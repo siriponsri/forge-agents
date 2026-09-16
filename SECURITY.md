@@ -12,4 +12,6 @@ an issue.
 - AO Limited must use one loopback daemon boundary per provider.
 - AO account-management and authentication surfaces are denied.
 - Native execution is the default; AO is explicit, worker-only and reversible.
+- Orca is reference-only: do not enable its account import/switching, remote,
+  mobile, cloud or network-exposed serve paths for FORGE-managed providers.
 - No credentials, model-provider state or browser profiles belong in this repo.

@@ -4,393 +4,267 @@
 
 # FORGE
 
-### Evidence-driven multi-agent project delivery.
+### Turn an idea into verified delivery—without giving up authority.
 
-**From one-line intent to verified deployment — with explicit authority, dynamic routing, independent QA, and auditable handoff.**
+**Local-first project orchestration with dynamic workers, independent QA, explicit release gates, and structured evidence.**
 
-[![Status](https://img.shields.io/badge/status-FORGE_V1_PRODUCTION_ACTIVE-111827?style=flat-square)](#current-status)
-[![Portable](https://img.shields.io/badge/portable-P11_RC_PASS-111827?style=flat-square)](#portable-forge)
-[![Architecture](https://img.shields.io/badge/AO-ADOPT_LIMITED-f97316?style=flat-square)](#agent-orchestrator)
-[![Platform](https://img.shields.io/badge/platform-Windows_x64-111827?style=flat-square)](#portable-forge)
+[![Status](https://img.shields.io/badge/status-FORGE_V1_PRODUCTION_ACTIVE-111827?style=flat-square)](#verified-status)
+[![Portable](https://img.shields.io/badge/portable-P11_RC_PASS-111827?style=flat-square)](#install-on-windows)
+[![Architecture](https://img.shields.io/badge/execution-AO_LIMITED-f97316?style=flat-square)](#execution-substrates)
+[![Orca](https://img.shields.io/badge/Orca-reference_only-6b7280?style=flat-square)](#orca-bake-off)
 
 </div>
 
 ---
 
-## What is FORGE?
+## Start here
 
-FORGE is a local-first **Multi-Agent Project Factory**.
+FORGE is a local project factory. You describe the outcome; FORGE separates discovery, planning, execution, independent checking, and the final release decision. It can use different worker tools without handing them planning or deployment authority.
 
-It does not treat a project as a long chat between permanent personas.  
-Instead, it turns an OWNER goal into a structured delivery pipeline, assembles only the capabilities needed for the current work, routes each task through an appropriate execution path, verifies the result independently, and keeps deployment authority explicit.
+You do not need to write code to install or operate the portable package. On 64-bit Windows:
+
+1. On GitHub, choose **Code → Download ZIP**, then extract the complete folder.
+2. Open its `bootstrap` folder.
+3. Double-click **`bootstrap.cmd`**.
+4. If Windows reports a missing prerequisite, install only the named item, then run `bootstrap.cmd` again.
+5. Sign in to a provider only with that provider's own application and normal sign-in flow.
+6. Double-click **`doctor.cmd`**. Continue when the result is `READY` or `READY_WITH_MISSING_OPTIONAL_PROVIDER`.
+7. Double-click **`launch-forge.cmd`**.
+8. Keep the console window open while FORGE is running. Close it to stop the local runtime.
+
+The default install location is:
 
 ```text
-OWNER intent
-    ↓
-Discovery
-    ↓
-Requirements
-    ↓
-Architecture + Plan
-    ↓
-Dynamic Work Cells
-    ↓
-Build + Integration
-    ↓
-Independent QA
-    ↓
-Release Gate
-    ↓
-Authorized Deployment
-    ↓
-Post-deploy Verification
-    ↓
-Evidence-backed Handoff
+%LOCALAPPDATA%\FORGE\forge-v1-portable
 ```
 
-FORGE is designed around a simple rule:
+Bootstrap is repeatable. Running it again verifies the installed files instead of overwriting an unrelated folder. It does not install Agent Orchestrator or Orca, change global PATH, copy credentials, or merge provider homes.
 
-> **The model is not the architecture. The agent is not the authority. The UI is not the evidence.**
+> Use the release folder's own `bootstrap` files. Do not copy individual scripts into another package.
 
----
+## The operating model
 
-## Workflow
+![FORGE delivery flow](assets/diagrams/forge-delivery-flow.svg)
 
-```mermaid
-flowchart LR
-    O["OWNER Goal"] --> I["Intake & Discovery"]
-    I --> R["Requirements"]
-    R --> P["Planner Authority"]
-    P --> T["Task Graph"]
+The OWNER keeps irreversible decisions. FORGE turns intent into a task graph, selects bounded workers, collects receipts, and sends the frozen result to Independent QA. Deployment happens only after the release gate is explicitly satisfied.
 
-    T --> S["Dynamic Staffing"]
-    S --> C["Required Capability"]
-    C --> W["Work Cell"]
-    W --> X["Task Profile"]
+| Stage | What happens | Who has authority |
+|---|---|---|
+| Intent | Goal, constraints, risk and desired outcome are stated | OWNER |
+| Discovery | Missing facts and acceptance criteria are resolved | FORGE |
+| Plan | Dependencies, staffing and routing are defined | FORGE Planner |
+| Work | Bounded workers build or inspect assigned scopes | Selected worker substrate |
+| Verify | The exact candidate is tested independently | FORGE Independent QA |
+| Release | Evidence is reviewed; deployment may be approved or stopped | OWNER + FORGE gate |
 
-    X --> H["Harness"]
-    H --> V["Provider"]
-    V --> M["Model"]
-    M --> B["Build / Integration"]
-
-    B --> Q["Independent QA"]
-    Q --> G{"Release Gate"}
-
-    G -->|Approved| D["Deployment"]
-    G -->|Blocked| F["Fix / Re-plan"]
-
-    F --> T
-    D --> Z["Post-deploy Verification"]
-    Z --> E["Structured Evidence"]
-    E --> O2["OWNER Handoff"]
-```
-
----
-
-## Architecture
-
-FORGE keeps these concepts deliberately separate:
+The governing relationship is:
 
 ```text
 Role ≠ Agent ≠ Skill ≠ Work Cell ≠ Harness ≠ Provider ≠ Model ≠ Tool
 ```
 
-### Authority layer
+Routing is an execution choice, not an identity. A worker can be replaced without changing who owns the plan or the release decision.
 
-| Authority | Responsibility |
-|---|---|
-| **Planner** | Defines the plan, task graph, dependencies, acceptance criteria and execution intent. |
-| **Developer** | Owns changes to build artifacts within an assigned scope. |
-| **Independent QA** | Verifies the frozen candidate independently from the implementation authority. |
-| **OWNER** | Retains irreversible business, security, deployment, spending and credential decisions. |
+## Install on Windows
 
-### Dynamic execution
+### What you need
 
-FORGE does not permanently bind one role to one model.
+- 64-bit Windows
+- Node.js 20 or newer
+- Git for Windows
+- at least one optional provider tool if you want model-backed work
 
-```text
-Task
-→ Required Capability
-→ Work Cell
-→ Task Profile
-→ Harness
-→ Provider
-→ Model
-```
+FORGE's doctor reports missing prerequisites. Bootstrap will not install them globally for you.
 
-Routing is treated as an execution decision, not an identity.
+### First install
 
----
+1. Extract the complete approved package to a normal local folder.
+2. Double-click `bootstrap\bootstrap.cmd`.
+3. If the window pauses with `BLOCKED_WITH_ACTION`, follow only the listed action and retry. A successful bootstrap may close automatically.
+4. Do not move individual files out of the extracted package.
+5. Run `bootstrap\doctor.cmd`.
+6. Run `bootstrap\launch-forge.cmd`.
 
-## Why FORGE exists
+Expected safe outcomes:
 
-Multi-agent systems are easy to demo and surprisingly hard to operate.
+- `READY` — core runtime and at least one provider are visible.
+- `READY_WITH_MISSING_OPTIONAL_PROVIDER` — core runtime is ready; provider sign-in can wait.
+- `BLOCKED_WITH_ACTION` — stop and complete the named prerequisite or integrity repair.
+- `FAIL_CLOSED` — stop; the target, package identity, or payload does not meet the safety contract.
 
-The difficult parts are rarely "make more agents talk." The difficult parts are:
+### Sign in to a provider
 
-- knowing who has authority to change what,
-- preventing provider/model lock-in,
-- keeping credentials isolated,
-- separating live evidence from human-readable summaries,
-- recovering safely from failed execution,
-- preventing duplicate or stale work,
-- independently verifying the exact candidate that will ship,
-- and knowing when the system must stop and ask the OWNER.
-
-FORGE focuses on those engineering problems.
-
----
-
-## Current status
-
-FORGE V1 has completed transactional production promotion.
-
-| Milestone | Result |
-|---|---:|
-| Production promotion | **PASS** |
-| Production state | `FORGE_V1_PRODUCTION_ACTIVE` |
-| Deterministic regression | **33 / 33 PASS** |
-| Production smoke | **PASS** |
-| Real Chrome control smoke | **PASS** |
-| Independent QA | **PASS** |
-| Final read-only verification | **PASS** |
-| Unexpected production paths | **0** |
-| New external spend during promotion | **0** |
-
-Current verified production snapshot:
+FORGE does not contain or migrate provider credentials. Sign in with the provider's native tool. Keep each provider in its own home:
 
 ```text
-df7400ebd6a99d825a08f6bbd6b4a5e5ae33554e223e030bcd8d3e215c57e826
+Official Codex  → %USERPROFILE%\.codex
+MaxPlus         → %USERPROFILE%\.codex-maxplus
 ```
 
----
+Never copy `auth.json`, tokens, browser profiles, or session caches between those homes. If a tool asks to import, switch, or consolidate accounts, decline it for a FORGE-managed provider.
 
-## Portable FORGE
+### Verify or repair
 
-P11 produced a portable release candidate from canonical production.
+- Run `bootstrap\doctor.cmd` whenever the machine or provider setup changes.
+- Run `bootstrap\bootstrap.cmd` again to verify an existing installation.
+- Do not manually replace files inside the managed install directory.
+- To remove the portable install, use `bootstrap\rollback-install.cmd`; it checks the install receipt before removing managed state.
+
+## Run a project
+
+Use this short OWNER brief:
 
 ```text
-Extract
-  ↓
-Double-click bootstrap
-  ↓
-Detect machine prerequisites
-  ↓
-Create machine-local FORGE state
-  ↓
-Doctor
-  ↓
-Launch
+Goal:
+Users:
+Must have:
+Must not do:
+Where it may run:
+What requires my approval:
+How we will know it is done:
 ```
 
-P11 clean-room validation covered fresh installation, doctor, launch, idempotence, rollback, malformed packages, unexpected existing targets and provider-discovery states.
+FORGE should ask you only for decisions that change architecture, security/privacy, credentials, public deployment, spending, or an irreversible outcome. Implementation details that are safe and reversible should be handled inside the approved scope.
+
+Before any real provider call, confirm the provider, expected scope, and spending boundary. Before deployment, inspect the Independent QA result and release evidence. A green UI alone is not release evidence.
+
+## Evidence and trust
+
+FORGE resolves conflicts in this order:
 
 ```text
-P11 Portable Validation: 11 / 11 PASS
-```
-
-Portable package identity:
-
-```text
-Package ID
-284b5ea2fc11d196864284c04d1e65918995517737232b1c1bd5de977f8ab435
-
-Release tree SHA-256
-002dac3884133ca5f359b0a4f9ba5bc3f2b65dba8dd3ec26d0f00b4441c19690
-
-ZIP SHA-256
-7f04f1c701f9e6f50318077fa4b2e16b7f113d4c9d75ea65ac6d22c2630a4310
-```
-
-Portable packaging never includes provider credentials.
-
----
-
-## Agent Orchestrator
-
-P11 evaluated **Agent Orchestrator (AO)** as a reusable execution layer.
-
-Pinned evaluation target:
-
-```text
-Untrivial-ai/agent-orchestrator
-v0.13.0
-15e9ea971f1711ec8b50e157d6eb300db6cbe0d6
-Apache-2.0
-```
-
-P11 architecture decision:
-
-```text
-ADOPT_AO_LIMITED
-```
-
-This does **not** make AO the brain of FORGE.
-
-The intended boundary is:
-
-```mermaid
-flowchart TD
-    A["OWNER"] --> B["FORGE Planner"]
-    B --> C["FORGE Task Graph"]
-    C --> D["FORGE Staffing + Routing"]
-    D --> E["Optional AO Worker Adapter"]
-    E --> F["Worktree / Session / Browser / PR / CI"]
-    F --> G["Artifact + Execution Receipt"]
-    G --> H["FORGE Independent QA"]
-    H --> I["FORGE Release / Deploy Gate"]
-```
-
-### AO may provide
-
-- worker/session lifecycle,
-- isolated workspaces and Git worktrees,
-- terminal/chat supervision,
-- browser/process lifecycle,
-- PR/CI/review plumbing,
-- coding-harness launch mechanics.
-
-### FORGE always retains
-
-- OWNER intake,
-- discovery and requirements,
-- Planner authority,
-- task graph,
-- dynamic staffing,
-- model/provider routing,
-- Independent QA authority,
-- deployment gate,
-- evidence/audit authority,
-- irreversible OWNER decisions.
-
-AO is a qualified but **optional execution backend**. P11 completed Windows x64 runtime qualification, separate-provider daemon proof, evidence mapping, cleanup verification and rollback-to-native parity using fixtures and temporary provider homes. Native execution remains the default.
-
----
-
-## Provider isolation
-
-Provider identity is an execution boundary.
-
-Example local homes:
-
-```text
-Official Codex  → dedicated CODEX_HOME
-MaxPlus         → separate dedicated CODEX_HOME
-```
-
-FORGE does not merge provider credentials.
-
-For AO-backed execution, the accepted design requires **separate AO daemon/data/run/port boundaries per provider**. AO account switching is not part of the FORGE-managed provider path.
-
----
-
-## Evidence first
-
-FORGE uses an explicit authority order:
-
-```text
-Structured JSON / JSONL
+Live structured JSON / JSONL
         ↓
 Verified runtime receipts
         ↓
-Checkpoint projections
+Frozen checkpoint projections
         ↓
 Markdown summaries
         ↓
 UI
 ```
 
-If a report disagrees with structured evidence, the structured evidence wins.
+Evidence records inputs, decisions, concise rationale, tests, outcomes, errors, and OWNER choices. It does not require or publish hidden chain-of-thought.
 
-FORGE records decisions, concise rationale, assumptions, evidence, tests, outcomes, errors and OWNER choices — not hidden chain-of-thought.
+## Execution substrates
 
----
+![FORGE execution substrate boundary](assets/diagrams/execution-substrates.svg)
 
-## Design principles
+FORGE may delegate worker plumbing, but never its planning or assurance authority.
 
-- **Local-first**
-- **Provider-agnostic**
-- **Harness-aware**
-- **Evidence-driven**
-- **Dynamic staffing**
-- **Independent QA**
-- **Fail closed**
-- **Reversible change**
-- **Cost-aware routing**
-- **Minimal OWNER interruption**
-- **No credential merging**
-- **No permanent agent swarm by default**
+| Substrate | Current position | Suitable use |
+|---|---|---|
+| Native FORGE | Default | Lowest-dependency execution and guaranteed fallback |
+| AO Limited | OWNER-approved, optional | Worker/session lifecycle, isolated worktrees, terminal supervision and bounded cleanup |
+| Orca | Reference-only after P11.5 | Source-informed future candidate; not qualified for FORGE execution |
 
----
-
-## Repository direction
-
-The repository is being structured around clean source and release artifacts rather than copying a machine installation into Git.
-
-Expected top-level shape:
+The active architecture decision remains:
 
 ```text
-forge-agents/
-├─ assets/
-├─ runtime/
-├─ bootstrap/
-├─ adapters/
-├─ contracts/
-├─ docs/
-├─ tests/
-├─ examples/
-└─ release/
+ADOPT_AO_LIMITED
 ```
 
-Machine-local state, provider homes, credentials, browser profiles and private project data do not belong in this repository.
+AO is opt-in, worker-only, reversible, and never a second planner. Native execution remains the default and rollback path. See [AO Limited integration](docs/AO_LIMITED_INTEGRATION.md) and [execution substrate boundaries](docs/EXECUTION_SUBSTRATES.md).
 
----
+## Orca bake-off
+
+P11.5 evaluated [stablyai/orca](https://github.com/stablyai/orca) at the immutable target below:
+
+```text
+release  v1.4.204
+commit   4f7baefc4f5c49181d54046763e083a4628662d8
+license  MIT
+```
+
+Orca provides a broad structured CLI, durable run/task/dispatch concepts, worktree and terminal controls, browser ownership, receipts, and recovery semantics. Those are useful reference patterns.
+
+The same pin also exposes three blocking boundaries for FORGE:
+
+- orchestration is explicitly experimental;
+- account registration can import Codex authentication into Orca-managed homes and the rate-limit path can read provider auth state;
+- the official Windows app did not start successfully from the clean temporary profile used for qualification, while `orca serve` is a network-exposed mode rather than a loopback-only headless contract.
+
+No model call, real provider login, account switch, public service, cloud deployment, or Orca adapter was used. The P11.5 recommendation is:
+
+```text
+KEEP_AO_LIMITED
+```
+
+Orca remains reference-only until a future, separately approved evaluation can prove a clean-profile Windows runtime, a loopback-pinned headless interface, and a hard provider-account boundary. Read the full [Orca evaluation](docs/ORCA_EVALUATION.md).
+
+## Authority boundary
+
+FORGE always retains:
+
+- OWNER intake and discovery
+- requirements and acceptance criteria
+- Planner and task graph
+- dynamic staffing and provider/model routing
+- Independent QA
+- release and deployment gates
+- structured evidence and audit
+- irreversible OWNER decisions
+
+An execution substrate may provide worker/session lifecycle, isolated workspace and Git worktree mechanics, terminal or coding-harness supervision, bounded browser/process lifecycle, PR/CI/review plumbing, and execution receipts.
+
+Do not create a chain such as `FORGE Planner → substrate orchestrator → another planner`. The worker layer executes a bounded task; it does not reinterpret the project.
+
+## Verified status
+
+| Milestone | Result |
+|---|---:|
+| Production state | `FORGE_V1_PRODUCTION_ACTIVE` |
+| Production regression | 33 / 33 PASS |
+| Portable clean-room validation | 11 / 11 PASS |
+| P11 architecture | `ADOPT_AO_LIMITED` |
+| AO adapter | Optional, worker-only, native-default |
+| P11.5 Orca recommendation | `KEEP_AO_LIMITED` |
+| P12 | Not started |
+
+Production snapshot:
+
+```text
+df7400ebd6a99d825a08f6bbd6b4a5e5ae33554e223e030bcd8d3e215c57e826
+```
+
+Portable package ID:
+
+```text
+284b5ea2fc11d196864284c04d1e65918995517737232b1c1bd5de977f8ab435
+```
+
+## Troubleshooting
+
+**Bootstrap says the target is not empty.** Choose an empty folder or use the existing receipt-backed FORGE target. Bootstrap refuses to take ownership of arbitrary files.
+
+**Doctor cannot find Node or Git.** Install the missing prerequisite with an OWNER-approved native installer. Re-run doctor; do not patch system PATH only to make a test pass.
+
+**No provider is detected.** The core runtime may still be ready. Install and sign in through one provider's native flow when model-backed work is approved.
+
+**A provider works in one terminal but not FORGE.** Check that the intended `CODEX_HOME` or native provider home is selected. Do not solve this by copying credentials.
+
+**Port 3935 is busy.** Stop the earlier FORGE process, or launch with an approved alternate local port. Do not expose the service to the LAN or Internet.
+
+**A payload hash fails.** Re-extract a verified package. Do not edit the manifest or disable integrity checks.
+
+## Repository safety
+
+This public repository must never contain provider credentials, `.env` secrets, auth/session/token caches, browser cookies or profiles, private project data, production-machine paths, downloaded AO/Orca source trees, or third-party binaries.
+
+The repository contains clean source, portable payloads, contracts, tests, diagrams, and sanitized evaluation records. Machine-local state stays on the machine.
 
 ## Roadmap
 
 ```text
-P10  Production activation
- ✓   FORGE_V1_PRODUCTION_ACTIVE
-
-P11  Portable distribution + AO reuse decision
- ✓   Portable RC PASS
- ✓   AO decision: ADOPT_AO_LIMITED
-
-P11.x  AO limited runtime qualification
- ✓     Windows x64 runtime proof
- ✓     Separate-provider daemon proof
- ○     FORGE → AO adapter
- ○     AO → FORGE evidence mapper
- ○     rollback-to-native parity
-
-P12  First portable end-to-end real project
- ○     Goal → build → QA → authorized deploy → verify → handoff
+P10   Production activation                         complete
+P11   Portable distribution + AO reuse decision    complete
+P11.5 Orca bake-off + repository addendum          complete
+P12   First portable real project                  not started
 ```
 
----
-
-## Safety boundary
-
-This repository must never contain:
-
-```text
-provider credentials
-auth/session/token caches
-private .env files
-browser cookies/profiles
-private project data
-production machine secrets
-```
-
-FORGE may coordinate execution across providers, but provider authentication remains local to its authorized runtime boundary.
+P12 requires a separate OWNER instruction. This repository update does not start it.
 
 ---
-
-## Project philosophy
-
-FORGE is not trying to simulate a company.
-
-It is trying to make project execution **deterministic enough to trust, flexible enough to route intelligently, and transparent enough for an OWNER to understand what is happening without becoming the system operator.**
 
 <div align="center">
 

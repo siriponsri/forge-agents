@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "checkpoint": "P11_5_PUBLIC_ORCA_EVALUATION",
+  "orca": {
+    "repository": "https://github.com/stablyai/orca",
+    "release": "v1.4.204",
+    "commit": "4f7baefc4f5c49181d54046763e083a4628662d8",
+    "license": "MIT",
+    "windows_artifact": "orca-windows-setup.exe",
+    "windows_artifact_sha256": "87b877ec7472f664e5264dc5367a5f18f4484aea67a08b4eca76f9a65729206c",
+    "bundled": false
+  },
+  "verdicts": {
+    "source_control_surface": "REFERENCE_VALUE_CONFIRMED",
+    "provider_home_isolation": "NOT_QUALIFIED",
+    "windows_runtime": "FAIL_CLOSED_CLEAN_PROFILE_APP_CRASH",
+    "browser_lifecycle": "NOT_RUN_RUNTIME_UNQUALIFIED",
+    "adapter": "NOT_BUILT_FAIL_CLOSED"
+  },
+  "recommendation": "KEEP_AO_LIMITED",
+  "current_architecture": "ADOPT_AO_LIMITED",
+  "production_changed": false,
+  "p12_started": false,
+  "model_backed_calls": 0,
+  "credentials_used": false
+}

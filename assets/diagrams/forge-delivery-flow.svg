@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="560" viewBox="0 0 1280 560" role="img" aria-labelledby="title desc">
+  <title id="title">FORGE evidence-driven delivery flow</title>
+  <desc id="desc">Owner intent passes through discovery, planning, bounded work, independent QA and a release gate. Evidence returns to the owner, while failed QA loops back to planning.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#667085"/></marker>
+    <style>.bg{fill:#fbfaf7}.ink{fill:#17202a}.muted{fill:#667085}.line{fill:none;stroke:#98a2b3;stroke-width:1.5;marker-end:url(#arrow)}.node{fill:#fff;stroke:#cdd3da;stroke-width:1}.focus{fill:#fff7ed;stroke:#f97316;stroke-width:2}.gate{fill:#17202a;stroke:#17202a;stroke-width:1}.eyebrow{font:600 12px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:1.2px}.title{font:600 28px Georgia,serif}.label{font:600 15px Inter,Segoe UI,sans-serif}.small{font:400 12px Inter,Segoe UI,sans-serif}</style>
+  </defs>
+  <rect class="bg" width="1280" height="560"/>
+  <text x="64" y="64" class="eyebrow muted">FORGE / DELIVERY CONTROL</text>
+  <text x="64" y="104" class="title ink">One authority path. Independent proof.</text>
+  <text x="64" y="132" class="small muted">Workers may change; planning, assurance and release authority do not.</text>
+  <path class="line" d="M192 244H264"/><path class="line" d="M424 244H496"/><path class="line" d="M656 244H728"/><path class="line" d="M888 244H960"/>
+  <path class="line" d="M1040 304V368H816"/><path class="line" d="M728 400H648V304"/>
+  <rect class="focus" x="64" y="184" width="128" height="120" rx="8"/>
+  <text x="84" y="216" class="eyebrow" fill="#c2410c">01 / OWNER</text><text x="84" y="248" class="label ink">Intent</text><text x="84" y="272" class="small muted">Goal · constraints</text><text x="84" y="288" class="small muted">approval boundary</text>
+  <rect class="node" x="264" y="184" width="160" height="120" rx="8"/>
+  <text x="284" y="216" class="eyebrow muted">02 / DISCOVER</text><text x="284" y="248" class="label ink">Requirements</text><text x="284" y="272" class="small muted">facts · acceptance</text><text x="284" y="288" class="small muted">risks · unknowns</text>
+  <rect class="node" x="496" y="184" width="160" height="120" rx="8"/>
+  <text x="516" y="216" class="eyebrow muted">03 / PLAN</text><text x="516" y="248" class="label ink">Task graph</text><text x="516" y="272" class="small muted">staff · route</text><text x="516" y="288" class="small muted">dependency · gate</text>
+  <rect class="node" x="728" y="184" width="160" height="120" rx="8"/>
+  <text x="748" y="216" class="eyebrow muted">04 / EXECUTE</text><text x="748" y="248" class="label ink">Work cells</text><text x="748" y="272" class="small muted">bounded change</text><text x="748" y="288" class="small muted">runtime receipt</text>
+  <rect class="focus" x="960" y="184" width="160" height="120" rx="8"/>
+  <text x="980" y="216" class="eyebrow" fill="#c2410c">05 / VERIFY</text><text x="980" y="248" class="label ink">Independent QA</text><text x="980" y="272" class="small muted">frozen candidate</text><text x="980" y="288" class="small muted">evidence, not UI</text>
+  <rect class="gate" x="728" y="368" width="176" height="64" rx="8"/>
+  <text x="748" y="396" class="eyebrow" fill="#f9fafb">06 / RELEASE GATE</text><text x="748" y="416" class="small" fill="#d0d5dd">approve · stop · re-plan</text>
+  <path d="M904 400H1072" class="line"/><rect class="node" x="1072" y="368" width="144" height="64" rx="8"/>
+  <text x="1092" y="396" class="label ink">Verified handoff</text><text x="1092" y="416" class="small muted">decision + receipt</text>
+  <line x1="64" y1="496" x2="1216" y2="496" stroke="#e4e7ec"/>
+  <circle cx="76" cy="520" r="4" fill="#f97316"/><text x="92" y="524" class="small ink">Orange marks human authority and independent assurance.</text>
+  <text x="1216" y="524" text-anchor="end" class="eyebrow muted">LOCAL FIRST · FAIL CLOSED</text>
+</svg>

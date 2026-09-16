@@ -1,9 +1,9 @@
 {
   "name": "forge-agents",
   "private": true,
-  "version": "1.0.0-p11",
+  "version": "1.0.0-p11.5",
   "type": "module",
-  "description": "FORGE portable runtime and opt-in AO Limited execution adapter",
+  "description": "FORGE portable runtime, opt-in AO Limited adapter, and P11.5 Orca evaluation",
   "scripts": {
     "test": "node tests/ao-limited-adapter.test.mjs"
   },

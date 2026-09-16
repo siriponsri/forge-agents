@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="560" viewBox="0 0 1280 560" role="img" aria-labelledby="title desc">
+  <title id="title">FORGE authority over execution substrates</title>
+  <desc id="desc">FORGE retains owner intake, planning, routing, independent QA, release and evidence authority. Native execution is default, AO Limited is approved optional, and Orca is reference-only.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#667085"/></marker>
+    <style>.bg{fill:#fbfaf7}.ink{fill:#17202a}.muted{fill:#667085}.panel{fill:#fff;stroke:#cdd3da}.active{fill:#fff7ed;stroke:#f97316;stroke-width:2}.dark{fill:#17202a}.rule{stroke:#e4e7ec}.flow{fill:none;stroke:#667085;stroke-width:1.5;marker-end:url(#arrow)}.eyebrow{font:600 12px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:1.2px}.title{font:600 28px Georgia,serif}.label{font:600 16px Inter,Segoe UI,sans-serif}.body{font:400 12px Inter,Segoe UI,sans-serif}.mono{font:500 11px ui-monospace,SFMono-Regular,Consolas,monospace}</style>
+  </defs>
+  <rect class="bg" width="1280" height="560"/>
+  <text x="64" y="64" class="eyebrow muted">FORGE / EXECUTION SUBSTRATES</text><text x="64" y="104" class="title ink">Delegate plumbing. Keep authority.</text>
+  <rect x="64" y="152" width="1152" height="112" rx="8" class="dark"/>
+  <text x="88" y="184" class="eyebrow" fill="#fdba74">FORGE AUTHORITY PLANE</text>
+  <text x="88" y="216" class="label" fill="#f9fafb">OWNER intake · discovery · Planner · task graph · staffing · routing · Independent QA · release gate · evidence</text>
+  <text x="88" y="240" class="body" fill="#d0d5dd">No execution backend may become a second planner or approve its own result.</text>
+  <path class="flow" d="M640 264V320"/><text x="660" y="300" class="mono muted">bounded task + policy</text>
+  <rect x="64" y="320" width="336" height="152" rx="8" class="panel"/>
+  <text x="88" y="352" class="eyebrow muted">DEFAULT</text><text x="88" y="384" class="label ink">Native FORGE</text>
+  <text x="88" y="412" class="body muted">Lowest dependency surface</text><text x="88" y="432" class="body muted">Guaranteed fallback path</text>
+  <line x1="88" y1="448" x2="376" y2="448" class="rule"/><text x="88" y="464" class="mono ink">STATUS / READY</text>
+  <rect x="472" y="320" width="336" height="152" rx="8" class="active"/>
+  <text x="496" y="352" class="eyebrow" fill="#c2410c">OWNER APPROVED / OPTIONAL</text><text x="496" y="384" class="label ink">AO Limited</text>
+  <text x="496" y="412" class="body muted">Worker lifecycle · worktrees</text><text x="496" y="432" class="body muted">Terminal supervision · cleanup</text>
+  <line x1="496" y1="448" x2="784" y2="448" class="rule"/><text x="496" y="464" class="mono ink">STATUS / ADOPT_AO_LIMITED</text>
+  <rect x="880" y="320" width="336" height="152" rx="8" class="panel" stroke-dasharray="6 5"/>
+  <text x="904" y="352" class="eyebrow muted">P11.5 / EVALUATED</text><text x="904" y="384" class="label ink">Orca</text>
+  <text x="904" y="412" class="body muted">Useful control-surface reference</text><text x="904" y="432" class="body muted">Runtime + auth boundary unqualified</text>
+  <line x1="904" y1="448" x2="1192" y2="448" class="rule"/><text x="904" y="464" class="mono muted">STATUS / REFERENCE ONLY</text>
+  <text x="64" y="520" class="body ink">All routes return artifacts and execution receipts to FORGE Independent QA.</text>
+  <text x="1216" y="520" text-anchor="end" class="eyebrow muted">NATIVE FALLBACK ALWAYS AVAILABLE</text>
+</svg>
