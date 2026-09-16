@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0.0",
+  "plur_enabled": false,
+  "provider_policy": "NATIVE_LOGIN_ONLY_NO_CREDENTIAL_COPY",
+  "official_codex_home": "%USERPROFILE%\\.codex",
+  "maxplus_home": "%USERPROFILE%\\.codex-maxplus"
+}

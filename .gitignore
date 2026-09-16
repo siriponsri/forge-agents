@@ -1,0 +1,30 @@
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+**/auth.json
+**/*credential*
+**/*secret*
+**/*token*
+**/*.pem
+**/*.key
+
+# Provider, AO and browser state
+.codex/
+.codex-maxplus/
+.ao/
+**/browser-profile/
+**/user-data-dir/
+**/cookies*
+**/*.sqlite*
+**/*.db
+
+# Build and local outputs
+node_modules/
+dist/
+coverage/
+*.log
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db

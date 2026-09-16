@@ -1,0 +1,13 @@
+{
+  "name": "forge-agents",
+  "private": true,
+  "version": "1.0.0-p11",
+  "type": "module",
+  "description": "FORGE portable runtime and opt-in AO Limited execution adapter",
+  "scripts": {
+    "test": "node tests/ao-limited-adapter.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,7 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {sha256, writeJson} from './core.mjs';
+export function normalizeMarkdown(text) { return String(text).replace(/^\uFEFF/,'').replace(/`n?/g,'\n').split('\n').map(line=>line.replace(/[ \t]+$/g,'')).join('\n').replace(/\n*$/,'\n'); }
+export function runDocumentIngestionProbe({outputRoot}={}) {
+  const root=path.resolve(outputRoot); fs.mkdirSync(root,{recursive:true}); const inputPath=path.join(root,'document-fixture.md'); const outputPath=path.join(root,'document-normalized.md'); const source='# P8 document fixture`n`n- alpha  `n- beta`n'; fs.writeFileSync(inputPath,source,'utf8'); const normalized=normalizeMarkdown(fs.readFileSync(inputPath,'utf8')); fs.writeFileSync(outputPath,normalized,'utf8'); const second=normalizeMarkdown(fs.readFileSync(inputPath,'utf8')); const pass=normalized===second&&normalized==='# P8 document fixture\n\n- alpha\n- beta\n'; const result={schema_version:'1.0.0',probe_id:'P8_DOCUMENT_INGESTION_RESULT',classification:'OPTIONAL_AVAILABLE',tool_id:'local-markdown-normalizer',named_consumer:'docs ingestion',input_path:inputPath,output_path:outputPath,output_sha256:sha256(normalized),deterministic:pass,external_upload:false,external_writes:false,credentials_used:false,verdict:pass?'PASS':'FAIL',limitation:'local Markdown/text only; binary office conversion remains deferred'}; writeJson(path.join(root,'document-result.json'),result); return result;
+}

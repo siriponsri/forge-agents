@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0.0",
+  "release": "FORGE_V1_P11_PUBLIC_REPOSITORY",
+  "status": "ADOPT_AO_LIMITED",
+  "built_from_verified_sources": true,
+  "production_snapshot": "df7400ebd6a99d825a08f6bbd6b4a5e5ae33554e223e030bcd8d3e215c57e826",
+  "portable_package_id": "284b5ea2fc11d196864284c04d1e65918995517737232b1c1bd5de977f8ab435",
+  "portable_release_tree_hash": "002dac3884133ca5f359b0a4f9ba5bc3f2b65dba8dd3ec26d0f00b4441c19690",
+  "portable_zip_sha256": "7f04f1c701f9e6f50318077fa4b2e16b7f113d4c9d75ea65ac6d22c2630a4310",
+  "architecture_packet_id": "0c26a38fa9c5329885d62415b1c3558053fc941c3feab85b07ef5e688b8b69e9",
+  "ao": {
+    "repository": "Untrivial-ai/agent-orchestrator",
+    "release": "v0.13.0",
+    "commit": "15e9ea971f1711ec8b50e157d6eb300db6cbe0d6",
+    "license": "Apache-2.0",
+    "bundled": false
+  },
+  "portable_source_files": 34,
+  "bootstrap_source_files": 11,
+  "public_sanitizations": [
+    "machine-private runtime paths replaced with environment or command resolution after source hash verification"
+  ],
+  "credentials_included": false,
+  "provider_state_included": false,
+  "plur_enabled": false,
+  "model_backed_calls_during_qualification": 0
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0.0",
+  "checkpoint": "P11_AO_LIMITED_ADAPTER_CONTRACT",
+  "verdict": "PASS",
+  "classification": "ADOPT_AO_LIMITED",
+  "interface": "FORGE route -> native|ao -> provider boundary -> AO worker -> mapped receipt -> FORGE QA",
+  "invariants": {
+    "classification": "ADOPT_AO_LIMITED",
+    "native_default": true,
+    "worker_only": true,
+    "account_switching": "DENIED",
+    "planner_authority": "FORGE",
+    "independent_qa_authority": "FORGE",
+    "deployment_authority": "FORGE",
+    "evidence_authority": "FORGE"
+  },
+  "allowed_ao_roles": [
+    "worker"
+  ],
+  "denied_ao_roles": [
+    "orchestrator",
+    "planner",
+    "qa_authority",
+    "deployment_authority",
+    "evidence_authority"
+  ],
+  "provider_isolation": "SEPARATE_DAEMON_BOUNDARY_PER_PROVIDER",
+  "credential_policy": "NO_READ_COPY_MERGE_SWITCH",
+  "model_backed_calls": 0,
+  "production_promoted": false
+}

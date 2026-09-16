@@ -1,0 +1,256 @@
+{
+  "schema_version": "1.0.0",
+  "release_name": "forge-v1-public-repository",
+  "source_portable_package_id": "284b5ea2fc11d196864284c04d1e65918995517737232b1c1bd5de977f8ab435",
+  "source_production_snapshot_id": "df7400ebd6a99d825a08f6bbd6b4a5e5ae33554e223e030bcd8d3e215c57e826",
+  "platform": {
+    "os": "windows",
+    "architectures": [
+      "x64",
+      "arm64"
+    ],
+    "runtime": "nodejs"
+  },
+  "payload_files": [
+    {
+      "path": ".agent-shared/runtime/scripts/adapters.mjs",
+      "bytes": 6460,
+      "sha256": "e618c3ea0a01772ab66237849472a322f2a534cc4263224a07cec06ec90a5c9b"
+    },
+    {
+      "path": ".agent-shared/runtime/scripts/capability-grad.mjs",
+      "bytes": 3394,
+      "sha256": "e6c291b951ff9165c59a89e90ac14de544f991b293fb5d84f0cebc4f9e36672b"
+    },
+    {
+      "path": ".agent-shared/runtime/scripts/core.mjs",
+      "bytes": 6999,
+      "sha256": "60ab37b680b552f97ca22256be2679c645b30c12c5eb7cc0bd2902b40553872d"
+    },
+    {
+      "path": ".agent-shared/runtime/scripts/resolver.mjs",
+      "bytes": 4386,
+      "sha256": "c7bac439b7bd8aa692e762003be8acff2236f9167f21c2f3403cb4e137c6b31e"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/bin/p95-serve.mjs",
+      "bytes": 821,
+      "sha256": "9cd2d6f71552af54608fe33dd053b88a13e0b6be359de84f51724215a21df21d"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/bin/project-factory.mjs",
+      "bytes": 7255,
+      "sha256": "dbd75c4ca59fb68bdf3babe30c9a0f866ff411a860732ce36588c2702727f094"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/config/TOOL_REGISTRY.json",
+      "bytes": 13555,
+      "sha256": "754fe800481c2fa5fdd6cd9a41a6fdd556df534ed0d37e37d8dd0dcbf247bb52"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/monitor/app.js",
+      "bytes": 16048,
+      "sha256": "1336e55454eb946af453b7f09b4e0ffb8001fab6cff6450cf1e29a64c2d3efc5"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/monitor/index.html",
+      "bytes": 1202,
+      "sha256": "d569dd7d01b900b0a664014bffd9bcc5bb467ca0402fb68edc4006b8b563f9e4"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/monitor/p95b.css",
+      "bytes": 1275,
+      "sha256": "1a1fc9a4b6eb747d2def2d96b3e93c98f33608e144b8845d836bee043ed08a7d"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/monitor/styles.css",
+      "bytes": 6706,
+      "sha256": "97320b7c28d1b54b20d981df6eade8e025c4e90e99d959f4fb4dcf588ded1a78"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/package.json",
+      "bytes": 291,
+      "sha256": "357d004b66acf968dc7fa165db068f19a45100ffa5109c854ad2bf0d0c749e5b"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/browser.mjs",
+      "bytes": 7864,
+      "sha256": "cfa0995bde658403c9661fb3f0855b5cb99ea8097af1d091dd8305a49bab98fb"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/core.mjs",
+      "bytes": 4763,
+      "sha256": "c038bbed2750feebfbbd40a4b2245e021a301b240f4a484bb3a5459f3df7d74e"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/document.mjs",
+      "bytes": 1454,
+      "sha256": "f9ec2a3691bfab1df41ad290719daa4f548e0fc3378ca13dfb32bc7c74bf24b9"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/git-probe.mjs",
+      "bytes": 2628,
+      "sha256": "b2344365b6d01fee5fb5022aa2e0cac1c602c3ea3e7833bd212d97a71062ccfb"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/harness.mjs",
+      "bytes": 2767,
+      "sha256": "c1b9d76d594160dc732da544e32d0e4cf13aa3f73b1b5c8be9da0bace04c561c"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/intake.mjs",
+      "bytes": 3115,
+      "sha256": "b3e8133b1009e88e4770f63e76c9557620c433200955acf3f41945c5cead7563"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/model-intelligence.mjs",
+      "bytes": 7788,
+      "sha256": "ade04415ccf4392b78e96656c637f3655bde904bcfef4597e41a60f144053fd7"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/model-refresh.mjs",
+      "bytes": 5060,
+      "sha256": "6a93912a98f9cb4553c1be7bec3c73a76826a04fc21c7dcd048fd5d5dd1940fc"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/p8-qa.mjs",
+      "bytes": 4571,
+      "sha256": "6bc9cc5d4f6c45b9347dca916f2d9a6fabc249b00b29a54de7499732e568ac52"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/p8-runtime.mjs",
+      "bytes": 6868,
+      "sha256": "538bcdc099f7cf8296de83e07b841752fd6b8bbed3d846b6639e3bd022778141"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/p95-core.mjs",
+      "bytes": 12602,
+      "sha256": "4ec17b4599e0d6cd13a71ed793c4fb3a6f9b307572e515c2b986ec4f75881d34"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/p95-monitor.mjs",
+      "bytes": 5930,
+      "sha256": "3d3fbad6fdd23e7e9ebe27b2e277868eb196d10232f0466da4dace1dbcd67717"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/p95-routing.mjs",
+      "bytes": 23795,
+      "sha256": "d5d303e7bf6727c63dfa4c7b45411b90ccac96fd31b7584cb0139e6e659094a4"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/p95-runtime.mjs",
+      "bytes": 36920,
+      "sha256": "1db314973621de62a134df64bbf3bba4639dd7262b3e93a52cc045cca9901ec1"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/qa.mjs",
+      "bytes": 3470,
+      "sha256": "8cbc0d71ee37dd2fe2a3bd64ce72cd63840fb04c3dc3c495927c6796ba6a4fd8"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/routing.mjs",
+      "bytes": 10542,
+      "sha256": "6bb83065963e2e0fcff218aabbce36c1c9c1bcc59004a99f54dbb0a756243fcc"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/runtime.mjs",
+      "bytes": 7176,
+      "sha256": "c31f0ecdea4148bfede77fc4c46f5bf4a8cacb64c7a97e3259c1382f8239e4cc"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/snapshot.mjs",
+      "bytes": 1971,
+      "sha256": "983b568a30e23a8b4007ffec15f2a74846de3387f633e1201822628320c9dac2"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/staffing.mjs",
+      "bytes": 1585,
+      "sha256": "b64b462f5e17719a55804366a134648ddd78ef30e88834136d8d03896d60a728"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/task-graph.mjs",
+      "bytes": 6848,
+      "sha256": "df4104dc957ab3629c199371996d2ec7b7b1185347bf95bfbf407abf1e2ad63a"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/tool-policy.mjs",
+      "bytes": 4071,
+      "sha256": "6bd5f7dbead05738b80a2b5c40e8c0cebff1acb3b91e9eab1ea0465eb4f04491"
+    },
+    {
+      "path": "project-factory-runtime-p9.5/src/tools.mjs",
+      "bytes": 14225,
+      "sha256": "19845b0b6d74a21344f719b6a323ac73c0fd94521432130900df616068b31c34"
+    }
+  ],
+  "distribution_files": [
+    {
+      "path": "bootstrap.cmd",
+      "bytes": 109,
+      "sha256": "7d618f57c9d2136fa461dbdd1f916736ce166b06c626cc5789540c964954eaf4"
+    },
+    {
+      "path": "bootstrap.ps1",
+      "bytes": 6783,
+      "sha256": "88a278e47bda8a44fa958481bfefd54fee68c447ba3f9620c6e5c7de642ebcae"
+    },
+    {
+      "path": "doctor.cmd",
+      "bytes": 143,
+      "sha256": "f8983ad927c70fdd8ce299328255af02cc51e36e4c7dc5ae87fb9c9c19adcf73"
+    },
+    {
+      "path": "doctor.ps1",
+      "bytes": 5561,
+      "sha256": "0592bb8bee303edd69100c178c605e95f26e8c3e7b8b95807b462725e734c032"
+    },
+    {
+      "path": "launch-forge.cmd",
+      "bytes": 96,
+      "sha256": "3f4c0c8ca7cf0d0727697c450dab078a864161bb15a4556a48811edd55d87025"
+    },
+    {
+      "path": "launch-forge.ps1",
+      "bytes": 987,
+      "sha256": "e4dc4af3eff384a4e05ba1cc2056159c825591785868cc10e29df3e2a4ad769e"
+    },
+    {
+      "path": "launch-runtime.mjs",
+      "bytes": 2051,
+      "sha256": "12842d32d7129a83b6e50d210e2f2e21d757fdfb9c6a44e41599f32c25dde321"
+    },
+    {
+      "path": "machine-config.template.json",
+      "bytes": 219,
+      "sha256": "f08103dd509db8393740e35181f8e38fbf4e64acba3a7d45ee1f1f02dc7fbefc"
+    },
+    {
+      "path": "offline-registry.template.json",
+      "bytes": 190,
+      "sha256": "7d49e59c018e2a75115461a050d3b90f51e26fb1783bcff5350278f321dff2d6"
+    },
+    {
+      "path": "rollback-install.cmd",
+      "bytes": 100,
+      "sha256": "0a94fb6b5d1636afd75404acb7b03889d90913247b5ec27eb5f51a4e23665321"
+    },
+    {
+      "path": "rollback-install.ps1",
+      "bytes": 3882,
+      "sha256": "47aebb01d42f38fb09b7df530a291885413ff4c0d4f01835a9dae6342f0135fb"
+    }
+  ],
+  "credentials_included": false,
+  "provider_caches_included": false,
+  "owner_project_data_included": false,
+  "plur_enabled": false,
+  "global_install_performed": false,
+  "normal_flow": "extract -> bootstrap.cmd -> native provider login if needed -> doctor.cmd -> launch-forge.cmd",
+  "checkpoint": "P11_PUBLIC_REPOSITORY_DISTRIBUTION_MANIFEST",
+  "status": "PUBLIC_REPOSITORY_DERIVED",
+  "package_id": "460eb44336b6bd69e53c316766b3703ff6e22159634ace18ae419ae7c725b17e",
+  "package_hash": "460eb44336b6bd69e53c316766b3703ff6e22159634ace18ae419ae7c725b17e",
+  "public_sanitizations": [
+    "machine-private runtime paths replaced after source hash verification"
+  ]
+}

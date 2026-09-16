@@ -1,0 +1,10 @@
+{
+  "name": "hoh-project-factory-runtime",
+  "version": "0.3.0-p9.5",
+  "private": true,
+  "type": "module",
+  "description": "Dependency-free candidate Project Factory Runtime for HoH P8 tool gap closure",
+  "scripts": {
+    "test": "node --test tests/p8.test.mjs tests/p95.test.mjs"
+  }
+}

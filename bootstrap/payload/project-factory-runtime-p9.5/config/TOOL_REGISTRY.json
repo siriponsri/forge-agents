@@ -1,0 +1,474 @@
+{
+  "schema_version": "1.0.0",
+  "registry_id": "TOOLREG-470b9f689e4d",
+  "authority": "P8_CANDIDATE_ONLY",
+  "generated_at": "2026-09-13T07:59:23.079Z",
+  "default_side_effect_policy": "P8_DEFAULT_SIDE_EFFECT_POLICY",
+  "tools": [
+    {
+      "tool_id": "browser-chrome-cdp",
+      "display_name": "Google Chrome Headless CDP",
+      "tool_type": "CLI",
+      "source": "local-executable",
+      "exact_version": "152.0.7977.83",
+      "provenance": "LOCAL_FILE_VERSION_OBSERVED",
+      "install_scope": "EXISTING_LOCAL",
+      "runtime_location": "chrome",
+      "capabilities": [
+        "browser-automation",
+        "ui-qa",
+        "dom-inspection",
+        "structured-evidence"
+      ],
+      "named_consumers": [
+        "Frontend QA",
+        "UI review",
+        "future post-deploy verification"
+      ],
+      "side_effect_classes_supported": [
+        "READ_LOCAL",
+        "WRITE_PROJECT_LOCAL"
+      ],
+      "authorization_requirements": [
+        "loopback-only",
+        "disposable-profile",
+        "no-login"
+      ],
+      "health_state": "HEALTHY",
+      "availability": true,
+      "freshness": "FRESH",
+      "deterministic_probe": "P8_BROWSER_PROBE",
+      "evidence_refs": [
+        "P8_BROWSER_PROBE.json"
+      ],
+      "known_limitations": [
+        "no authenticated login",
+        "no external network dependency"
+      ],
+      "promotion_status": "CANDIDATE_ONLY",
+      "status": "INTEGRATED",
+      "local_preference": 10,
+      "complexity": 2
+    },
+    {
+      "tool_id": "native-git",
+      "display_name": "Native Git",
+      "tool_type": "CLI",
+      "source": "local-executable",
+      "exact_version": "2.54.0.windows.1",
+      "provenance": "LOCAL_VERSION_PROBE",
+      "install_scope": "EXISTING_LOCAL",
+      "runtime_location": "git",
+      "capabilities": [
+        "git",
+        "repo-inspection",
+        "local-branch",
+        "local-rollback"
+      ],
+      "named_consumers": [
+        "Release workflow",
+        "Project Factory local state"
+      ],
+      "side_effect_classes_supported": [
+        "READ_LOCAL",
+        "WRITE_PROJECT_LOCAL",
+        "DESTRUCTIVE_LOCAL"
+      ],
+      "authorization_requirements": [
+        "disposable-workspace-for-write"
+      ],
+      "health_state": "HEALTHY",
+      "availability": true,
+      "freshness": "FRESH",
+      "deterministic_probe": "P8_GIT_CAPABILITY_RESULT",
+      "evidence_refs": [
+        "P8_GIT_CAPABILITY_RESULT.json"
+      ],
+      "known_limitations": [
+        "remote write disabled in P8"
+      ],
+      "promotion_status": "CANDIDATE_ONLY",
+      "status": "INTEGRATED",
+      "local_preference": 10,
+      "complexity": 1
+    },
+    {
+      "tool_id": "model-intelligence-refresh",
+      "display_name": "Project Factory Model Intelligence Refresh",
+      "tool_type": "BUILT_IN",
+      "source": "candidate-runtime",
+      "exact_version": "0.1.0-p8",
+      "provenance": "P8_CANDIDATE_SOURCE",
+      "install_scope": "EXISTING_LOCAL",
+      "runtime_location": "src/model-refresh.mjs",
+      "capabilities": [
+        "model-freshness",
+        "provider-lineup",
+        "pricing-observation",
+        "runtime-health"
+      ],
+      "named_consumers": [
+        "Project Factory Route Resolver"
+      ],
+      "side_effect_classes_supported": [
+        "READ_LOCAL",
+        "READ_EXTERNAL_PUBLIC"
+      ],
+      "authorization_requirements": [
+        "source-precedence",
+        "unknown-safe-fallback"
+      ],
+      "health_state": "HEALTHY",
+      "availability": true,
+      "freshness": "FRESH",
+      "deterministic_probe": "P8_MODEL_REFRESH_RESULT",
+      "evidence_refs": [
+        "P8_MODEL_REFRESH_RESULT.json"
+      ],
+      "known_limitations": [
+        "pricing UNKNOWN without safe source"
+      ],
+      "promotion_status": "CANDIDATE_ONLY",
+      "status": "INTEGRATED",
+      "local_preference": 10,
+      "complexity": 1
+    },
+    {
+      "tool_id": "local-markdown-normalizer",
+      "display_name": "Local Markdown Text Normalizer",
+      "tool_type": "BUILT_IN",
+      "source": "candidate-runtime",
+      "exact_version": "0.1.0-p8",
+      "provenance": "P8_CANDIDATE_SOURCE",
+      "install_scope": "EXISTING_LOCAL",
+      "runtime_location": "src/document.mjs",
+      "capabilities": [
+        "document-ingestion",
+        "markdown-normalization"
+      ],
+      "named_consumers": [
+        "discovery/research intake",
+        "docs ingestion"
+      ],
+      "side_effect_classes_supported": [
+        "READ_LOCAL",
+        "WRITE_PROJECT_LOCAL"
+      ],
+      "authorization_requirements": [
+        "local-file-only"
+      ],
+      "health_state": "HEALTHY",
+      "availability": true,
+      "freshness": "FRESH",
+      "deterministic_probe": "P8_DOCUMENT_INGESTION_RESULT",
+      "evidence_refs": [
+        "P8_DOCUMENT_INGESTION_RESULT.json"
+      ],
+      "known_limitations": [
+        "binary office conversion deferred"
+      ],
+      "promotion_status": "CANDIDATE_ONLY",
+      "status": "INTEGRATED",
+      "local_preference": 10,
+      "complexity": 1
+    },
+    {
+      "tool_id": "opencode",
+      "display_name": "OpenCode CLI",
+      "tool_type": "CLI",
+      "source": "local-path",
+      "exact_version": "1.18.30",
+      "provenance": "LOCAL_VERSION_PROBE",
+      "install_scope": "EXISTING_LOCAL",
+      "runtime_location": "opencode",
+      "capabilities": [
+        "harness",
+        "model-route",
+        "runtime-health"
+      ],
+      "named_consumers": [
+        "Project Factory Route Resolver",
+        "Frontend QA"
+      ],
+      "side_effect_classes_supported": [
+        "READ_LOCAL",
+        "WRITE_PROJECT_LOCAL"
+      ],
+      "authorization_requirements": [
+        "read-only-default"
+      ],
+      "health_state": "HEALTHY",
+      "availability": true,
+      "freshness": "FRESH",
+      "deterministic_probe": "P7.5_HARNESS_SWITCH_PROOF",
+      "evidence_refs": [
+        "P7_5_HARNESS_SWITCH_PROOF.json"
+      ],
+      "known_limitations": [
+        "no paid generation in P8"
+      ],
+      "promotion_status": "CANDIDATE_ONLY",
+      "status": "INTEGRATED",
+      "local_preference": 8,
+      "complexity": 2
+    },
+    {
+      "tool_id": "rtk",
+      "display_name": "RTK",
+      "tool_type": "CLI",
+      "source": "local-path",
+      "exact_version": "0.45.0",
+      "provenance": "P4_RUNTIME_REGISTRY",
+      "install_scope": "EXISTING_LOCAL",
+      "runtime_location": "rtk",
+      "capabilities": [
+        "terminal-noise-reduction"
+      ],
+      "named_consumers": [
+        "developer terminal ergonomics"
+      ],
+      "side_effect_classes_supported": [
+        "READ_LOCAL"
+      ],
+      "authorization_requirements": [
+        "explicit opt-in"
+      ],
+      "health_state": "HEALTHY",
+      "availability": true,
+      "freshness": "FRESH",
+      "deterministic_probe": "VERSION_ONLY",
+      "evidence_refs": [
+        "03-tool-pack/sources.json"
+      ],
+      "known_limitations": [
+        "not required for qualification readiness"
+      ],
+      "promotion_status": "CANDIDATE_ONLY",
+      "status": "OPTIONAL",
+      "local_preference": 5,
+      "complexity": 1
+    },
+    {
+      "tool_id": "chrome-devtools-mcp",
+      "display_name": "Chrome DevTools MCP candidate",
+      "tool_type": "MCP",
+      "source": "03-tool-pack manifest only",
+      "exact_version": "UNPINNED",
+      "provenance": "SOURCE_MANIFEST_ONLY",
+      "install_scope": "NOT_ACQUIRED",
+      "runtime_location": "UNKNOWN",
+      "capabilities": [
+        "browser-automation",
+        "dom-inspection"
+      ],
+      "named_consumers": [
+        "Frontend QA",
+        "UI review"
+      ],
+      "side_effect_classes_supported": [
+        "READ_LOCAL",
+        "WRITE_PROJECT_LOCAL"
+      ],
+      "authorization_requirements": [
+        "acquisition and audit required"
+      ],
+      "health_state": "HEALTHY",
+      "availability": true,
+      "freshness": "FRESH",
+      "deterministic_probe": "NOT_RUN",
+      "evidence_refs": [
+        "03-tool-pack/sources.json",
+        "03-tool-pack/AUDIT_MATRIX.md"
+      ],
+      "known_limitations": [
+        "direct Chrome CDP already satisfies contract"
+      ],
+      "promotion_status": "CANDIDATE_ONLY",
+      "status": "DEFERRED",
+      "local_preference": 1,
+      "complexity": 8
+    },
+    {
+      "tool_id": "markitdown",
+      "display_name": "Microsoft MarkItDown candidate",
+      "tool_type": "LIBRARY",
+      "source": "03-tool-pack manifest only",
+      "exact_version": "UNPINNED",
+      "provenance": "SOURCE_MANIFEST_ONLY",
+      "install_scope": "NOT_ACQUIRED",
+      "runtime_location": "UNKNOWN",
+      "capabilities": [
+        "document-ingestion"
+      ],
+      "named_consumers": [
+        "docs ingestion"
+      ],
+      "side_effect_classes_supported": [
+        "READ_LOCAL",
+        "WRITE_PROJECT_LOCAL"
+      ],
+      "authorization_requirements": [
+        "sandbox acquisition required"
+      ],
+      "health_state": "HEALTHY",
+      "availability": true,
+      "freshness": "FRESH",
+      "deterministic_probe": "NOT_RUN",
+      "evidence_refs": [
+        "03-tool-pack/sources.json"
+      ],
+      "known_limitations": [
+        "built-in normalizer sufficient for current fixture"
+      ],
+      "promotion_status": "CANDIDATE_ONLY",
+      "status": "DEFERRED",
+      "local_preference": 1,
+      "complexity": 5
+    },
+    {
+      "tool_id": "markdownify-mcp",
+      "display_name": "Markdownify MCP candidate",
+      "tool_type": "MCP",
+      "source": "03-tool-pack manifest only",
+      "exact_version": "UNPINNED",
+      "provenance": "SOURCE_MANIFEST_ONLY",
+      "install_scope": "NOT_ACQUIRED",
+      "runtime_location": "UNKNOWN",
+      "capabilities": [
+        "document-ingestion"
+      ],
+      "named_consumers": [
+        "docs ingestion"
+      ],
+      "side_effect_classes_supported": [
+        "READ_LOCAL",
+        "WRITE_PROJECT_LOCAL"
+      ],
+      "authorization_requirements": [
+        "acquisition and audit required"
+      ],
+      "health_state": "HEALTHY",
+      "availability": true,
+      "freshness": "FRESH",
+      "deterministic_probe": "NOT_RUN",
+      "evidence_refs": [
+        "03-tool-pack/sources.json"
+      ],
+      "known_limitations": [
+        "duplicate higher-risk candidate"
+      ],
+      "promotion_status": "CANDIDATE_ONLY",
+      "status": "REJECTED",
+      "local_preference": 0,
+      "complexity": 9
+    },
+    {
+      "tool_id": "github-pr-write",
+      "display_name": "GitHub remote PR/write surface",
+      "tool_type": "CONNECTOR",
+      "source": "03-tool-pack manifest only",
+      "exact_version": "DEFERRED",
+      "provenance": "SOURCE_MANIFEST_ONLY",
+      "install_scope": "NOT_ACQUIRED",
+      "runtime_location": "UNKNOWN",
+      "capabilities": [
+        "github-remote-write"
+      ],
+      "named_consumers": [
+        "Release workflow"
+      ],
+      "side_effect_classes_supported": [
+        "WRITE_EXTERNAL"
+      ],
+      "authorization_requirements": [
+        "future explicit owner approval"
+      ],
+      "health_state": "HEALTHY",
+      "availability": true,
+      "freshness": "FRESH",
+      "deterministic_probe": "POLICY_ONLY",
+      "evidence_refs": [
+        "03-tool-pack/sources.json"
+      ],
+      "known_limitations": [
+        "remote write and PR creation disabled in P8"
+      ],
+      "promotion_status": "CANDIDATE_ONLY",
+      "status": "DEFERRED",
+      "local_preference": 0,
+      "complexity": 10
+    },
+    {
+      "tool_id": "cloud-deploy",
+      "display_name": "Railway/Vercel deployment adapter",
+      "tool_type": "CONNECTOR",
+      "source": "P7.5 deployment contract",
+      "exact_version": "DEFERRED",
+      "provenance": "P7.5_CONTRACT_ONLY",
+      "install_scope": "NOT_ACQUIRED",
+      "runtime_location": "UNKNOWN",
+      "capabilities": [
+        "cloud-deploy"
+      ],
+      "named_consumers": [
+        "Cloud release"
+      ],
+      "side_effect_classes_supported": [
+        "DEPLOY_EXTERNAL"
+      ],
+      "authorization_requirements": [
+        "future explicit owner approval"
+      ],
+      "health_state": "HEALTHY",
+      "availability": true,
+      "freshness": "FRESH",
+      "deterministic_probe": "POLICY_ONLY",
+      "evidence_refs": [
+        "P7_5_PROJECT_FACTORY_ARCHITECTURE.md"
+      ],
+      "known_limitations": [
+        "no authentication or deployment in P8"
+      ],
+      "promotion_status": "CANDIDATE_ONLY",
+      "status": "DEFERRED",
+      "local_preference": 0,
+      "complexity": 10
+    },
+    {
+      "tool_id": "existing-host-connectors",
+      "display_name": "Existing host connector surface",
+      "tool_type": "MCP",
+      "source": "candidate capability registry",
+      "exact_version": "DISCOVERED",
+      "provenance": "P4B_CANDIDATE_REGISTRY",
+      "install_scope": "EXISTING_CANDIDATE",
+      "runtime_location": "candidate/.agent-shared/runtime/capability-registry.json",
+      "capabilities": [
+        "mcp"
+      ],
+      "named_consumers": [
+        "Project Factory tool plane"
+      ],
+      "side_effect_classes_supported": [
+        "READ_LOCAL"
+      ],
+      "authorization_requirements": [
+        "only-if-callable"
+      ],
+      "health_state": "HEALTHY",
+      "availability": true,
+      "freshness": "FRESH",
+      "deterministic_probe": "NOT_CALLABLE_PROOFED",
+      "evidence_refs": [
+        "candidate/.agent-shared/runtime/capability-registry.json"
+      ],
+      "known_limitations": [
+        "discovered but not activated"
+      ],
+      "promotion_status": "CANDIDATE_ONLY",
+      "status": "DEFERRED",
+      "local_preference": 1,
+      "complexity": 6
+    }
+  ]
+}

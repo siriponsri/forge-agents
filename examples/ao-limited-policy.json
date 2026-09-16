@@ -1,0 +1,19 @@
+{
+  "ao_limited_enabled": true,
+  "spawn_timeout_ms": 5000,
+  "cleanup_timeout_ms": 3000,
+  "provider_daemons": {
+    "provider_a": {
+      "boundary_id": "ao-provider-a",
+      "base_url": "http://127.0.0.1:43121",
+      "data_root_id": "data-provider-a",
+      "run_file_id": "run-provider-a"
+    },
+    "provider_b": {
+      "boundary_id": "ao-provider-b",
+      "base_url": "http://127.0.0.1:43122",
+      "data_root_id": "data-provider-b",
+      "run_file_id": "run-provider-b"
+    }
+  }
+}
