@@ -13,6 +13,10 @@ evaluated target is `stablyai/orca` release `v1.4.204`, commit
 source, installer, binary, account data or runtime state is included here.
 # FORGE v3 workbench additions
 
+fflate0.8.3 (101arrowz/fflate), MIT: source archive generation, preserving Unix
+launcher permission attributes. Downloaded installations verify their source-file
+manifest before rebuilding packages without requiring a Git checkout.
+
 Manrope and IBM Plex Sans Thai, @fontsource5.3.0: SIL Open Font License1.1;
 unmodified bundled webfont subsets and copyright/license text are served at
 `font-notices.txt`. See app/web/public/font-notices.txt. VS Code named theme palette

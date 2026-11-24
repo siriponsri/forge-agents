@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp,readFile} from 'node:fs/promises';
+import {mkdtemp,readFile,writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {createDownloadService} from '../app/server/downloads.mjs';
+import {extractPackage} from '../app/reports/files.mjs';
 function entries(bytes){
   const end=bytes.lastIndexOf(Buffer.from('504b0506','hex'));assert.ok(end>=0);
   let at=bytes.readUInt32LE(end+16);const count=bytes.readUInt16LE(end+10),out=[];
@@ -23,4 +24,10 @@ test('platform downloads contain real scoped launchers, source revision and matc
     if(p.id==='macos'){assert.equal(p.qualification,'not-run');assert.equal(list.find(e=>e.name==='FORGE/Start-FORGE.command').mode&0o777,0o755);}
   }
   await assert.rejects(s.file('../private.json'),{statusCode:404});
+  const windows=await s.file('FORGE-Windows.zip');const extracted=path.join(dir,'installed-copy');await extractPackage(await readFile(windows.path),extracted);
+  const installedRoot=path.join(extracted,'FORGE');
+  const portable=createDownloadService({sourceRoot:installedRoot,dataDir:path.join(dir,'portable-data')});
+  const portableMetadata=await portable.metadata();assert.equal(portableMetadata.commit,m.commit);assert.equal(portableMetadata.platforms.length,2);
+  await writeFile(path.join(installedRoot,'app','launcher.mjs'),'changed unqualified source');
+  const changed=createDownloadService({sourceRoot:installedRoot,dataDir:path.join(dir,'changed-data')});await assert.rejects(changed.metadata(),{statusCode:409});
 });

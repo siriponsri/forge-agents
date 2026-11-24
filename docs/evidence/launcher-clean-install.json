@@ -1,0 +1,19 @@
+{
+  "observedAt": "2026-11-24T05:06:40.118Z",
+  "testedSourceCommit": "d23560b008d94800aa70587f7b07d7953f8ed433",
+  "platform": "Windows x64",
+  "node": "24.19.0",
+  "checks": {
+    "downloadZip": "PASSED",
+    "extractWithoutGitOrNodeModules": "PASSED",
+    "npmCi": "PASSED",
+    "build": "PASSED",
+    "startReadiness": "PASSED",
+    "occupiedPortFallback": "PASSED",
+    "restart": "PASSED",
+    "stop": "PASSED",
+    "browserAutoOpen": "NOT_RUN",
+    "macOSLive": "NOT_RUN"
+  },
+  "scope": "Disposable engineering installation; rerun final UI/theme revision before release"
+}
