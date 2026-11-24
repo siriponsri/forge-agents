@@ -34,7 +34,16 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
   let reports;try{const mod=await import('../reports/service.mjs');reports=await mod.createReportService({store,dataDir});}catch(e){if(e.code!=='ERR_MODULE_NOT_FOUND')throw e;}
   let commit='unknown';try{commit=execFileSync('git',['rev-parse','--short','HEAD'],{cwd:root,encoding:'utf8',windowsHide:true}).trim();}catch{try{commit=JSON.parse(await readFile(path.join(root,'release-info.json'),'utf8')).commit.slice(0,7);}catch{}}
   const clients=new Set();let closed=false;
-  const app={store,t3,jobs,connections,reports,server:null,url:null,async close(){if(closed)return;closed=true;for(const client of clients)client.end();await jobs.shutdown();await t3.shutdown();await connections.close();await reports?.shutdown?.();await new Promise(r=>app.server.close(r));await store.close();}};
+  const app={store,t3,jobs,connections,reports,server:null,url:null,async close(){
+    if(closed)return;closed=true;
+    // Stop accepting reconnects before closing SSE; browser retries must not keep
+    // an application shutdown alive. Close only this server's HTTP connections.
+    const stopped=new Promise(resolve=>app.server.close(resolve));
+    for(const client of clients)client.end();
+    app.server.closeAllConnections();
+    await jobs.shutdown();await t3.shutdown();await connections.close();await reports?.shutdown?.();
+    await stopped;await store.close();
+  }};
   const server=http.createServer(async(req,res)=>{
     try{
       const host=req.headers.host??'';if(!/^(127\.0\.0\.1|localhost|\[::1\])(:\d+)?$/.test(host))fail('HOST','Loopback Host required',403);
