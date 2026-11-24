@@ -1,0 +1,22 @@
+{
+  "id": "forge-mobile-relay",
+  "name": "FORGE Mobile Relay",
+  "activation": {"onStartup": true},
+  "description": "Native Telegram inbox/approval bridge to private local FORGE; never an agent tool.",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["endpoint", "bindingId", "gatewayId", "accountId", "platform", "chatId", "threadId", "ownerId", "secretEnv"],
+    "properties": {
+      "endpoint": {"type": "string"},
+      "bindingId": {"type": "string"},
+      "gatewayId": {"type": "string"},
+      "accountId": {"type": "string"},
+      "platform": {"const": "telegram"},
+      "chatId": {"type": "string"},
+      "threadId": {"type": ["null", "string"]},
+      "ownerId": {"type": "string"},
+      "secretEnv": {"type": "string", "pattern": "^FORGE_RELAY_[A-Z0-9_]+$"}
+    }
+  }
+}

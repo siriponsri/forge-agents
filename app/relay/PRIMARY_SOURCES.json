@@ -1,0 +1,125 @@
+{
+  "checkedAt": "2026-11-24",
+  "implementation": "FORGE-owned glue; no upstream implementation copied",
+  "liveHermes": "LIVE_HERMES_NOT_RUN",
+  "liveOpenClaw": "LIVE_OPENCLAW_NOT_RUN",
+  "fixtureQualification": "Official pinned HTTP/native plugin context fixtures; SDK packages not installed; not live qualification",
+  "sources": [
+    {
+      "repository": "https://github.com/NousResearch/hermes-agent",
+      "revision": "b9b36c933759e536e0f280f67c85f976488b5178",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "LICENSE",
+          "url": "https://raw.githubusercontent.com/NousResearch/hermes-agent/b9b36c933759e536e0f280f67c85f976488b5178/LICENSE",
+          "sha256": "821556e6336796450ab852d375117b48a4887e71d255794fd6318d99982a5ab6"
+        },
+        {
+          "path": "website/docs/user-guide/messaging/webhooks.md",
+          "url": "https://raw.githubusercontent.com/NousResearch/hermes-agent/b9b36c933759e536e0f280f67c85f976488b5178/website/docs/user-guide/messaging/webhooks.md",
+          "sha256": "5f6bf9ac46536cf923f79f421336a721b625016ae2bfdfa7f4bb89df6608f35b"
+        },
+        {
+          "path": "website/docs/developer-guide/programmatic-integration.md",
+          "url": "https://raw.githubusercontent.com/NousResearch/hermes-agent/b9b36c933759e536e0f280f67c85f976488b5178/website/docs/developer-guide/programmatic-integration.md",
+          "sha256": "cc08e4b5fee5f4a3721b670c40945099ab247be06e054c8b95d071f93f5d1986"
+        },
+        {
+          "path": "website/docs/user-guide/features/hooks.md",
+          "url": "https://raw.githubusercontent.com/NousResearch/hermes-agent/b9b36c933759e536e0f280f67c85f976488b5178/website/docs/user-guide/features/hooks.md",
+          "sha256": "311d58aa2c1e766f96cd43063eb4fed5866b491eac3c691e3cd75208201f204c"
+        },
+        {
+          "path": "hermes_cli/plugins_context.py",
+          "url": "https://raw.githubusercontent.com/NousResearch/hermes-agent/b9b36c933759e536e0f280f67c85f976488b5178/hermes_cli/plugins_context.py",
+          "sha256": "272dbf10f62577cb2d8d06f3f07bd2efe60c7ba6ddeec4e1405341949dcf1ad8"
+        },
+        {
+          "path": "hermes_cli/plugins_manifest.py",
+          "url": "https://raw.githubusercontent.com/NousResearch/hermes-agent/b9b36c933759e536e0f280f67c85f976488b5178/hermes_cli/plugins_manifest.py",
+          "sha256": "89b30e679247a628c7dad93c573afa9f3f22529015b26397de24f5067ff7fc06"
+        },
+        {
+          "path": "gateway/session.py",
+          "url": "https://raw.githubusercontent.com/NousResearch/hermes-agent/b9b36c933759e536e0f280f67c85f976488b5178/gateway/session.py",
+          "sha256": "76069e89cddf22065d3f5c93bb1cd9358e8cf2bbf22de2731ceafb7f4052ef3e"
+        },
+        {
+          "path": "gateway/platforms/event.py",
+          "url": "https://raw.githubusercontent.com/NousResearch/hermes-agent/b9b36c933759e536e0f280f67c85f976488b5178/gateway/platforms/event.py",
+          "sha256": "9cd0bb259089d41d4aa8e7f04ce84bfbb0bd1cbd1639f862281c9901ea8b0780"
+        },
+        {
+          "path": "plugins/platforms/telegram/adapter.py",
+          "url": "https://raw.githubusercontent.com/NousResearch/hermes-agent/b9b36c933759e536e0f280f67c85f976488b5178/plugins/platforms/telegram/adapter.py",
+          "sha256": "279fcc261d7214a78b09639d0b238933ffdf0a4eb60aef74349d75fe2e821116"
+        },
+        {
+          "path": "gateway/config.py",
+          "url": "https://raw.githubusercontent.com/NousResearch/hermes-agent/b9b36c933759e536e0f280f67c85f976488b5178/gateway/config.py",
+          "sha256": "2dfdc9d457de4b17db5fac2d19f9494018cb9c08a4efdec5be48db92d7d066ed"
+        },
+        {
+          "path": "gateway/platforms/base.py",
+          "url": "https://raw.githubusercontent.com/NousResearch/hermes-agent/b9b36c933759e536e0f280f67c85f976488b5178/gateway/platforms/base.py",
+          "sha256": "9820518ed01e88737dd07bc0927ed63d949a41bbbc851f012af5e79159c29bec"
+        }
+      ],
+      "version": "source@b9b36c933759e536e0f280f67c85f976488b5178"
+    },
+    {
+      "repository": "https://github.com/openclaw/openclaw",
+      "revision": "d31463cca15f5eb9aa242ac3d37dcdac32d5dad9",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "package.json",
+          "url": "https://raw.githubusercontent.com/openclaw/openclaw/d31463cca15f5eb9aa242ac3d37dcdac32d5dad9/package.json",
+          "sha256": "a0ac84f52e14df87eb552cdf61c57c4a1747d8118cab0442aa4b1f7d8d063b3c"
+        },
+        {
+          "path": "LICENSE",
+          "url": "https://raw.githubusercontent.com/openclaw/openclaw/d31463cca15f5eb9aa242ac3d37dcdac32d5dad9/LICENSE",
+          "sha256": "9efd316ecf1c4c60f6fd5d26433142fff2b6794d7d328e9bc6179b29bf9c82a4"
+        },
+        {
+          "path": "src/plugins/hook-message.types.ts",
+          "url": "https://raw.githubusercontent.com/openclaw/openclaw/d31463cca15f5eb9aa242ac3d37dcdac32d5dad9/src/plugins/hook-message.types.ts",
+          "sha256": "3f2ec058638050b4c824a26a7a2668f327ec9eb171e653a8f8d1147c0a7c5746"
+        },
+        {
+          "path": "src/plugins/hook-types.ts",
+          "url": "https://raw.githubusercontent.com/openclaw/openclaw/d31463cca15f5eb9aa242ac3d37dcdac32d5dad9/src/plugins/hook-types.ts",
+          "sha256": "63e7a81bd7af59acf12da33f8ccf97a12d24535c17270b0d8aab8eb348db96ed"
+        },
+        {
+          "path": "src/plugins/plugin-command.types.ts",
+          "url": "https://raw.githubusercontent.com/openclaw/openclaw/d31463cca15f5eb9aa242ac3d37dcdac32d5dad9/src/plugins/plugin-command.types.ts",
+          "sha256": "906a0f5a556d049ae9610faf4b1cb48dda235c56f2ec7ee0f1d32b49cd7ed1f8"
+        },
+        {
+          "path": "src/plugins/runtime/types-channel.ts",
+          "url": "https://raw.githubusercontent.com/openclaw/openclaw/d31463cca15f5eb9aa242ac3d37dcdac32d5dad9/src/plugins/runtime/types-channel.ts",
+          "sha256": "0466d15370350a4d0c9af9b62bfebb58c919f69cfc600b4235200f19c1416419"
+        },
+        {
+          "path": "src/channels/plugins/outbound.types.ts",
+          "url": "https://raw.githubusercontent.com/openclaw/openclaw/d31463cca15f5eb9aa242ac3d37dcdac32d5dad9/src/channels/plugins/outbound.types.ts",
+          "sha256": "f13606e27c6e81c1681d949d84d6ead3c12925e8667e64b37d0869c4d329739a"
+        },
+        {
+          "path": "src/channels/plugins/registry-loader.ts",
+          "url": "https://raw.githubusercontent.com/openclaw/openclaw/d31463cca15f5eb9aa242ac3d37dcdac32d5dad9/src/channels/plugins/registry-loader.ts",
+          "sha256": "cb4ec4850a2000102877179bc03b79d974fcb0238cde2ffc2e529227f5865699"
+        },
+        {
+          "path": "docs/plugins/hooks.md",
+          "url": "https://raw.githubusercontent.com/openclaw/openclaw/d31463cca15f5eb9aa242ac3d37dcdac32d5dad9/docs/plugins/hooks.md",
+          "sha256": "b70d444e4ec0f35810f3a2050a409f376529788a607ae737f8a3ffbabae10794"
+        }
+      ],
+      "version": "2026.11.7"
+    }
+  ]
+}

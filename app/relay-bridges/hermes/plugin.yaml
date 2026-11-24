@@ -1,0 +1,7 @@
+name: forge-mobile-relay
+version: 1.0.0
+description: Native Telegram Inbox and human approval bridge to local FORGE
+author: FORGE
+manifest_version: 1
+provides_hooks:
+  - pre_gateway_dispatch
