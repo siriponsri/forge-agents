@@ -462,3 +462,7 @@ button.activity-row { width:100%; display:flex; align-items:center; justify-cont
   .theme-mini { forced-color-adjust: none; }
   .sidebar nav button.active, .theme-option.is-selected { outline: 1px solid currentColor; }
 }
+.office-agent-queue .history-row { align-items:flex-start; flex-wrap:wrap; gap:16px; }
+.office-agent-queue .history-row>div:first-child { min-width:0; flex:1 1 260px; }
+.office-agent-queue small { overflow-wrap:anywhere; }
+.agent-edit-preview { white-space:pre-wrap; overflow-wrap:anywhere; max-height:240px; overflow:auto; }

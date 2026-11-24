@@ -265,7 +265,14 @@ export async function createStorageService({ dataDir, store, artifacts, vault, e
         for (const key of portableCollections) for (const x of manifest.records[key]) mapping.set(x.id, randomUUID());
         function remap(value, key = '') {
           if (Array.isArray(value)) return value.map(v => remap(v, key));
-          if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([k,v]) => [k, k === 'lineage' || k === 'source' ? portable(v) : remap(v, k)]));
+          if (value && typeof value === 'object') {
+            const mapped=Object.fromEntries(Object.entries(value).map(([k,v]) => [k, k === 'lineage' || k === 'source'&&typeof v!=='string' ? portable(v) : remap(v, k)]));
+            if(value.name==='FORGE_IMAGE_ASSETS_V1'&&typeof value.data==='string'){
+              let assets;try{assets=JSON.parse(value.data);}catch{fail('INTEGRITY','Native image resource manifest is invalid',409);}
+              mapped.data=JSON.stringify(remap(assets));
+            }
+            return mapped;
+          }
           if (typeof value !== 'string') return value;
           if (key === 'id' || key.endsWith('Id') || key.endsWith('Ids')) return mapping.get(value) ?? value;
           return value.replace(/\/api\/artifacts\/([a-zA-Z0-9_-]+)\/download/g, (url, artifactId) => mapping.has(artifactId) ? `/api/artifacts/${mapping.get(artifactId)}/download` : url);

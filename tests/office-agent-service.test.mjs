@@ -62,7 +62,7 @@ test('stale revisions conflict before requests and before applying reviewed work
   await assert.rejects(f.service.requestEdit({ ...input, expectedRevision: 2 }), { code: 'REVISION_CONFLICT' });
   await f.service.requestEdit(input); const lease = await f.lease(); await f.service.review(f.editor(input, lease));
   const d = f.store.read().documents[0];
-  await command(f.store, { type: 'document.save', operationId: randomUUID(), projectId: f.scope.projectId, id: d.id, expectedRevision: 1, data: { snapshot: d.snapshot, actor: { kind: 'human' } } });
+  await f.command({ type: 'document.save', operationId: randomUUID(), projectId: f.scope.projectId, id: d.id, expectedRevision: 1, data: { snapshot: d.snapshot, actor: { kind: 'human' } } });
   const result = await f.service.beginApply(f.editor(input, lease)); assert.equal(result.mayApply, false); assert.equal(result.request.status, 'conflict');
   assert.throws(() => f.service.readDocument({ ...f.scope, expectedRevision: 1, selection: { sheetId: 'first', range: 'A1' } }), { code: 'REVISION_CONFLICT' });
 });
@@ -120,7 +120,9 @@ test('generic/frontend fabricated ack and save without attributed receipt cannot
   const f = await fixture(t), input = f.input(), { permit, lease } = await f.begin(input);
   await assert.rejects(f.service.ack({ ...f.ackInput(input, lease), receipt: { outcome: 'applied', revision: 2 } }), { code: 'VALIDATION' });
   const after = f.editorSnapshotFixture(input);
-  await command(f.store, { ...permit.saveCommand, data: { ...permit.saveCommand.data, snapshot: after } });
+  await f.command({ ...permit.saveCommand, data: { ...permit.saveCommand.data, snapshot: after } });
+  // Model an imported legacy receipt: no browser-supplied receipt is trusted.
+  await f.store.transaction(s=>{delete s.receipts.find(r=>r.operationId===input.operationId).result.receipt.actor;});
   const result = await f.service.ack(f.ackInput(input, lease));
   assert.equal(result.request.status, 'uncertain'); assert.equal(result.request.reason, 'RECEIPT_UNVERIFIED');
 });
@@ -146,8 +148,9 @@ test('false durable receipt with wrong content, region, actor, scope or revision
 test('later human revision retains verified agent receipt and replay never restores old content', async t => {
   const f = await fixture(t, 'doc'), input = f.input(), { permit } = await f.begin(input);
   await f.saveWithProposedLeadReceiptFixture(permit, f.editorSnapshotFixture(input));
+  assert.equal((await f.service.status(f.key(input))).request.status, 'completed');
   const afterHuman = structuredClone(f.store.read().documents[0].snapshot); afterHuman.body.dataStream = 'human later\r\n';
-  await command(f.store, { type: 'document.save', operationId: randomUUID(), projectId: f.scope.projectId, id: f.scope.documentId, expectedRevision: 2, data: { snapshot: afterHuman, actor: { kind: 'human' } } });
+  await f.command({ type: 'document.save', operationId: randomUUID(), projectId: f.scope.projectId, id: f.scope.documentId, expectedRevision: 2, data: { snapshot: afterHuman, actor: { kind: 'human' } } });
   await f.restart(); assert.equal((await f.service.requestEdit(input)).request.status, 'completed');
   assert.equal(f.store.read().documents[0].revision, 3); assert.equal(f.store.read().documents[0].snapshot.body.dataStream, 'human later\r\n');
 });

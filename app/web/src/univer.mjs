@@ -158,8 +158,8 @@ export async function mountEditor(container, record, onChange) {
         if (!disposed) onChange();
         return result;
       },
-      undo: () => (record.kind === "doc" ? unit.undo() : univerAPI.undo()),
-      redo: () => (record.kind === "doc" ? unit.redo() : univerAPI.redo()),
+      undo: () => unit.undo(),
+      redo: () => unit.redo(),
       dark: (value) => {
         const color=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||accent;
         univerAPI.setTheme({...defaultTheme,primary:{...defaultTheme.primary,500:color,600:color,700:color}});

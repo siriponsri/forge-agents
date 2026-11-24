@@ -3,9 +3,11 @@
 ## Active assignments — 2026-11-24
 
 AS-01 Assistance Strategy / Auto-Model Selection: owner confirmed larger Asst. and
-smaller Executor roles. Two routing/assistance-frequency preferences are pending
-in the user-input UI; dependent implementation waits for answers. Requirements,
-invariants and next executable work are in repository-root docs/ASSISTANCE_STRATEGY.md.
+smaller Executor roles; auto considers ALL connected-provider models, balances
+quality/cost and starts an appropriate Executor; Asst. assists difficult/stalled
+work only. READY_FOR_IMPLEMENTATION. Requirements and invariants are in
+repository-root docs/ASSISTANCE_STRATEGY.md. KOB is now confirmed as API-key API
+integration; CLI/extension contract ambiguity does not block this selected route.
 This product task does not alter the development thread/worker model choices.
 
 Owner addition: Paperclip PC-01 source/license audit completed at pinned7d26bdaa;

@@ -2,6 +2,26 @@
 
 ## Developer checkpoint — 2026-11-24
 
+Latest lead checkpoint supersedes the older sequencing below: Office MCP queue
+is mounted at `/mcp/office` and GUI review/apply/save uses the actual domain
+receipt/lease guard. Native Sheets and Docs MCP->GUI->save->Undo/Redo passed;
+local full bundle image manifest and native drawing URLs remap/reopen passed
+after service close/reopen. Evidence `docs/evidence/office-agent-gui-smoke.json`.
+28 integrated Office/domain/shutdown checks passed, production build passed.
+Actual LLM Office tool invocation remains NOT_RUN, separate from this SDK test.
+
+Backend worker commits for governance, official Colab MCP, MCP OAuth, KOB API,
+and Assistance Strategy are on integration; their HTTP/GUI/T3 seams are being
+integrated and are not yet accepted as complete. Owner confirmed all connected
+models, balanced quality/cost, suitable Executor first, Asst only difficult/stuck;
+KOB uses API key; Hermes Agent/OpenClaw mobile work enters Inbox and requires
+Owner approval in its originating channel. See `docs/ASSISTANCE_STRATEGY.md` and
+`docs/MOBILE_RELAY.md`. No new product prototype, public listener or push.
+
+Next executable task: mount provider/governance/OAuth routes and T3 setup/role
+context, then integrate compute/strategy/mobile GUI and qualify combined flows.
+Overall IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN remain explicit.
+
 Latest integrated checkpoint: serving09fc17e/0cd8cce, storage998762d/bd0f7be,
 protocol86515ae. Lead GUI serving actual Windows LitServe REST+MCP weighted fixture,
 hash-verified result download, Stop/Restart PASSED. Local storage GUI two full

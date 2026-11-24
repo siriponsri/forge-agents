@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Save, Undo2, Redo2, Download } from "lucide-react";
+import { Save, Undo2, Redo2, Download, ImagePlus } from "lucide-react";
 import { command, date, operationId, request, scoped } from "./api.mjs";
 import {
   Badge,
@@ -137,14 +137,21 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
     baseline = useRef(""),
     pending = useRef(null),
     documentName = useRef(record.name),
-    saving = useRef(false);
+    saving = useRef(false),
+    imageInput = useRef(null),
+    editorSessionId = useRef(operationId()),
+    editorLease = useRef(null);
   const [ready, setReady] = useState(false),
     [error, setError] = useState(null),
     [dirty, setDirty] = useState(false),
     [locked, setLocked] = useState(false),
     [dark, setDark] = useState(themeKind==='dark'),
     [receipt, setReceipt] = useState(null),
-    [recoverUrl, setRecoverUrl] = useState(null);
+    [recoverUrl, setRecoverUrl] = useState(null),
+    [reviewed, setReviewed] = useState(null),
+    [queuePending, setQueuePending] = useState(false);
+  const queueRequests=(state.officeAgent?.requests||[]).filter(r=>r.projectId===projectId&&r.documentId===record.id);
+  const queueLocked=queuePending||queueRequests.some(r=>['applying','uncertain'].includes(r.status));
   const [agent, setAgent] = useState(false),
     [history, setHistory] = useState(false);
   const dirtyCallback = useRef(onDirty);
@@ -186,6 +193,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
       editor.current = null; // Defer React-root disposal until this React commit has finished.
       if (owned) queueMicrotask(() => owned.dispose());
       dirtyCallback.current(false);
+      if(editorLease.current){const {projectId,documentId,editorSessionId,leaseToken}=editorLease.current;request('/api/office/agent/release',{projectId,documentId,editorSessionId,leaseToken}).catch(()=>{});}
     };
   }, []);
   useEffect(()=>{if(ready&&editor.current){const value=themeKind==='dark';setDark(value);editor.current.dark(value);}},[themeKind,themeId,ready]);
@@ -213,7 +221,10 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
     try {
       const snapshot = editor.current.snapshot(),
         edit = pending.current || change;
-      const result = await command(
+      if(edit?.saveCommand)edit.commandInput??={
+        ...edit.saveCommand,data:{...edit.saveCommand.data,snapshot,name:documentName.current,resources:snapshot.resources||[]},
+      };
+      const result = edit?.saveCommand ? await request('/api/command',edit.commandInput) : await command(
         "document.save",
         projectId,
         {
@@ -230,8 +241,14 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
       );
       base.current = result.entity;
       baseline.current = JSON.stringify(snapshot);
-      pending.current = null;
       setReceipt(result.receipt);
+      // A save reply is the durable authority; ack only reconciles that receipt.
+      // Keep the same command on a lost reply and never apply the edit again.
+      if(edit?.queueScope)await request('/api/office/agent/ack',{
+        ...edit.queueScope,editorSessionId:editorSessionId.current,leaseToken:editorLease.current.leaseToken,
+      });
+      pending.current = null;
+      setQueuePending(false);setReviewed(null);
       changed();
       return result;
     } catch (e) {
@@ -243,11 +260,51 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
       setLocked(false);
     }
   };
+  const scopeFor=r=>Object.fromEntries(['projectId','documentId','botId','taskId','runId','attemptId','operationId'].map(k=>[k,r[k]]));
+  const reconcileQueued=async r=>run(async()=>{
+    const result=await request('/api/office/agent/status',scopeFor(r));
+    if(result.request.status==='completed'&&pending.current?.queueScope?.operationId===r.operationId){
+      const latest=await request('/api/state'),saved=latest.receipts.find(x=>x.operationId===r.operationId)?.result;
+      if(saved){base.current=saved.entity;baseline.current=JSON.stringify(saved.entity.snapshot);setReceipt(saved.receipt);}
+      pending.current=null;setQueuePending(false);setReviewed(null);changed();
+    }
+    return result;
+  });
+  const reviewQueued=async r=>run(async()=>{
+    if(!ready||dirty||pending.current||saving.current)throw new Error(t('บันทึกงานปัจจุบันก่อนตรวจคำขอ','Save current edits before reviewing a request.'));
+    const clean={projectId,documentId:record.id,editorSessionId:editorSessionId.current,expectedRevision:base.current.revision,dirty:false};
+    const lease=editorLease.current
+      ? await request('/api/office/agent/renew',{...clean,leaseToken:editorLease.current.leaseToken}).then(x=>({...editorLease.current,...x}))
+      : await request('/api/office/agent/claim',clean);
+    editorLease.current={...clean,leaseToken:lease.leaseToken};
+    const result=await request('/api/office/agent/review',{...scopeFor(r),...editorLease.current});
+    setReviewed(result.request.status==='review'?r.operationId:null);return result;
+  });
+  const applyQueued=async r=>run(async()=>{
+    if(!editor.current||dirty||pending.current||reviewed!==r.operationId)throw new Error(t('ตรวจคำขอและบันทึกงานปัจจุบันก่อน','Review the request and save current edits first.'));
+    const result=await request('/api/office/agent/begin-apply',{...scopeFor(r),...editorLease.current});
+    if(!result.mayApply)return result;
+    setQueuePending(true);setLocked(true);
+    // Retain the permit even if the editor throws: an issued apply is never replayed.
+    pending.current={saveCommand:result.saveCommand,queueScope:scopeFor(r)};
+    try{editor.current.apply(r.edit);changed();return await persist(pending.current);}
+    catch(e){setError(e);throw e;}finally{setLocked(false);}
+  });
+  const dirtyRef=useRef(dirty);dirtyRef.current=dirty;
+  useEffect(()=>{
+    if(!reviewed)return;
+    const timer=setInterval(()=>{
+      if(!editorLease.current||dirtyRef.current||saving.current||pending.current)return;
+      request('/api/office/agent/renew',{...editorLease.current,expectedRevision:base.current.revision,dirty:false})
+        .catch(e=>{editorLease.current=null;setReviewed(null);setError(e);});
+    },10000);
+    return()=>clearInterval(timer);
+  },[reviewed]);
   const applyAgent = async (e) => {
     e.preventDefault();
     const d = new FormData(e.currentTarget);
     await run(async () => {
-      if (!editor.current || dirty || pending.current)
+      if (!editor.current || dirty || pending.current || queueLocked)
         throw new Error(
           t(
             "บันทึกการแก้ไขปัจจุบันก่อนใช้คำสั่งบอท",
@@ -311,7 +368,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
             className="document-name"
             aria-label={t("เปลี่ยนชื่อเอกสาร", "Rename document")}
             defaultValue={record.name}
-            disabled={locked}
+            disabled={locked||queueLocked}
             onChange={(e) => {
               documentName.current = e.target.value;
               changed();
@@ -326,7 +383,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
         </div>
         <div className="actions">
           <button
-            disabled={!ready || locked || busy || !dirty}
+            disabled={!ready || locked || busy || (!dirty&&!pending.current) || (queueLocked&&!pending.current)}
             className="primary"
             onClick={() => run(() => persist())}
           >
@@ -334,7 +391,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
             {t("บันทึก", "Save")}
           </button>
           <button
-            disabled={!ready || locked}
+            disabled={!ready || locked || queueLocked}
             title={t("ย้อนกลับใน session ปัจจุบัน", "Undo in current session")}
             aria-label="Undo"
             onClick={() =>
@@ -347,7 +404,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
             <Undo2 size={16} />
           </button>
           <button
-            disabled={!ready || locked}
+            disabled={!ready || locked || queueLocked}
             aria-label="Redo"
             onClick={() =>
               run(async () => {
@@ -361,6 +418,11 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
           <button onClick={() => setHistory(!history)}>
             {t("ประวัติ", "History")}
           </button>
+          <input ref={imageInput} hidden type="file" accept="image/png,image/jpeg" onChange={e=>{
+            const file=e.target.files?.[0];e.target.value='';if(!file)return;
+            run(async()=>{setLocked(true);try{await editor.current.insertImage(file);changed();}finally{setLocked(false);}});
+          }}/>
+          <button disabled={!ready||locked||queueLocked} onClick={()=>imageInput.current.click()}><ImagePlus size={16}/>{t('แทรกรูป','Insert image')}</button>
           <button
             disabled={!ready}
             onClick={() => {
@@ -407,8 +469,8 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
         </div>
       )}
       <div
-        className={`editor-frame ${locked ? "locked" : ""}`}
-        inert={locked || undefined}
+        className={`editor-frame ${locked||queueLocked ? "locked" : ""}`}
+        inert={locked || queueLocked || undefined}
       >
         <div className="univer-container" ref={container} />
         {!ready && !error && (
@@ -417,9 +479,28 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
           </div>
         )}
       </div>
+      {queueRequests.length>0&&<section className="panel office-agent-queue" aria-label={t('คำขอแก้ไขจาก agent','Agent edit requests')}>
+        <h3>{t('คำขอแก้ไขจาก agent','Agent edit requests')}</h3>
+        <p className="help">{t('ตรวจข้อความและขอบเขตก่อนใช้ การแก้ไขจะผ่าน editor นี้แล้วบันทึกเป็น revision เดียว','Review the text and region. The operation applies through this editor and saves one durable revision.')}</p>
+        {queueLocked&&<p role="status">{t('กำลังยืนยันผลคำขอ ห้ามใช้คำสั่งซ้ำ หากขาดการเชื่อมต่อให้บันทึกคำสั่งเดิมอีกครั้ง','Reconciling an issued operation. Do not apply again. If the save response was lost, retry Save with the same command.')}</p>}
+        {queueRequests.map(r=><article className="history-row" key={r.operationId}>
+          <div><strong>{r.region} · r{r.expectedRevision}</strong> <Badge>{r.status}</Badge>
+            <small>{scoped(state,'bots',projectId).find(b=>b.id===r.botId)?.name||r.botId} · {r.operationId}</small>
+            <pre className="agent-edit-preview">{r.edit.text}</pre>{r.reason&&<small>{r.reason}</small>}
+          </div>
+          <div className="actions">
+            {['pending','review'].includes(r.status)&&<>
+              <button disabled={!ready||busy||locked||dirty||queueLocked||newer} onClick={()=>reviewQueued(r)}>{t('ตรวจคำขอ','Review request')}</button>
+              <button className="primary" disabled={busy||locked||dirty||queueLocked||reviewed!==r.operationId||newer} onClick={()=>applyQueued(r)}>{t('ใช้คำขอและบันทึก','Apply request & save')}</button>
+              <button disabled={busy||reviewed!==r.operationId} onClick={()=>run(()=>request('/api/office/agent/reject',{...scopeFor(r),editorSessionId:editorSessionId.current,leaseToken:editorLease.current.leaseToken}))}>{t('ปฏิเสธ','Reject')}</button>
+            </>}
+            {(['applying','uncertain'].includes(r.status)||(queuePending&&pending.current?.queueScope?.operationId===r.operationId))&&<button disabled={busy} onClick={()=>reconcileQueued(r)}>{t('ตรวจผลบันทึก','Reconcile save')}</button>}
+          </div>
+        </article>)}
+      </section>}
       <div className="toolbar">
         <button
-          disabled={!ready || locked || dirty}
+          disabled={!ready || locked || dirty || queueLocked}
           onClick={() => setAgent(!agent)}
         >
           {t("คำสั่งแก้ไขแบบจำกัดขอบเขต", "Bounded agent edit")}
@@ -519,7 +600,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
           >
             <textarea name="text" required rows={3} maxLength={10000} />
           </Field>
-          <Submit busy={busy || locked || dirty}>
+          <Submit busy={busy || locked || dirty || queueLocked}>
             {t("ใช้คำสั่งและบันทึก", "Apply & save")}
           </Submit>
         </form>
@@ -552,7 +633,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
                 <small>{date(h.createdAt || h.timestamp || h.at)}</small>
               </div>
               <button
-                disabled={busy || dirty}
+                disabled={busy || dirty || queueLocked}
                 onClick={() =>
                   run(async () => {
                     const r = await command(

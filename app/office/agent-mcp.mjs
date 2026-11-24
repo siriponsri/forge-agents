@@ -1,6 +1,7 @@
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { mkdir, open, readFile, lstat, realpath } from 'node:fs/promises';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
@@ -48,6 +49,15 @@ export async function loadOfficeAgentSecret(dataDir) {
   const root = await realpath(dataDir), privateDir = path.join(root, '.office-agent-private');
   await mkdir(privateDir, { recursive: true, mode: 0o700 });
   if ((await lstat(privateDir)).isSymbolicLink() || await realpath(privateDir) !== privateDir) throw new Error('Machine-private credential directory must not be a link');
+  if(process.platform==='win32'){
+    // A static script replaces the ACL only on this dedicated credential folder.
+    // No secret is passed through process arguments, environment, or stdout.
+    const script=`$ErrorActionPreference='Stop'; $dir=$env:FORGE_OFFICE_PRIVATE_DIR; $sid=[System.Security.Principal.WindowsIdentity]::GetCurrent().User; $system=New-Object System.Security.Principal.SecurityIdentifier('S-1-5-18'); $acl=Get-Acl -LiteralPath $dir; $acl.SetAccessRuleProtection($true,$false); foreach($rule in @($acl.Access)){$acl.RemoveAccessRuleSpecific($rule)}; foreach($principal in @($sid,$system)){$acl.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule($principal,'FullControl','ContainerInherit,ObjectInherit','None','Allow')))}; Set-Acl -LiteralPath $dir -AclObject $acl; $file=Join-Path $dir 'mcp-bearer.secret'; if(Test-Path -LiteralPath $file){$f=Get-Acl -LiteralPath $file; $f.SetAccessRuleProtection($true,$false); foreach($rule in @($f.Access)){$f.RemoveAccessRuleSpecific($rule)}; foreach($principal in @($sid,$system)){$f.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule($principal,'FullControl','Allow')))}; Set-Acl -LiteralPath $file -AclObject $f}`;
+    // Persist only the changed access rules; Set-Acl may also request SACL
+    // privileges that an ordinary desktop user does not possess.
+    const accessOnly=script.replace('Set-Acl -LiteralPath $dir -AclObject $acl','[System.IO.Directory]::SetAccessControl($dir,$acl)').replace('Set-Acl -LiteralPath $file -AclObject $f','[System.IO.File]::SetAccessControl($file,$f)');
+    execFileSync('powershell.exe',['-NoProfile','-NonInteractive','-Command',accessOnly],{windowsHide:true,env:{...process.env,FORGE_OFFICE_PRIVATE_DIR:privateDir},stdio:['ignore','pipe','pipe']});
+  }
   const secretFile = path.join(privateDir, 'mcp-bearer.secret');
   let handle;
   try { handle = await open(secretFile, 'wx', 0o600); await handle.writeFile(randomBytes(32).toString('base64url')); await handle.sync(); }

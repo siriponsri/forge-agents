@@ -21,6 +21,8 @@ import {createOfficeService} from '../office/service.mjs';
 import {createServingService} from '../serving/service.mjs';
 import {createStorageService} from '../storage/service.mjs';
 import {createDesktopService} from '../desktop/index.mjs';
+import {createOfficeAgentService} from '../office/agent-service.mjs';
+import {createOfficeAgentMcpHandler} from '../office/agent-mcp.mjs';
 export {defaultDataDir};
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const manifest=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
@@ -35,6 +37,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
   const gitStorage=createGitStorageService({store});
   const downloads=createDownloadService({sourceRoot:root,dataDir});
   const office=createOfficeService({store});
+  const officeAgent=createOfficeAgentService({store,dataDir});await officeAgent.recover();
   const serving=createServingService({store,dataDir,connections,artifacts});
   const storage=await createStorageService({store,dataDir,artifacts});
   const desktop=createDesktopService({store,dataDir});
@@ -42,8 +45,8 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
   await jobs.recover();
   let reports;try{const mod=await import('../reports/service.mjs');reports=await mod.createReportService({store,dataDir});}catch(e){if(e.code!=='ERR_MODULE_NOT_FOUND')throw e;}
   let commit='unknown';try{commit=execFileSync('git',['rev-parse','--short','HEAD'],{cwd:root,encoding:'utf8',windowsHide:true}).trim();}catch{try{commit=JSON.parse(await readFile(path.join(root,'release-info.json'),'utf8')).commit.slice(0,7);}catch{}}
-  const clients=new Set();let closed=false,closingPromise,offProjection=()=>{},projectionPromise,projectionAgain=false;
-  const app={store,t3,jobs,connections,reports,serving,storage,desktop,server:null,url:null,async close(){
+  const clients=new Set();let closed=false,closingPromise,officeMcpHandler,offProjection=()=>{},projectionPromise,projectionAgain=false;
+  const app={store,t3,jobs,connections,reports,serving,storage,desktop,officeAgent,server:null,url:null,async close(){
     if(closingPromise)return closingPromise;closed=true;
     closingPromise=(async()=>{
     offProjection();await projectionPromise;
@@ -52,7 +55,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
     const stopped=new Promise(resolve=>app.server.close(resolve));
     for(const client of clients)client.end();
     app.server.closeAllConnections();
-    await desktop.shutdown();await storage.shutdown();await jobs.shutdown();await t3.shutdown();await serving.shutdown();await connections.close();await reports?.shutdown?.();
+    await officeMcpHandler?.close();await desktop.shutdown();await storage.shutdown();await jobs.shutdown();await t3.shutdown();await serving.shutdown();await connections.close();await reports?.shutdown?.();
     await stopped;await store.close();
     })();return closingPromise;
   }};
@@ -61,6 +64,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
       const host=req.headers.host??'';if(!/^(127\.0\.0\.1|localhost|\[::1\])(:\d+)?$/.test(host))fail('HOST','Loopback Host required',403);
       if(req.headers.origin && req.headers.origin!==`http://${host}`)fail('ORIGIN','Cross-origin requests are blocked',403);
       const url=new URL(req.url,`http://${host}`),p=url.pathname,method=req.method;
+      if(officeMcpHandler&&await officeMcpHandler(req,res))return;
       if(method==='OPTIONS')return json(res,{error:{code:'ORIGIN',message:'CORS is disabled'}},403);
       if(method==='GET'&&p==='/api/health')return json(res,{status:'ready',product:'FORGE',version:manifest.version,commit,dataPath:dataDir,t3:t3.health(),reports:reports?await reports.health():{status:'implementation_pending'},implementation:'IMPLEMENTATION_INCOMPLETE'});
       if(method==='GET'&&p==='/api/state')return json(res,store.read());
@@ -104,6 +108,10 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
       if(method==='POST'){
         if(!req.headers['content-type']?.startsWith('application/json'))fail('CONTENT_TYPE','Use application/json',415);const input=await body(req);let value;
         if(p==='/api/command')value=await command(store,input);
+        else if(p.startsWith('/api/office/agent/')){
+          const methods={request:'requestEdit',read:'readDocument',status:'status',list:'list',claim:'claim',renew:'renew',release:'release',review:'review','begin-apply':'beginApply',ack:'ack',reject:'reject'};
+          const method=methods[p.slice('/api/office/agent/'.length)];if(!method)fail('NOT_FOUND','Office agent operation not found',404);value=await officeAgent[method](input);
+        }
         else if(p==='/api/jobs/start')value=await jobs.start(input);
         else if(p==='/api/notebooks/import')value=await jobs.importNotebook(input);
         else if(/^\/api\/jobs\/[^/]+\/stop$/.test(p))value=await jobs.stop(p.split('/')[3]);
@@ -170,6 +178,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
     }catch(e){if(res.headersSent){res.end();return;}json(res,{error:{code:e.code??'INTERNAL',message:e.message,details:e.details}},e.statusCode??(e.code==='ENOENT'?404:500));}
   });
   app.server=server;await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',resolve);});app.url=`http://127.0.0.1:${server.address().port}`;
+  officeMcpHandler=await createOfficeAgentMcpHandler({service:officeAgent,dataDir,endpoint:app.url+'/mcp/office'});
   offProjection=store.subscribe(()=>{
     if(closed)return;projectionAgain=true;if(projectionPromise)return;
     projectionPromise=(async()=>{while(projectionAgain&&!closed){projectionAgain=false;for(const record of store.read().runs.filter(r=>r.taskId&&r.threadId))await t3.refreshState(record.id);}})().catch(error=>{app.projectionError=error.message;}).finally(()=>{projectionPromise=undefined;});

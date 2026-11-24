@@ -7,14 +7,17 @@ smaller model acts as **Executor**. Add automatic model selection. The owner ask
 to resolve uncertainty/conflicting requirements with them before dependent work.
 This describes the product feature, not a change to the development model.
 
-Pending owner choices (asked through asynchronous user-input UI):
+Owner choices confirmed in conversation:
 
-1. Auto selection only within explicitly allowed Asst./Executor lists in Settings,
-   or all models on connected providers.
-2. Asst. plans/reviews every task, or assists only difficult/stalled execution.
+1. Auto selection may consider **all models of connected providers**.
+2. Invoke the larger Asst. **only for difficult work or when Executor is stuck**.
 
-Status: REQUIREMENTS_PARTIALLY_CONFIRMED / WAITING_OWNER_PREFERENCES.
-Do not silently apply recommended UI defaults as an owner answer.
+3. **Balance quality and cost**, starting with an Executor suited to the work.
+
+All three preferences were explicitly answered by the owner. KOB was clarified
+separately as an **API connection using the owner's API key**, not CLI/extension.
+
+Status: REQUIREMENTS_CONFIRMED / READY_FOR_IMPLEMENTATION.
 
 Implementation requirements independent of those answers:
 
@@ -33,7 +36,7 @@ Implementation requirements independent of those answers:
 - Missing capability/catalog/authentication returns actionable setup; unresolved
   preference or conflicting constraints asks the owner before dispatch.
 
-Next executable work after answers: finalize Settings schema and selection rules,
+Next executable work: finalize Settings schema and selection rules,
 implement role-specific T3 context/admission plus bounded Asst.–Executor loop,
 add GUI controls/trace and fixture/live checks. Current ordinary adaptive selector
 does not yet implement this two-role strategy and must not be presented as doing so.

@@ -1,0 +1,13 @@
+{
+  "result": "PASSED",
+  "fixtureDir": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-office-queue-gui-T6ciXf",
+  "checks": [
+    "sheet actual MCP queue -> GUI review/apply -> durable receipt -> native undo/redo",
+    "doc actual MCP queue -> GUI review/apply -> durable receipt -> native undo/redo",
+    "full local bundle remaps image manifest IDs/project IDs and native source URLs",
+    "service close/reopen retains completion and both restored native image snapshots reopen"
+  ],
+  "provider": "NOT_RUN; injected run identity",
+  "homeUat": "HOME_UAT_NOT_RUN",
+  "restoredProjectId": "4c4ce046-755b-409e-9bb0-09e1321e9584"
+}

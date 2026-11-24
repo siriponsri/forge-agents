@@ -1,6 +1,7 @@
 import { randomUUID, createHash } from 'node:crypto';
 import { mkdir, realpath, stat } from 'node:fs/promises';
 import path from 'node:path';
+import {validateOfficeAgentSave} from '../office/agent-contract.mjs';
 export const now=()=>new Date().toISOString();
 export function fail(code,message,statusCode=400,details){throw Object.assign(new Error(message),{code,statusCode,details});}
 export function required(value,label){if(typeof value!=='string'||!value.trim())fail('VALIDATION',`${label} is required`);return value.trim();}
@@ -29,18 +30,17 @@ function validateSnapshot(snapshot,s,projectId){
   if(/blob:|file:|filesystem:/.test(serialized))fail('RESOURCE_NOT_DURABLE','Save temporary browser images as project resources before saving this document');
   for(const match of serialized.matchAll(/\/api\/artifacts\/([^/"\\]+)\/download/g))find(s,'artifacts',match[1],projectId);
 }
-export async function command(store,input){
+export async function command(store,input,{clock=Date.now}={}){
   const operationId=required(input.operationId,'operationId'); const type=required(input.type,'type');
   const fingerprint=createHash('sha256').update(JSON.stringify({...input,operationId:undefined})).digest('hex');
-  // Workspace initialization is reversible and explicitly selected by the user.
-  if(type==='project.create'){
-    const workspace=path.resolve(required(input.data?.workspace,'workspace'));
-    await mkdir(workspace,{recursive:true});
-    if(!(await stat(workspace)).isDirectory())fail('WORKSPACE','Choose a workspace folder');
-  }
-  return store.transaction(s=>{
+  return store.transaction(async s=>{
     const prior=s.receipts.find(r=>r.operationId===operationId);
     if(prior){if(prior.fingerprint!==fingerprint)fail('OPERATION_REUSE','Operation ID was used for another command',409);return prior.result;}
+    validateOfficeAgentSave(s,input,{now:clock()});
+    if(type==='project.create'){
+      const workspace=path.resolve(required(input.data?.workspace,'workspace'));await mkdir(workspace,{recursive:true});
+      if(!(await stat(workspace)).isDirectory())fail('WORKSPACE','Choose a workspace folder');
+    }
     const data=input.data??{};let x;
     if(type==='settings.update'){
       if(data.language && !['th','en'].includes(data.language))fail('VALIDATION','Language must be th/en');

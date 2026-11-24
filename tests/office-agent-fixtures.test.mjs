@@ -17,7 +17,8 @@ export async function fixture(t, kind = 'sheet') {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-office-agent-fixture-'));
   const dataDir = path.join(root, 'state');
   let store = await openStore(dataDir), clock = 100000;
-  const cmd = (type, projectId, data) => command(store, { type, projectId, data, operationId: randomUUID() });
+  const execute = input => command(store, input, {clock:()=>clock});
+  const cmd = (type, projectId, data) => execute({ type, projectId, data, operationId: randomUUID() });
   const project = (await cmd('project.create', undefined, { name: 'Disposable office agent fixture', workspace: path.join(root, 'project') })).entity;
   const bot = (await cmd('bot.create', project.id, { name: 'Fixture bot' })).entity;
   const task = (await cmd('task.create', project.id, { title: 'Fixture task', botId: bot.id })).entity;
@@ -27,7 +28,7 @@ export async function fixture(t, kind = 'sheet') {
   const document = (await cmd('document.create', project.id, { name: 'Fixture document', kind, snapshot, packageVersion: '1.6.1' })).entity;
   const scope = { projectId: project.id, documentId: document.id, botId: bot.id, taskId: task.id, runId: run.id, attemptId: run.attemptId };
   const f = {
-    root, dataDir, scope, document, get store() { return store; },
+    root, dataDir, scope, document, command:execute, get store() { return store; },
     service: createOfficeAgentService({ store, dataDir, now: () => clock }),
     advance(ms) { clock += ms; },
     input(edit = kind === 'sheet' ? { kind: 'sheet.setValues', sheetId: 'second', range: 'A1:B1', text: 'ไทย\t=1+2' } : { kind: 'doc.insertText', index: 2, text: 'ไทย' }) { return { ...scope, operationId: randomUUID(), expectedRevision: 1, edit }; },
@@ -60,13 +61,8 @@ export async function fixture(t, kind = 'sheet') {
     },
     async saveWithProposedLeadReceiptFixture(permit, after) {
       const input = { ...permit.saveCommand, data: { ...permit.saveCommand.data, snapshot: after } };
-      await command(store, input);
-      // Lead explicitly accepted these receipt fields. Base checkout's domain
-      // does not yet persist them; only this labelled fixture supplies the seam.
-      await store.transaction(s => {
-        const receipt = s.receipts.find(r => r.operationId === input.operationId).result.receipt;
-        Object.assign(receipt, { projectId: input.projectId, baseRevision: input.expectedRevision, actor: input.data.actor, operation: input.data.operation });
-      });
+      // Use the integrated domain guard and its real durable receipt.
+      await execute(input);
       return store.read().receipts.find(r => r.operationId === input.operationId).result;
     },
     async restart() { await store.close(); store = await openStore(dataDir); f.service = createOfficeAgentService({ store, dataDir, now: () => clock }); await f.service.recover(); },
