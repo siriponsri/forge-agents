@@ -7,8 +7,8 @@ preference, persisted locally and by the application, not a static screenshot.
 
 ## Product and surfaces
 
-An atmospheric, precise engineering workbench for Thai no-code users. A consistent
-side rail, functional top bar, expressive Overview and focused working surfaces.
+A precise, calm engineering workbench for Thai no-code users. A consistent
+side rail, functional top bar, task-led Overview and focused working surfaces.
 Keep real project/team/plan/notebook/office/report behavior. No invented metrics,
 reviews, customers, completed jobs or connectivity. Status is backed by records.
 
@@ -33,7 +33,27 @@ Univer uses its supported live theme APIs without remounting or discarding edits
 
 ## Interaction and layout
 
-Desktop uses a clear side rail and roomy content. Narrow screens use a drawer and
+Desktop uses a clear side rail (232px, 218px below 1200px), a 64px top bar and
+roomy content. The app content stays within 1560px; Overview within 1180px.
+The main heading uses Manrope at 26px on Overview, reducing to 22px on phones.
+Task focus uses 30px desktop text, with explicit 26/25/23px responsive steps.
+The body remains 13px with 12px action labels and 11px supporting records.
+Overview uses one tonal task focus surface, an open definition-list summary, and
+Recent work beside a compact tool list. Task status, owner, and counts reflect
+canonical records. Ongoing work leads, then blockers, reviews, ready and backlog
+tasks; the most recently recorded task wins within a status. Opening the focus
+uses the existing plan route; it does not execute or imply a live run.
+Use the semantic sidebar tone for the focus surface, full status outlines and
+ordinary row separators. Avoid decorative graphs and repeated summary cards here.
+Keep the current project description visible and label developer fixtures honestly.
+
+Desktop uses tonal separation; ordinary panels and primary buttons have no
+ambient shadow. Dialogs and the mobile drawer retain their functional elevation.
+Interactive rows have hover feedback; focus rings use the existing semantic token.
+Busy submit buttons retain their accessible name, announce busy state and disable
+repeat submission. Field hints preserve existing description associations.
+
+Narrow screens use a drawer and
 stacked fields; check320/375/414/768 widths for overflow. Theme chooser supports
 keyboard and search, visual palette previews, current selection and Escape.
 Use restrained transitions and reduced-motion. Preserve visible focus and useful
@@ -41,7 +61,8 @@ loading/error/conflict states. No new approval gate for routine authorized UI wo
 
 ## Scope and ownership
 
-Lead: App/Overview/theme persistence/fonts, launcher/download API/packaging,
-integration and tests. Theme worker: named palettes/picker/global visual layer.
+Lead: App/theme persistence/fonts, launcher/download API/packaging, integration
+and shared contracts. Scoped app refinement: Overview, ui primitives and style.css.
+Named palette sources and ThemePicker retain their existing owner.
 Landing worker: Landing/landing.css/welcome.html only. Preserve existing code paths
 and routes; no production components or legacy payloads are deleted.

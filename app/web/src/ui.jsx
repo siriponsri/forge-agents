@@ -1,7 +1,9 @@
 import React, { useId, useRef } from "react";
-import { Plus, RefreshCw } from "lucide-react";
+import { LoaderCircle, Plus, RefreshCw } from "lucide-react";
 export function Field({ label, children, hint }) {
-  const id = useId();
+  const generatedId = useId();
+  const firstChild = React.Children.toArray(children)[0];
+  const id = (React.isValidElement(firstChild) && firstChild.props.id) || generatedId;
   return (
     <div className="field">
       <label htmlFor={id}>{label}</label>
@@ -9,7 +11,7 @@ export function Field({ label, children, hint }) {
         i === 0 && React.isValidElement(child)
           ? React.cloneElement(child, {
               id,
-              ...(hint ? { "aria-describedby": `${id}-hint` } : {}),
+              ...(hint ? { "aria-describedby": [child.props["aria-describedby"], `${id}-hint`].filter(Boolean).join(" ") } : {}),
             })
           : child,
       )}
@@ -36,14 +38,14 @@ export const Badge = ({ children }) => (
   </span>
 );
 export const Submit = ({ children, busy }) => (
-  <button className="primary" type="submit" disabled={busy}>
-    <Plus size={16} />
+  <button className="primary" type="submit" disabled={busy} aria-busy={busy || undefined}>
+    {busy ? <LoaderCircle size={16} aria-hidden="true" /> : <Plus size={16} aria-hidden="true" />}
     {children}
   </button>
 );
 export const Refresh = ({ onClick, label }) => (
   <button type="button" onClick={onClick}>
-    <RefreshCw size={15} />
+    <RefreshCw size={15} aria-hidden="true" />
     {label}
   </button>
 );
@@ -74,6 +76,7 @@ export function Collection({
         <button
           key={item.id}
           className={selected === item.id ? "selected" : ""}
+          aria-pressed={selected === item.id}
           onClick={() => onSelect(item.id)}
         >
           <strong>{title(item)}</strong>
