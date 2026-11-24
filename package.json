@@ -5,12 +5,13 @@
   "type": "module",
   "description": "FORGE v3 local workbench development: T3, AG-UI, office and reports",
   "scripts": {
-    "test": "node --test tests/*.test.mjs",
+    "test": "node --test tests/*.test.mjs app/web/tests/boundaries.test.mjs",
     "test:legacy": "node tests/ao-limited-adapter.test.mjs",
     "build": "vite build app/web --outDir dist",
     "start": "node app/server/main.mjs",
     "dev": "vite app/web --host 127.0.0.1",
-    "check": "node --check app/server/main.mjs"
+    "check": "node --check app/server/main.mjs",
+    "test:browser": "node app/web/tests/smoke.mjs"
   },
   "engines": {
     "node": ">=24.13"
@@ -26,5 +27,8 @@
     "react-dom": "19.2.4",
     "t3": "0.1.11",
     "vite": "7.3.8"
+  },
+  "devDependencies": {
+    "playwright": "1.65.1"
   }
 }
