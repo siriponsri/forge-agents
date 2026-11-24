@@ -22,7 +22,15 @@ export function validateSpec(spec) {
 function stringsFrom(value, result = []) {
   if (typeof value === 'string') result.push(value);
   else if (Array.isArray(value)) value.forEach(x => stringsFrom(x, result));
-  else if (value && typeof value === 'object') Object.values(value).forEach(x => stringsFrom(x, result));
+  else if (value && typeof value === 'object') {
+    // Native inspection interleaves paragraph text with style/type metadata.
+    // Only actual text fields form the document stream; styles must not split
+    // a user's multi-paragraph source or count as content that was emitted.
+    for (const [key, x] of Object.entries(value)) {
+      if (key === 'text' && typeof x === 'string') result.push(x);
+      else if (x && typeof x === 'object') stringsFrom(x, result);
+    }
+  }
   return result;
 }
 export function checkText(data, expected, label) {

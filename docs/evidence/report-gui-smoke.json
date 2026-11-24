@@ -1,0 +1,45 @@
+{
+  "result": "PASSED",
+  "kind": "real Windows native report GUI qualification",
+  "checks": [
+    "GUI engine/font configuration",
+    "saved ReportSpec revision",
+    "real WordCraft DOCX/PDF",
+    "inline PDF surface",
+    "verified DOCX/PDF download bytes",
+    "real PdfCraft rotate + parent lineage",
+    "no browser exceptions"
+  ],
+  "jobs": [
+    "fc6cf2a0-9c9b-47b1-b298-e7cc518f1dd9",
+    "c711af73-3d4c-4c8c-a5fb-b306281282d7"
+  ],
+  "outputs": [
+    {
+      "kind": "docx",
+      "sha256": "4b4451434eae8135c16876b013f098f5ae7c2a118ba3adf76cb4a80cabf79ea9",
+      "bytes": 6844
+    },
+    {
+      "kind": "pdf",
+      "sha256": "4151c7d4b974ed47108b9b02db9374dff512b0db5c65d4c59ac4d6b11642b824",
+      "bytes": 36792
+    },
+    {
+      "kind": "png",
+      "sha256": "96f968c9f641542b2b8b21ec25b039597d0ebf504afb489763c59b9c826954c6",
+      "bytes": 37018
+    },
+    {
+      "kind": "pdf",
+      "sha256": "e7b0f5dd4f17095f509dbf6d085f2a13647a12c4ff8e326c56d88a9c86dc1a5a",
+      "bytes": 34294
+    },
+    {
+      "kind": "png",
+      "sha256": "f1a48d9142b7a30a3182c052e20df15445141f333677fac8a8e16d4cd206903b",
+      "bytes": 36891
+    }
+  ],
+  "observedAt": "2026-11-24T04:49:04.159Z"
+}

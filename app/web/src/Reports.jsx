@@ -66,6 +66,11 @@ export default function Reports({ t, state, projectId, mutate, run, busy }) {
       </Heading>
       <div className="engine-strip">
         <span>WordCraft / PdfCraft</span>
+        {['wordcraft','pdfcraft'].map(name => <span key={name} role="status">
+          {name === 'wordcraft' ? 'WordCraft' : 'PdfCraft'} · {engines?.engines?.[name]?.ready
+            ? `${engines.engines[name].identity?.version ?? ''} ${t('พร้อมใช้งาน','Ready')}`
+            : engines?.engines?.[name]?.recovery || t('ตรวจสอบก่อนใช้งาน','Check setup')}
+        </span>)}
         <button
           onClick={() =>
             run(async () => {
@@ -83,7 +88,7 @@ export default function Reports({ t, state, projectId, mutate, run, busy }) {
         </details>
       </div>
       {configure && (
-        <EngineSettings t={t} run={run} busy={busy} onHealth={setEngines} />
+        <EngineSettings key={JSON.stringify(engines?.config)} health={engines} t={t} run={run} busy={busy} onHealth={setEngines} />
       )}
       <div className="split report-layout">
         <aside className="panel">
@@ -116,8 +121,8 @@ export default function Reports({ t, state, projectId, mutate, run, busy }) {
               </div>
               <p>
                 {t(
-                  "ใช้ engine ที่ตั้งค่าไว้ ความพร้อมหรือความล้มเหลวรายงานตามผลจริง ไม่มีการจำลองไฟล์ส่งออก",
-                  "Uses configured native engines. Missing dependencies and render failures remain visible.",
+                  "สร้างไฟล์จากเวอร์ชันนี้ แล้วตรวจฟอนต์และการจัดหน้าก่อนดาวน์โหลด",
+                  "Generate this saved revision, then review fonts and pagination before downloading.",
                 )}
               </p>
               <button
@@ -666,7 +671,7 @@ function ReportJob({ t, job, run, busy, artifacts, setPreview }) {
     </article>
   );
 }
-function EngineSettings({ t, run, busy, onHealth }) {
+function EngineSettings({ t, run, busy, onHealth, health }) {
   return (
     <form
       className="panel"
@@ -740,16 +745,17 @@ function EngineSettings({ t, run, busy, onHealth }) {
       </div>
       <div className="form-grid">
         <Field label="WordCraft executable">
-          <input name="wordcraftPath" />
+          <input name="wordcraftPath" defaultValue={health?.config?.wordcraft?.path ?? ''} />
         </Field>
         <Field label="PdfCraft executable">
-          <input name="pdfcraftPath" />
+          <input name="pdfcraftPath" defaultValue={health?.config?.pdfcraft?.path ?? ''} />
         </Field>
         <Field label={t("ป้ายเวอร์ชันโปรไฟล์ฟอนต์", "Font profile version label")}>
-          <input required name="fontVersion" defaultValue="system-local" />
+          <input required name="fontVersion" defaultValue={health?.config?.fonts?.[0]?.version ?? 'system-local'} />
         </Field>
         <Field label={t("ฟอนต์", "Font family")}>
-          <input required name="fontFamily" defaultValue="Tahoma" />
+          <input required name="fontFamily" list="report-font-families" defaultValue={health?.config?.fonts?.[0]?.family ?? 'Tahoma'} />
+          <datalist id="report-font-families">{(health?.engines?.wordcraft?.fonts?.families??[]).map(f=><option key={f} value={f}/>)}</datalist>
         </Field>
         <Field
           label={t(
@@ -757,7 +763,7 @@ function EngineSettings({ t, run, busy, onHealth }) {
             "Local font files (one path per line)",
           )}
         >
-          <textarea name="fontPaths" rows={2} />
+          <textarea name="fontPaths" rows={2} defaultValue={(health?.config?.fonts?.[0]?.files??[]).map(f=>f.path).join('\n')} />
         </Field>
       </div>
       <p className="help">
