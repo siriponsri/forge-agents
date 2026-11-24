@@ -1,6 +1,27 @@
 # Implementation Log
 
-No owner-machine coding or application verification is claimed by this starting log.
+## Developer implementation — 2026-11-24
+
+- Inspected efcd132/main/origin/worktrees, owner dirty docs and legacy package;
+  no applicable AGENTS.md existed. Created integration branch and scoped v3 docs
+  commit9d0a90f. Source/contract map: repository-root `docs/FORGE_ARCHITECTURE.md`.
+- Added durable SQLite service, scoped revision commands, Python jobs, artifacts,
+  metadata backup/restore, MCP, desktop ownership and actual T3 bridge22bb87c.
+- T3 Windows npm loader encountered transient EPERM after executable validation;
+  retained MIT source and added bounded atomic rename retry. Actual T3 local OAuth
+  PKCE grants only supervised orchestration in FORGE's own isolated control plane.
+  No developer app credential/session imported. T3/launcher9857bdd.
+- Live read-only provider smoke: gpt-6.1-sol/xhigh, completed expected reply; actual
+  thread/run mapped to AG-UI. Sanitized result in `docs/evidence/t3-live-smoke.json`.
+- Added catalog slow/failure handling and scoped output Git commit/push with
+  disposable bare remote; product tests PASSED. de14a95.
+- Commands actually run: `npm test`, `npm run check`, `npm audit`,
+  `node tests/live-t3-smoke.mjs`, `git diff --check`. Product build/launcher combined
+  verification awaits worker integration; do not reuse historical P11 counts.
+
+## Original preparation log
+
+No owner-machine coding or application verification was claimed by the starting log.
 
 ## Handoff v3 preparation — 2026-11-24
 

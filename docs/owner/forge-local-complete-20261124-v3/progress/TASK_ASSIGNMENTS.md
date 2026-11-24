@@ -1,6 +1,23 @@
 # Task Assignments
 
-Initial state: **NO WORKER SESSIONS STARTED BY THIS HANDOFF**.
+## Active assignments — 2026-11-24
+
+Base9d0a90f, shared API in `app/CONTRACTS.md`. Lead owns integration branch,
+server/schema/manifests/lockfiles/progress. Model for all: codex gpt-6.1-sol,
+reasoningEffort=xhigh. Isolated worktrees prepared by delegate_task, not shared writes.
+
+| Worker | Branch | Ownership | State |
+|---|---|---|---|
+| A GUI/office | t3/forge-gui-univer-workbench | app/web, docs/worker-ui.md | Running; own browser/persistence evidence reported; lead integration pending |
+| B report engines | t3/implement-report-engines | app/reports, tests/reports*, docs/worker-reports.md | Running; actual Windows engine evidence reported; lead integration pending |
+
+Absolute worktree locations discoverable via `git worktree list`; each worker
+uses its own temporary runtime data and port. Neither may push main or edit
+central progress. Lead reviews scoped commits and tests the combined tree.
+
+## Historical initial assignment template
+
+Initial state was **NO WORKER SESSIONS STARTED BY THIS HANDOFF**.
 
 The integration owner fills assignments after inspecting the checkout and establishing shared contracts. Branch names are proposals until created and inspected. One mutable writer owns each worktree.
 

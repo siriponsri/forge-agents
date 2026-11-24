@@ -1,5 +1,17 @@
 # Decisions
 
+## D-009 — Observed implementation choices (2026-11-24)
+
+Use the actually running codex gpt-6.1-sol/reasoningEffort=xhigh for lead and two
+isolated worktree workers. Catalog exposure of6.2 is not a successful6.2 request
+and does not change this selection. Keep development T3 separate from FORGE's
+T3 v0.1.11 matching GUI/server distribution, source pin59651c1761f6c63e9b6056839067066968e6a406.
+Reuse its MIT launcher with a documented Windows rename retry; never disable hashes.
+Use SDK MCP1.32.2, AG-UI core1.0.5, Univer1.6.1, React19.2.4, Vite7.3.8, exact
+lockfile. SQLite is the domain authority; T3 remains provider-turn authority.
+Native office snapshots and versioned ReportSpec remain distinct representations.
+Do not advance main or publish while required implementation remains incomplete.
+
 ## D-001 — Complete product replaces first-slice delivery
 
 Owner correction, 2026-11-24: build the complete FORGE no-code localhost product now. G0–G1 remains an intermediate foundation. All requested product feature families remain in scope.

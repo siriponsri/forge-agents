@@ -1,5 +1,50 @@
 # Current Status — Complete Local FORGE
 
+## Developer checkpoint — 2026-11-24
+
+Overall **IMPLEMENTATION_INCOMPLETE**, **HOME_UAT_NOT_RUN**. Active branch
+`integration/forge-local-complete`; main stays efcd132. No push. Requirements and
+contracts9d0a90f, backend22bb87c, T3/launcher9857bdd, catalog/Git evidence de14a95.
+Legacy protected payloads untouched; no prototype product created.
+
+Lead and both isolated workers use codex/**gpt-6.1-sol**, **reasoningEffort=xhigh**.
+Lead configuration observed from orchestration capabilities and successful live
+execution. Worker completion/integration remains pending at this checkpoint.
+
+Implemented/checked on Windows, Node24.19.0: SQLite domain/revisions/operation
+receipts, project scope, evidence-backed task completion, real local Python jobs,
+artifact hashes, metadata backup/restore, catalog fallback and explicit selected-file
+Git commit/push to a bare engineering-fixture remote. MCP transport/discovery/call
+reservations and target ownership/capability filtering have local fixture evidence;
+this does not qualify live MCP services or native desktop targets.
+
+Actual pinned T3 v0.1.11 GUI/server starts with FORGE-only machine state. Actual MCP
+handshake/discovery and read-only provider run PASSED:
+`3ca650f9-801e-4c8b-8e8c-acf0dd733d61`, reply FORGE_ENGINEERING_BRIDGE_OK.
+AG-UI1.0/core1.0.5 validates actual start/message snapshots/finish.
+Evidence: repository-root `docs/evidence/t3-live-smoke.json`. Full tool/frontend-tool,
+interrupt, delta and live stop/reconnect qualification remain incomplete.
+
+`npm test` passed legacy AO fixtures plus six product behavior tests;
+`npm run check` passed; `npm audit` reports zero vulnerabilities. Worker A reports
+browser/Univer/Python/restart checks passed in its worktree; Worker B reports real
+Windows report outputs and strict glyph failure passed. These are worker evidence,
+not yet integrated application acceptance. Build/combined UI/clean launcher checks
+must follow integration.
+
+G0–G4/G6 IN_PROGRESS; G5 partial ownership/capability implementation. Required code
+gaps: unified T3 navigation, complete AG-UI lifecycle, cloud compute/provider setup,
+Drive sync/conflict/retention, inference/LitServe, native/guest/browser drivers and
+effective in-flight stop, adaptive evaluation and remaining office/report acceptance.
+Missing implementation is not deferred home UAT.
+
+Next executable task: integrate worker GUI/Univer/report commits, review API
+alignment, run combined tests/build, launch disposable state and verify UI,
+save/reopen across restart, report preview/download and launcher lifecycle.
+Then continue outstanding G3–G6 work from the acceptance evidence map.
+
+## Historical handoff snapshot (superseded by the checkpoint above)
+
 Initial handoff state: **READY_FOR_LOCAL_IMPLEMENTATION_AUDIT / OWNER_CHECKOUT_NOT_INSPECTED**.
 
 This record starts the v3 handoff. It does not claim that application work in the owner's local repository has been inspected or completed. Reconcile any existing implementation and v1/v2 progress before updating it; preserve work already done.

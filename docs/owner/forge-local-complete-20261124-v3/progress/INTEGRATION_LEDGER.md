@@ -1,6 +1,31 @@
 # Integration Ledger
 
-Initial state: **NOT_AUDITED_IN_OWNER_CHECKOUT** for every row. This is a coverage list, not an installed or shipped connector catalog.
+## Inspected implementation ledger — 2026-11-24
+
+| Route | Implementation/evidence | Live qualification |
+|---|---|---|
+| T3/Codex | app/vendor/t3 + app/server/t3.mjs; actual matching v0.1.11 GUI/server and supervised MCP thread ownership | PASSED read-only gpt-6.1-sol/xhigh fixture; docs/evidence/t3-live-smoke.json |
+| Claude/Gemini/Grok/OpenCode/Kimi/Qwen/DeepSeek | T3 provider registry/ACP route available in selected runtime; FORGE per-route no-code install/setup not yet complete | NOT_RUN per provider; no claim from Codex success |
+| OpenRouter | Generic endpoint reachability only; model/harness execution IMPLEMENTATION_INCOMPLETE | NOT_RUN |
+| MaxPlus | Prior isolated native-home boundary preserved; product route/setup IMPLEMENTATION_INCOMPLETE | NOT_RUN |
+| KOB | API path/licensing distinctions in research; required adapter IMPLEMENTATION_INCOMPLETE | NOT_RUN |
+| Custom MCP | SDK1.32.2 stdio/HTTP, discovery, enabled tool calls, durable uncertainty reservations | Local tests only; service-specific OAuth/install not complete |
+| Local Windows compute | Real Python notebook job/log/status with selected workspace and timeout | PASSED disposable Python execution |
+| Owner server/Colab browser/Colab API/Vast/Runpod | Required lifecycle adapters IMPLEMENTATION_INCOMPLETE | NOT_RUN; no resources provisioned |
+| Local metadata/artifacts | Native snapshots, SHA256-verified artifacts and metadata backup/restore | PASSED persistence/tamper checks; artifact bundle backup/retention incomplete |
+| Output-project Git | app/server/git-storage.mjs selected-file commit, explicit remote/branch push | PASSED disposable bare-fixture remote; no FORGE remote push |
+| Google Drive | Required auth, staged transfer/conflict/retry/retention IMPLEMENTATION_INCOMPLETE | NOT_RUN |
+| LitServe/inference/deployment/metrics | Required artifact-bound serving workflow IMPLEMENTATION_INCOMPLETE | NOT_RUN |
+| Main Windows/guest/browser targets | Persisted identity/ownership/tool boundary; actual driver setup and in-flight stop incomplete | Fixture ownership only; native actions NOT_RUN |
+| Adaptive skills | Versioned skill records/capability filter; evaluation/promotion/loop integration incomplete | Fixture filter only |
+| AG-UI | core1.0.5, actual T3 run/message/finish validated; complete tools/delta/frontend result recovery incomplete | Provider smoke PASSED to stated subset |
+| Univer | Worker A implementing Sheets/Docs; reports real save/reopen/formula/undo evidence | Lead integrated acceptance pending |
+| WordCraft/PdfCraft | Worker B implementing native service; reports actual official Windows outputs/strict checks | Lead integrated acceptance pending |
+| Office Exchange/LibreOffice | Optional; not advertised ready, no commercial package installed | NOT_RUN |
+
+The rows below are the original requirement inventory, retained for provenance.
+
+Initial state was **NOT_AUDITED_IN_OWNER_CHECKOUT** for every row.
 
 For each named route, record implementation paths and supported operations separately from dependency/authentication readiness, local contract checks and actual live evidence. A shared compatible adapter can cover multiple services only after the relevant contracts are checked. Unavailable login may defer qualification; missing code remains an implementation gap.
 
