@@ -28,6 +28,7 @@ import {
 } from "./operations.jsx";
 import Office from "./Office.jsx";
 import Reports from "./Reports.jsx";
+import Serving from './Serving.jsx';
 import Overview from './Overview.jsx';
 import ThemePicker from './ThemePicker.jsx';
 import { DEFAULT_THEME, getTheme } from './themes.mjs';
@@ -145,6 +146,7 @@ export default function App() {
     ["team", Users, "ทีมบอท", "Bot team"],
     ["chat", MessagesSquare, "ห้องสนทนา", "Conversations"],
     ["notebooks", NotebookPen, "สมุดงาน Python", "Notebooks"],
+    ['serving',Zap,'โมเดลและการทำนาย','Models & serving'],
     ["office", FileSpreadsheet, "เอกสารและตาราง", "Docs & sheets"],
     ["reports", FileText, "รายงาน", "Report Studio"],
     ["artifacts", Files, "ไฟล์และผลลัพธ์", "Artifacts"],
@@ -324,6 +326,7 @@ export default function App() {
                 <Office key={projectId} {...props} onDirty={setDirtyOffice} />
               )}{" "}
               {page === "reports" && <Reports key={projectId} {...props} />}{" "}
+              {page === 'serving' && <Serving key={projectId} {...props}/>}
               {page === "artifacts" && <Artifacts {...props} />}{" "}
               {page === "monitor" && <Monitoring {...props} />}{" "}
               {page === "settings" && (

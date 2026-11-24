@@ -117,6 +117,12 @@ main { padding: 36px 36px 60px; max-width: 1700px; margin: 0 auto; min-width: 0;
 .panel { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-panel); padding: 22px; margin-bottom: 20px; box-shadow: 0 1px 2px var(--shadow-color); min-width: 0; }
 .split { display: grid; grid-template-columns: 260px minmax(0,1fr); gap: 20px; align-items: start; }
 .split > section, .split > aside { min-width: 0; }
+.serving-layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 24px; align-items: start; }
+.serving-status { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px; margin: 16px 0; border: 1px solid var(--line); border-radius: var(--radius); }
+.serving-status > span { overflow-wrap: anywhere; }
+.inference-output { display: grid; gap: 6px; margin: 18px 0; }
+.inference-output output { font-size: 38px; font-weight: 600; line-height: 1.2; color: var(--text); }
+@media (max-width: 1100px) { .serving-layout { grid-template-columns: minmax(0,1fr); } }
 .collection { display: flex; flex-direction: column; margin: 14px -7px; gap: 4px; }
 .collection button { text-align: left; align-items: flex-start; flex-direction: column; justify-content: flex-start; background: transparent; border-color: transparent; padding: 12px 10px; width: 100%; gap: 3px; white-space: normal; }
 .collection button strong { font-weight: 600; overflow-wrap: anywhere; }

@@ -340,7 +340,7 @@ export function Artifacts({ t, state, projectId, run, busy }) {
 
 export function Monitoring(props) {
   const { t, state, projectId } = props,
-    runs = scoped(state, "runs", projectId),
+    runs = scoped(state, "runs", projectId).filter(r=>!r.kind?.startsWith('serving.')),
     jobs = scoped(state, "jobs", projectId);
   return (
     <>

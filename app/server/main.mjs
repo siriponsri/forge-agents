@@ -18,6 +18,7 @@ import { createGitStorageService } from './git-storage.mjs';
 import {defaultDataDir} from './paths.mjs';
 import {createDownloadService} from './downloads.mjs';
 import {createOfficeService} from '../office/service.mjs';
+import {createServingService} from '../serving/service.mjs';
 export {defaultDataDir};
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const manifest=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
@@ -32,18 +33,19 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
   const gitStorage=createGitStorageService({store});
   const downloads=createDownloadService({sourceRoot:root,dataDir});
   const office=createOfficeService({store});
+  const serving=createServingService({store,dataDir,connections,artifacts});
   await jobs.recover();
   let reports;try{const mod=await import('../reports/service.mjs');reports=await mod.createReportService({store,dataDir});}catch(e){if(e.code!=='ERR_MODULE_NOT_FOUND')throw e;}
   let commit='unknown';try{commit=execFileSync('git',['rev-parse','--short','HEAD'],{cwd:root,encoding:'utf8',windowsHide:true}).trim();}catch{try{commit=JSON.parse(await readFile(path.join(root,'release-info.json'),'utf8')).commit.slice(0,7);}catch{}}
   const clients=new Set();let closed=false;
-  const app={store,t3,jobs,connections,reports,server:null,url:null,async close(){
+  const app={store,t3,jobs,connections,reports,serving,server:null,url:null,async close(){
     if(closed)return;closed=true;
     // Stop accepting reconnects before closing SSE; browser retries must not keep
     // an application shutdown alive. Close only this server's HTTP connections.
     const stopped=new Promise(resolve=>app.server.close(resolve));
     for(const client of clients)client.end();
     app.server.closeAllConnections();
-    await jobs.shutdown();await t3.shutdown();await connections.close();await reports?.shutdown?.();
+    await jobs.shutdown();await t3.shutdown();await serving.shutdown();await connections.close();await reports?.shutdown?.();
     await stopped;await store.close();
   }};
   const server=http.createServer(async(req,res)=>{
@@ -66,6 +68,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
       if(method==='GET'&&p==='/api/t3/status')return json(res,t3.health());
       if(method==='GET'&&p==='/api/t3/catalog')return json(res,catalog.read());
       if(method==='GET'&&p==='/api/reports/health')return json(res,reports?await reports.health():{status:'implementation_pending'});
+      if(method==='GET'&&p==='/api/serving/health')return json(res,await serving.health(url.searchParams.get('projectId')));
       if(method==='GET'&&/^\/api\/reports\/jobs\/[^/]+$/.test(p))return json(res,await reports.getJob(p.split('/')[4]));
       if(method==='GET'&&/^\/api\/jobs\/[^/]+$/.test(p))return json(res,find(store.read(),'jobs',p.split('/')[3]));
       if(method==='GET'&&/^\/api\/artifacts\/[^/]+\/download$/.test(p)){
@@ -99,6 +102,11 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
         else if(p==='/api/skills/select')value=await control.select(input);
         else if(p==='/api/reports/configure'&&reports)value=await reports.configure(input);
         else if(p==='/api/reports/extract-document')value=office.extract(input);
+        else if(p==='/api/serving/configure')value=await serving.configure(input);
+        else if(p==='/api/serving/start')value=await serving.start(input);
+        else if(p==='/api/serving/predict')value=await serving.predict(input);
+        else if(/^\/api\/serving\/jobs\/[^/]+\/stop$/.test(p))value=await serving.stop(p.split('/')[4]);
+        else if(/^\/api\/serving\/jobs\/[^/]+\/detach$/.test(p))value=await serving.detach(p.split('/')[4]);
         else if(p==='/api/reports/generate'&&reports)value=await reports.generate(input);
         else if(p==='/api/reports/pdf-operation'&&reports)value=await reports.pdfOperation(input);
         else if(/^\/api\/reports\/jobs\/[^/]+\/stop$/.test(p)&&reports)value=await reports.stop(p.split('/')[4]);

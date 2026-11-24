@@ -84,6 +84,8 @@ test('actual HTTP + Streamable MCP, declared binding, lineage, idempotency and i
   const httpError = await f.serving.predict({ ...input, operationId: randomUUID(), payload: { fail: true } });
   assert.equal(httpError.status, 'failed'); assert.equal(httpError.error.httpStatus, 422);
   e.healthStatus = 503; assert.equal((await f.serving.health(f.p.id)).status, 'error');
+  assert.equal((await f.serving.detach(deployment.id)).status,'detached');
+  e.healthStatus=200;assert.equal((await fetch(e.url+'/health')).status,200,'detaching never stops an unowned endpoint');
   await assert.rejects(f.serving.configure(configInput(f, e, { projectId: f.other.id, expectedRevision: f.other.revision })), { code: 'NOT_FOUND' });
 });
 

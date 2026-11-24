@@ -1,0 +1,39 @@
+{
+  "result": "PASSED",
+  "kind": "actual Windows LitServe GUI engineering qualification",
+  "fixtureDir": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-serving-gui-3xcUqs",
+  "checks": [
+    "GUI upload model/preprocessor",
+    "explicit artifact revisions and hashes",
+    "configure/setup/start actual LitServe",
+    "REST and discovered MCP readiness",
+    "owned loader observed selected bytes",
+    "REST and MCP [5,6] => 3.5",
+    "actual elapsed latency and hash-verified result artifacts",
+    "375px no overflow",
+    "owned stop and fresh restart",
+    "no browser exceptions"
+  ],
+  "deployments": [
+    "fa305892-82ea-46fe-8b31-6ad0a07a8ca0",
+    "25f4bd94-1608-4a12-8d9c-94daa697ec3f"
+  ],
+  "predictions": [
+    {
+      "id": "d5cb3707-d04b-4665-9238-638c52250675",
+      "transport": "rest",
+      "artifactIds": [
+        "9ea8fb0a-158c-4c4d-9373-4df36692c83c"
+      ],
+      "latencyMs": 41.207000000000335
+    },
+    {
+      "id": "5bd0d3a7-ac58-418a-918d-06df94d8875f",
+      "transport": "mcp",
+      "artifactIds": [
+        "de59e79e-d82f-4474-872f-cc183e80064c"
+      ],
+      "latencyMs": 114.34569999999985
+    }
+  ]
+}

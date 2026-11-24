@@ -280,6 +280,12 @@ export function createServingService({ dataDir, store, connections, artifacts })
     // Inference cancellation stops the client wait; the request may have reached the server.
     return find(store.read(), 'jobs', id);
   }
+  async function detach(id){
+    await ready();const job=find(store.read(),'jobs',id);
+    if(job.kind!=='serving.deployment'||job.config.mode!=='existing')fail('SERVING_DETACH','Only an existing remote endpoint can be detached; stop owned local work instead',409);
+    // This changes the attachment record only. No remote stop/kill is dispatched.
+    return update(id,{status:'detached',readiness:'detached',owned:false,finishedAt:now()});
+  }
   async function shutdown() {
     if (closed) return; closed = true; await recovered;
     for (const control of controls.values()) control.controller.abort();
@@ -289,5 +295,5 @@ export function createServingService({ dataDir, store, connections, artifacts })
     for (const [id, control] of controls) if (control.handle) await update(id, { status: 'stopped', readiness: 'offline', finishedAt: now() });
     controls.clear();
   }
-  return { configure, health, predict, start, stop, shutdown };
+  return { configure, health, predict, start, stop, detach, shutdown };
 }
