@@ -2,6 +2,29 @@
 
 ## Developer checkpoint — 2026-11-24
 
+Latest integrated checkpoint: serving09fc17e/0cd8cce, storage998762d/bd0f7be,
+protocol86515ae. Lead GUI serving actual Windows LitServe REST+MCP weighted fixture,
+hash-verified result download, Stop/Restart PASSED. Local storage GUI two full
+backups, selected manifest restore to NEW project/folder, identical file download,
+native artifact-ID remap and retention preview PASSED. Drive OAuth/DPAPI and REST
+adapter fixture pass; LIVE_DRIVE_NOT_RUN. Native/browser workerfd10045 passed10
+tests incl actual selected-window Windows and owned Chromium; lead integration
+pending. Adaptive and remote compute workers are active in isolated worktrees.
+
+Protocol now has actual native feed tools/messages/state, durable source receipts,
+explicit interruption/reconnect and question/once-only permission responses.
+Worker live provider lifecycle PASSED. Lead HTTP live display cursors/domain deltas
+PASSED without effect replay. Exact remaining protocol blocker: pinned T30.1.11
+has no arbitrary frontend tool-result return payload. Capability false and409;
+full A21/A22 remains incomplete for this part. This is a dependency contract gap,
+not a missing-account/home-UAT excuse. Remaining tasks below are older dependency
+observations; use the latest acceptance checkpoint to distinguish resolved gaps.
+
+Next executable task: commit integrated Storage/AG-UI HTTP/GUI evidence, integrate
+native driverfd10045 routes/GUI/runtime packaging, then adaptive context validation
+and compute APIs. Inspect the integrated app after each boundary change. Continue
+remaining gaps in ACCEPTANCE_EVIDENCE rather than treating them as UAT.
+
 Latest owner steering: improve visual design, provide named **VS Code themes**,
 default **Dark Modern**, plus a landing page using Orca/T3/Paseo as structural
 references and real Windows/macOS launcher downloads. These are active tasks in

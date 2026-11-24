@@ -1,0 +1,22 @@
+{
+  "result": "PASSED",
+  "fixtureDir": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-storage-gui-4fBtLY",
+  "scope": "actual local filesystem; Drive live NOT_RUN",
+  "checks": [
+    "GUI file upload",
+    "destination configuration and health",
+    "two verified full project backups",
+    "explicit selected manifest restore into new project/folder",
+    "hash-identical restored bytes downloaded",
+    "native resource IDs remapped",
+    "retention preview protects newest full backup",
+    "320/375/768 responsive",
+    "no browser exceptions"
+  ],
+  "backupJobs": [
+    "0322749f-0323-45a3-8f3c-688d53890fd2",
+    "2688faf6-5be9-419c-ba3a-ebd03ac87695"
+  ],
+  "restoreJob": "b93e2716-69bb-4bd4-9346-13c38cfca369",
+  "restoredProjectId": "b8658191-881b-4455-baac-6940a23464d6"
+}

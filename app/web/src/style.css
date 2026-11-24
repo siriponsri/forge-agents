@@ -122,6 +122,11 @@ main { padding: 36px 36px 60px; max-width: 1700px; margin: 0 auto; min-width: 0;
 .serving-status > span { overflow-wrap: anywhere; }
 .inference-output { display: grid; gap: 6px; margin: 18px 0; }
 .inference-output output { font-size: 38px; font-weight: 600; line-height: 1.2; color: var(--text); }
+.storage-status { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; padding: 18px 0; }
+.storage-status dd { margin: 0; }
+.storage-status small { display: block; }
+.storage-surface { overflow-wrap: anywhere; }
+.storage-surface button { white-space: normal; }
 @media (max-width: 1100px) { .serving-layout { grid-template-columns: minmax(0,1fr); } }
 .collection { display: flex; flex-direction: column; margin: 14px -7px; gap: 4px; }
 .collection button { text-align: left; align-items: flex-start; flex-direction: column; justify-content: flex-start; background: transparent; border-color: transparent; padding: 12px 10px; width: 100%; gap: 3px; white-space: normal; }

@@ -1,0 +1,73 @@
+{
+  "observedAt": "2026-11-24T05:41:00.144Z",
+  "kind": "actual-provider-disposable-engineering-fixture",
+  "t3Version": "0.1.11",
+  "sourceRevision": "59651c1761f6c63e9b6056839067066968e6a406",
+  "requestedModel": "gpt-6.1-sol",
+  "requestedOptions": [
+    {
+      "id": "reasoningEffort",
+      "value": "xhigh"
+    }
+  ],
+  "frontendToolResults": "IMPLEMENTATION_BLOCKED: no supported return contract in pinned T3",
+  "homeUat": "NOT_RUN",
+  "checks": [
+    {
+      "kind": "explicit-single-read-permission",
+      "runId": "498c74eb-c194-4294-8eec-83e4f941a892",
+      "requestId": "runtime-request:provider:codex:provider-turn:provider-turn%3Aprovider%3Acodex%3Anative-turn%3A01a20c12-c7e1-71d1-a079-f34b02c8b5c6:native-request:exec-9783f94e-1821-43b7-8421-5d0b355eef37:abb5738c-b86f-4f71-8481-874a9c5859a3",
+      "decision": "accept",
+      "scope": "one fixture read only; no session-wide permission"
+    },
+    {
+      "kind": "read-tool-and-native-feed",
+      "runId": "498c74eb-c194-4294-8eec-83e4f941a892",
+      "threadId": "mcp:launch:e8bb2e1ce3014d08815da3a9c23c1084f3a362c90c1a1279aca6ec3b56ac62d1",
+      "providerRunId": "run:thread:mcp%3Alaunch%3Ae8bb2e1ce3014d08815da3a9c23c1084f3a362c90c1a1279aca6ec3b56ac62d1:ordinal:1",
+      "status": "completed",
+      "executedModel": "gpt-6.1-sol",
+      "providerAttempts": [
+        {
+          "id": "run-attempt:run:run%3Athread%3Amcp%253Alaunch%253Ae8bb2e1ce3014d08815da3a9c23c1084f3a362c90c1a1279aca6ec3b56ac62d1%3Aordinal%3A1:attempt:1",
+          "providerThreadId": "provider-thread:provider:codex:native-thread:pending%3Arun%3Athread%3Amcp%253Alaunch%253Ae8bb2e1ce3014d08815da3a9c23c1084f3a362c90c1a1279aca6ec3b56ac62d1%3Aordinal%3A1",
+          "providerTurnId": null,
+          "providerInstanceId": "codex",
+          "status": "completed"
+        }
+      ],
+      "replyMarkerObserved": true,
+      "toolResults": 2,
+      "eventTypes": [
+        "RUN_STARTED",
+        "TOOL_CALL_START",
+        "TOOL_CALL_ARGS",
+        "TOOL_CALL_END",
+        "TOOL_CALL_RESULT",
+        "MESSAGES_SNAPSHOT",
+        "CUSTOM",
+        "STATE_SNAPSHOT",
+        "TEXT_MESSAGE_START",
+        "TEXT_MESSAGE_CONTENT",
+        "TEXT_MESSAGE_END",
+        "STATE_DELTA",
+        "RUN_FINISHED"
+      ],
+      "idempotentReconcile": true
+    },
+    {
+      "kind": "actual-stop-and-explicit-reconnect",
+      "runId": "1657c161-045b-437e-b132-19f2cc55689b",
+      "threadId": "mcp:launch:e2bddc97bb826d4db9391a0bd69bba4b17ae4ce60aec4300487d7a8ef566385f",
+      "providerRunId": "run:thread:mcp%3Alaunch%3Ae2bddc97bb826d4db9391a0bd69bba4b17ae4ce60aec4300487d7a8ef566385f:ordinal:1",
+      "status": "interrupted",
+      "stopAcknowledgement": {
+        "status": "interrupt_requested",
+        "at": "2026-11-24T05:41:45.676Z"
+      },
+      "identityPreserved": true,
+      "runCount": 2,
+      "partialMessageCount": 1
+    }
+  ]
+}

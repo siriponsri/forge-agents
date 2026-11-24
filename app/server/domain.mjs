@@ -62,6 +62,7 @@ export async function command(store,input){
         s[collection].push(x);
       }else if(['update','save','restore'].includes(action)){
         x=find(s,collection,input.id,kind==='project'?null:input.projectId); revision(x,input.expectedRevision);
+        if(kind==='skill'&&(x.provenance?.kind==='adaptive.candidate'||x.status==='retired'))fail('ADAPTIVE_REVIEW_REQUIRED','Use reviewed adaptive promotion or rollback for this versioned skill',409);
         if(['document','report'].includes(kind)){
           x.history.push({revision:x.revision,snapshot:structuredClone(x.snapshot),spec:structuredClone(x.spec),summary:data.summary??action,actor:data.actor??'user',at:now()});
         }

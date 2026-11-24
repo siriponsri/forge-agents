@@ -3,6 +3,27 @@
 This is a coverage map, not a completion declaration. **IMPLEMENTATION_INCOMPLETE**;
 all home checks **HOME_UAT_NOT_RUN**. Paths below are repository-relative.
 
+Latest integrated evidence supersedes the earlier baseline rows below:
+
+| Criteria | Current implementation and verification |
+|---|---|
+| A02/A03 | Lead combined persistent GUI/native office/TH-EN flows pass;15 named VS Code themes with reload/restart and responsive checks pass; landing real screenshot/downloads pass |
+| A12/A13 |09fc17e/0cd8cce: actual Windows weighted LitServe REST/MCP, selected artifact hashes, GUI setup/start/health/predict/result download/stop/restart pass. Authenticated transport/arbitrary local framework loaders missing |
+| A14/A15/A20 |998762d/bd0f7be: verified local/Drive adapter, routing, explicit conflicts, file-granular resume, retention, native/report artifact bundle restore. Lead local GUI two backups/new-project restore/remapped native resource IDs passes. Drive live NOT_RUN; distributed deletion leases not claimed |
+| A16/A17 | Workerfd10045:10 tests pass incl actual selected-window native Windows and owned Chromium with effective Stop/Take over. Guest authenticated protocol fixture passes; real VM NOT_RUN. Lead routes/GUI/packaging pending |
+| A19/A20 | Clean downloaded Windows archive npm ci/build/start/occupied-port/restart/stop pass, separate GUI flows pass. Browser auto-open suppressed in fixture; Mac execution NOT_RUN; main not advanced |
+| A21/A22 |86515ae actual native T3 feed tool args/result, message/state corrections, durable receipts, attempt-scoped stop/reconnect passed live. Lead HTTP display cursor/domain-delta fixture passes. Arbitrary frontend result return BLOCKED by pinned T3 contract, capability false409; no plain text imitation |
+| A23/A24 | Lead real Sheets/Docs, formula, human/agent live undo/redo, stale conflict/save/reopen/restart pass. Inbound autonomous T3/MCP edit bridge and persistent embedded drawing acquisition/insertion still missing |
+| A25/A26/A27/A28 | Real Windows native report suite and no-code acquisition pass. Lead GUI uploaded figure + selected saved Sheets values -> DOCX/PDF -> decoded PNG preview/download/rotation passes; hashed Tahoma Thai/English layout/search/strict failure evidence retained |
+| A30 | Reviewed Docs-text/Sheets-range projection freezes native revision/hash, explicitly discloses scalar/formula/style/image limits. Native editing independent. Optional Exchange/LibreOffice/rich round trip not enabled |
+
+Adaptive and remote compute implementations are active isolated worker tasks;
+do not mark them integrated before lead review and GUI checks. A01/A04/A07/A08
+unified T3 shell, provider-backed chat/per-provider setup, complete MCP setup and
+remaining Office capability gaps still apply. Latest evidence: docs/evidence and
+docs/worker-{protocol,serving,storage,desktop}.md. Older rows remain historical
+baseline observations, not a second current implementation assessment.
+
 | Criteria | Implementation coverage | Developer evidence / remaining work |
 |---|---|---|
 | A00 | Implemented preservation boundary | efcd132 inspected; scoped integration commits, protected legacy files untouched; AO fixtures pass |

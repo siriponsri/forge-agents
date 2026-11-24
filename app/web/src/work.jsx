@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Play, Square, ExternalLink } from "lucide-react";
 import { date, operationId, request, runEvents, scoped } from "./api.mjs";
 import {
@@ -665,6 +665,12 @@ export function Planning(props) {
 
 export function Run({ runRecord: r, t, run, busy }) {
   const [events, setEvents] = useState(null);
+  const [live,setLive]=useState(false),[recovery,setRecovery]=useState(null),stream=useRef(null),cursor=useRef(0);
+  useEffect(()=>()=>stream.current?.close(),[r.id]);
+  const watch=()=>{stream.current?.close();if(cursor.current===0)setEvents([]);setLive(true);const source=new EventSource(`/api/runs/${encodeURIComponent(r.id)}/stream?afterSequence=${cursor.current}`);stream.current=source;
+    source.addEventListener('agui',message=>{const record=JSON.parse(message.data);if(record.sequence<=cursor.current)return;cursor.current=record.sequence;setEvents(rows=>[...(rows??[]),record.event]);});
+    source.onerror=()=>{source.close();setLive(false);};
+  };
   return (
     <article className="run">
       <div className="record-head">
@@ -679,12 +685,17 @@ export function Run({ runRecord: r, t, run, busy }) {
         {date(r.createdAt)} · {t("โปรไฟล์", "Profile")} r
         {r.profileRevision ?? "—"}
       </small>
+      <p>{t('การสังเกต','Observation')}: {r.connection?.status??'not connected'}{r.stopRequest&&<> · {t('คำขอหยุด','Stop request')}: {r.stopRequest.status}</>}</p>
       {r.error && (
         <p className="error-text">
           {typeof r.error === "string" ? r.error : r.error.message}
         </p>
       )}
       <div className="actions">
+        <button disabled={live} onClick={watch}>{t('ดูเหตุการณ์สด','Watch live events')}</button>
+        <button disabled={busy} onClick={()=>run(async()=>{stream.current?.close();setLive(false);return request(`/api/runs/${r.id}/disconnect`,{});})}>{t('ตัดการสังเกต (ไม่หยุดงาน)','Detach observation (keeps execution)')}</button>
+        <button disabled={busy} onClick={()=>run(async()=>{const result=await request(`/api/runs/${r.id}/reconnect`,{});watch();return result;})}>{t('เชื่อมการสังเกตเดิมอีกครั้ง','Reconnect existing observation')}</button>
+        <button onClick={()=>run(async()=>{const result=await request(`/api/runs/${r.id}/recovery`);setRecovery(result);return result;})}>{t('ตรวจ snapshot สำหรับกู้คืน','Read recovery snapshot')}</button>
         <button
           disabled={busy}
           onClick={() =>
@@ -712,6 +723,7 @@ export function Run({ runRecord: r, t, run, busy }) {
           onClick={() =>
             run(async () => {
               const result = await runEvents(r.id);
+              stream.current?.close();setLive(false);cursor.current=0;
               setEvents(Array.isArray(result) ? result : result.events || []);
               return result;
             })
@@ -726,6 +738,11 @@ export function Run({ runRecord: r, t, run, busy }) {
           </a>
         )}
       </div>
+      {recovery&&<details open><summary>{t('Snapshot จากข้อมูลที่บันทึก','Persisted recovery snapshot')}</summary><Json value={recovery}/></details>}
+      {r.protocolMessages?.filter(message=>message.role==='assistant').map(message=><p className="message" key={message.id} style={{whiteSpace:'pre-wrap'}}>{typeof message.content==='string'?message.content:''}</p>)}
+      {Object.values(r.toolObservations??{}).map(tool=><div className="run" key={tool.id??tool.toolCallId}><strong>{tool.name??tool.toolCallName??tool.id}</strong> <Badge>{tool.status??'observed'}</Badge><details><summary>{t('อาร์กิวเมนต์และผลที่สังเกตได้','Observed arguments & result')}</summary><Json value={tool}/></details></div>)}
+      {r.pendingInputs?.map(input=><form key={input.requestId} className="panel" onSubmit={event=>{event.preventDefault();const data=new FormData(event.currentTarget);run(()=>request(`/api/runs/${r.id}/input`,{operationId:operationId(),requestId:input.requestId,answers:Object.fromEntries(data)}));}}><h3>{t('คำถามจากการรันนี้','Question from this run')}</h3>{input.questions?.map(question=><Field key={question.id} label={question.question??question.header??question.id}><input required name={question.id}/></Field>)}<Submit busy={busy}>{t('ส่งคำตอบสำหรับคำถามนี้','Answer this question')}</Submit></form>)}
+      {r.pendingApprovals?.map(input=><section className="panel" key={input.requestId}><h3>{t('คำขอสิทธิ์จากการรันนี้','Permission requested by this run')}</h3><p>{input.prompt??input.reason??input.requestKind}</p><div className="actions">{[['accept','อนุญาตครั้งนี้','Allow once'],['decline','ปฏิเสธ','Decline'],['cancel','ยกเลิกคำขอ','Cancel request']].map(([decision,th,en])=><button key={decision} disabled={busy} onClick={()=>run(()=>request(`/api/runs/${r.id}/approval`,{operationId:operationId(),requestId:input.requestId,decision}))}>{t(th,en)}</button>)}</div></section>)}
       {events && (
         <ol className="event-list">
           {events.map((e, i) => (

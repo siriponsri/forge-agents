@@ -29,6 +29,7 @@ import {
 import Office from "./Office.jsx";
 import Reports from "./Reports.jsx";
 import Serving from './Serving.jsx';
+import Storage from './Storage.jsx';
 import Overview from './Overview.jsx';
 import ThemePicker from './ThemePicker.jsx';
 import { DEFAULT_THEME, getTheme } from './themes.mjs';
@@ -150,6 +151,7 @@ export default function App() {
     ["office", FileSpreadsheet, "เอกสารและตาราง", "Docs & sheets"],
     ["reports", FileText, "รายงาน", "Report Studio"],
     ["artifacts", Files, "ไฟล์และผลลัพธ์", "Artifacts"],
+    ['storage',Files,'จัดเก็บและกู้คืน','Storage & recovery'],
     ["monitor", Activity, "ติดตามการทำงาน", "Monitor"],
     ["settings", Settings, "ตั้งค่าโครงการ", "Settings"],
   ];
@@ -327,6 +329,7 @@ export default function App() {
               )}{" "}
               {page === "reports" && <Reports key={projectId} {...props} />}{" "}
               {page === 'serving' && <Serving key={projectId} {...props}/>}
+              {page === 'storage' && <Storage key={projectId} {...props}/>}
               {page === "artifacts" && <Artifacts {...props} />}{" "}
               {page === "monitor" && <Monitoring {...props} />}{" "}
               {page === "settings" && (

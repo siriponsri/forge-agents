@@ -2,6 +2,14 @@
 
 ## Active assignments — 2026-11-24
 
+Current continuation: SERVE-01 integrated09fc17e/0cd8cce and lead real GUI PASSED;
+STORE-01 integrated998762d/bd0f7be, lead local GUI backup/restore PASSED;
+PROTO-01 integrated86515ae, worker actual provider lifecycle and lead HTTP projection
+PASSED. Desktop workerfd10045 completed (native/browser actual10/10); lead GUI
+integration next. Adaptive worker and remote-compute worker are RUNNING in their
+own worktrees. `git worktree list` is authoritative for absolute paths. Lead and
+all workers remain gpt-6.1-sol/reasoningEffort=xhigh. No push/main advancement.
+
 ### Owner UI/landing additions (latest steering)
 
 | Task | Owner | Executable scope | State |

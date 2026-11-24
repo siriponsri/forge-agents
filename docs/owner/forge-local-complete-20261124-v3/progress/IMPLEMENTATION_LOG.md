@@ -1,5 +1,25 @@
 # Implementation Log
 
+## Serving, storage and native protocol integration — 2026-11-24
+
+- Serving40bf879 ->09fc17e; lead0cd8cce HTTP/GUI. Real weighted Windows LitServe
+  REST/MCP GUI, measured latency, result hashes, owned stop/restart passed.
+  Detached existing endpoint metadata never kills its remote server (contract test).
+- Storageef47cdc ->998762d. Leadbd0f7be adds HTTP/OAuth callback and shutdown
+  cancellation;20 storage/shutdown tests pass incl staged resume after service close.
+  Lead local GUI two complete backups, manifest-selected independent restore,
+  identical downloaded bytes, native resource remap and retention preview pass.
+- Protocol4e6d9fe ->86515ae. Actual native read/tool/stream/state and interrupt/
+  reconnect evidence preserved; lead startup recovery, live SSE display cursors,
+  domain projection subscription, question/permission routes and Run controls added.
+  HTTP fixture validates live domain deltas and unsupported frontend result409.
+- Integration found ended-SSE write during shutdown; send/heartbeat now guard
+  ended/destroyed response and unsubscribe on response close. Regression passes.
+- Native/browser workerfd10045 passed actual owned Windows and Chromium10/10;
+  real guest NOT_RUN. Lead integration next, followed by adaptive and compute workers.
+  Missing provider/chat/MCP/Office implementation and frontend-result contract gap
+  remain explicitly incomplete; independent work continues, no product/main release.
+
 ## Integrated visual, landing and launcher checkpoint — 2026-11-24
 
 - Lead added no-code browser uploads, bounded saved Sheets range/Docs-text import,
