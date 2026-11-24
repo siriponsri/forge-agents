@@ -20,6 +20,21 @@
 7. ปิดระบบด้วย `Stop-FORGE.cmd`; เริ่มใหม่ด้วย `Restart-FORGE.cmd`
    ปิด browser อย่างเดียวไม่ใช่การหยุด service
 
+## Landing และ macOS launcher (งานเพิ่มล่าสุด)
+
+หน้าแนะนำผลิตภัณฑ์อยู่ที่ `/welcome` และ workbench ที่ `/app` ปุ่มดาวน์โหลดเป็น
+source+launcher ZIP ของ commit ที่แสดง พร้อม SHA256 ไม่ใช่ signed EXE/DMG.
+สำหรับ macOS เปิด `Start-FORGE.command`, ปิด/เริ่มใหม่ด้วยไฟล์ .command คู่กัน
+ติดตั้ง Node.js24.13+ ก่อนใช้งาน ข้อมูลอยู่ที่
+`~/Library/Application Support/FORGE/workbench`.
+**macOS live qualification NOT_RUN**; native report-engine binaries ในรอบนี้
+ตรวจจริงเฉพาะ Windows x64 ส่วน GUI/native snapshot editing ไม่ต้องพึ่ง engine.
+
+Windows clean-package check: source ZIP จาก d23560b แตกลง temp directory ใหม่
+ที่มีช่องว่าง ไม่มี node_modules/build เดิม ตัวช่วย npm ci/build/start/restart/stop
+ผ่านบน Node24.19.0. Browser auto-open ถูกปิดไว้สำหรับ engineering fixture;
+browser UI ตรวจด้วย Preview/Playwright แยก. ต้องตรวจซ้ำกับ UI/theme revision ใหม่.
+
 ข้อมูลถาวรค่าเริ่มต้นอยู่ที่ `%LOCALAPPDATA%/FORGE/workbench` แยกจาก source/build
 และจาก legacy portable package. มี SQLite, report settings, engines, outputs และ
 logs ภายในตำแหน่งนี้ ห้ามส่งทั้ง directory เข้า Git หรือย้าย credentials ไปบ้าน

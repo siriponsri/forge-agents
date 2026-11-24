@@ -33,9 +33,11 @@ test('durable revisions, isolated projects, replay safety and evidence-backed bo
   const task=(await command(store,op('task.create',project.id,{title:'Inspect durable file',planId:plan.id,botId:bot.id}))).entity;
   await assert.rejects(command(store,op('task.update',project.id,{status:'done'},{id:task.id,expectedRevision:1})),{code:'EVIDENCE_REQUIRED'});
   const done=await command(store,op('task.update',project.id,{status:'done',evidence:['fixture test result']},{id:task.id,expectedRevision:1}));assert.equal(done.entity.status,'done');
+  await command(store,op('settings.update',null,{theme:'monokai'}));
+  await assert.rejects(command(store,op('settings.update',null,{theme:'invalid theme()'})),{code:'VALIDATION'});
   await store.close();store=await openStore(dir);
   assert.equal(store.read().documents[0].revision,3);assert.equal(store.read().bots[0].name,'Reviewer');assert.equal(store.read().conversations[0].messages[0].text,message.data.text);
-  assert.equal(store.read().projects.length,2);await store.close();
+  assert.equal(store.read().projects.length,2);assert.equal(store.read().settings.theme,'monokai');await store.close();
 });
 
 test('atomic rollback and serialized writers keep last acknowledged data',async()=>{

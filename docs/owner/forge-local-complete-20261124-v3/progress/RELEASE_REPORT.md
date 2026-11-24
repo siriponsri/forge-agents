@@ -1,4 +1,33 @@
-# Release Report — Initial Template
+# Release Report — Development checkpoint
+
+## Observed status — 2026-11-24
+
+**IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN**. Integration branch only;
+no main advancement, remote push, public hosting or product prototype activation.
+Source remote inspected: https://github.com/siriponsri/forge-agents.
+Current product package version1.1.0-alpha.3; release revision not selected.
+
+Developer evidence: npm build/check/test; combined browser core flow/office
+restart/conflict/undo; actual isolated T3 Codex run; actual WordCraft0.18.1 and
+PdfCraft0.22.0 Windows native report generation/strict failure/preview/rotation/
+download/stop; explicit native acquisition API tests by worker B. Sanitized evidence
+in repository-root docs/evidence; detailed worker commands in docs/worker-ui.md and
+docs/worker-reports.md. Optional real tests are separate from ordinary fixture tests.
+
+Clean Windows downloaded ZIP d23560b: npm ci from lockfile installed241 packages,
+build passed, localhost readiness passed, busy-port fallback passed, restart/stop
+passed, data outside source. No .git or developer node_modules needed at startup.
+Auto-opening a system browser was suppressed in this disposable fixture.
+
+Owner additions in progress: redesigned Overview/workbench, persisted named VS Code
+themes (Dark Modern default), reference-inspired landing, Windows/macOS ZIP download
+API with commit/hash and actual .cmd/.command launchers. macOS actual platform
+qualification remains NOT_RUN. Pinned native report profiles remain Windows-only.
+
+Required product gaps remain in ACCEPTANCE_EVIDENCE/INTEGRATION_LEDGER; do not call
+this READY_FOR_HOME_UAT or advance main merely because local core checks passed.
+
+## Original release checklist (historical template below)
 
 State: **NO APPLICATION RELEASE PREPARED OR PUSHED BY THIS HANDOFF**.
 
