@@ -1,0 +1,176 @@
+{
+  "observedAt": "2026-11-24",
+  "method": "public GitHub commit API and pinned raw source inspection; no private credentials",
+  "components": [
+    {
+      "repository": "https://github.com/mem0ai/mem0",
+      "commit": "f93aba4b53241ccd9db32903cd19d1ff7f0066f0",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "LICENSE",
+          "url": "https://raw.githubusercontent.com/mem0ai/mem0/f93aba4b53241ccd9db32903cd19d1ff7f0066f0/LICENSE",
+          "sha256": "0bbcbe931c353293a2fafce08326181dfeea0e568c566afd4ce8337a70f5e219",
+          "bytes": 11349
+        },
+        {
+          "path": "pyproject.toml",
+          "url": "https://raw.githubusercontent.com/mem0ai/mem0/f93aba4b53241ccd9db32903cd19d1ff7f0066f0/pyproject.toml",
+          "sha256": "d4bc078a05cc7b9d677bbf4d0b262cfc532495b5aadeded053ac84fd90b6e974",
+          "bytes": 3394
+        },
+        {
+          "path": "mem0/memory/main.py",
+          "url": "https://raw.githubusercontent.com/mem0ai/mem0/f93aba4b53241ccd9db32903cd19d1ff7f0066f0/mem0/memory/main.py",
+          "sha256": "e37b2775aafbc654113cb643dae2a8a9cf299d2e7eee29904f1ed212f89aa570",
+          "bytes": 170171
+        },
+        {
+          "path": "mem0/utils/factory.py",
+          "url": "https://raw.githubusercontent.com/mem0ai/mem0/f93aba4b53241ccd9db32903cd19d1ff7f0066f0/mem0/utils/factory.py",
+          "sha256": "b7883d7c48264eeac449e3696ad90d96db4ae6d3404e886c8dfc930d0843d02d",
+          "bytes": 12514
+        },
+        {
+          "path": "mem0/vector_stores/qdrant.py",
+          "url": "https://raw.githubusercontent.com/mem0ai/mem0/f93aba4b53241ccd9db32903cd19d1ff7f0066f0/mem0/vector_stores/qdrant.py",
+          "sha256": "8bfa2b87440a12d814a0f7ee0a4a5fe2ad75ee4e9bbff644e9eb6f2ef8d34802",
+          "bytes": 27865
+        },
+        {
+          "path": "mem0/embeddings/ollama.py",
+          "url": "https://raw.githubusercontent.com/mem0ai/mem0/f93aba4b53241ccd9db32903cd19d1ff7f0066f0/mem0/embeddings/ollama.py",
+          "sha256": "94257bb2e73d82e5fd0f0b0bb1f4b2f4e7886a2e4068e88beec5d1872469b3bb",
+          "bytes": 2550
+        }
+      ]
+    },
+    {
+      "repository": "https://github.com/getzep/graphiti",
+      "commit": "a61333edfa14cc483365ed7dd1e287ae6096db6c",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "LICENSE",
+          "url": "https://raw.githubusercontent.com/getzep/graphiti/a61333edfa14cc483365ed7dd1e287ae6096db6c/LICENSE",
+          "sha256": "2825300b20d7b951209835a4a331f29e24725a39d65168e4b831df53aa372650",
+          "bytes": 11325
+        },
+        {
+          "path": "pyproject.toml",
+          "url": "https://raw.githubusercontent.com/getzep/graphiti/a61333edfa14cc483365ed7dd1e287ae6096db6c/pyproject.toml",
+          "sha256": "93ea53514f31a2db16ef78c535e41c567c6a40aff4cecd0e8f97449de244a088",
+          "bytes": 3078
+        },
+        {
+          "path": "graphiti_core/graphiti.py",
+          "url": "https://raw.githubusercontent.com/getzep/graphiti/a61333edfa14cc483365ed7dd1e287ae6096db6c/graphiti_core/graphiti.py",
+          "sha256": "da1095cfaf887b483e573360183df38dda8dfa68cdf26ed891577143fa72964e",
+          "bytes": 116361
+        }
+      ]
+    },
+    {
+      "repository": "https://github.com/letta-ai/letta",
+      "commit": "8816d3a8516893bfdc0fa14bfb1235226012e295",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "LICENSE",
+          "url": "https://raw.githubusercontent.com/letta-ai/letta/8816d3a8516893bfdc0fa14bfb1235226012e295/LICENSE",
+          "sha256": "984c6db99fc6609803108dfc196762118662cd94b82a456dd9217583f18f3612",
+          "bytes": 10759
+        },
+        {
+          "path": "pyproject.toml",
+          "error": "HTTP Error 404: Not Found"
+        },
+        {
+          "path": "letta/schemas/block.py",
+          "error": "HTTP Error 404: Not Found"
+        },
+        {
+          "path": "letta/services/block_manager.py",
+          "error": "HTTP Error 404: Not Found"
+        }
+      ]
+    },
+    {
+      "repository": "https://github.com/qdrant/qdrant",
+      "commit": "23065a0bf6857c3e5da45f6c8939cc746cc0580e",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "LICENSE",
+          "url": "https://raw.githubusercontent.com/qdrant/qdrant/23065a0bf6857c3e5da45f6c8939cc746cc0580e/LICENSE",
+          "sha256": "210b508429e913d9de5301f90508bc2cbf5b2281de5b45e607c04d58f0f3bd8f",
+          "bytes": 11351
+        },
+        {
+          "path": "Cargo.toml",
+          "url": "https://raw.githubusercontent.com/qdrant/qdrant/23065a0bf6857c3e5da45f6c8939cc746cc0580e/Cargo.toml",
+          "sha256": "3c903757f5f5000ba7b74416742575880a2b5b36d07967b064d5c2d3efcab400",
+          "bytes": 14270
+        }
+      ]
+    },
+    {
+      "repository": "https://github.com/deepseek-ai/deepseek-harness",
+      "commit": "4b399c39a6d1479cd84ca591b4d7c88e24d38a96",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "LICENSE",
+          "url": "https://raw.githubusercontent.com/deepseek-ai/deepseek-harness/4b399c39a6d1479cd84ca591b4d7c88e24d38a96/LICENSE",
+          "sha256": "ebb4f09972aee8608be255debaf78451a68e95c290f55c240dec2ecfa16ea6be",
+          "bytes": 1065
+        },
+        {
+          "path": "SAFETY.md",
+          "url": "https://raw.githubusercontent.com/deepseek-ai/deepseek-harness/4b399c39a6d1479cd84ca591b4d7c88e24d38a96/SAFETY.md",
+          "sha256": "62075bb51e0f7790441e7722ff12063107b4866019332e71ef01b63b6f880fee",
+          "bytes": 1673
+        },
+        {
+          "path": "package.json",
+          "url": "https://raw.githubusercontent.com/deepseek-ai/deepseek-harness/4b399c39a6d1479cd84ca591b4d7c88e24d38a96/package.json",
+          "sha256": "56a33c6e5708aa446f8a97cadcd058387318a51c1c8df6ad25188320eb8f8872",
+          "bytes": 21374
+        }
+      ]
+    },
+    {
+      "repository": "https://github.com/letta-ai/letta",
+      "commit": "56ba9c25552605eec89de8ed3dc6394b625c1993",
+      "branch": "archive",
+      "purpose": "Historical shared block architecture only; current default branch redirects to letta-code; no runtime reuse",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "letta/schemas/block.py",
+          "url": "https://raw.githubusercontent.com/letta-ai/letta/56ba9c25552605eec89de8ed3dc6394b625c1993/letta/schemas/block.py",
+          "sha256": "db805da329a276532510d9586c85adb49fb36e550da09584dc70d18a927e8f88",
+          "bytes": 8238
+        },
+        {
+          "path": "letta/services/block_manager.py",
+          "url": "https://raw.githubusercontent.com/letta-ai/letta/56ba9c25552605eec89de8ed3dc6394b625c1993/letta/services/block_manager.py",
+          "sha256": "c6d7fcec90c9108cb80414285f68609cc420f22044c9bd67ebf9300bdec136b3",
+          "bytes": 47301
+        },
+        {
+          "path": "pyproject.toml",
+          "url": "https://raw.githubusercontent.com/letta-ai/letta/56ba9c25552605eec89de8ed3dc6394b625c1993/pyproject.toml",
+          "sha256": "ba86147a334a4900962b260d1912e263e011e8698377327b9f1a8fd943540c3e",
+          "bytes": 5409
+        },
+        {
+          "path": "LICENSE",
+          "url": "https://raw.githubusercontent.com/letta-ai/letta/56ba9c25552605eec89de8ed3dc6394b625c1993/LICENSE",
+          "sha256": "984c6db99fc6609803108dfc196762118662cd94b82a456dd9217583f18f3612",
+          "bytes": 10759
+        }
+      ]
+    }
+  ]
+}

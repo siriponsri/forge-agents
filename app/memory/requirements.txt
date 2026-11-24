@@ -1,0 +1,6 @@
+# Optional isolated backend only; no root runtime dependency.
+# Qualification pins checked against PyPI/upstream on 2026-11-24.
+-c requirements-lock.txt
+mem0ai==2.2.1
+qdrant-client==1.20.0
+ollama==0.6.1
