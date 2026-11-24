@@ -18,7 +18,7 @@ test('shutdown closes active SSE and incomplete HTTP sockets, then reopens durab
   await new Promise(resolve=>socket.once('connect',resolve));
   // A preconnected browser socket with no complete request is not an SSE client.
   socket.write('GET /api/health HTTP/1.1\r\nHost: 127.0.0.1\r\n');
-  await app.close();
+  await Promise.all([app.close(),app.close()]);
   await reader.cancel().catch(()=>{});
   app=await createApplication({dataDir,port});
   assert.equal(app.store.read().settings.theme,'monokai');

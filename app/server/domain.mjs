@@ -63,6 +63,11 @@ export async function command(store,input){
       }else if(['update','save','restore'].includes(action)){
         x=find(s,collection,input.id,kind==='project'?null:input.projectId); revision(x,input.expectedRevision);
         if(kind==='skill'&&(x.provenance?.kind==='adaptive.candidate'||x.status==='retired'))fail('ADAPTIVE_REVIEW_REQUIRED','Use reviewed adaptive promotion or rollback for this versioned skill',409);
+        if(kind==='document'&&data.actor?.kind==='agent'){
+          const actor=data.actor;find(s,'bots',actor.botId,input.projectId);
+          if(actor.taskId)find(s,'tasks',actor.taskId,input.projectId);
+          if(actor.runId){const run=find(s,'runs',actor.runId,input.projectId);if(run.botId!==actor.botId||run.taskId!==actor.taskId||run.attemptId!==actor.attemptId)fail('SCOPE','Agent edit does not match its run/task/attempt',403);}
+        }
         if(['document','report'].includes(kind)){
           x.history.push({revision:x.revision,snapshot:structuredClone(x.snapshot),spec:structuredClone(x.spec),summary:data.summary??action,actor:data.actor??'user',at:now()});
         }
@@ -80,6 +85,7 @@ export async function command(store,input){
       }else fail('UNKNOWN_COMMAND',type);
     }
     const receipt={operationId,type,entityId:x.id,revision:x.revision,outcome:'applied',at:now()};
+    if(type==='document.save')Object.assign(receipt,{projectId:input.projectId,baseRevision:input.expectedRevision,actor:structuredClone(data.actor??{kind:'human'}),operation:structuredClone(data.operation??data.edit??null)});
     const result={receipt,entity:structuredClone(x),stateRevision:s.revision+1};
     s.receipts.push({operationId,fingerprint,result});
     s.events.push(entity({type,projectId:input.projectId,entityId:x.id,revision:x.revision}));

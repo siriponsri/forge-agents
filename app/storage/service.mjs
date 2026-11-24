@@ -381,7 +381,7 @@ export async function createStorageService({ dataDir, store, artifacts, vault, e
       if (!Number.isInteger(keepLast) || keepLast < 1 || keepLast > 10000) fail('VALIDATION', 'Keep at least one revision');
       const job = await reserve('retention', input, { destinationId: input.destinationId });
       if (job.replayed) return job;
-      return guarded(job, async () => {
+      return single(job.id,()=>guarded(job, async () => {
         const adapter = await adapterFor(input.projectId, input.destinationId), head = await readHead(adapter, input.projectId);
         // Never delete from an ambiguous branch, even when acknowledged; first create an explicitly merged backup.
         if (head.conflicted) fail('DESTINATION_CONFLICT', 'Resolve destination forks before retention', 409, { currentHead: head.token, heads: head.heads });
@@ -414,7 +414,7 @@ export async function createStorageService({ dataDir, store, artifacts, vault, e
           }
         }
         return update(job.id, { status: 'completed', deletedBundleIds: input.dryRun === false ? candidates : [], finishedAt: now() });
-      });
+      }));
     },
     beginDriveAuth: input => auth.begin(input),
     finishDriveAuth: input => auth.finish(input),

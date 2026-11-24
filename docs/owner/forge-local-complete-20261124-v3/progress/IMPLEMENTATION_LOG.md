@@ -1,5 +1,15 @@
 # Implementation Log
 
+- Desktopfd10045 ->16ae6c9; lead added actual target setup/readiness/window/lease/
+  action/Stop/Take over GUI, hash-verified common screenshot downloads, explicit
+  screenshot owner capture in complete bundles and workspace-owned restore. Pinned
+  Playwright moved to runtime dependencies; audit0 vulnerabilities. Lead GUI actual
+  owned Chromium and UUID/PID-selected native window passed text/click/inspect/PNG,
+  blocked-click Stop unknown, and in-flight native wait Take over cancelled. Guest
+  live remains NOT_RUN. Screenshot backup/restore downloaded correct PNG bytes.
+  Source checks and22 desktop/storage/shutdown regression tests passed before GUI.
+  Adaptive272bcca and compute0b1ccd6 completed in isolated worktrees, integration next.
+
 ## Serving, storage and native protocol integration — 2026-11-24
 
 - Serving40bf879 ->09fc17e; lead0cd8cce HTTP/GUI. Real weighted Windows LitServe

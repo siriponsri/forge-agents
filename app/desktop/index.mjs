@@ -160,7 +160,7 @@ export function createDesktopService({ dataDir, store, driverFactories = {} }) {
           const png = Buffer.from(result.png); if (png.length > 6 * 1024 * 1024) throw fault('ARTIFACT_LIMIT', 'Screenshot exceeds 6 MiB limit');
           const artifactId = randomUUID(); await mkdir(path.join(root, 'screenshots'), { recursive: true });
           await writeFile(path.join(root, 'screenshots', `${artifactId}.png`), png, { mode: 0o600 });
-          const artifact = { id: artifactId, projectId: target.projectId, targetId: target.id, attemptId: input.attemptId, name: 'Desktop screenshot.png', type: 'desktop-screenshot', mimeType: 'image/png', size: png.length, sha256: hash(png), status: 'verified', createdAt: stamp() };
+          const artifact = { id: artifactId, revision:1,projectId: target.projectId, targetId: target.id, attemptId: input.attemptId, name: 'Desktop screenshot.png',kind:'desktop-screenshot', type: 'desktop-screenshot', mimeType: 'image/png',bytes:png.length, size: png.length, sha256: hash(png), status: 'verified', createdAt: stamp() };
           await store.transaction(s => { s.artifacts.push(artifact); });
           result = { artifactId, mimeType: 'image/png', size: artifact.size, sha256: artifact.sha256 };
         }

@@ -1,0 +1,18 @@
+{
+  "result": "PASSED",
+  "fixtureDir": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-desktop-gui-rvRGRQ",
+  "checks": [
+    "GUI target setup/readiness/window selection/lease",
+    "actual owned Chromium navigate/type/click/inspect",
+    "hash-verified screenshot preview/download",
+    "full screenshot artifact backup and independent restored download",
+    "375px responsive",
+    "Stop aborts dispatched blocked click, outcome unknown",
+    "actual selected owned HWND/PID native GUI text/click postconditions",
+    "native screenshot decoded",
+    "Take over cancels in-flight native wait"
+  ],
+  "native": "PASSED",
+  "guest": "NOT_RUN",
+  "homeUat": "NOT_RUN"
+}

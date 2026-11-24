@@ -20,6 +20,7 @@ import {createDownloadService} from './downloads.mjs';
 import {createOfficeService} from '../office/service.mjs';
 import {createServingService} from '../serving/service.mjs';
 import {createStorageService} from '../storage/service.mjs';
+import {createDesktopService} from '../desktop/index.mjs';
 export {defaultDataDir};
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const manifest=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
@@ -36,21 +37,24 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
   const office=createOfficeService({store});
   const serving=createServingService({store,dataDir,connections,artifacts});
   const storage=await createStorageService({store,dataDir,artifacts});
+  const desktop=createDesktopService({store,dataDir});
   await t3.recover();
   await jobs.recover();
   let reports;try{const mod=await import('../reports/service.mjs');reports=await mod.createReportService({store,dataDir});}catch(e){if(e.code!=='ERR_MODULE_NOT_FOUND')throw e;}
   let commit='unknown';try{commit=execFileSync('git',['rev-parse','--short','HEAD'],{cwd:root,encoding:'utf8',windowsHide:true}).trim();}catch{try{commit=JSON.parse(await readFile(path.join(root,'release-info.json'),'utf8')).commit.slice(0,7);}catch{}}
-  const clients=new Set();let closed=false,offProjection=()=>{},projectionPromise,projectionAgain=false;
-  const app={store,t3,jobs,connections,reports,serving,storage,server:null,url:null,async close(){
-    if(closed)return;closed=true;
+  const clients=new Set();let closed=false,closingPromise,offProjection=()=>{},projectionPromise,projectionAgain=false;
+  const app={store,t3,jobs,connections,reports,serving,storage,desktop,server:null,url:null,async close(){
+    if(closingPromise)return closingPromise;closed=true;
+    closingPromise=(async()=>{
     offProjection();await projectionPromise;
     // Stop accepting reconnects before closing SSE; browser retries must not keep
     // an application shutdown alive. Close only this server's HTTP connections.
     const stopped=new Promise(resolve=>app.server.close(resolve));
     for(const client of clients)client.end();
     app.server.closeAllConnections();
-    await storage.shutdown();await jobs.shutdown();await t3.shutdown();await serving.shutdown();await connections.close();await reports?.shutdown?.();
+    await desktop.shutdown();await storage.shutdown();await jobs.shutdown();await t3.shutdown();await serving.shutdown();await connections.close();await reports?.shutdown?.();
     await stopped;await store.close();
+    })();return closingPromise;
   }};
   const server=http.createServer(async(req,res)=>{
     try{
@@ -93,7 +97,8 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
       if(method==='GET'&&/^\/api\/artifacts\/[^/]+\/download$/.test(p)){
         const id=p.split('/')[3];const artifact=find(store.read(),'artifacts',id);
         const ownedReport=artifact.jobId&&store.read().jobs.some(j=>j.id===artifact.jobId&&j.owner==='reports');
-        const file=ownedReport&&reports?await reports.download(id):await artifacts.download(id);
+        const screen=artifact.type==='desktop-screenshot'&&!artifact.restoredFrom?await desktop.screenshot({projectId:artifact.projectId,targetId:artifact.targetId,artifactId:id}):null;
+        const file=screen?{path:screen.path,filename:artifact.name,contentType:screen.mimeType}:ownedReport&&reports?await reports.download(id):await artifacts.download(id);
         res.writeHead(200,{'Content-Type':file.contentType,'Content-Disposition':`inline; filename*=UTF-8''${encodeURIComponent(file.filename)}`,'X-Content-Type-Options':'nosniff'});createReadStream(file.path).pipe(res);return;
       }
       if(method==='POST'){
@@ -133,9 +138,15 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
         else if(p==='/api/storage/drive/folders')value=await storage.listDriveFolders(input);
         else if(p==='/api/storage/drive/folders/create')value=await storage.createDriveFolder(input);
         else if(p==='/api/storage/git')value=await gitStorage.run(input);
-        else if(p==='/api/desktop/acquire')value=await control.acquire(input);
-        else if(p==='/api/desktop/action')value=await control.action(input);
-        else if(p==='/api/desktop/stop')value=await control.stop(input);
+        else if(p==='/api/desktop/setup')value=await desktop.setup(input);
+        else if(p==='/api/desktop/health')value=await desktop.health(input);
+        else if(p==='/api/desktop/windows')value=await desktop.listWindows(input);
+        else if(p==='/api/desktop/install-browser')value=await desktop.installBrowser(input);
+        else if(p==='/api/desktop/acquire')value=await desktop.acquire(input);
+        else if(p==='/api/desktop/action')value=await desktop.action(input);
+        else if(p==='/api/desktop/stop')value=await desktop.stop(input);
+        else if(p==='/api/desktop/takeover')value=await desktop.takeover(input);
+        else if(p==='/api/desktop/release')value=await desktop.release(input);
         else if(p==='/api/skills/select')value=await control.select(input);
         else if(p==='/api/reports/configure'&&reports)value=await reports.configure(input);
         else if(p==='/api/reports/extract-document')value=office.extract(input);

@@ -13,6 +13,13 @@ evaluated target is `stablyai/orca` release `v1.4.204`, commit
 source, installer, binary, account data or runtime state is included here.
 # FORGE v3 workbench additions
 
+Playwright1.65.1 (Microsoft): Apache-2.0; runtime dependency for owned Chromium
+targets. Browser acquisition uses the pinned package installer and retains the
+downloaded browser's own notices. No owner browser profile is bundled.
+LitServe0.2.19 and FastMCP2.14.7: Apache-2.0; Python MCP1.30.0: MIT.
+Pinned isolated serving dependencies are in app/serving/requirements.txt; upstream
+provenance and qualified platform evidence are in docs/worker-serving.md.
+
 fflate0.8.3 (101arrowz/fflate), MIT: source archive generation, preserving Unix
 launcher permission attributes. Downloaded installations verify their source-file
 manifest before rebuilding packages without requiring a Git checkout.

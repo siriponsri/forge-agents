@@ -32,7 +32,8 @@ export async function filePlan(snapshot, projectId, artifactIds, { dataDir } = {
   const project = find(snapshot, 'projects', projectId), workspace = await realpath(project.workspace), files = new Map(), bindings = [];
   for (const artifact of snapshot.artifacts.filter(a => a.projectId === projectId && (!artifactIds || artifactIds.includes(a.id)))) {
     if (!/^[0-9a-f]{64}$/.test(artifact.sha256 ?? '') || artifact.status !== 'verified') fail('INTEGRITY', 'Every artifact must have a verified recorded checksum', 409);
-    const entries = [{ path: artifact.path, sha256: artifact.sha256, bytes: artifact.bytes, primary: true }, ...(artifact.companionFiles ?? []).map(x => typeof x === 'string' ? { path: x } : x)];
+    const desktopScreenshot=artifact.type==='desktop-screenshot'&&!artifact.restoredFrom;
+    const entries = [{ path:desktopScreenshot&&dataDir?path.join(dataDir,'desktop','screenshots',artifact.id+'.png'):artifact.path, sha256: artifact.sha256, bytes: artifact.bytes??artifact.size, primary: true }, ...(artifact.companionFiles ?? []).map(x => typeof x === 'string' ? { path: x } : x)];
     for (const entry of entries) {
       if (typeof entry.path !== 'string') fail('PATH_SCOPE', 'Artifact path is required', 403);
       const source = path.resolve(workspace, entry.path);
@@ -40,6 +41,10 @@ export async function filePlan(snapshot, projectId, artifactIds, { dataDir } = {
       if (inside(workspace, source)) {
         relative = safeRelative(path.relative(workspace, source).split(path.sep).join('/'));
         file = await scoped(workspace, relative);
+      } else if(desktopScreenshot){
+        const receipt=snapshot.receipts.find(r=>r.type==='desktop.action'&&r.result?.status==='completed'&&r.result.projectId===projectId&&r.result.targetId===artifact.targetId&&r.result.result?.artifactId===artifact.id);
+        if(!dataDir||!entry.primary||!receipt||source!==path.join(dataDir,'desktop','screenshots',artifact.id+'.png'))fail('PATH_SCOPE','Screenshot does not match an authoritative desktop action',403);
+        file=await scoped(dataDir,`desktop/screenshots/${artifact.id}.png`);relative=safeRelative(`.forge-artifacts/desktop/${artifact.id}.png`);
       } else {
         // Native Report Studio owns this one published root; credentials/config/staging remain excluded.
         // Require the authoritative report job membership, not a user-supplied arbitrary external path.
