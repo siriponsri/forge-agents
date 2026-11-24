@@ -13,6 +13,7 @@ import { createConnectionService, integrationCatalog } from './connections.mjs';
 import { createArtifactService } from './artifacts.mjs';
 import { createControlService } from './control.mjs';
 import { protocolEvents } from './agui.mjs';
+import { createCatalogService } from './catalog.mjs';
 const root=fileURLToPath(new URL('../../',import.meta.url));
 export const defaultDataDir=()=>process.env.FORGE_DATA_DIR??path.join(process.env.LOCALAPPDATA??path.join(os.homedir(),'.local','share'),'FORGE','workbench');
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2','.png':'image/png'};
@@ -22,6 +23,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
   await mkdir(dataDir,{recursive:true});const store=await openStore(dataDir);
   const jobs=createJobService({store,dataDir}),t3=createT3Service({store,dataDir}),connections=createConnectionService({store});
   const artifacts=createArtifactService({store,dataDir}),control=createControlService({store,connections});
+  const catalog=createCatalogService({load:()=>t3.catalog()});
   await jobs.recover();
   let reports;try{const mod=await import('../reports/service.mjs');reports=await mod.createReportService({store,dataDir});}catch(e){if(e.code!=='ERR_MODULE_NOT_FOUND')throw e;}
   let commit='unknown';try{commit=execFileSync('git',['rev-parse','--short','HEAD'],{cwd:root,encoding:'utf8',windowsHide:true}).trim();}catch{}
@@ -43,6 +45,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
       }
       if(method==='GET'&&/^\/api\/runs\/[^/]+\/events$/.test(p)){const id=p.split('/')[3];find(store.read(),'runs',id);res.writeHead(200,{'Content-Type':'text/event-stream','Cache-Control':'no-cache'});for(const event of protocolEvents(store.read(),id))res.write(`data: ${JSON.stringify(event)}\n\n`);return res.end();}
       if(method==='GET'&&p==='/api/t3/status')return json(res,t3.health());
+      if(method==='GET'&&p==='/api/t3/catalog')return json(res,catalog.read());
       if(method==='GET'&&p==='/api/reports/health')return json(res,reports?await reports.health():{status:'implementation_pending'});
       if(method==='GET'&&/^\/api\/reports\/jobs\/[^/]+$/.test(p))return json(res,await reports.getJob(p.split('/')[4]));
       if(method==='GET'&&/^\/api\/jobs\/[^/]+$/.test(p))return json(res,find(store.read(),'jobs',p.split('/')[3]));
@@ -57,7 +60,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
         else if(p==='/api/notebooks/import')value=await jobs.importNotebook(input);
         else if(/^\/api\/jobs\/[^/]+\/stop$/.test(p))value=await jobs.stop(p.split('/')[3]);
         else if(p==='/api/t3/start')value=await t3.start();
-        else if(p==='/api/t3/catalog')value=await t3.catalog();
+        else if(p==='/api/t3/catalog')value=await catalog.refresh();
         else if(p==='/api/runs/start')value=await t3.startRun(input);
         else if(/^\/api\/runs\/[^/]+\/reconcile$/.test(p))value=await t3.reconcile(p.split('/')[3]);
         else if(/^\/api\/runs\/[^/]+\/stop$/.test(p))value=await t3.stop(p.split('/')[3]);

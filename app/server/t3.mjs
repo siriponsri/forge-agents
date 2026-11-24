@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process';
 import { mkdir, readFile, appendFile } from 'node:fs/promises';
 import path from 'node:path';
 import net from 'node:net';
+import { randomBytes, createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
@@ -33,9 +34,20 @@ export function createT3Service({dataDir,store}){
       while(Date.now()<deadline){if(exited!==undefined||status==='failed')throw new Error(`T3 did not start; inspect local t3.log (${error??exited})`);try{const r=await fetch(url,{signal:AbortSignal.timeout(1000)});await r.body?.cancel();if(r.ok)break;}catch{}await new Promise(r=>setTimeout(r,300));}
       // Issue a new short-lived credential only in FORGE's own fresh T3 control plane.
       // Never read, migrate or log credentials from the development application.
-      const issued=JSON.parse(await cli(['auth','session','issue','--base-dir',home,'--label','FORGE local bridge','--ttl','1h','--scope','orchestration:read','--scope','orchestration:operate','--json']));
-      issueSession=issued.sessionId;const token=issued.token??issued.accessToken;
-      if(!token)throw new Error('T3 did not return an access token for the FORGE bridge');
+      const pairing=JSON.parse(await cli(['auth','pairing','create','--base-dir',home,'--label','FORGE local bridge','--ttl','1m','--scope','orchestration:read','--scope','orchestration:operate','--json']));
+      const label=`FORGE local bridge ${crypto.randomUUID()}`;
+      const post=async(route,input,form=false)=>{const r=await fetch(new URL(route,url),{method:'POST',headers:{'Content-Type':form?'application/x-www-form-urlencoded':'application/json'},body:form?new URLSearchParams(input):JSON.stringify(input),signal:AbortSignal.timeout(10000)});const value=await r.json();if(!r.ok)throw new Error(`T3 local authorization ${route}: ${value.message??value.error_description??r.status}`);return value;};
+      const callback='http://127.0.0.1:4317/forge-local-callback';
+      const registered=await post('/oauth/mcp/register',{client_name:label,redirect_uris:[callback],token_endpoint_auth_method:'none'});
+      const verifier=randomBytes(32).toString('base64url');
+      const authorization={response_type:'code',client_id:registered.client_id,redirect_uri:callback,code_challenge:createHash('sha256').update(verifier).digest('base64url'),code_challenge_method:'S256',state:randomBytes(16).toString('hex'),resource:`${url}/mcp`};
+      const approved=await post('/oauth/mcp/decision',{authorization,decision:{_tag:'pairing-code',access:'approval-required',code:pairing.credential}});
+      const code=new URL(approved.redirectTo).searchParams.get('code');
+      const issued=await post('/oauth/mcp/token',{grant_type:'authorization_code',code,redirect_uri:callback,client_id:registered.client_id,code_verifier:verifier,resource:`${url}/mcp`},true);
+      const token=issued.access_token;
+      if(!token)throw new Error('T3 did not return an MCP access token for the FORGE bridge');
+      const sessions=JSON.parse(await cli(['auth','session','list','--base-dir',home,'--json']));
+      issueSession=sessions.find?.(s=>s.label===label)?.sessionId;
       client=new Client({name:'forge-local-bridge',version:'0.2.0'},{capabilities:{}});
       await client.connect(new StreamableHTTPClientTransport(new URL('/mcp',url),{requestInit:{headers:{Authorization:`Bearer ${token}`}}}));
       status='ready';error=null;return {status,url,version:'0.1.11'};
@@ -64,7 +76,7 @@ export function createT3Service({dataDir,store}){
         const listed=await call('t3_project_list',{limit:100});const project=listed.projects.find(x=>path.resolve(x.workspaceRoot).toLowerCase()===path.resolve(p.workspace).toLowerCase());
         if(!project)throw new Error('T3 project registration not observed');
         const provider=p.profile.provider;
-        const launched=await call('t3_thread_launch',{projectId:project.id,title:task.title,message:`FORGE task ${task.id}. Work only within this selected workspace.\n${task.title}\n${task.description??''}`,runtimeMode:'approval-required',...(provider?.instanceId&&provider?.model?{modelSelection:{instanceId:provider.instanceId,model:provider.model,options:provider.options??[]}}:{})});
+        const launched=await call('t3_thread_launch',{projectId:project.id,clientRequestId:run.id,title:task.title,message:`FORGE task ${task.id}. Work only within this selected workspace.\n${task.title}\n${task.description??''}`,runtimeMode:'approval-required',...(provider?.instanceId&&provider?.model?{modelSelection:{instanceId:provider.instanceId,model:provider.model,options:provider.options??[]}}:{})});
         await store.transaction(state=>{const r=find(state,'runs',run.id);r.threadId=launched.threadId;r.providerRunId=launched.runId;r.status='running';changed(r);const task=find(state,'tasks',r.taskId);task.threadId=r.threadId;task.status='running';changed(task);appendProtocol(state,r,{type:'RUN_STARTED',threadId:r.threadId,runId:r.id});});
       }catch(e){await store.transaction(s=>{const r=find(s,'runs',run.id);r.status='unknown';r.error=e.message;changed(r);appendProtocol(s,r,{type:'CUSTOM',name:'forge.execution.uncertain',value:{error:e.message,attemptId:r.attemptId}});});}
       return find(store.read(),'runs',run.id);
@@ -72,10 +84,19 @@ export function createT3Service({dataDir,store}){
     async reconcile(id){
       const r=find(store.read(),'runs',id);if(!r.threadId)return r;
       const observation=await call('t3_thread_read',{threadId:r.threadId,limit:100,view:'messages'});
-      await store.transaction(s=>{const run=find(s,'runs',id);run.observation=observation;run.messages=observation.items??observation.messages??[];run.status=observation.thread?.status??run.status;changed(run);appendProtocol(s,run,{type:'CUSTOM',name:'forge.t3.observation',value:{threadId:run.threadId,status:run.status,taskId:run.taskId,botId:run.botId}});});
+      await store.transaction(s=>{const run=find(s,'runs',id);run.observation=observation;run.messages=observation.items??[];const observedRun=observation.recentRuns?.find(r=>r.runId===run.providerRunId);run.status=observedRun?.status??observation.thread?.status??run.status;changed(run);
+        const messages=run.messages.filter(i=>['user_message','assistant_message'].includes(i.type)&&i.text).map(i=>({id:i.messageId??i.itemId,role:i.type==='user_message'?'user':'assistant',content:i.text}));
+        appendProtocol(s,run,{type:'MESSAGES_SNAPSHOT',messages});
+        appendProtocol(s,run,{type:'CUSTOM',name:'forge.t3.observation',value:{threadId:run.threadId,status:run.status,taskId:run.taskId,botId:run.botId}});
+        if(!run.terminalEvent && ['completed','failed','cancelled','interrupted'].includes(run.status)){
+          if(run.status==='failed')appendProtocol(s,run,{type:'RUN_ERROR',message:observation.thread?.error??'T3 run failed'});
+          else appendProtocol(s,run,{type:'RUN_FINISHED',threadId:run.threadId,runId:run.id,outcome:run.status==='completed'?{type:'success'}:{type:'cancelled'}});
+          run.terminalEvent=true;
+        }
+      });
       return find(store.read(),'runs',id);
     },
-    async stop(id){const run=find(store.read(),'runs',id);if(!run.threadId)fail('OUTCOME_UNKNOWN','No observed thread; reconcile the T3 environment before retrying',409);await call('t3_thread_interrupt',{threadId:run.threadId});return this.reconcile(id);},
+    async stop(id){const run=find(store.read(),'runs',id);if(!run.threadId)fail('OUTCOME_UNKNOWN','No observed thread; reconcile the T3 environment before retrying',409);await call('t3_thread_interrupt',{threadId:run.threadId,stop:true,clientRequestId:`stop-${id}`});return this.reconcile(id);},
     async shutdown(){await client?.close().catch(()=>{});client=undefined;if(issueSession)await cli(['auth','session','revoke',issueSession,'--base-dir',home]).catch(()=>{});child?.kill();},
   };
 }

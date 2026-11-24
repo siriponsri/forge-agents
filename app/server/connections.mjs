@@ -2,6 +2,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { find, fail, changed, now } from './domain.mjs';
 
 export const integrationCatalog=[
@@ -11,13 +12,15 @@ export const integrationCatalog=[
   ...['Google Drive','project Git','LitServe','native Windows','desktop/VM','browser'].map(name=>({name,implementation:'IMPLEMENTATION_INCOMPLETE',live:'NOT_RUN'})),
 ];
 export function createConnectionService({store}){
-  const clients=new Map();
+  const clients=new Map(),signatures=new Map();
   async function connect(id){
     const c=find(store.read(),'connections',id);if(c.enabled===false)fail('DISABLED','Enable this connection first',409);
-    if(clients.has(id))return clients.get(id);
+    const signature=JSON.stringify([c.route,c.url,c.command,c.args]);
+    if(clients.has(id)&&signatures.get(id)===signature)return clients.get(id);
+    if(clients.has(id)){await clients.get(id).close();clients.delete(id);}
     const client=new Client({name:'forge-local',version:'0.2.0'},{capabilities:{}});
     const transport=c.route==='stdio'?new StdioClientTransport({command:c.command,args:c.args??[],stderr:'pipe',env:Object.fromEntries(Object.entries(process.env).filter(([k])=>['PATH','Path','SystemRoot','TEMP','TMP','USERPROFILE','LOCALAPPDATA'].includes(k)))}):new StreamableHTTPClientTransport(new URL(c.url));
-    await client.connect(transport,{timeout:15000});clients.set(id,client);return client;
+    await client.connect(transport,{timeout:15000});clients.set(id,client);signatures.set(id,signature);return client;
   }
   async function record(id,patch){await store.transaction(s=>{const c=find(s,'connections',id);Object.assign(c,patch);changed(c);});}
   return {
@@ -33,7 +36,8 @@ export function createConnectionService({store}){
     async call(id,{name,arguments:args,operationId,projectId}){
       const c=find(store.read(),'connections',id,projectId);if(!c.lastCheck?.capabilities?.some(t=>t.name===name))fail('DISCOVER_FIRST','Discover and enable this tool before calling it',409);
       // Durable reservation: an uncertain remote result is never resubmitted automatically.
-      const reservation=await store.transaction(s=>{const prior=s.events.find(e=>e.operationId===operationId&&e.type==='mcp.call');if(prior)return {replayed:true,...prior};if(!operationId)fail('VALIDATION','operationId required');const event={id:crypto.randomUUID(),type:'mcp.call',operationId,projectId,connectionId:id,name,status:'pending',createdAt:now()};s.events.push(event);return event;});
+      const fingerprint=createHash('sha256').update(JSON.stringify({projectId,connectionId:id,name,args})).digest('hex');
+      const reservation=await store.transaction(s=>{const prior=s.events.find(e=>e.operationId===operationId&&e.type==='mcp.call');if(prior){if(prior.fingerprint!==fingerprint)fail('OPERATION_REUSE','MCP operation ID reused with different scope/arguments',409);return {replayed:true,...prior};}if(!operationId)fail('VALIDATION','operationId required');const event={id:crypto.randomUUID(),type:'mcp.call',operationId,fingerprint,projectId,connectionId:id,name,status:'pending',createdAt:now()};s.events.push(event);return event;});
       if(reservation.replayed)return reservation;
       const client=await connect(id);let result,status='completed';try{result=await client.callTool({name,arguments:args},undefined,{timeout:30000});if(result.isError)status='failed';}catch(e){status='unknown';result={error:e.message};}
       await store.transaction(s=>Object.assign(s.events.find(e=>e.id===reservation.id),{status,result,finishedAt:now()}));return {status,result};
