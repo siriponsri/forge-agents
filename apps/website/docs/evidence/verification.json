@@ -1,0 +1,33 @@
+{
+    "result":  "PASSED",
+    "checks":  [
+                   "Home and all architecture layers: TH/EN × light/dark × 320/375/768/1440; no overflow; 16 WCAG AA axe audits",
+                   "All 10 localized inner routes × both themes × 375/1440; 40 axe AA audits; missing release has source guide action and zero executable links",
+                   "Keyboard Radix arrow-key tabs, capability filters, full-resolution screenshot, locale routes, theme persistence, 320px menu Escape and skip-link focus; reduced motion",
+                   "Prerendered no-JavaScript install content; optional localStorage failure; forced colors",
+                   "Every internal route and fragment resolves in the standalone build"
+               ],
+    "a11yAuditCount":  56,
+    "violations":  [
+
+                   ],
+    "pageErrors":  [
+
+                   ],
+    "requestsStayLocal":  true,
+    "releaseSnapshot":  {
+                            "schemaVersion":  1,
+                            "repository":  "siriponsri/forge-agents",
+                            "checkedAt":  "2026-11-24T08:23:40.322Z",
+                            "state":  "no_public_releases",
+                            "httpStatus":  200,
+                            "note":  "Anonymous GitHub API snapshot. Only uploaded Windows ZIP assets with GitHub SHA-256 digests and repository-scoped URLs are eligible.",
+                            "releases":  [
+
+                                         ]
+                        },
+    "deployment":  "NOT_RUN",
+    "homeUat":  "HOME_UAT_NOT_RUN",
+    "macosNative":  "NOT_RUN",
+    "captureOrigin":  "Actual standalone production-site browser run; representative copies are in this directory. Original full run was developer-local forge-public-website-iSwhBC."
+}

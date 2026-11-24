@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-24T08:42:19Z",
+  "title": "Design System: FORGE public website",
+  "extensions": {
+    "colorMeta": {
+      "accent": {"role":"primary","displayName":"FORGE accent ink","tonalRamp":["#28170e","#4b230e","#74300c","#a83d0b","#cd6a37","#e99363","#f7bd9c","#fce8db"]},
+      "paper": {"role":"neutral","displayName":"Cool paper","tonalRamp":["#171b22","#303640","#4c5461","#697381","#8993a0","#adb5bf","#d2d7de","#f7f8fa"]}
+    },
+    "typographyMeta": {
+      "display":{"displayName":"Manrope display","purpose":"Expansive English product headings."},
+      "body":{"displayName":"IBM Plex Sans Thai","purpose":"Readable Thai and English support copy."}
+    },
+    "shadows": [],
+    "motion": [
+      {"name":"architecture-detail","value":"400ms cubic-bezier(0.16,1,0.3,1)","purpose":"Visible clip and opacity transition between ownership layers; removed for reduced motion."},
+      {"name":"action-hover","value":"180ms ease-out","purpose":"Short action feedback; transforms removed for reduced motion."}
+    ],
+    "breakpoints": [{"name":"phone","value":"620px"},{"name":"tablet","value":"850px"},{"name":"compact-desktop","value":"1100px"}]
+  },
+  "components": [
+    {"name":"Primary action","kind":"button","refersTo":"button-primary","description":"A single useful setup or source action.","html":"<a class=\"ds-action\" href=\"#\">Explore FORGE <span aria-hidden=\"true\">→</span></a>","css":".ds-action{display:inline-flex;gap:24px;align-items:center;background:var(--button,#252a30);color:var(--button-ink,#fff);padding:12px 22px;min-height:50px;border-radius:8px;text-decoration:none;font-family:'IBM Plex Sans Thai',sans-serif;font-size:14px}.ds-action:hover{background:var(--accent,#a83d0b);color:var(--bg,#f7f8fa)}.ds-action:focus-visible{outline:3px solid var(--focus,#9c390a);outline-offset:5px}"},
+    {"name":"Navigation","kind":"nav","refersTo":"navigation","description":"Ordinary reading routes with visible focus.","html":"<nav class=\"ds-nav\" aria-label=\"Website\"><a href=\"#\">Product</a><a href=\"#\">Architecture</a><a href=\"#\">Docs</a></nav>","css":".ds-nav{display:flex;gap:29px;align-items:center;font:14px 'IBM Plex Sans Thai',sans-serif}.ds-nav a{color:var(--muted,#5f6570);text-decoration:none}.ds-nav a:hover{color:var(--ink,#20242a)}.ds-nav a:focus-visible{outline:3px solid var(--focus,#9c390a);outline-offset:5px}"},
+    {"name":"Qualification status","kind":"chip","refersTo":"capability-status","description":"A factual capability label, never a claim of public release.","html":"<span class=\"ds-status\">Experimental</span>","css":".ds-status{display:inline-flex;padding:3px 8px;border-radius:5px;background:var(--accent-soft,#fbe5d5);color:var(--accent,#a83d0b);font:500 10px/1.5 'IBM Plex Sans Thai',sans-serif}"},
+    {"name":"Architecture layer","kind":"custom","description":"One selected layer in the ownership diagram.","html":"<button class=\"ds-layer\" aria-pressed=\"true\">FORGE core<small>Projects · Teams · Plans</small></button>","css":".ds-layer{display:block;text-align:left;padding:19px 18px;border:1px solid var(--accent,#a83d0b);border-radius:9px;background:var(--accent-soft,#fbe5d5);color:var(--accent,#a83d0b);font:500 15px 'IBM Plex Sans Thai',sans-serif}.ds-layer small{display:block;font-size:11px;font-weight:400;margin-top:3px}.ds-layer:hover{background:var(--soft,#eceff2)}.ds-layer:focus-visible{outline:3px solid var(--focus,#9c390a);outline-offset:5px}"},
+    {"name":"Bounded container","kind":"card","refersTo":"architecture-container","description":"A container for a connected diagram or real release metadata.","html":"<section class=\"ds-container\"><h3>FORGE workspace</h3><p>Plans, teams and evidence share canonical records.</p></section>","css":".ds-container{padding:30px;background:var(--paper,#fff);border:1px solid var(--line,#d9dde2);border-radius:14px;color:var(--ink,#20242a)}.ds-container h3{font:600 22px Manrope,sans-serif;margin:0 0 16px}.ds-container p{font:16px/1.7 'IBM Plex Sans Thai',sans-serif;color:var(--muted,#5f6570);margin:0}"}
+  ],
+  "narrative": {
+    "northStar":"Connected work, clearly seen",
+    "overview":"The public website inherits FORGE's orange letterform and bundled typefaces, then gives the product room: broad whitespace, an actual workbench capture and open, readable workflow rows. This is a standalone Persuade/Read surface; its light/dark choice is independent of the product's 15 named editor themes.",
+    "keyCharacteristics":["Expansive typography paired with practical, readable supporting copy.","Real product proof and explicit development qualifications.","Open rows for content; bounded surfaces for the screenshot and architecture.","One purposeful transition, not repeated section entrances."],
+    "rules":[{"name":"The Semantic Pair Rule","body":"Every background, text, line and focus role has an explicit dark counterpart. Change the whole role relationship, not isolated hexes.","section":"colors"},{"name":"The Reading Language Rule","body":"Thai paragraphs keep generous line height and normal tracking. English display compression never leaks into Thai body text.","section":"typography"}],
+    "dos":["Do preserve real product screenshots and their developer-fixture captions.","Do make setup and release limitations readable in both themes and languages.","Do use open rows for explanatory content and full borders for actual containers.","Do keep motion purposeful and remove it for reduced-motion visitors."],
+    "donts":["Don't invent public releases, completed live checks, users or metrics.","Don't apply the workbench's 15-theme controls to this independent website.","Don't add external fonts, embeds or a dependency on the private local runtime."]
+  }
+}

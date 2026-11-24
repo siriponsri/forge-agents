@@ -1,0 +1,10 @@
+{
+  "kind": "pre-existing-product-screenshot",
+  "origin": "Actual FORGE workbench screenshot captured by app/web/tests/visual-refinement.mjs; overview-1440-dark-modern.png from the verified forge-visual-refinement-rFK2fH engineering run.",
+  "generated": false,
+  "width": 1440,
+  "height": 1000,
+  "sha256": "053c352b7c1a0235d8e9e866ed2b5b2a5f58dd4125312062faffa7f1da0bf705",
+  "content": "Disposable developer verification records, not live provider activity or customer data. The website labels this explicitly.",
+  "license": "FORGE repository license; no third-party product screenshot reused"
+}
