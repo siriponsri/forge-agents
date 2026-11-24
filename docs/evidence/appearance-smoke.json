@@ -1,0 +1,15 @@
+{
+  "result": "PASSED",
+  "fixtureDir": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-appearance-W30syc",
+  "checks": [
+    "Dark Modern default",
+    "15 named VS Code themes selectable and saved",
+    "reload and process-restart theme persistence",
+    "real Overview records",
+    "320/375/414/768/1440 responsive",
+    "theme dialog keyboard dismissal",
+    "bundled fonts",
+    "actual landing screenshot captured",
+    "no browser exceptions"
+  ]
+}

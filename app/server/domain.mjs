@@ -23,9 +23,11 @@ function validateTask(s,x,projectId){
   const visit=(id,seen=new Set())=>{if(id===x.id)fail('CYCLE','Task dependency cycle');if(seen.has(id))return;seen.add(id);for(const dep of find(s,'tasks',id,projectId).dependsOn??[])visit(dep,seen);};
   for(const id of x.dependsOn??[])visit(id);
 }
-function validateSnapshot(snapshot){
+function validateSnapshot(snapshot,s,projectId){
   if(!snapshot || typeof snapshot!=='object' || Array.isArray(snapshot))fail('VALIDATION','Native editor snapshot is required');
-  if(/blob:/.test(JSON.stringify(snapshot)))fail('RESOURCE_NOT_DURABLE','Save temporary browser images as project resources before saving this document');
+  const serialized=JSON.stringify(snapshot);
+  if(/blob:|file:|filesystem:/.test(serialized))fail('RESOURCE_NOT_DURABLE','Save temporary browser images as project resources before saving this document');
+  for(const match of serialized.matchAll(/\/api\/artifacts\/([^/"\\]+)\/download/g))find(s,'artifacts',match[1],projectId);
 }
 export async function command(store,input){
   const operationId=required(input.operationId,'operationId'); const type=required(input.type,'type');
@@ -55,7 +57,7 @@ export async function command(store,input){
         x=entity({...defaults[kind],...pick(data,fields[kind])},kind==='project'?null:input.projectId);
         required(x.title??x.name,kind==='task'?'title':'name');
         if(kind==='project'){x.workspace=path.resolve(required(x.workspace,'workspace'));if(s.projects.some(p=>path.resolve(p.workspace).toLowerCase()===x.workspace.toLowerCase()))fail('WORKSPACE_EXISTS','This workspace already has a project',409);}
-        if(kind==='document'){if(!['sheet','doc'].includes(x.kind))fail('VALIDATION','Document kind must be sheet/doc');if(x.snapshot)validateSnapshot(x.snapshot);}
+        if(kind==='document'){if(!['sheet','doc'].includes(x.kind))fail('VALIDATION','Document kind must be sheet/doc');if(x.snapshot)validateSnapshot(x.snapshot,s,input.projectId);}
         validateLinks(s,x,input.projectId);if(kind==='task')validateTask(s,x,input.projectId);
         s[collection].push(x);
       }else if(['update','save','restore'].includes(action)){
@@ -68,7 +70,7 @@ export async function command(store,input){
           const historic=x.history.find(h=>h.revision===data.sourceRevision);
           if(!historic)fail('NOT_FOUND','Revision not found',404);patch=kind==='document'?{snapshot:historic.snapshot}:{spec:historic.spec};
         }
-        if(patch.snapshot)validateSnapshot(patch.snapshot);
+        if(patch.snapshot)validateSnapshot(patch.snapshot,s,input.projectId);
         // Identity/type cannot be changed by snapshot payloads or ordinary updates.
         delete patch.kind;if(kind==='project')delete patch.workspace;
         const candidate={...x,...patch};validateLinks(s,candidate,input.projectId);

@@ -11,6 +11,7 @@ const temp=await mkdtemp(path.join(os.tmpdir(),'forge-landing-'));
 const app=await createApplication({dataDir:path.join(temp,'state')});
 const browser=await chromium.launch({headless:true});
 const page=await browser.newPage({viewport:{width:1440,height:1000},acceptDownloads:true});
+page.setDefaultTimeout(15000);
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
 try{
   await page.goto(app.url+'/welcome');
@@ -49,7 +50,7 @@ try{
   }
   await page.setViewportSize({width:1440,height:1000});
   await page.getByRole('link',{name:'Open workbench',exact:true}).first().click();
-  await page.getByRole('heading',{name:'ภาพรวมพื้นที่ทำงาน',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'พื้นที่สำหรับสิ่งที่คุณอยากสร้าง',exact:true}).waitFor();
   assert.equal(new URL(page.url()).pathname,'/app');
   assert.equal(await page.locator('html').getAttribute('data-theme'),'dark-modern');
   assert.deepEqual(errors,[]);

@@ -87,6 +87,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
         else if(/^\/api\/mcp\/[^/]+\/discover$/.test(p))value=await connections.discover(p.split('/')[3]);
         else if(/^\/api\/mcp\/[^/]+\/call$/.test(p))value=await connections.call(p.split('/')[3],input);
         else if(p==='/api/artifacts/register')value=await artifacts.register(input);
+        else if(p==='/api/artifacts/upload')value=await artifacts.upload(input);
         else if(p==='/api/storage/backup')value=await artifacts.backup();
         else if(p==='/api/storage/restore')value=await artifacts.restore(input);
         else if(p==='/api/storage/git')value=await gitStorage.run(input);

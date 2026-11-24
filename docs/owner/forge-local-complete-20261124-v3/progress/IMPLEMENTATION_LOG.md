@@ -1,5 +1,28 @@
 # Implementation Log
 
+## Integrated visual, landing and launcher checkpoint — 2026-11-24
+
+- Combined GUI1b4faad/reports073960f; fixed real multiline validation0603f71.
+  Native WordCraft/PdfCraft13 tests passed, acquisition separately passed.
+  Lead GUI: actual DOCX/PDF, decoded PNG preview, verified downloads and rotation
+  parent lineage passed after redesign; original core/Univer/Python smoke passed.
+- Theme worker529327e/f325689 integrated037ec95/9137a38. Landing7755165 integrated
+  c44260c. Lead Overview/fonts/persistence/live Univer theme integrated10e38aa.
+ 15 VS Code themes select/save/reload/process-restart; responsive320–1440 passed.
+- Real app screenshot captured from labelled engineering fixture. Landing actual
+  TH/EN download clicks pass byte/SHA/commit checks for both source+launcher ZIPs.
+  Windows clean archive install/port/restart/stop passed; native Mac NOT_RUN.
+-36ad386 closes this application's HTTP sockets before stopping services. New
+  regression covers active SSE plus incomplete preconnected HTTP request and
+  reopening the same SQLite data/port; repeat appearance smoke passed.
+- Commands: npm run build; node app/vendor/vscode-themes/verify.mjs;
+  node app/web/tests/{smoke,report-smoke,appearance-smoke,landing-smoke}.mjs;
+  node --test tests/product-shutdown.test.mjs. Sanitized evidence in docs/evidence.
+- Serving, protocol and storage workers use isolated branches, actual inherited
+  codex gpt-6.1-sol/reasoningEffort=xhigh. Lead integrates shared contracts/HTTP/GUI.
+  Next: real artifact-bound REST/MCP serving in the integrated workbench, then
+  protocol and storage/recovery integration. IMPLEMENTATION_INCOMPLETE; no push.
+
 ## Developer implementation — 2026-11-24
 
 - Inspected efcd132/main/origin/worktrees, owner dirty docs and legacy package;

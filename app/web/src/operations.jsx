@@ -222,6 +222,15 @@ export function Artifacts({ t, state, projectId, run, busy }) {
           "Register an existing file. The service verifies its bytes and SHA256 before registration.",
         )}
       />
+      <form className="panel inline-form" onSubmit={e=>{e.preventDefault();const data=new FormData(e.currentTarget),file=data.get('file');run(async()=>{
+        if(!file?.size||file.size>16*1024*1024)throw new Error(t('เลือกไฟล์ไม่เกิน 16 MB','Choose a nonempty file up to 16 MB'));
+        const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(file);});
+        return request('/api/artifacts/upload',{operationId:operationId(),projectId,name:file.name,kind:data.get('kind'),base64});
+      });}}>
+        <Field label={t('เพิ่มไฟล์จากเครื่อง (ไม่เกิน 16 MB)','Upload a file (up to 16 MB)')}><input type="file" name="file" required/></Field>
+        <Field label={t('ชนิดของไฟล์ที่เพิ่ม','Uploaded artifact kind')}><select name="kind">{['file','model','preprocessor','dataset','figure','config'].map(k=><option key={k}>{k}</option>)}</select></Field>
+        <Submit busy={busy}>{t('อัปโหลดและตรวจไฟล์','Upload & verify')}</Submit>
+      </form>
       <form
         className="panel inline-form"
         onSubmit={async (e) => {

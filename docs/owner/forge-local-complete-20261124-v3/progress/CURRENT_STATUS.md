@@ -6,23 +6,31 @@ Latest owner steering: improve visual design, provide named **VS Code themes**,
 default **Dark Modern**, plus a landing page using Orca/T3/Paseo as structural
 references and real Windows/macOS launcher downloads. These are active tasks in
 TASK_ASSIGNMENTS; they augment the original complete-product objective.
-GUI and native report workers have been integrated. Lead combined browser smoke
-PASSED, real report GUI configure/generate/preview surface/download/rotate PASSED.
-A multiline text-validation bug found during integration was fixed0603f71.
-The current PDF object viewer shows fallback in headless Chromium; an actual
-rendered-image fallback is still needed before claiming browser-independent preview.
-First-run clean package exposed dependency loading before preflight; fixed413a04d
-and macOS pure path selection/launchers added d23560b. Downloaded clean package
-installation verification is running. New theme/landing workers own separate paths.
+GUI, native reports, landing and theme workers have been integrated. Lead reran
+core GUI/Univer/Python/persistence smoke, real report generation/download/rotation
+and decoded native PNG preview: PASSED. Multiline validation fixed0603f71; the PDF
+preview now uses real rendered PNG bytes instead of relying on a PDF browser plugin.
+Overview and all 15 pinned VS Code builtin themes are integrated10e38aa. Dark Modern
+is default/fallback; theme selection survives reload and process restart. Bundled
+Manrope/IBM Plex Sans Thai and live Univer theme switching preserve editor state.
+Responsive checks at320/375/414/768/1440 and theme source/contrast verification pass.
+
+Landing /welcome uses an actual app screenshot with labelled engineering data;
+TH/EN, responsive layouts, /app navigation, and actual browser downloads for both
+platform ZIPs pass. Bytes, SHA256 and source commit match metadata. Clean Windows
+archive install/start/occupied-port/restart/stop passed; macOS launchers and Unix
+permissions are packaged but native Mac execution is NOT_RUN.36ad386 fixes shutdown
+with preconnected HTTP sockets, verified with active SSE and durable reopen.
 
 Overall **IMPLEMENTATION_INCOMPLETE**, **HOME_UAT_NOT_RUN**. Active branch
 `integration/forge-local-complete`; main stays efcd132. No push. Requirements and
 contracts9d0a90f, backend22bb87c, T3/launcher9857bdd, catalog/Git evidence de14a95.
 Legacy protected payloads untouched; no prototype product created.
 
-Lead and both isolated workers use codex/**gpt-6.1-sol**, **reasoningEffort=xhigh**.
+Lead and isolated workers use codex/**gpt-6.1-sol**, **reasoningEffort=xhigh**.
 Lead configuration observed from orchestration capabilities and successful live
-execution. Worker completion/integration remains pending at this checkpoint.
+execution. New isolated workers now implement serving/LitServe, AG-UI lifecycle,
+and storage bundles/Drive/recovery. Worker completion is separate from integration.
 
 Implemented/checked on Windows, Node24.19.0: SQLite domain/revisions/operation
 receipts, project scope, evidence-backed task completion, real local Python jobs,
@@ -38,12 +46,11 @@ AG-UI1.0/core1.0.5 validates actual start/message snapshots/finish.
 Evidence: repository-root `docs/evidence/t3-live-smoke.json`. Full tool/frontend-tool,
 interrupt, delta and live stop/reconnect qualification remain incomplete.
 
-`npm test` passed legacy AO fixtures plus six product behavior tests;
-`npm run check` passed; `npm audit` reports zero vulnerabilities. Worker A reports
-browser/Univer/Python/restart checks passed in its worktree; Worker B reports real
-Windows report outputs and strict glyph failure passed. These are worker evidence,
-not yet integrated application acceptance. Build/combined UI/clean launcher checks
-must follow integration.
+`npm test`, `npm run check`, `npm run build` and zero-vulnerability `npm audit`
+passed on the integrated tree before the shutdown regression was added; that new
+regression also passes. Real report suite13 passed/1 acquisition opt-in skipped;
+separate real no-code acquisition passed. Evidence is in repository-root
+`docs/evidence/` and task notes `docs/worker-{ui,reports,themes,landing}.md`.
 
 G0–G4/G6 IN_PROGRESS; G5 partial ownership/capability implementation. Required code
 gaps: unified T3 navigation, complete AG-UI lifecycle, cloud compute/provider setup,
@@ -51,10 +58,10 @@ Drive sync/conflict/retention, inference/LitServe, native/guest/browser drivers 
 effective in-flight stop, adaptive evaluation and remaining office/report acceptance.
 Missing implementation is not deferred home UAT.
 
-Next executable task: integrate worker GUI/Univer/report commits, review API
-alignment, run combined tests/build, launch disposable state and verify UI,
-save/reopen across restart, report preview/download and launcher lifecycle.
-Then continue outstanding G3–G6 work from the acceptance evidence map.
+Next executable task: integrate serving worker's artifact/preprocessor binding and
+LitServe REST/MCP lifecycle into HTTP/GUI, verify actual weighted inference and
+owned stop; integrate protocol/storage workers after scoped review. Continue the
+remaining implementation gaps in ACCEPTANCE_EVIDENCE rather than treating them as UAT.
 
 ## Historical handoff snapshot (superseded by the checkpoint above)
 

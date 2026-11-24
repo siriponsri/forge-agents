@@ -6,6 +6,27 @@ import { validateState } from './store.mjs';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 export function createArtifactService({store,dataDir}){
   return {
+    async upload({operationId,projectId,name,kind='file',base64}){
+      const p=find(store.read(),'projects',projectId);
+      if(typeof operationId!=='string'||!operationId||operationId.length>200||typeof kind!=='string'||kind.length>80||typeof name!=='string'||!name.trim()||name.length>180||/[\\/\x00-\x1f]/.test(name))fail('VALIDATION','Choose a file with a valid name and operation ID');
+      if(typeof base64!=='string'||base64.length>22369624||!base64.length)fail('SIZE','Upload a nonempty file up to 16 MB');
+      const bytes=Buffer.from(base64,'base64');
+      if(bytes.length>16*1024*1024||bytes.toString('base64')!==base64)fail('FORMAT','Invalid base64 file content or file exceeds 16 MB');
+      const sha256=hash(bytes),fingerprint=hash(Buffer.from(JSON.stringify({projectId,name,kind,sha256})));
+      const prior=store.read().receipts.find(r=>r.operationId===operationId);
+      if(prior){if(prior.fingerprint!==fingerprint)fail('OPERATION_REUSE','Upload ID was used for different content',409);return prior.result;}
+      const base=await confined(p.workspace,'.forge',{existing:false});await mkdir(base,{recursive:true});await confined(p.workspace,'.forge');
+      const dir=await confined(p.workspace,'.forge/uploads',{existing:false});await mkdir(dir,{recursive:true});await confined(p.workspace,'.forge/uploads');
+      const safe=name.replace(/[^\p{L}\p{N}._-]/gu,'_').replace(/^\.+/,'_'),relative=path.join('.forge','uploads',sha256+'-'+safe);
+      const file=await confined(p.workspace,relative,{existing:false});
+      try{await writeFile(file,bytes,{flag:'wx'});}catch(e){if(e.code!=='EEXIST')throw e;if(hash(await readFile(file))!==sha256)fail('INTEGRITY','Uploaded artifact location changed',409);}
+      return store.transaction(s=>{
+        const replay=s.receipts.find(r=>r.operationId===operationId);if(replay){if(replay.fingerprint!==fingerprint)fail('OPERATION_REUSE','Upload ID was used for different content',409);return replay.result;}
+        let artifact=s.artifacts.find(a=>a.projectId===projectId&&a.path===file&&a.sha256===sha256);
+        if(!artifact){artifact=entity({name,path:file,kind,sha256,bytes:bytes.length,status:'verified',source:{kind:'browser-upload'},locations:[{kind:'local',path:file,verifiedAt:now()}]},projectId);s.artifacts.push(artifact);}
+        s.receipts.push({operationId,fingerprint,result:artifact});return artifact;
+      });
+    },
     async register(input){
       const p=find(store.read(),'projects',input.projectId);const file=await confined(p.workspace,input.path);const info=await stat(file);
       if(!info.isFile())fail('FORMAT','Select a file');if(info.size>512*1024*1024)fail('SIZE','Current local verification limit is 512 MB');
@@ -15,7 +36,8 @@ export function createArtifactService({store,dataDir}){
     async download(id){
       const a=find(store.read(),'artifacts',id);const p=find(store.read(),'projects',a.projectId);
       const file=await confined(p.workspace,a.path);const bytes=await readFile(file);if(hash(bytes)!==a.sha256)fail('INTEGRITY','Artifact bytes changed since verification; register a new revision',409);
-      return {path:file,filename:a.name,contentType:a.name.endsWith('.pdf')?'application/pdf':a.name.endsWith('.docx')?'application/vnd.openxmlformats-officedocument.wordprocessingml.document':'application/octet-stream'};
+      const extension=path.extname(a.name).toLowerCase();
+      return {path:file,filename:a.name,contentType:({'.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.pdf':'application/pdf','.docx':'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})[extension]??'application/octet-stream'};
     },
     async backup(){
       const snapshot=store.read();const bytes=Buffer.from(JSON.stringify(snapshot));const dir=path.join(dataDir,'backups');await mkdir(dir,{recursive:true});

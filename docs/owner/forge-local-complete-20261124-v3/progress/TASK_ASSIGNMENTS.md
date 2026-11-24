@@ -6,10 +6,13 @@
 
 | Task | Owner | Executable scope | State |
 |---|---|---|---|
-| UX-01 VS Code themes | New isolated theme worker | Named builtin palettes, picker, theme-aware global styles; default Dark Modern | IN_PROGRESS |
-| UX-02 Workbench redesign | Lead | Overview, shell hierarchy, bundled type, preference persistence, live Univer theme | IN_PROGRESS |
-| WEB-01 Landing | New isolated landing worker | TH/EN landing inspired structurally by orca.dev/t3.codes/paseo.sh, actual screenshot, download UI | IN_PROGRESS |
-| DIST-01 Windows/macOS downloads | Lead | Source+launcher ZIPs, SHA256/commit metadata, download API, platform setup | IN_PROGRESS; macOS live NOT_RUN |
+| UX-01 VS Code themes | Theme worker + lead | 15 pinned builtin palettes, picker and semantic styles; default Dark Modern | INTEGRATED037ec95/9137a38; source/contrast checks PASSED |
+| UX-02 Workbench redesign | Lead | Overview, shell hierarchy, bundled type, persistence, live Univer theme | INTEGRATED10e38aa; responsive/reload/restart PASSED |
+| WEB-01 Landing | Landing worker + lead | TH/EN landing, actual screenshot and metadata-backed downloads | INTEGRATEDc44260c/10e38aa; combined browser checks PASSED |
+| DIST-01 Windows/macOS downloads | Lead | Source+launcher ZIPs, SHA256/commit, portable rebuilding | IMPLEMENTED7abe954; Windows clean install PASSED; macOS live NOT_RUN |
+| SERVE-01 A12/A13 | Serving worker | app/serving/**, tests/serving*, docs/worker-serving.md | RUNNING t3/serving-inference-mcp; weighted REST/MCP parity reported, integration pending |
+| PROTO-01 A21/A22 | Protocol worker | t3.mjs/agui.mjs, app/protocol/**, protocol tests and own note | RUNNING isolated worktree; lead HTTP/GUI integration follows |
+| STORE-01 A14/A15/A20 | Storage worker | app/storage/**, storage tests and own note | RUNNING isolated worktree; lead HTTP/GUI integration follows |
 
 Earlier workers A/B completed and were integrated as1b4faad/073960f.
 Lead combined GUI smoke and actual native report GUI generation/rotation/download
@@ -22,8 +25,8 @@ reasoningEffort=xhigh. Isolated worktrees prepared by delegate_task, not shared 
 
 | Worker | Branch | Ownership | State |
 |---|---|---|---|
-| A GUI/office | t3/forge-gui-univer-workbench | app/web, docs/worker-ui.md | Running; own browser/persistence evidence reported; lead integration pending |
-| B report engines | t3/implement-report-engines | app/reports, tests/reports*, docs/worker-reports.md | Running; actual Windows engine evidence reported; lead integration pending |
+| A GUI/office | t3/forge-gui-univer-workbench | app/web, docs/worker-ui.md | COMPLETED305f16f; INTEGRATED1b4faad; lead core browser/restart PASSED |
+| B report engines | t3/implement-report-engines | app/reports, tests/reports*, docs/worker-reports.md | COMPLETED90832f7; INTEGRATED073960f; lead real native suite/GUI PASSED |
 
 Absolute worktree locations discoverable via `git worktree list`; each worker
 uses its own temporary runtime data and port. Neither may push main or edit

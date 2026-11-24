@@ -1,0 +1,48 @@
+{
+  "result": "PASSED",
+  "fixtureDir": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-landing-D5Iz0x",
+  "commit": "36ad386df82ed19b019fd6dbd027a5cb1c221b66",
+  "checks": [
+    "Thai default and TH/EN",
+    "actual screenshot decoded",
+    "320/375/414/768/1440 responsive in both languages",
+    "actual Windows and macOS browser downloads",
+    "download byte count/SHA256/commit provenance",
+    "source includes launchers and screenshot without git/dependencies",
+    "macOS explicitly not qualified",
+    "landing opens actual workbench",
+    "Dark Modern default",
+    "no browser exceptions"
+  ],
+  "packages": [
+    {
+      "id": "windows",
+      "label": "Windows",
+      "filename": "FORGE-Windows.zip",
+      "url": "/downloads/FORGE-Windows.zip",
+      "sha256": "0774dc89132ba71ea400707aba779fe0429128990ca27c2e5d97adceb1cfc732",
+      "bytes": 372291,
+      "qualification": "developer-verified",
+      "requirements": [
+        "Node.js 24.13+",
+        "Windows x64",
+        "Internet for initial dependency installation"
+      ]
+    },
+    {
+      "id": "macos",
+      "label": "macOS",
+      "filename": "FORGE-macOS.zip",
+      "url": "/downloads/FORGE-macOS.zip",
+      "sha256": "9190ee5bd96feb4450905b36297c4db62d08da0652fe1f90113cdaa77affa4f7",
+      "bytes": 372280,
+      "qualification": "not-run",
+      "requirements": [
+        "Node.js 24.13+",
+        "macOS; native platform verification pending",
+        "Internet for initial dependency installation",
+        "Native report engines currently qualified on Windows x64 only"
+      ]
+    }
+  ]
+}
