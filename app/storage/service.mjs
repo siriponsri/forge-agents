@@ -51,6 +51,8 @@ export async function createStorageService({ dataDir, store, artifacts, vault, e
   const stageRoot = path.join(dataDir, 'storage', 'jobs');
   await mkdir(stageRoot, { recursive: true });
   const auth = createDriveAuth({ vault, env, fetchImpl }), inFlight = new Map();
+  const controller=new AbortController();let closed=false;
+  const checkOpen=()=>{if(closed)fail('INTERRUPTED','Storage service stopped; inspect the staged job before resuming',409);};
   await store.transaction(s => {
     for (const j of s.jobs.filter(j => j.kind === 'storage' && ACTIVE.includes(j.status))) {
       j.status = 'interrupted'; j.error = safeError({ code: 'INTERRUPTED' }); j.updatedAt = now();
@@ -67,11 +69,12 @@ export async function createStorageService({ dataDir, store, artifacts, vault, e
     return { project, storage, destination: found };
   }
   async function adapterFor(projectId, destinationId) {
+    checkOpen();
     const target = destination(projectId, destinationId);
-    if (adapters[destinationId]) return adapters[destinationId];
-    return target.destination.kind === 'local'
+    const adapter=adapters[destinationId]??await(target.destination.kind === 'local'
       ? createLocalAdapter({ ...target.destination, workspace: target.project.workspace, dataDir })
-      : createDriveAdapter({ ...target.destination, auth, fetchImpl, wait });
+      : createDriveAdapter({ ...target.destination, auth, fetchImpl, wait,signal:controller.signal }));
+    return new Proxy(adapter,{get(target,key){const value=target[key];return typeof value==='function'?async(...args)=>{checkOpen();const result=await value.apply(target,args);checkOpen();return result;}:value;}});
   }
   const jobFile = async (jobId, key, createParents = false) => {
     id(jobId); const root = path.join(stageRoot, jobId);
@@ -87,6 +90,7 @@ export async function createStorageService({ dataDir, store, artifacts, vault, e
     });
   }
   async function reserve(action, input, extra = {}) {
+    checkOpen();
     validateInput(input); find(store.read(), 'projects', input.projectId);
     const fingerprint = hash(json({ action, input }));
     return store.transaction(s => {
@@ -103,8 +107,8 @@ export async function createStorageService({ dataDir, store, artifacts, vault, e
   async function guarded(job, work) {
     try { await update(job.id, { status: 'running', error: null }); return await work(); }
     catch (error) {
-      const code = error.code;
-      return update(job.id, { status: code === 'DESTINATION_CONFLICT' ? 'conflict' : code === 'INTERRUPTED' ? 'interrupted' : 'failed', error: safeError(error), ...(code === 'DESTINATION_CONFLICT' ? { conflict: { currentHead: error.details?.currentHead ?? null, heads: error.details?.heads ?? [] } } : {}) });
+      const code = closed?'INTERRUPTED':error.code;
+      return update(job.id, { status: code === 'DESTINATION_CONFLICT' ? 'conflict' : code === 'INTERRUPTED' ? 'interrupted' : 'failed', error: safeError(closed?{code:'INTERRUPTED'}:error), ...(code === 'DESTINATION_CONFLICT' ? { conflict: { currentHead: error.details?.currentHead ?? null, heads: error.details?.heads ?? [] } } : {}) });
     }
   }
   async function single(jobId, fn) {
@@ -416,6 +420,11 @@ export async function createStorageService({ dataDir, store, artifacts, vault, e
     finishDriveAuth: input => auth.finish(input),
     async listDriveFolders(input) { return (await adapterFor(input.projectId, input.destinationId)).folders(); },
     async createDriveFolder(input) { return (await adapterFor(input.projectId, input.destinationId)).createFolder(input.name); },
+    async shutdown(){
+      if(closed)return;closed=true;controller.abort();
+      await Promise.allSettled([...inFlight.values()]);
+      await store.transaction(s=>{for(const job of s.jobs.filter(j=>j.kind==='storage'&&ACTIVE.includes(j.status))){job.status='interrupted';job.error=safeError({code:'INTERRUPTED'});job.updatedAt=now();}});
+    },
   };
   return service;
 }

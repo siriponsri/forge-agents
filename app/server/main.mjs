@@ -19,6 +19,7 @@ import {defaultDataDir} from './paths.mjs';
 import {createDownloadService} from './downloads.mjs';
 import {createOfficeService} from '../office/service.mjs';
 import {createServingService} from '../serving/service.mjs';
+import {createStorageService} from '../storage/service.mjs';
 export {defaultDataDir};
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const manifest=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
@@ -34,18 +35,19 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
   const downloads=createDownloadService({sourceRoot:root,dataDir});
   const office=createOfficeService({store});
   const serving=createServingService({store,dataDir,connections,artifacts});
+  const storage=await createStorageService({store,dataDir,artifacts});
   await jobs.recover();
   let reports;try{const mod=await import('../reports/service.mjs');reports=await mod.createReportService({store,dataDir});}catch(e){if(e.code!=='ERR_MODULE_NOT_FOUND')throw e;}
   let commit='unknown';try{commit=execFileSync('git',['rev-parse','--short','HEAD'],{cwd:root,encoding:'utf8',windowsHide:true}).trim();}catch{try{commit=JSON.parse(await readFile(path.join(root,'release-info.json'),'utf8')).commit.slice(0,7);}catch{}}
   const clients=new Set();let closed=false;
-  const app={store,t3,jobs,connections,reports,serving,server:null,url:null,async close(){
+  const app={store,t3,jobs,connections,reports,serving,storage,server:null,url:null,async close(){
     if(closed)return;closed=true;
     // Stop accepting reconnects before closing SSE; browser retries must not keep
     // an application shutdown alive. Close only this server's HTTP connections.
     const stopped=new Promise(resolve=>app.server.close(resolve));
     for(const client of clients)client.end();
     app.server.closeAllConnections();
-    await jobs.shutdown();await t3.shutdown();await serving.shutdown();await connections.close();await reports?.shutdown?.();
+    await storage.shutdown();await jobs.shutdown();await t3.shutdown();await serving.shutdown();await connections.close();await reports?.shutdown?.();
     await stopped;await store.close();
   }};
   const server=http.createServer(async(req,res)=>{
@@ -61,14 +63,21 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
       if(method==='GET'&&p.startsWith('/downloads/')){const file=await downloads.file(p.slice('/downloads/'.length));res.writeHead(200,{'Content-Type':file.contentType,'Content-Disposition':`attachment; filename="${file.filename}"`,'X-Content-Type-Options':'nosniff'});createReadStream(file.path).pipe(res);return;}
       if(method==='GET'&&p==='/api/events'){
         res.writeHead(200,{'Content-Type':'text/event-stream','Cache-Control':'no-cache','Connection':'keep-alive'});clients.add(res);
-        const send=()=>res.write(`data: ${JSON.stringify({type:'state.changed',revision:store.read().revision})}\n\n`);send();const off=store.subscribe(send),timer=setInterval(()=>res.write(': heartbeat\n\n'),15000);
-        req.on('close',()=>{clients.delete(res);off();clearInterval(timer);});return;
+        const send=()=>{if(!res.writableEnded&&!res.destroyed)res.write(`data: ${JSON.stringify({type:'state.changed',revision:store.read().revision})}\n\n`);};send();
+        const off=store.subscribe(send),timer=setInterval(()=>{if(!res.writableEnded&&!res.destroyed)res.write(': heartbeat\n\n');},15000);
+        res.once('close',()=>{clients.delete(res);off();clearInterval(timer);});return;
       }
       if(method==='GET'&&/^\/api\/runs\/[^/]+\/events$/.test(p)){const id=p.split('/')[3];find(store.read(),'runs',id);res.writeHead(200,{'Content-Type':'text/event-stream','Cache-Control':'no-cache'});for(const event of protocolEvents(store.read(),id))res.write(`data: ${JSON.stringify(event)}\n\n`);return res.end();}
       if(method==='GET'&&p==='/api/t3/status')return json(res,t3.health());
       if(method==='GET'&&p==='/api/t3/catalog')return json(res,catalog.read());
       if(method==='GET'&&p==='/api/reports/health')return json(res,reports?await reports.health():{status:'implementation_pending'});
       if(method==='GET'&&p==='/api/serving/health')return json(res,await serving.health(url.searchParams.get('projectId')));
+      if(method==='GET'&&p==='/api/storage/drive/auth/callback'){
+        const connected=await storage.finishDriveAuth({state:url.searchParams.get('state'),code:url.searchParams.get('code')});
+        const payload=JSON.stringify({type:'forge.drive.connected',secretRef:connected.secretRef});
+        res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Referrer-Policy':'no-referrer'});
+        return res.end(`<!doctype html><html lang="th"><meta charset="utf-8"><title>FORGE Drive</title><p>เชื่อมต่อ Google Drive แล้ว กลับไปที่ FORGE เพื่อตั้งค่าโฟลเดอร์</p><script>window.opener?.postMessage(${payload},location.origin);history.replaceState(null,'',location.pathname);</script></html>`);
+      }
       if(method==='GET'&&/^\/api\/reports\/jobs\/[^/]+$/.test(p))return json(res,await reports.getJob(p.split('/')[4]));
       if(method==='GET'&&/^\/api\/jobs\/[^/]+$/.test(p))return json(res,find(store.read(),'jobs',p.split('/')[3]));
       if(method==='GET'&&/^\/api\/artifacts\/[^/]+\/download$/.test(p)){
@@ -95,6 +104,18 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
         else if(p==='/api/artifacts/upload')value=await artifacts.upload(input);
         else if(p==='/api/storage/backup')value=await artifacts.backup();
         else if(p==='/api/storage/restore')value=await artifacts.restore(input);
+        else if(p==='/api/storage/configure')value=await storage.configure(input);
+        else if(p==='/api/storage/health')value=await storage.health(input);
+        else if(p==='/api/storage/status')value=await storage.status(input);
+        else if(p==='/api/storage/inspect')value=await storage.inspect(input);
+        else if(p==='/api/storage/sync')value=await storage.sync(input);
+        else if(p==='/api/storage/bundles/backup')value=await storage.backup(input);
+        else if(p==='/api/storage/bundles/restore')value=await storage.restore(input);
+        else if(p==='/api/storage/retry')value=await storage.retry(input);
+        else if(p==='/api/storage/retention')value=await storage.retention(input);
+        else if(p==='/api/storage/drive/auth/begin')value=await storage.beginDriveAuth({...input,redirectUri:`http://${host}/api/storage/drive/auth/callback`});
+        else if(p==='/api/storage/drive/folders')value=await storage.listDriveFolders(input);
+        else if(p==='/api/storage/drive/folders/create')value=await storage.createDriveFolder(input);
         else if(p==='/api/storage/git')value=await gitStorage.run(input);
         else if(p==='/api/desktop/acquire')value=await control.acquire(input);
         else if(p==='/api/desktop/action')value=await control.action(input);

@@ -36,6 +36,17 @@ async function fixture(t, options = {}) {
 }
 const assertAbsent = file => assert.rejects(access(file), { code: 'ENOENT' });
 
+test('service shutdown interrupts staged transfer before publication and preserves resumable bytes',async t=>{
+  let f,closing;
+  f=await fixture(t,{transferHook:event=>{if(event.phase==='afterFile'&&!closing)closing=f.service.shutdown();}});
+  const job=await f.service.backup(f.input());await closing;
+  assert.equal(job.status,'interrupted');assert.equal(job.error.code,'INTERRUPTED');
+  assert.equal((await f.service.status({projectId:f.project.id})).sync.archive.lastVerified??null,null);
+  assert.ok(job.completedFiles.length>0);
+  const key=`projects/${f.project.id}/bundles/${job.bundleId}/manifest.json`;assert.equal(await f.adapter.get(key),null);
+  await f.restart();const resumed=await f.service.retry({...f.input(),jobId:job.id,mode:'resume'});assert.equal(resumed.status,'completed',JSON.stringify(resumed.error));
+});
+
 test('complete backup restores artifact/companion bytes, native content and lineage into an independent project after restart', async t => {
   const f = await fixture(t);
   await f.store.transaction(s => { s.settings.storageSecret = 'DO-NOT-EXPORT'; s.projects[0].profile.provider = { secretRef: 'env:PRIVATE', access_token: 'DO-NOT-EXPORT' }; });

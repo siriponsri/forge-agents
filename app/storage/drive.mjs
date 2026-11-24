@@ -9,15 +9,17 @@ const metadataFields = 'id,name,mimeType,appProperties,capabilities(canAddChildr
 
 // Drive v3 binary objects, resumable uploads, generated IDs and immutable keys.
 // No public sharing permissions are created. Folder must be explicitly selected/created by the owner.
-export function createDriveAdapter({ folderId, secretRef, auth, fetchImpl = fetch, wait = sleep }) {
+export function createDriveAdapter({ folderId, secretRef, auth, fetchImpl = fetch, wait = sleep,signal }) {
   if (typeof folderId !== 'string' || !/^[a-zA-Z0-9_-]{1,200}$/.test(folderId)) fail('VALIDATION', 'Choose a Google Drive folder');
   async function request(url, options = {}, { accepted = [], retry = true } = {}) {
     const parsed = new URL(url);
     if (parsed.protocol !== 'https:' || parsed.hostname !== 'www.googleapis.com') fail('DRIVE_PERMISSION', 'Unexpected Drive upload endpoint');
     for (let attempt = 0; ; attempt++) {
+      if(signal?.aborted)fail('INTERRUPTED','Storage stopped; inspect staged files before resuming',409);
       let response;
-      try { response = await fetchImpl(url, { ...options, headers: { ...options.headers, Authorization: `Bearer ${await auth.token(secretRef)}` }, redirect: 'error', signal: AbortSignal.timeout(60000) }); }
+      try { response = await fetchImpl(url, { ...options, headers: { ...options.headers, Authorization: `Bearer ${await auth.token(secretRef)}` }, redirect: 'error', signal: signal?AbortSignal.any([signal,AbortSignal.timeout(60000)]):AbortSignal.timeout(60000) }); }
       catch (e) {
+        if(signal?.aborted)fail('INTERRUPTED','Storage stopped; inspect staged files before resuming',409);
         if (e.code === 'AUTH_REQUIRED' || e.code === 'SETUP_REQUIRED') throw e;
         if (!retry || attempt >= 2) fail('DRIVE_UNAVAILABLE', 'Drive request interrupted; retry staged files');
         await wait(250 * 2 ** attempt); continue;
