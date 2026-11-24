@@ -65,7 +65,7 @@ export async function createContextService({store,dataDir,authorize,tokenizer,pr
     return items.filter(i=>refs.some(r=>r.id===i.id&&r.revision===i.revision&&r.sha256===hash(i.content)&&r.sha256===i.sha256)).map(i=>{
       if(hash(scopeOf(p,i.scope))!==hash(scope))fail('CONTEXT_SCOPE','Resolved memory scope differs from its authorized request',403);
       text(i.content,'memory content',limits.maxTextBytes);
-      return {id:`memory:${i.id}`,kind:'memory',text:redact(i.content),sha256:hash(redact(i.content)),scope,sourceRefs:safeJson([{kind:'memory',id:i.id,revision:i.revision,sha256:i.sha256},...(i.sourceRefs??[])]),verification:safeJson(i.verification??null),stale:i.stale===true,conflicts:safeJson(i.conflicts??[]),trust:'untrusted-data',memory:true};
+      return {id:`memory:${i.id}`,kind:'memory',text:redact(i.content),sha256:hash(redact(i.content)),scope,sourceRefs:safeJson([{kind:'memory',id:i.id,revision:i.revision,sha256:i.sha256},...(i.sourceRefs??[])]),verification:safeJson(i.verification??null),stale:i.stale===true,provenanceStale:i.provenanceStale===true,conflicts:safeJson(i.conflicts??[]),trust:'untrusted-data',memory:true};
     });
   }
   async function gatherMemory(s,input,caller){

@@ -186,6 +186,8 @@ Memory text never enters context events, receipts, compacted summaries or spill
 storage. Only refs and the bounded retrieval request are stored. Current memory
 is re-authorized/re-resolved for preview, resolve, compaction, retry and dispatch.
 Verification, conflicts and stale flags remain claims in escaped untrusted DATA.
+The finalized memory seam's `provenanceStale` annotation also survives current
+resolution, explicitly distinguishing source drift from time-based staleness.
 Memory cannot become a canonical critical instruction, permission or approval.
 This first implementation accepts records in the exact requested memory scope;
 cross-scope shared records must be requested/resolved in their original scope
@@ -278,6 +280,9 @@ worked without changing host policy.
   retrieval, conflict flags, native pre-dispatch composition, forget and service
   restart passed. The test uses `app/memory/index.mjs` automatically after merge;
   otherwise it explicitly skips unless `FORGE_MEMORY_TEST_MODULE` is set.
+  Rechecked against finalized memory commit
+  `449dc0c4207325aeb975722b452e59f6c2141f33`, including source revision drift
+  propagated as `stale:true,provenanceStale:true` while preserving refs only.
 - Real spill directory junction redirection and same-size byte tampering rejected.
   File-symlink creation itself lacked Windows privilege; that sub-fixture was not
   exercised and emits an explicit diagnostic. It is not a passed symlink test.

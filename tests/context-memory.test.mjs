@@ -28,6 +28,8 @@ test('real Memory Manager + SQLite context seam preserves conflicts and propagat
   const r=await seam({run:store.read().runs[0],project:store.read().projects[0],baseMessage:'Owner constraint: do not expose a public service.'});
   assert.equal(r.memoryAvailable,2);assert.match(r.message,/REMEMBERED_UNIQUE/);assert.match(r.message,/untrusted DATA/);assert.match(r.message,/conflicts/);assert.match(r.message,/do not expose/);
   assert.ok(!JSON.stringify(store.read().events.filter(e=>e.type.startsWith('context.'))).includes('REMEMBERED_UNIQUE'));
+  await store.transaction(s=>s.tasks[0].revision++);
+  const drifted=await context.resolve({projectId:'p',contextId:r.id},caller);assert.match(drifted.message,/"stale":true/);assert.match(drifted.message,/"provenanceStale":true/);
   await memory.forget({projectId:'p',scope,id:first.id,expectedRevision:first.revision,operationId:crypto.randomUUID()},caller);
   assert.ok(!(await context.resolve({projectId:'p',contextId:r.id},caller)).message.includes('REMEMBERED_UNIQUE'));
   await memory.close();await store.close();store=await openStore(dir);memory=await initMemory();context=await initContext();
