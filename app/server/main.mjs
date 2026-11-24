@@ -53,7 +53,9 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
       if(method==='GET'&&/^\/api\/reports\/jobs\/[^/]+$/.test(p))return json(res,await reports.getJob(p.split('/')[4]));
       if(method==='GET'&&/^\/api\/jobs\/[^/]+$/.test(p))return json(res,find(store.read(),'jobs',p.split('/')[3]));
       if(method==='GET'&&/^\/api\/artifacts\/[^/]+\/download$/.test(p)){
-        const id=p.split('/')[3];let file;try{file=await artifacts.download(id);}catch(e){if(!reports)throw e;file=await reports.download(id);}
+        const id=p.split('/')[3];const artifact=find(store.read(),'artifacts',id);
+        const ownedReport=artifact.jobId&&store.read().jobs.some(j=>j.id===artifact.jobId&&j.owner==='reports');
+        const file=ownedReport&&reports?await reports.download(id):await artifacts.download(id);
         res.writeHead(200,{'Content-Type':file.contentType,'Content-Disposition':`inline; filename*=UTF-8''${encodeURIComponent(file.filename)}`,'X-Content-Type-Options':'nosniff'});createReadStream(file.path).pipe(res);return;
       }
       if(method==='POST'){

@@ -45,8 +45,9 @@ test('atomic rollback and serialized writers keep last acknowledged data',async(
   await store.close();
 });
 
-test('HTTP startup, job execution, verified artifacts, backup and process restart',async()=>{
+test('HTTP startup, job execution, verified artifacts, backup and process restart',async t=>{
   const dir=await temp();let app=await createApplication({dataDir:dir});
+  t.after(()=>app.close());
   const post=async(p,input)=>{const r=await fetch(app.url+p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(input)});const data=await r.json();if(!r.ok)throw Object.assign(new Error(data.error.message),data.error);return data;};
   const health=await (await fetch(app.url+'/api/health')).json();assert.equal(health.product,'FORGE');
   const project=(await post('/api/command',op('project.create',null,{name:'Job fixture',workspace:path.join(dir,'job workspace')}))).entity;

@@ -1,3 +1,11 @@
+> **FORGE v3 development:** งานผลิตภัณฑ์ล่าสุดอยู่บน `integration/forge-local-complete`
+> สถานะ **IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN**.
+> เปิด workbench ที่รวมแล้วด้วย `Start-FORGE.cmd` (Node.js24.13+), ปิดด้วย
+> `Stop-FORGE.cmd`, เริ่มใหม่ด้วย `Restart-FORGE.cmd`.
+> ดู [วิธีเริ่มและข้อจำกัดปัจจุบัน](docs/FORGE_LOCAL_QUICKSTART_TH.md) และ
+> [progress v3](docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md).
+> ข้อมูล P11 ด้านล่างเป็นผลของ portable release เดิม ไม่ใช่ผลรับรอง v3.
+
 <div align="center">
 
 <img src="assets/forge-mark.svg" alt="FORGE" width="104">
