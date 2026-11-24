@@ -1,0 +1,24 @@
+{
+  "name": "t3",
+  "version": "0.1.11",
+  "description": "T3 Code CLI. Downloads the self-contained executable for this platform from the GitHub Release.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pingdotgg/t3code",
+    "directory": "apps/server"
+  },
+  "bin": {
+    "t3": "./bin/t3.mjs"
+  },
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20.11"
+  },
+  "t3code": {
+    "databaseMigration": 102
+  }
+}
