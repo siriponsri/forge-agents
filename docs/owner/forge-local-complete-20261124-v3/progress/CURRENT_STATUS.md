@@ -2,6 +2,19 @@
 
 ## Developer checkpoint — 2026-11-24
 
+Latest owner steering: improve visual design, provide named **VS Code themes**,
+default **Dark Modern**, plus a landing page using Orca/T3/Paseo as structural
+references and real Windows/macOS launcher downloads. These are active tasks in
+TASK_ASSIGNMENTS; they augment the original complete-product objective.
+GUI and native report workers have been integrated. Lead combined browser smoke
+PASSED, real report GUI configure/generate/preview surface/download/rotate PASSED.
+A multiline text-validation bug found during integration was fixed0603f71.
+The current PDF object viewer shows fallback in headless Chromium; an actual
+rendered-image fallback is still needed before claiming browser-independent preview.
+First-run clean package exposed dependency loading before preflight; fixed413a04d
+and macOS pure path selection/launchers added d23560b. Downloaded clean package
+installation verification is running. New theme/landing workers own separate paths.
+
 Overall **IMPLEMENTATION_INCOMPLETE**, **HOME_UAT_NOT_RUN**. Active branch
 `integration/forge-local-complete`; main stays efcd132. No push. Requirements and
 contracts9d0a90f, backend22bb87c, T3/launcher9857bdd, catalog/Git evidence de14a95.

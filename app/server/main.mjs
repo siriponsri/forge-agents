@@ -16,6 +16,7 @@ import { protocolEvents } from './agui.mjs';
 import { createCatalogService } from './catalog.mjs';
 import { createGitStorageService } from './git-storage.mjs';
 import {defaultDataDir} from './paths.mjs';
+import {createDownloadService} from './downloads.mjs';
 export {defaultDataDir};
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const manifest=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
@@ -28,9 +29,10 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
   const artifacts=createArtifactService({store,dataDir}),control=createControlService({store,connections});
   const catalog=createCatalogService({load:()=>t3.catalog()});
   const gitStorage=createGitStorageService({store});
+  const downloads=createDownloadService({sourceRoot:root,dataDir});
   await jobs.recover();
   let reports;try{const mod=await import('../reports/service.mjs');reports=await mod.createReportService({store,dataDir});}catch(e){if(e.code!=='ERR_MODULE_NOT_FOUND')throw e;}
-  let commit='unknown';try{commit=execFileSync('git',['rev-parse','--short','HEAD'],{cwd:root,encoding:'utf8',windowsHide:true}).trim();}catch{}
+  let commit='unknown';try{commit=execFileSync('git',['rev-parse','--short','HEAD'],{cwd:root,encoding:'utf8',windowsHide:true}).trim();}catch{try{commit=JSON.parse(await readFile(path.join(root,'release-info.json'),'utf8')).commit.slice(0,7);}catch{}}
   const clients=new Set();let closed=false;
   const app={store,t3,jobs,connections,reports,server:null,url:null,async close(){if(closed)return;closed=true;for(const client of clients)client.end();await jobs.shutdown();await t3.shutdown();await connections.close();await reports?.shutdown?.();await new Promise(r=>app.server.close(r));await store.close();}};
   const server=http.createServer(async(req,res)=>{
@@ -42,6 +44,8 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
       if(method==='GET'&&p==='/api/health')return json(res,{status:'ready',product:'FORGE',version:manifest.version,commit,dataPath:dataDir,t3:t3.health(),reports:reports?await reports.health():{status:'implementation_pending'},implementation:'IMPLEMENTATION_INCOMPLETE'});
       if(method==='GET'&&p==='/api/state')return json(res,store.read());
       if(method==='GET'&&p==='/api/integrations')return json(res,integrationCatalog);
+      if(method==='GET'&&p==='/api/downloads')return json(res,await downloads.metadata());
+      if(method==='GET'&&p.startsWith('/downloads/')){const file=await downloads.file(p.slice('/downloads/'.length));res.writeHead(200,{'Content-Type':file.contentType,'Content-Disposition':`attachment; filename="${file.filename}"`,'X-Content-Type-Options':'nosniff'});createReadStream(file.path).pipe(res);return;}
       if(method==='GET'&&p==='/api/events'){
         res.writeHead(200,{'Content-Type':'text/event-stream','Cache-Control':'no-cache','Connection':'keep-alive'});clients.add(res);
         const send=()=>res.write(`data: ${JSON.stringify({type:'state.changed',revision:store.read().revision})}\n\n`);send();const off=store.subscribe(send),timer=setInterval(()=>res.write(': heartbeat\n\n'),15000);
@@ -92,7 +96,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
       if(p.startsWith('/api/'))fail('NOT_FOUND','API route not found',404);
       const dir=path.join(root,'app','web','dist'),requested=path.resolve(dir,`.${decodeURIComponent(p)}`),relative=path.relative(dir,requested);
       if(relative.startsWith('..')||path.isAbsolute(relative))fail('PATH','Invalid asset path',403);
-      let file=requested;try{if(!(await stat(file)).isFile())file=path.join(dir,'index.html');}catch{file=path.join(dir,'index.html');}
+      let file=['/welcome','/welcome/'].includes(p)?path.join(dir,'welcome.html'):requested;try{if(!(await stat(file)).isFile())file=path.join(dir,'index.html');}catch{file=path.join(dir,'index.html');}
       const bytes=await readFile(file);res.writeHead(200,{'Content-Type':mime[path.extname(file)]??'application/octet-stream','X-Content-Type-Options':'nosniff'});res.end(bytes);
     }catch(e){if(res.headersSent){res.end();return;}json(res,{error:{code:e.code??'INTERNAL',message:e.message,details:e.details}},e.statusCode??(e.code==='ENOENT'?404:500));}
   });

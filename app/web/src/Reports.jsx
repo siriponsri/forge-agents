@@ -51,6 +51,7 @@ export default function Reports({ t, state, projectId, mutate, run, busy }) {
       a.contentType === "application/pdf" ||
       /\.pdf$/i.test(a.filename || a.name || a.path || ""),
   );
+  const previewImage=preview&&artifacts.find(a=>a.kind==='png'&&((a.jobId&&a.jobId===preview.jobId)||a.parentArtifactIds?.includes(preview.id)));
   return (
     <>
       <Heading
@@ -270,19 +271,8 @@ export default function Reports({ t, state, projectId, mutate, run, busy }) {
               {t("ไฟล์จริงจาก artifact ที่บันทึกแล้ว", "Actual registered artifact")} ·
               SHA256 {preview.sha256 || preview.hash || "—"}
             </p>
-            <object
-              type="application/pdf"
-              data={downloadUrl(preview.id)}
-              className="pdf-preview"
-            >
-              <p>
-                {t(
-                  "เบราว์เซอร์ไม่รองรับ PDF ในหน้า ให้ดาวน์โหลดไฟล์เพื่อตรวจ",
-                  "Inline PDF is unavailable in this browser. Download the file to inspect.",
-                )}{" "}
-                <a href={downloadUrl(preview.id)}>{t("เปิดไฟล์", "Open file")}</a>
-              </p>
-            </object>
+            {previewImage?<div className="report-page-preview"><p className="help">{t('หน้าที่ 1 · ภาพจากไฟล์ PDF ที่ตรวจแล้ว','Page 1 · rendered from the verified PDF')}</p><img src={downloadUrl(previewImage.id)} alt={t('ภาพหน้ารายงานที่สร้างจริง','Rendered report page')} style={{display:'block',maxWidth:'100%',height:'auto',margin:'0 auto'}}/></div>:<div className="overview-empty"><p>{t('ยังไม่มีภาพตัวอย่างของ PDF นี้','A rendered preview is not available yet.')}</p><button disabled={busy} onClick={()=>run(()=>request('/api/reports/pdf-operation',{operationId:operationId(),projectId,artifactId:preview.id,expectedRevision:preview.revision,operation:'render',page:1}))}>{t('สร้างภาพตัวอย่าง','Render preview')}</button></div>}
+            <a className="button" href={downloadUrl(preview.id)} target="_blank" rel="noreferrer">{t('เปิด PDF แบบเต็ม','Open full PDF')}</a>
           </section>
         </div>
       )}

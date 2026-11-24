@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-24",
+  "framework": "React 19 + Vite 7",
+  "previousFont": "Segoe UI / Tahoma",
+  "previousPalette": "warm neutral + burnt orange",
+  "motion": "no motion library; CSS and reduced-motion",
+  "currentOwnerDirection": "VS Code named themes; Dark Modern default; redesigned FORGE workbench and reference-inspired landing",
+  "typography": ["Manrope", "IBM Plex Sans Thai"],
+  "implementation": "in-place existing flows plus additive Overview/theme/landing; no route deletion"
+}

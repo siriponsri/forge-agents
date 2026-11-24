@@ -29,7 +29,7 @@ try{
   await click('Save report source');await wait(s=>s.reports.length===1);await click('Generate DOCX & PDF');
   let s=await wait(s=>s.jobs.some(j=>j.owner==='reports'&&['ready','failed','unknown'].includes(j.status)));const report=s.jobs.find(j=>j.kind==='report');assert.equal(report.status,'ready',JSON.stringify(report.error));
   const pdf=s.artifacts.find(a=>a.kind==='pdf'),docx=s.artifacts.find(a=>a.kind==='docx');assert.ok(pdf&&docx);
-  await page.getByRole('button',{name:'Preview PDF',exact:true}).first().click();await page.getByRole('dialog').waitFor();assert.equal(await page.getByRole('dialog').locator('object,iframe').count(),1);
+  await page.getByRole('button',{name:'Preview PDF',exact:true}).first().click();await page.getByRole('dialog').waitFor();const rendered=page.getByRole('dialog').getByRole('img',{name:'Rendered report page'});await rendered.waitFor();await rendered.evaluate(img=>img.decode());assert.ok(await rendered.evaluate(img=>img.naturalWidth>0));
   const pdfResponse=await page.request.get(app.url+`/api/artifacts/${pdf.id}/download`);assert.equal(pdfResponse.status(),200);assert.equal((await pdfResponse.body()).subarray(0,5).toString(),'%PDF-');
   const wordResponse=await page.request.get(app.url+`/api/artifacts/${docx.id}/download`);assert.equal(wordResponse.status(),200);assert.equal((await wordResponse.body()).subarray(0,2).toString(),'PK');
   await page.screenshot({path:path.join(temp,'report-preview.png'),fullPage:true});await page.getByRole('dialog').getByRole('button',{name:'Close',exact:true}).click();

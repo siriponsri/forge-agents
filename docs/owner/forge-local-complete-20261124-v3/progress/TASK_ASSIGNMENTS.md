@@ -2,6 +2,20 @@
 
 ## Active assignments — 2026-11-24
 
+### Owner UI/landing additions (latest steering)
+
+| Task | Owner | Executable scope | State |
+|---|---|---|---|
+| UX-01 VS Code themes | New isolated theme worker | Named builtin palettes, picker, theme-aware global styles; default Dark Modern | IN_PROGRESS |
+| UX-02 Workbench redesign | Lead | Overview, shell hierarchy, bundled type, preference persistence, live Univer theme | IN_PROGRESS |
+| WEB-01 Landing | New isolated landing worker | TH/EN landing inspired structurally by orca.dev/t3.codes/paseo.sh, actual screenshot, download UI | IN_PROGRESS |
+| DIST-01 Windows/macOS downloads | Lead | Source+launcher ZIPs, SHA256/commit metadata, download API, platform setup | IN_PROGRESS; macOS live NOT_RUN |
+
+Earlier workers A/B completed and were integrated as1b4faad/073960f.
+Lead combined GUI smoke and actual native report GUI generation/rotation/download
+passed; sanitized report evidence is in `docs/evidence/report-gui-smoke.json`.
+The redesign preserves these flows; regression tests must be rerun on the new UI.
+
 Base9d0a90f, shared API in `app/CONTRACTS.md`. Lead owns integration branch,
 server/schema/manifests/lockfiles/progress. Model for all: codex gpt-6.1-sol,
 reasoningEffort=xhigh. Isolated worktrees prepared by delegate_task, not shared writes.
