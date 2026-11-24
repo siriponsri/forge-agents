@@ -14,7 +14,9 @@ import { createArtifactService } from './artifacts.mjs';
 import { createControlService } from './control.mjs';
 import { protocolEvents } from './agui.mjs';
 import { createCatalogService } from './catalog.mjs';
+import { createGitStorageService } from './git-storage.mjs';
 const root=fileURLToPath(new URL('../../',import.meta.url));
+const manifest=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
 export const defaultDataDir=()=>process.env.FORGE_DATA_DIR??path.join(process.env.LOCALAPPDATA??path.join(os.homedir(),'.local','share'),'FORGE','workbench');
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2','.png':'image/png'};
 async function body(req){let size=0;const parts=[];for await(const b of req){size+=b.length;if(size>24*1024*1024)fail('SIZE','Request exceeds 24 MB',413);parts.push(b);}try{return JSON.parse(Buffer.concat(parts).toString()||'{}');}catch{fail('JSON','Invalid JSON request');}}
@@ -24,6 +26,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
   const jobs=createJobService({store,dataDir}),t3=createT3Service({store,dataDir}),connections=createConnectionService({store});
   const artifacts=createArtifactService({store,dataDir}),control=createControlService({store,connections});
   const catalog=createCatalogService({load:()=>t3.catalog()});
+  const gitStorage=createGitStorageService({store});
   await jobs.recover();
   let reports;try{const mod=await import('../reports/service.mjs');reports=await mod.createReportService({store,dataDir});}catch(e){if(e.code!=='ERR_MODULE_NOT_FOUND')throw e;}
   let commit='unknown';try{commit=execFileSync('git',['rev-parse','--short','HEAD'],{cwd:root,encoding:'utf8',windowsHide:true}).trim();}catch{}
@@ -35,7 +38,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
       if(req.headers.origin && req.headers.origin!==`http://${host}`)fail('ORIGIN','Cross-origin requests are blocked',403);
       const url=new URL(req.url,`http://${host}`),p=url.pathname,method=req.method;
       if(method==='OPTIONS')return json(res,{error:{code:'ORIGIN',message:'CORS is disabled'}},403);
-      if(method==='GET'&&p==='/api/health')return json(res,{status:'ready',product:'FORGE',version:'0.2.0-dev',commit,dataPath:dataDir,t3:t3.health(),reports:reports?await reports.health():{status:'implementation_pending'},implementation:'IMPLEMENTATION_INCOMPLETE'});
+      if(method==='GET'&&p==='/api/health')return json(res,{status:'ready',product:'FORGE',version:manifest.version,commit,dataPath:dataDir,t3:t3.health(),reports:reports?await reports.health():{status:'implementation_pending'},implementation:'IMPLEMENTATION_INCOMPLETE'});
       if(method==='GET'&&p==='/api/state')return json(res,store.read());
       if(method==='GET'&&p==='/api/integrations')return json(res,integrationCatalog);
       if(method==='GET'&&p==='/api/events'){
@@ -70,6 +73,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
         else if(p==='/api/artifacts/register')value=await artifacts.register(input);
         else if(p==='/api/storage/backup')value=await artifacts.backup();
         else if(p==='/api/storage/restore')value=await artifacts.restore(input);
+        else if(p==='/api/storage/git')value=await gitStorage.run(input);
         else if(p==='/api/desktop/acquire')value=await control.acquire(input);
         else if(p==='/api/desktop/action')value=await control.action(input);
         else if(p==='/api/desktop/stop')value=await control.stop(input);

@@ -92,6 +92,7 @@ export function createT3Service({dataDir,store}){
           if(run.status==='failed')appendProtocol(s,run,{type:'RUN_ERROR',message:observation.thread?.error??'T3 run failed'});
           else appendProtocol(s,run,{type:'RUN_FINISHED',threadId:run.threadId,runId:run.id,outcome:run.status==='completed'?{type:'success'}:{type:'cancelled'}});
           run.terminalEvent=true;
+          const task=find(s,'tasks',run.taskId,run.projectId);task.status=run.status==='completed'?'review':'blocked';changed(task);
         }
       });
       return find(store.read(),'runs',id);

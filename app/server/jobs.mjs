@@ -20,14 +20,16 @@ export function createJobService({store,dataDir}){
       if(job.replayed)return job;
       const dir=path.join(dataDir,'jobs',job.id);await mkdir(dir,{recursive:true});
       const script=path.join(dir,'notebook.py');await writeFile(script,job.code??'','utf8');
-      const child=spawn(process.env.FORGE_PYTHON??'python',['-u',script],{cwd:job.workspace,windowsHide:true,stdio:['ignore','pipe','pipe'],shell:false});
+      const allowedEnvironment=Object.fromEntries(Object.entries(process.env).filter(([key])=>['PATH','Path','SystemRoot','TEMP','TMP','USERPROFILE','LOCALAPPDATA','PYTHONPATH'].includes(key)));
+      const child=spawn(process.env.FORGE_PYTHON??'python',['-u',script],{cwd:job.workspace,env:allowedEnvironment,windowsHide:true,stdio:['ignore','pipe','pipe'],shell:false});
       processes.set(job.id,child);
       const update=(fn)=>store.transaction(s=>{const j=find(s,'jobs',job.id);fn(j);changed(j);}).catch(()=>{});
       await update(j=>{j.status='running';j.pid=child.pid;j.startedAt=now();});
       const append=b=>update(j=>{j.logs=(j.logs+b.toString('utf8')).slice(-200000);});
       child.stdout.on('data',append);child.stderr.on('data',append);
       let done=false;
-      const finish=(status,error,exitCode)=>{if(done)return;done=true;processes.delete(job.id);update(j=>{j.status=status;j.error=error;j.exitCode=exitCode;j.finishedAt=now();});};
+      const timeout=setTimeout(()=>{update(j=>{j.status='stopping';j.error='Local job reached its 120 second limit';});child.kill();},120000);
+      const finish=(status,error,exitCode)=>{if(done)return;done=true;clearTimeout(timeout);processes.delete(job.id);update(j=>{j.status=status;j.error=error??j.error;j.exitCode=exitCode;j.finishedAt=now();});};
       child.on('error',e=>finish('failed',`Python could not start: ${e.message}. Install Python and retry.`,null));
       child.on('exit',(code,signal)=>finish(store.read().jobs.find(j=>j.id===job.id)?.status==='stopping'?'stopped':code===0?'completed':'failed',code===0?null:`Python exited (${code??signal})`,code));
       return store.read().jobs.find(j=>j.id===job.id);

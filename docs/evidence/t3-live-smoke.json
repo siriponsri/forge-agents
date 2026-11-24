@@ -1,0 +1,22 @@
+{
+  "observedAt": "2026-11-24T04:30:38.198Z",
+  "scope": "Disposable read-only FORGE T3 provider integration; no files changed",
+  "t3Version": "0.1.11",
+  "model": "gpt-6.1-sol",
+  "options": {
+    "reasoningEffort": "xhigh"
+  },
+  "status": "completed",
+  "runId": "3ca650f9-801e-4c8b-8e8c-acf0dd733d61",
+  "threadId": "mcp:launch:58c23d0c0a8d034ca5443ac6418a5bfc4b4ebd6a0a0bcbd6115e8ef483a390ae",
+  "providerRunId": "run:thread:mcp%3Alaunch%3A58c23d0c0a8d034ca5443ac6418a5bfc4b4ebd6a0a0bcbd6115e8ef483a390ae:ordinal:1",
+  "reply": [
+    "FORGE_ENGINEERING_BRIDGE_OK"
+  ],
+  "protocolEventTypes": [
+    "RUN_STARTED",
+    "MESSAGES_SNAPSHOT",
+    "CUSTOM",
+    "RUN_FINISHED"
+  ]
+}

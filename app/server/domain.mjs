@@ -25,7 +25,7 @@ function validateTask(s,x,projectId){
 }
 function validateSnapshot(snapshot){
   if(!snapshot || typeof snapshot!=='object' || Array.isArray(snapshot))fail('VALIDATION','Native editor snapshot is required');
-  if(/(?:blob:|data:image\/)/.test(JSON.stringify(snapshot)))fail('RESOURCE_NOT_DURABLE','Save images as project resources before saving this document');
+  if(/blob:/.test(JSON.stringify(snapshot)))fail('RESOURCE_NOT_DURABLE','Save temporary browser images as project resources before saving this document');
 }
 export async function command(store,input){
   const operationId=required(input.operationId,'operationId'); const type=required(input.type,'type');
