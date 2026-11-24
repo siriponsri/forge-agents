@@ -42,7 +42,8 @@ export async function command(store,input){
     const data=input.data??{};let x;
     if(type==='settings.update'){
       if(data.language && !['th','en'].includes(data.language))fail('VALIDATION','Language must be th/en');
-      s.settings={...s.settings,...pick(data,['language','activeProjectId'])};x={id:'settings',revision:s.revision+1,...s.settings};
+      if(data.theme!==undefined && (typeof data.theme!=='string'||!/^[a-z0-9-]{1,80}$/.test(data.theme)))fail('VALIDATION','Invalid theme identifier');
+      s.settings={...s.settings,...pick(data,['language','theme','activeProjectId'])};x={id:'settings',revision:s.revision+1,...s.settings};
     }else if(type==='message.send'){
       x=find(s,'conversations',data.conversationId,input.projectId);revision(x,input.expectedRevision);
       x.messages.push(entity({role:'user',text:required(data.text,'message'),botId:x.botId},input.projectId)); changed(x);

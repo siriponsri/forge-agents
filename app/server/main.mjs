@@ -15,9 +15,10 @@ import { createControlService } from './control.mjs';
 import { protocolEvents } from './agui.mjs';
 import { createCatalogService } from './catalog.mjs';
 import { createGitStorageService } from './git-storage.mjs';
+import {defaultDataDir} from './paths.mjs';
+export {defaultDataDir};
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const manifest=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
-export const defaultDataDir=()=>process.env.FORGE_DATA_DIR??path.join(process.env.LOCALAPPDATA??path.join(os.homedir(),'.local','share'),'FORGE','workbench');
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2','.png':'image/png'};
 async function body(req){let size=0;const parts=[];for await(const b of req){size+=b.length;if(size>24*1024*1024)fail('SIZE','Request exceeds 24 MB',413);parts.push(b);}try{return JSON.parse(Buffer.concat(parts).toString()||'{}');}catch{fail('JSON','Invalid JSON request');}}
 function json(res,data,status=200){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(data));}
