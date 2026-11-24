@@ -109,7 +109,7 @@ export default function Reports({ t, state, projectId, mutate, run, busy }) {
         <section>
           <SourceEditor
             key={record?.id || "new"}
-            {...{ t, record, mutate, busy, artifacts, documents }}
+            {...{ t, record, mutate, busy, artifacts, documents,run,projectId }}
             onSaved={(r) => setSelected(r.entity.id)}
           />
           {record && (
@@ -286,6 +286,8 @@ function SourceEditor({
   busy,
   artifacts,
   documents,
+  run,
+  projectId,
   onSaved,
 }) {
   const [spec, setSpec] = useState(() =>
@@ -415,28 +417,11 @@ function SourceEditor({
           <details>
             <summary>
               {t(
-                "ตาราง / รูปอ้างอิง (ขั้นสูง)",
-                "Table / figure references (advanced)",
+                "ตารางและรูปประกอบ",
+                "Table and figure",
               )}
             </summary>
-            <Field
-              label={t("ตาราง JSON ตาม ReportSpec", "ReportSpec table JSON")}
-            >
-              <textarea
-                defaultValue={s.table ? JSON.stringify(s.table, null, 2) : ""}
-                onChange={(e) => {
-                  try {
-                    const value = e.target.value
-                      ? JSON.parse(e.target.value)
-                      : undefined;
-                    e.target.setCustomValidity("");
-                    section(i, { table: value });
-                  } catch {
-                    e.target.setCustomValidity("Invalid JSON");
-                  }
-                }}
-              />
-            </Field>
+            <ReportTable t={t} table={s.table} onChange={table=>section(i,{table})}/>
             <Field label={t("Figure artifact ID", "Figure artifact ID")}>
               <select
                 value={s.figure?.artifactId || ""}
@@ -454,13 +439,15 @@ function SourceEditor({
                 }
               >
                 <option value="">—</option>
-                {artifacts.map((a) => (
+                {artifacts.filter(a=>['png','jpg','jpeg'].includes(a.kind)).map((a) => (
                   <option key={a.id} value={a.id}>
                     {a.name || a.filename || a.id}
                   </option>
                 ))}
               </select>
             </Field>
+            {s.figure&&<><Field label={t('คำอธิบายรูป','Figure caption')}><input value={s.figure.caption??''} onChange={e=>section(i,{figure:{...s.figure,caption:e.target.value}})}/></Field><Field label={t('ความกว้างรูป (pt)','Figure width (pt)')}><input type="number" min="1" max="450" value={s.figure.width??360} onChange={e=>section(i,{figure:{...s.figure,width:Number(e.target.value)}})}/></Field></>}
+            <label className="check"><input type="checkbox" checked={!!s.pageBreakBefore} onChange={e=>section(i,{pageBreakBefore:e.target.checked})}/>{t('ขึ้นหน้าใหม่ก่อนส่วนนี้','Start this section on a new page')}</label>
           </details>
           <button
             type="button"
@@ -529,51 +516,7 @@ function SourceEditor({
           ))}
         </select>
       </Field>
-      <details>
-        <summary>
-          {t(
-            "นำเข้าเนื้อหา plain text จาก native Doc ที่บันทึก",
-            "Import plain text from a saved native Doc",
-          )}
-        </summary>
-        <p className="help">
-          {t(
-            "นำเข้าเฉพาะข้อความ ไม่แมป styles/tables/images เป็นการเชื่อมแหล่งที่มาอย่างชัดเจน",
-            "Text only; styles, tables and images are not mapped. Input document identity and revision are recorded.",
-          )}
-        </p>
-        {documents
-          .filter((d) => d.kind === "doc")
-          .map((d) => (
-            <button
-              type="button"
-              key={d.id}
-              onClick={() =>
-                update({
-                  sections: [
-                    ...spec.sections,
-                    {
-                      heading: d.name,
-                      text: (d.snapshot?.body?.dataStream || "")
-                        .replace(/\r\n?$/g, "")
-                        .replace(/\r/g, "\n"),
-                    },
-                  ],
-                  inputs: [
-                    ...spec.inputs,
-                    {
-                      documentId: d.id,
-                      revision: d.revision,
-                      mapping: "plain-text-v1",
-                    },
-                  ],
-                })
-              }
-            >
-              {d.name} · r{d.revision}
-            </button>
-          ))}
-      </details>
+      <NativeReportImport {...{t,documents,run,projectId,busy}} onImport={result=>update({sections:[...spec.sections,result.section],inputs:[...spec.inputs,result.input]})}/>
       <div className="actions">
         <Submit busy={busy}>{t("บันทึกแหล่งรายงาน", "Save report source")}</Submit>
         <small>
@@ -585,6 +528,25 @@ function SourceEditor({
       </div>
     </form>
   );
+}
+function ReportTable({t,table,onChange}){
+  const [text,setText]=useState(()=>table?.values.map(row=>row.join('\t')).join('\n')??'');
+  return <><Field label={t('ข้อมูลตาราง (วางจากตาราง ใช้ Tab คั่นคอลัมน์)','Table cells (paste rows with tab-separated columns)')}><textarea rows={4} value={text} placeholder={'Name\tValue\nรายการ\t10'} onChange={e=>{
+    const value=e.target.value;setText(value);const rows=value.split('\n').map(row=>row.split('\t'));
+    const valid=!value||(rows.length<=1000&&rows[0].length<=63&&rows.every(row=>row.length===rows[0].length));e.target.setCustomValidity(valid?'':t('ทุกแถวต้องมีจำนวนคอลัมน์เท่ากัน','Every row must have the same number of columns'));
+    if(valid)onChange(value?{values:rows,header:table?.header!==false}:undefined);
+  }}/></Field>{table&&<label className="check"><input type="checkbox" checked={table.header!==false} onChange={e=>onChange({...table,header:e.target.checked})}/>{t('แถวแรกเป็นหัวตาราง','Use first row as table header')}</label>}</>;
+}
+function NativeReportImport({t,documents,run,projectId,busy,onImport}){
+  const [id,setId]=useState(''),[sheetId,setSheetId]=useState(''),[range,setRange]=useState('A1:B5'),[formulaMode,setFormulaMode]=useState('expressions'),[review,setReview]=useState(null);
+  const document=documents.find(d=>d.id===id);
+  return <details><summary>{t('นำเนื้อหาจาก Docs หรือช่วงเซลล์ Sheets','Import from Docs or a Sheets range')}</summary>
+    <p className="help">{t('นำเข้าข้อความหรือเซลล์จากเวอร์ชันที่บันทึก พร้อมต้นทางและ hash ไม่แปลงรูปแบบ ตารางใน Docs รูป หรือกราฟ','Imports saved text or selected cells with revision and hash. Document styling, Docs tables, images and charts are not converted.')}</p>
+    <Field label={t('เอกสารต้นทาง','Source document')}><select value={id} onChange={e=>{setId(e.target.value);setSheetId('');setReview(null);}}><option value="">—</option>{documents.map(d=><option key={d.id} value={d.id}>{d.name} · r{d.revision}</option>)}</select></Field>
+    {document?.kind==='sheet'&&<div className="form-grid"><Field label={t('แผ่นงาน','Worksheet')}><select value={sheetId||document.snapshot.sheetOrder[0]} onChange={e=>{setSheetId(e.target.value);setReview(null);}}>{document.snapshot.sheetOrder.map(key=><option key={key} value={key}>{document.snapshot.sheets[key].name}</option>)}</select></Field><Field label={t('ช่วงเซลล์ที่นำเข้า','Import range')}><input value={range} onChange={e=>{setRange(e.target.value);setReview(null);}}/></Field><Field label={t('สูตรในรายงาน','Report formulas')}><select value={formulaMode} onChange={e=>{setFormulaMode(e.target.value);setReview(null);}}><option value="expressions">{t('แสดงนิพจน์สูตรเป็นข้อความ','Formula expressions as text')}</option><option value="cached-values">{t('ใช้ค่าที่บันทึกไว้','Use saved scalar values')}</option></select></Field></div>}
+    <button type="button" disabled={busy||!document} onClick={()=>run(async()=>{const result=await request('/api/reports/extract-document',{projectId,documentId:id,expectedRevision:document.revision,sheetId:sheetId||undefined,range,formulaMode});setReview(result);return result;})}>{t('ตรวจเนื้อหาที่จะนำเข้า','Preview import')}</button>
+    {review&&<div className="panel"><h3>{review.section.heading}</h3>{review.section.text&&<p style={{whiteSpace:'pre-wrap'}}>{review.section.text}</p>}{review.section.table&&<div className="table-wrap"><table><tbody>{review.section.table.values.map((row,i)=><tr key={i}>{row.map((cell,n)=><td key={n}>{String(cell)}</td>)}</tr>)}</tbody></table></div>}<small>r{review.input.revision} · {review.input.sourceSha256.slice(0,12)}</small><p className="help">{review.warnings.join(' ')}</p><button type="button" onClick={()=>{onImport(review);setReview(null);}}>{t('เพิ่มเนื้อหานี้ลงแหล่งรายงาน','Add this content to report source')}</button></div>}
+  </details>;
 }
 function ReportJob({ t, job, run, busy, artifacts, setPreview }) {
   const outputs = artifacts.filter(

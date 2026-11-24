@@ -12,6 +12,11 @@ export function createArtifactService({store,dataDir}){
       if(typeof base64!=='string'||base64.length>22369624||!base64.length)fail('SIZE','Upload a nonempty file up to 16 MB');
       const bytes=Buffer.from(base64,'base64');
       if(bytes.length>16*1024*1024||bytes.toString('base64')!==base64)fail('FORMAT','Invalid base64 file content or file exceeds 16 MB');
+      if(kind==='figure'){
+        if(bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])))kind='png';
+        else if(bytes[0]===255&&bytes[1]===216&&bytes[2]===255)kind='jpg';
+        else fail('FORMAT','Report figures require PNG or JPEG image bytes');
+      }
       const sha256=hash(bytes),fingerprint=hash(Buffer.from(JSON.stringify({projectId,name,kind,sha256})));
       const prior=store.read().receipts.find(r=>r.operationId===operationId);
       if(prior){if(prior.fingerprint!==fingerprint)fail('OPERATION_REUSE','Upload ID was used for different content',409);return prior.result;}

@@ -108,6 +108,19 @@ test('FIXTURE concurrent duplicate effects, immutable source revisions, conflict
   await writeFile(snapshot.artifacts[0].path, 'bad');
   await assert.rejects(restarted.download(j.artifactIds[0]), e => ['INVALID_ARCHIVE', 'INVALID_OUTPUT'].includes(e.code));
 });
+test('FIXTURE report native inputs freeze historical snapshot and enforce project/hash lineage',async t=>{
+  const f=await fixture(t),snapshot={body:{dataStream:'Saved native text\r\n'}};
+  const sourceSha256=sha256(Buffer.from(JSON.stringify(snapshot)));
+  await f.store.transaction(s=>{
+    s.documents=[{id:'doc',projectId:'p',revision:2,snapshot:{body:{dataStream:'Newer human content\r\n'}},history:[{revision:1,snapshot}]}];
+    s.reports[0].spec.inputs=[{documentId:'doc',revision:1,mapping:'univer-doc-text-v1',sourceSha256}];
+  });
+  const job=await f.service.generate(INPUT),done=await settled(f.service,job.id);
+  assert.equal(done.status,'ready',JSON.stringify(done.error));
+  const stored=(await f.store.read()).jobs[0];assert.deepEqual(stored.frozenSource.inputDocuments[0].snapshot,snapshot);
+  await f.store.transaction(s=>{s.documents[0].projectId='other';});
+  await assert.rejects(f.service.generate({...INPUT,operationId:'foreign-document'}),e=>e.code==='INPUT_REVISION');
+});
 for (const [name, mode, code] of [
   ['launch failure', { startFailure: true }, 'ENGINE_FAILURE'], ['missing font', { missingFont: true }, 'FONT_MISSING'],
   ['partial write and engine error', { partialFailure: true }, 'ENGINE_FAILURE'], ['corrupt PDF', { corruptPDF: true }, 'INVALID_OUTPUT'], ['corrupt DOCX', { corruptDOCX: true }, 'INVALID_ARCHIVE'],

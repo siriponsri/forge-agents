@@ -249,7 +249,15 @@ export function createService({ dataDir, store }, { sessionFactory = openSession
         validateSpec(report.spec);
         sourceRevision = report.revision;
         frozenSource = { schemaVersion: 1, projectId: input.projectId, reportId: report.id, sourceRevision, spec: clone(report.spec) };
-        const refs = [...report.spec.inputs, ...report.spec.sections.filter(s => s.figure).map(s => s.figure)];
+        frozenSource.inputDocuments=report.spec.inputs.filter(ref=>ref.documentId).map(ref=>{
+          const document=state.documents.find(d=>d.id===ref.documentId&&d.projectId===input.projectId);
+          const snapshot=document?.revision===ref.revision?document.snapshot:document?.history?.find(h=>h.revision===ref.revision)?.snapshot;
+          if(!snapshot||!['univer-doc-text-v1','univer-sheet-range-v1','plain-text-v1'].includes(ref.mapping)||!Number.isInteger(ref.revision))throw fault('INPUT_REVISION','Selected native document revision is unavailable in this project.',409);
+          const hash=sha256(Buffer.from(JSON.stringify(snapshot)));
+          if(ref.sourceSha256&&ref.sourceSha256!==hash)throw fault('INPUT_REVISION','Selected native document snapshot hash changed.',409);
+          return {...ref,sourceSha256:hash,snapshot:clone(snapshot)};
+        });
+        const refs = [...report.spec.inputs.filter(ref=>!ref.documentId), ...report.spec.sections.filter(s => s.figure).map(s => s.figure)];
         inputArtifacts = refs.map(ref => {
           const a = state.artifacts.find(a => a.id === ref.artifactId && a.projectId === input.projectId);
           if (!a || !Number.isInteger(ref.revision) || a.revision !== ref.revision || !a.sha256) throw fault('INPUT_REVISION', 'Every input/figure needs an explicit existing project artifact revision.', 409);

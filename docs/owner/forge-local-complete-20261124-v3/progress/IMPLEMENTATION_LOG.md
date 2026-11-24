@@ -2,6 +2,15 @@
 
 ## Integrated visual, landing and launcher checkpoint — 2026-11-24
 
+- Lead added no-code browser uploads, bounded saved Sheets range/Docs-text import,
+  review before ReportSpec mutation, historical native snapshot/hash lineage at
+  generation, TSV table editing, figure/caption/pagebreak forms. Real GUI run
+  generated DOCX/PDF with uploaded screenshot + selected range/cached formula
+  values, decoded preview and rotation: PASSED (report-gui-j45y7e). Core GUI/Univer
+  regression also PASSED (forge-ui-worker-uAua9K). npm test27 passed/2 opt-in skips.
+  Native Office drawing upload/insertion remains a separate missing capability;
+  report figure upload does not qualify persistent drawings inside Univer.
+
 - Combined GUI1b4faad/reports073960f; fixed real multiline validation0603f71.
   Native WordCraft/PdfCraft13 tests passed, acquisition separately passed.
   Lead GUI: actual DOCX/PDF, decoded PNG preview, verified downloads and rotation

@@ -57,6 +57,11 @@ never resubmits effects. `GET /api/runs/:id/events`: persisted AG-UI projection.
 `POST /api/connections/:id/check`: actual transport/dependency check.
 `POST /api/mcp/:id/discover`, `/call`: discovered MCP via SDK; no fabricated tools.
 `POST /api/artifacts/register`: projectId,path,kind; verify file and SHA256.
+`POST /api/artifacts/upload`: operationId,projectId,name,kind,base64; immutable
+project-owned verified files up to16 MB; replay IDs cannot change content/scope.
+`POST /api/reports/extract-document`: projectId,documentId,expectedRevision,
+sheetId?,range?,formulaMode?; returns section/input hash/warnings for explicit
+review before report source save. Generation freezes selected native revision.
 `GET /api/artifacts/:id/download`; `POST /api/storage/backup` and `/restore`.
 `POST /api/t3/start`; `GET /api/t3/status`; independent T3 app URL returned.
 `POST /api/runs/start`: bounded task to owned T3 thread; never another direct CLI turn.
@@ -82,6 +87,6 @@ React 19 + Vite. Dependencies managed by lead, initially React/react-dom, Vite,
 @univerjs/presets, @univerjs/preset-sheets-core, @univerjs/preset-docs-core 1.6.1,
 lucide-react. No commercial extension required. Use fetch relative APIs, native
 labels, visible errors, keyboard focus, Thai default with English switch.
-Use orange FORGE accent, warm neutral workbench, Segoe UI/Tahoma Thai fallback,
-asymmetric project/sidebar/content layout and useful empty states, no gradients,
-hype or synthetic metrics. Runtime/tool details belong in advanced settings.
+Latest owner steering supersedes the initial warm palette: use named pinned VS
+Code builtins, default Dark Modern; orange FORGE brand and theme-derived accent.
+Bundle Manrope/IBM Plex Sans Thai. Runtime/tool details belong in advanced settings.

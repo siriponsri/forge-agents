@@ -1,45 +1,52 @@
-﻿{
+{
   "result": "PASSED",
   "kind": "real Windows native report GUI qualification",
-  "fixtureDir": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-report-gui-kXJ6Cx",
+  "fixtureDir": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-report-gui-j45y7e",
   "checks": [
+    "GUI browser image upload with verified bytes",
     "GUI engine/font configuration",
     "saved ReportSpec revision",
-    "real WordCraft DOCX/PDF",
-    "decoded native PNG preview with full PDF download",
+    "selected native sheet range + saved formula value + snapshot lineage",
+    "real WordCraft DOCX/PDF with uploaded figure and imported table",
+    "decoded native PNG preview",
     "verified DOCX/PDF download bytes",
     "real PdfCraft rotate + parent lineage",
     "no browser exceptions"
   ],
   "jobs": [
-    "b684189d-8303-423c-9634-3ddf6d81e409",
-    "fefff1dd-4612-4f52-aa06-5ccd36a6cb62"
+    "536c93d3-756d-4067-bff4-f97168cc55ab",
+    "4a3dfddd-af0f-4423-bdc7-89a496827d09"
   ],
   "outputs": [
     {
+      "kind": "png",
+      "sha256": "4fadfac906183ea8403391c8d0662c8b23df1da840fcbc50b195fdab779a0a5e",
+      "bytes": 108479
+    },
+    {
       "kind": "docx",
-      "sha256": "70e2b8c01d80ed460c6263dcdea47dcc08f80b9fc08a93e2c33540ebdd2f15d7",
-      "bytes": 6844
+      "sha256": "65aa80aa45ac3f9f937b676a7a22f1a006341c4eefe640e67c2c5f1a7528835f",
+      "bytes": 116073
     },
     {
       "kind": "pdf",
-      "sha256": "b5ed8366aee4ab46e533c29b8f8a24c39150a944135bec4c073246574f1e7f64",
-      "bytes": 36792
+      "sha256": "758a8fb71eb5f9c26d58bfb274ac921fc2caefc40e5bd8b94f08ce308c265a1b",
+      "bytes": 125462
     },
     {
       "kind": "png",
-      "sha256": "96f968c9f641542b2b8b21ec25b039597d0ebf504afb489763c59b9c826954c6",
-      "bytes": 37018
+      "sha256": "0bce83a5e18483aaa8d10a1aa5cf4c685860b29c5d7cce74bf358268e4afdc39",
+      "bytes": 70306
     },
     {
       "kind": "pdf",
-      "sha256": "be99cb64f0cbdca7a2f0e680d1081b2021e377fe8633d030b162101fcfd27a5b",
-      "bytes": 34294
+      "sha256": "157a328e031c7b8a3a7528c58bcc0b603ab01fc4dd2233276391a80b82a08081",
+      "bytes": 121712
     },
     {
       "kind": "png",
-      "sha256": "f1a48d9142b7a30a3182c052e20df15445141f333677fac8a8e16d4cd206903b",
-      "bytes": 36891
+      "sha256": "b153ceada37b953fd7ec4b1548a994a533a148f8f0fc9020cdab4d836619b8cd",
+      "bytes": 74683
     }
   ]
 }

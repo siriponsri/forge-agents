@@ -17,6 +17,7 @@ import { createCatalogService } from './catalog.mjs';
 import { createGitStorageService } from './git-storage.mjs';
 import {defaultDataDir} from './paths.mjs';
 import {createDownloadService} from './downloads.mjs';
+import {createOfficeService} from '../office/service.mjs';
 export {defaultDataDir};
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const manifest=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
@@ -30,6 +31,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
   const catalog=createCatalogService({load:()=>t3.catalog()});
   const gitStorage=createGitStorageService({store});
   const downloads=createDownloadService({sourceRoot:root,dataDir});
+  const office=createOfficeService({store});
   await jobs.recover();
   let reports;try{const mod=await import('../reports/service.mjs');reports=await mod.createReportService({store,dataDir});}catch(e){if(e.code!=='ERR_MODULE_NOT_FOUND')throw e;}
   let commit='unknown';try{commit=execFileSync('git',['rev-parse','--short','HEAD'],{cwd:root,encoding:'utf8',windowsHide:true}).trim();}catch{try{commit=JSON.parse(await readFile(path.join(root,'release-info.json'),'utf8')).commit.slice(0,7);}catch{}}
@@ -96,6 +98,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0}={}){
         else if(p==='/api/desktop/stop')value=await control.stop(input);
         else if(p==='/api/skills/select')value=await control.select(input);
         else if(p==='/api/reports/configure'&&reports)value=await reports.configure(input);
+        else if(p==='/api/reports/extract-document')value=office.extract(input);
         else if(p==='/api/reports/generate'&&reports)value=await reports.generate(input);
         else if(p==='/api/reports/pdf-operation'&&reports)value=await reports.pdfOperation(input);
         else if(/^\/api\/reports\/jobs\/[^/]+\/stop$/.test(p)&&reports)value=await reports.stop(p.split('/')[4]);

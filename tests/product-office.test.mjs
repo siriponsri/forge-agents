@@ -1,0 +1,24 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtemp} from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import {createApplication} from '../app/server/main.mjs';
+import {command} from '../app/server/domain.mjs';
+import {extractReportSource} from '../app/office/report-source.mjs';
+test('native report extraction freezes selected revision and rejects stale or foreign reads',async t=>{
+  const root=await mkdtemp(path.join(os.tmpdir(),'forge-office-')),app=await createApplication({dataDir:path.join(root,'state')});t.after(()=>app.close());
+  const cmd=(type,projectId,data)=>command(app.store,{type,projectId,data,operationId:crypto.randomUUID()});
+  const p=(await cmd('project.create',null,{name:'one',workspace:path.join(root,'one')})).entity;
+  const other=(await cmd('project.create',null,{name:'two',workspace:path.join(root,'two')})).entity;
+  const d=(await cmd('document.create',p.id,{name:'Thai sheet',kind:'sheet',snapshot:{sheetOrder:['a','b'],sheets:{a:{name:'first',rowCount:20,columnCount:10,cellData:{}},b:{name:'selected',rowCount:20,columnCount:10,cellData:{0:{0:{v:'จำนวน'},1:{f:'=1+2',v:3}},1:{0:{v:'Mixed'},1:{v:42}}}}}}})).entity;
+  const post=async data=>{const r=await fetch(app.url+'/api/reports/extract-document',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});return {status:r.status,body:await r.json()};};
+  const input={projectId:p.id,documentId:d.id,expectedRevision:1,sheetId:'b',range:'A1:B2'};
+  const result=await post(input);assert.equal(result.status,200);assert.deepEqual(result.body.section.table.values,[['จำนวน','=1+2'],['Mixed',42]]);assert.match(result.body.input.sourceSha256,/^[a-f0-9]{64}$/);
+  assert.deepEqual((await post({...input,formulaMode:'cached-values'})).body.section.table.values,[['จำนวน',3],['Mixed',42]]);
+  assert.equal((await post({...input,projectId:other.id})).status,404);
+  assert.equal((await post({...input,expectedRevision:0})).status,409);
+  assert.equal((await post({...input,range:'A1:ZZ99999'})).status,400);
+  const snapshot=structuredClone(d.snapshot);delete snapshot.sheets.b.cellData[0][1].v;
+  assert.throws(()=>extractReportSource({...d,snapshot},{sheetId:'b',range:'A1:B2',formulaMode:'cached-values'}),/no saved result/);
+});
