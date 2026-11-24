@@ -3,8 +3,10 @@ import { readFile, writeFile, mkdir, open, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
+import os from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { defaultDataDir } from './server/main.mjs';
+// Preflight must run before importing any third-party application dependency.
+const defaultDataDir=()=>process.env.FORGE_DATA_DIR??path.join(process.env.LOCALAPPDATA??path.join(os.homedir(),'.local','share'),'FORGE','workbench');
 const root=fileURLToPath(new URL('../',import.meta.url)),dir=defaultDataDir();
 const receiptPath=path.join(dir,'instance.json');
 const delay=ms=>new Promise(r=>setTimeout(r,ms));
