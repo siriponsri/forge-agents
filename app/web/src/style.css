@@ -13,7 +13,7 @@
   --accent-ink: var(--link);
   --accent-soft: var(--selected-bg);
   --brand: #f97316;
-  --brand-ink: var(--forge-accent);
+  --brand-ink: #17191b;
   --radius: 7px;
   --radius-panel: 12px;
   --shadow: 0 3px 12px var(--shadow-color);
@@ -257,11 +257,21 @@ td strong:not(:where(.univer-container *)) { font-weight: 600; }
 .overview-local-note svg { width: 12px; height: 12px; flex-shrink: 0; }
 .overview-stat-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; margin: 0 0 30px; }
 .overview-stat { padding: 19px 20px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); min-width: 0; }
+.overview-stat > div { display:flex; align-items:center; gap:7px; }
+.overview-stat > div svg { flex-shrink:0; color:var(--muted); }
 .overview-stat > svg { color: var(--muted); width: 16px; height: 16px; }
 .overview-stat strong { display: block; font-family: var(--font-display); font-size: 30px; font-weight: 600; letter-spacing: -.8px; line-height: 1.4; margin: 8px 0 5px; }
 .overview-stat span, .overview-stat small { font-size: 11px; color: var(--muted); }
 .overview-columns { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(0,1fr); gap: 24px; }
 .overview-actions, .overview-recent { min-width: 0; }
+.overview-actions { margin-bottom:28px; }
+.activity-list { display:flex; flex-direction:column; gap:4px; }
+button.activity-row { width:100%; display:flex; align-items:center; justify-content:flex-start; gap:11px; text-align:left; padding:12px 9px; border-color:transparent; background:transparent; }
+.activity-row .activity-icon { flex-shrink:0; display:flex; align-items:center; }
+.activity-row > span:nth-child(2) { flex:1; min-width:0; }
+.activity-row strong { display:block; overflow:hidden; text-overflow:ellipsis; font-size:12px; }
+.activity-row small { display:block; text-align:left; }
+.activity-row .status { flex-shrink:0; font-size:10px; color:var(--muted); margin-left:auto; }
 .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 14px; }
 .section-head h2 { font-size: 14px; margin: 0; }
 .section-head > span, .section-head > small { color: var(--muted); font-size: 10px; }

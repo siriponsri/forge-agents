@@ -14,6 +14,8 @@ import {
   AlertCircle,
   X,
   Menu,
+  LayoutDashboard,
+  Zap,
 } from "lucide-react";
 import { command, request, safeLocalUrl } from "./api.mjs";
 import { Empty, Field, Heading, Submit } from "./ui.jsx";
@@ -26,8 +28,13 @@ import {
 } from "./operations.jsx";
 import Office from "./Office.jsx";
 import Reports from "./Reports.jsx";
+import Overview from './Overview.jsx';
+import ThemePicker from './ThemePicker.jsx';
+import { DEFAULT_THEME, getTheme } from './themes.mjs';
 
 export default function App() {
+  const [theme,setTheme]=useState(()=>getTheme(localStorage.getItem('forge.theme')||DEFAULT_THEME).id);
+  const themeHydrated=useRef(false);
   const [lang, setLang] = useState(
     () => localStorage.getItem("forge.language") || "th",
   );
@@ -38,7 +45,7 @@ export default function App() {
     [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false),
     [connected, setConnected] = useState(false),
-    [page, setPage] = useState("plan"),
+    [page, setPage] = useState("overview"),
     [navOpen, setNavOpen] = useState(false);
   const [projectId, setProjectId] = useState(
     () => localStorage.getItem("forge.project") || "",
@@ -84,6 +91,9 @@ export default function App() {
     document.documentElement.lang = lang;
     localStorage.setItem("forge.language", lang);
   }, [lang]);
+  useEffect(()=>{document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=getTheme(theme).kind;localStorage.setItem('forge.theme',theme);const meta=document.querySelector('meta[name="theme-color"]');meta?.setAttribute('content',getComputedStyle(document.documentElement).backgroundColor);},[theme]);
+  useEffect(()=>{if(state&&!themeHydrated.current){themeHydrated.current=true;if(state.settings.theme)setTheme(getTheme(state.settings.theme).id);}},[state]);
+  const changeTheme=id=>{setTheme(getTheme(id).id);command('settings.update',null,{theme:id}).then(refresh).catch(setError);};
   useEffect(() => {
     if (state && !state.projects.some((p) => p.id === projectId))
       setProjectId(state.projects[0]?.id || "");
@@ -91,6 +101,7 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("forge.project", projectId);
   }, [projectId]);
+  useEffect(()=>{window.scrollTo(0,0);},[page,projectId]);
   const run = async (fn) => {
     setBusy(true);
     setError(null);
@@ -125,8 +136,11 @@ export default function App() {
     mutate,
     refresh,
     setNotice,
+    themeKind:getTheme(theme).kind,
+    themeId:theme,
   };
   const nav = [
+    ['overview',LayoutDashboard,'ภาพรวม','Overview'],
     ["plan", Layers3, "แผนงาน", "Plan & tasks"],
     ["team", Users, "ทีมบอท", "Bot team"],
     ["chat", MessagesSquare, "ห้องสนทนา", "Conversations"],
@@ -161,9 +175,9 @@ export default function App() {
     <div className={`workbench ${navOpen ? "nav-open" : ""}`}>
       <aside className="sidebar">
         <div className="brand">
-          <span className="forge-mark">F</span>
+          <svg className="brand-symbol" width="35" height="35" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="13" fill="var(--brand)"/><path d="M14 12H35V19H22V24H32V31H22V38H14Z" fill="var(--brand-ink)"/><rect x="33" y="31" width="6" height="6" rx="2" fill="var(--brand-ink)" opacity=".65"/></svg>
           <div>
-            FORGE<small>Local engineering workbench</small>
+            FORGE<small>{t('พื้นที่สำหรับทุกไอเดีย','Your creative workspace')}</small>
           </div>
         </div>
         <div className="project-picker">
@@ -188,6 +202,7 @@ export default function App() {
           </button>
         </div>
         <nav aria-label={t("พื้นที่ทำงาน", "Workspace")}>
+          <span className="nav-section">WORKSPACE</span>
           {nav.map(([id, Icon, th, en]) => (
             <button
               key={id}
@@ -201,7 +216,7 @@ export default function App() {
               }
             >
               <Icon size={18} />
-              {t(th, en)}
+              <span className="nav-label">{t(th, en)}</span>
             </button>
           ))}
         </nav>
@@ -212,8 +227,7 @@ export default function App() {
               : t("กำลังกู้คืนการเชื่อมต่อ", "Reconnecting events")}
           </span>
           <small>
-            {t("ข้อมูลจากบริการในเครื่อง", "State from local service")} · r
-            {state?.revision ?? "—"}
+            {t('บันทึกและซิงก์ในเครื่อง','Saved on this machine')}
           </small>
           <button onClick={startT3} disabled={busy}>
             <Code2 size={17} />
@@ -228,6 +242,7 @@ export default function App() {
               {t("ไปที่ T3", "Open T3")}
             </a>
           )}
+          <div className="sidebar-version">FORGE <span>{health?.version??'alpha'} · {health?.commit??'local'}</span></div>
         </div>
       </aside>
       <div className="workspace">
@@ -239,11 +254,12 @@ export default function App() {
           >
             <Menu size={20} />
           </button>
-          <span className="breadcrumb">
+          <span className="breadcrumb topbar-title">
             {project?.name || "FORGE"}{" "}
             <span>/ {nav.find((n) => n[0] === page)?.[3]}</span>
           </span>
           <div className="actions">
+            <ThemePicker theme={theme} onChange={changeTheme} t={t}/>
             <button
               onClick={() => run(refresh)}
               disabled={busy}
@@ -296,19 +312,8 @@ export default function App() {
                 "Loading FORGE… If unavailable, start the local service and refresh.",
               )}
             </Empty>
-          ) : !project ? (
-            <>
-              <Heading
-                title={t("เริ่มพื้นที่ทำงาน", "Create a workspace")}
-                description={t(
-                  "สร้างโครงการเพื่อจัดทีม วางแผน และบันทึกงานในเครื่องของคุณ",
-                  "Create a project to organize your team, plan and local work.",
-                )}
-              />
-              <button className="primary" onClick={() => setNewProject(true)}>
-                {t("สร้างโครงการแรก", "Create first project")}
-              </button>
-            </>
+          ) : !project || page==='overview' ? (
+            <Overview {...props} onCreate={()=>setNewProject(true)} onNavigate={id=>navigate(()=>setPage(id))}/>
           ) : (
             <>
               {page === "plan" && <Planning {...props} />}{" "}

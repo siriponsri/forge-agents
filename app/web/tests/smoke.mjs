@@ -42,7 +42,7 @@ const waitState = async (predicate) => {
 };
 try {
   await page.goto(app.url);
-  await page.getByText("เริ่มพื้นที่ทำงาน", { exact: true }).waitFor();
+  await page.getByRole('heading',{name:'พื้นที่สำหรับสิ่งที่คุณอยากสร้าง',exact:true}).waitFor();
   await page.getByLabel("Language").selectOption("en");
   await click("Create first project");
   await page.getByLabel("Project name").fill("Disposable UI verification");

@@ -74,13 +74,14 @@ export async function mountEditor(container, record, onChange) {
     });
     locale = language.default;
   } else throw new Error("Unsupported native document kind.");
+  const accent=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||defaultTheme.primary[500];
   const theme = {
     ...defaultTheme,
     primary: {
       ...defaultTheme.primary,
-      500: "#be521e",
-      600: "#a74415",
-      700: "#873511",
+      500: accent,
+      600: accent,
+      700: accent,
     },
   };
   const { univer, univerAPI } = createUniver({
@@ -112,7 +113,11 @@ export async function mountEditor(container, record, onChange) {
       rawSnapshot: () => structuredClone(unit.save()),
       undo: () => (record.kind === "doc" ? unit.undo() : univerAPI.undo()),
       redo: () => (record.kind === "doc" ? unit.redo() : univerAPI.redo()),
-      dark: (value) => univerAPI.toggleDarkMode(value),
+      dark: (value) => {
+        const color=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||accent;
+        univerAPI.setTheme({...defaultTheme,primary:{...defaultTheme.primary,500:color,600:color,700:color}});
+        univerAPI.toggleDarkMode(value);
+      },
       apply: (edit) => {
         if (edit.kind === "sheet.setValues" && record.kind === "sheet") {
           const parsed = boundedSheetEdit(edit.range, edit.text);

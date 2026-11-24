@@ -20,6 +20,8 @@ export default function Office({
   run,
   busy,
   onDirty,
+  themeKind='dark',
+  themeId='dark-modern',
 }) {
   const documents = scoped(state, "documents", projectId),
     [selected, setSelected] = useState(""),
@@ -107,7 +109,7 @@ export default function Office({
           {record ? (
             <Editor
               key={`${record.id}:${reload}`}
-              {...{ t, state, projectId, record, run, busy }}
+              {...{ t, state, projectId, record, run, busy,themeKind,themeId }}
               onDirty={(value) => {
                 setDirty(value);
                 onDirty(value);
@@ -128,7 +130,7 @@ export default function Office({
     </>
   );
 }
-function Editor({ t, state, projectId, record, run, busy, onDirty, onReload }) {
+function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,themeKind,themeId }) {
   const container = useRef(null),
     editor = useRef(null),
     base = useRef(record),
@@ -140,7 +142,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload }) {
     [error, setError] = useState(null),
     [dirty, setDirty] = useState(false),
     [locked, setLocked] = useState(false),
-    [dark, setDark] = useState(false),
+    [dark, setDark] = useState(themeKind==='dark'),
     [receipt, setReceipt] = useState(null),
     [recoverUrl, setRecoverUrl] = useState(null);
   const [agent, setAgent] = useState(false),
@@ -172,6 +174,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload }) {
           return;
         }
         editor.current = value;
+        value.dark(themeKind==='dark');
         baseline.current = JSON.stringify(value.rawSnapshot());
         setReady(true);
       })
@@ -185,6 +188,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload }) {
       dirtyCallback.current(false);
     };
   }, []);
+  useEffect(()=>{if(ready&&editor.current){const value=themeKind==='dark';setDark(value);editor.current.dark(value);}},[themeKind,themeId,ready]);
   useEffect(() => {
     const prevent = (e) => {
       if (dirty) {

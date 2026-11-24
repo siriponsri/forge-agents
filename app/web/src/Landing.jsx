@@ -115,7 +115,7 @@ function ProductPreview({ t }) {
       </div>
       <figcaption>
         <span><span className="landing-status-dot" />FORGE Workbench</span>
-        <span>{t("พื้นที่ทำงานบนเครื่องคุณ", "A workspace on your machine")}</span>
+        <span>{t("หน้าจอจริง · ข้อมูลสำหรับตรวจการทำงาน", "Actual app · engineering fixture data")}</span>
       </figcaption>
     </figure>
   );
