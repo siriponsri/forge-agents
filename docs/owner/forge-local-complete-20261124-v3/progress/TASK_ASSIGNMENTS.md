@@ -2,6 +2,12 @@
 
 ## Active assignments — 2026-11-24
 
+AS-01 Assistance Strategy / Auto-Model Selection: owner confirmed larger Asst. and
+smaller Executor roles. Two routing/assistance-frequency preferences are pending
+in the user-input UI; dependent implementation waits for answers. Requirements,
+invariants and next executable work are in repository-root docs/ASSISTANCE_STRATEGY.md.
+This product task does not alter the development thread/worker model choices.
+
 Owner addition: Paperclip PC-01 source/license audit completed at pinned7d26bdaa;
 PC-02 organization/goal context and PC-05 action policy are next separated work.
 PC-03 review inbox/PC-04 observed budgets/PC-06 checkout mapped in
