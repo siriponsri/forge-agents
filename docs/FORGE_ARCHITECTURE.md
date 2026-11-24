@@ -1,5 +1,12 @@
 # FORGE v3 implementation architecture
 
+Owner addition2026-11-24: Paperclip reuse work is active. Source pin
+7d26bdaa424551a172f1a4b7ae3c737a0745e8f9/MIT inspected. Selected adoption is scoped
+organization/goal context, durable review inbox, observed-budget admission and
+connection action policy around FORGE's existing T3 owner. Detailed PC-01–PC-06
+task/acceptance map is in the v3 reference/research/PAPERCLIP_INTEGRATION_RESEARCH.md.
+This source assessment does not claim the Paperclip service is integrated/running.
+
 Inspection base: efcd132, main, only one worktree; owner v3 docs untracked.
 No applicable AGENTS.md existed in root or ancestors. Legacy package is P11.5,
 Node >=20, AO test only; no T3-derived product or product lockfile was present.

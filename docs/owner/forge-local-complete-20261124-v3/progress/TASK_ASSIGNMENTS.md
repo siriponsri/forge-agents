@@ -2,6 +2,12 @@
 
 ## Active assignments — 2026-11-24
 
+Owner addition: Paperclip PC-01 source/license audit completed at pinned7d26bdaa;
+PC-02 organization/goal context and PC-05 action policy are next separated work.
+PC-03 review inbox/PC-04 observed budgets/PC-06 checkout mapped in
+reference/research/PAPERCLIP_INTEGRATION_RESEARCH.md. No Paperclip runtime or
+integration check is claimed by this audit. Preserve the original G0–G6 objective.
+
 Current continuation: SERVE-01 integrated09fc17e/0cd8cce and lead real GUI PASSED;
 STORE-01 integrated998762d/bd0f7be, lead local GUI backup/restore PASSED;
 PROTO-01 integrated86515ae, worker actual provider lifecycle and lead HTTP projection

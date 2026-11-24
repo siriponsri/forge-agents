@@ -9,6 +9,8 @@ import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/
 import { entity, find, fail, changed } from './domain.mjs';
 import { appendProtocol } from './agui.mjs';
 import { createProtocolController } from '../protocol/controller.mjs';
+import {validateAdaptiveContext,adaptivePrompt} from './adaptive-context.mjs';
+import {digest as contextDigest} from '../adaptive/records.mjs';
 import { openT3ReadFeed, openT3ApprovalChannel } from '../protocol/t3-rpc.mjs';
 
 const launcher=fileURLToPath(new URL('../vendor/t3/bin/t3.mjs',import.meta.url));
@@ -91,6 +93,7 @@ export function createT3Service({dataDir,store}){
   }});
   return {
     ...protocol,
+    adaptiveContextVersion:1,
     start,
     health(){return {status,url,version:'0.1.11',sourceRevision:'59651c1761f6c63e9b6056839067066968e6a406',error};},
     async tools(){await start();return (await client.listTools()).tools;},
@@ -100,13 +103,14 @@ export function createT3Service({dataDir,store}){
       let replay=false;
       const run=await store.transaction(s=>{
         if(!input.operationId)fail('VALIDATION','operationId required');
-        const prior=s.runs.find(r=>r.operationId===input.operationId);if(prior){if(prior.projectId!==input.projectId||prior.taskId!==input.taskId)fail('OPERATION_REUSE','Run operation ID belongs to different work',409);replay=true;return prior;}
+        const prior=s.runs.find(r=>r.operationId===input.operationId);if(prior){if(prior.projectId!==input.projectId||prior.taskId!==input.taskId||contextDigest(prior.adaptiveContext??null)!==contextDigest(input.adaptiveContext??null)||(prior.conversationId??null)!==(input.conversationId??null))fail('OPERATION_REUSE','Run operation ID belongs to different work or context',409);replay=true;return prior;}
         const p=find(s,'projects',input.projectId),task=find(s,'tasks',input.taskId,p.id);
+        const adaptiveContext=validateAdaptiveContext(s,input);
         if(input.conversationId)find(s,'conversations',input.conversationId,p.id);
         if(!task.planId || !find(s,'plans',task.planId,p.id).approved)fail('PLAN_REQUIRED','Review and approve the concrete plan before starting',409);
         if(s.runs.some(r=>r.projectId===p.id&&r.taskId&&['submitting','preparing','queued','starting','running','waiting','unknown'].includes(r.status)))fail('WORKSPACE_BUSY','Reconcile the existing execution before starting another',409);
         for(const dep of task.dependsOn??[])if(find(s,'tasks',dep,p.id).status!=='done')fail('DEPENDENCY','Task has unfinished dependencies',409);
-        const r=entity({operationId:input.operationId,taskId:task.id,botId:task.botId,conversationId:input.conversationId,status:'submitting',attemptId:crypto.randomUUID(),profileRevision:p.revision,profile:structuredClone(p.profile),protocolEvents:[],messages:[]},p.id);s.runs.push(r);task.runIds.push(r.id);changed(task);return r;
+        const r=entity({operationId:input.operationId,taskId:task.id,botId:task.botId,conversationId:input.conversationId,...(adaptiveContext?{adaptiveContext}:{}),status:'submitting',attemptId:crypto.randomUUID(),profileRevision:p.revision,profile:structuredClone(p.profile),protocolEvents:[],messages:[]},p.id);s.runs.push(r);task.runIds.push(r.id);changed(task);return r;
       });if(replay)return run;
       let launchRequested=false;
       try{
@@ -117,8 +121,10 @@ export function createT3Service({dataDir,store}){
         if(!project){await cli(['project','add',p.workspace,'--base-dir',home,'--title',p.name]);listed=await call('t3_project_list',{limit:100});project=listed.projects.find(x=>path.resolve(x.workspaceRoot).toLowerCase()===path.resolve(p.workspace).toLowerCase());}
         if(!project)throw new Error('T3 project registration not observed');
         const provider=p.profile.provider;
+        const bot=task.botId?find(s,'bots',task.botId,p.id):null;
+        const message=`FORGE task ${task.id}. Work only within this selected workspace: ${p.workspace}. Use this path explicitly as the working directory for commands.\n${task.title}\n${task.description??''}${bot?`\nAssigned bot: ${bot.name}. Role: ${bot.role??''}\n${bot.instructions??''}`:''}${adaptivePrompt(run.adaptiveContext)}`;
         launchRequested=true;
-        const launched=await call('t3_thread_launch',{projectId:project.id,clientRequestId:run.id,title:task.title,message:`FORGE task ${task.id}. Work only within this selected workspace: ${p.workspace}. Use this path explicitly as the working directory for commands.\n${task.title}\n${task.description??''}`,runtimeMode:'approval-required',...(provider?.instanceId&&provider?.model?{modelSelection:{instanceId:provider.instanceId,model:provider.model,options:provider.options??[]}}:{})});
+        const launched=await call('t3_thread_launch',{projectId:project.id,clientRequestId:run.id,title:task.title,message,runtimeMode:'approval-required',...(provider?.instanceId&&provider?.model?{modelSelection:{instanceId:provider.instanceId,model:provider.model,options:provider.options??[]}}:{})});
         await store.transaction(state=>{const r=find(state,'runs',run.id);r.t3ProjectId=project.id;r.threadId=launched.threadId;r.providerRunId=launched.runId;r.providerInstanceId=provider?.instanceId;r.status=launched.status??'running';changed(r);const task=find(state,'tasks',r.taskId);task.threadId=r.threadId;task.status='running';changed(task);appendProtocol(state,r,{type:'RUN_STARTED',threadId:r.threadId,runId:r.id});});
       }catch(e){await store.transaction(s=>{const r=find(s,'runs',run.id);r.status=launchRequested?'unknown':'failed';r.error=e.message;changed(r);if(!launchRequested){const task=find(s,'tasks',r.taskId,r.projectId);task.status='blocked';changed(task);}appendProtocol(s,r,{type:'CUSTOM',name:launchRequested?'forge.execution.uncertain':'forge.execution.setup-failed',value:{error:e.message,attemptId:r.attemptId}});});}
       const observed=find(store.read(),'runs',run.id);if(observed.threadId){try{await protocol.observe(run.id);}catch{/* Execution is retained; explicit recovery exposes the disconnected observation. */}}

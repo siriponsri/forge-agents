@@ -5,6 +5,15 @@
   "usage": "Observed source pins support traceability. Select compatible released packages/binaries during implementation; these are not mandatory install commands or claims of integration.",
   "repositories": [
     {
+      "repository": "paperclipai/paperclip",
+      "url": "https://github.com/paperclipai/paperclip",
+      "branch_observed": "master",
+      "commit": "7d26bdaa424551a172f1a4b7ae3c737a0745e8f9",
+      "code_license": "MIT",
+      "research": "reference/research/PAPERCLIP_INTEGRATION_RESEARCH.md",
+      "status": "SOURCE_AUDIT_PASSED; SELECTED_GOVERNANCE_AND_ORG_ADOPTION_PENDING_IMPLEMENTATION"
+    },
+    {
       "repository": "ag-ui-protocol/ag-ui",
       "url": "https://github.com/ag-ui-protocol/ag-ui",
       "branch_observed": "main",
