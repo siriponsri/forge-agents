@@ -1,5 +1,14 @@
 # Decisions
 
+2026-11-24 Owner DH addendum: retain FORGE's canonical authority and default T3
+execution; extend native services incrementally. Pinned DSH source
+4b399c39a6d1479cd84ca591b4d7c88e24d38a96 is MIT/developer preview and declares a
+newer Node range than current FORGE. Cordis patterns may inform a native registry;
+no framework rewrite or unqualified runtime dependency is implied. See
+[DH map](../../../DH_TASK_MAP.md). Impeccable4.10.0 installed at upstream
+b49177d32788f2dc585c42831d845dacf1ebed2c for the Owner's minimal/distinct UI update;
+VS Code theme names/default and working behavior remain binding requirements.
+
 ## D-009 — Observed implementation choices (2026-11-24)
 
 Use the actually running codex gpt-6.1-sol/reasoningEffort=xhigh for lead and two

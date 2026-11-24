@@ -1,5 +1,12 @@
 # Complete product acceptance matrix
 
+Additional acceptance: DH-01–DH-09 from the [Owner addendum](13_DEEPSEEK_HARNESS_ADDENDUM.md)
+are mandatory at their declared priorities. [DH task map](../../DH_TASK_MAP.md)
+maps them to current capabilities and remaining checks. Registry/Plugin Manager,
+scoped authorization, context preservation, bounded evidence-driven goals and
+catalog provenance require implementation plus integrated tests; research alone
+does not pass. Optional SDK/runtime/live qualification is separately recorded.
+
 ## What this release accepts
 
 Accept the FORGE product and its no-code localhost operation. The owner will later pull `main` at home and test system flows. Do not make CA-EWS training, a medical application or any other prototype product an acceptance gate for this round.

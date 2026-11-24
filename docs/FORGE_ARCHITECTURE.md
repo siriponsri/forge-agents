@@ -1,5 +1,10 @@
 # FORGE v3 implementation architecture
 
+The [DH addendum map](DH_TASK_MAP.md) extends this architecture with scoped plugin
+contracts, context budgeting/compaction and durable goals around existing owners.
+FORGE remains the authority plane. Optional DSH is explicitly selected, disabled
+until qualified, and cannot silently replace an uncertain T3 attempt.
+
 Owner addition2026-11-24: Paperclip reuse work is active. Source pin
 7d26bdaa424551a172f1a4b7ae3c737a0745e8f9/MIT inspected. Selected adoption is scoped
 organization/goal context, durable review inbox, observed-budget admission and

@@ -1,5 +1,10 @@
 # Complete FORGE implementation plan
 
+Owner additive requirements: [DeepSeek Harness DH-01–DH-09](13_DEEPSEEK_HARNESS_ADDENDUM.md)
+extend the current milestones. See [integration/backlog/reuse map](../../DH_TASK_MAP.md).
+P0 plugin, scoped harness, context, goals and discovery extend existing owners;
+the optional DSH backend is disabled pending qualification. Preserve completed work.
+
 ## Delivery target and working rules
 
 The owner's latest instruction is to complete the **FORGE product**, so a no-code Windows user can open it on localhost and use the requested capabilities through the GUI. After development, `main` is the delivery branch; the owner will pull at home and conduct system-flow acceptance there.
