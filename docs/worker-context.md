@@ -13,6 +13,8 @@ credentials, public service, cloud job or prototype activation.
 - `contracts.mjs`, `accounting.mjs`, `spill.mjs`: bounded validation, redaction,
   provenance, measurement, confined hash-verified UTF-8 output storage.
 - `pre-dispatch.mjs`: trusted native T3 pre-dispatch closure.
+- `admission.mjs`, `memory.mjs`: durable Assistance route/options consistency,
+  classified public errors, and original-scope memory groups.
 - `app/web/src/ContextBudget.jsx`: default component with props
   `{t,state,projectId,run,busy}`. Uses existing UI classes, TH/EN, real APIs.
 - `tests/context*.test.mjs`: service, real HTTP/SQLite/Chromium panel and actual
@@ -42,7 +44,8 @@ const context = await createContextService({
 const prepareContext = createT3ContextSeam({
   service: context,
   callerContextForRun, // trusted host resolver; return no body-supplied grants
-  memoryForRun,       // optional trusted resolver of a Memory context request
+  memoryForRun,       // optional request object OR array of scoped requests
+  allowNativePassthrough: true, // OPTIONAL trusted opt-in; default false
 });
 // Inside the existing native startRun, AFTER plan/adaptive/run admission and
 // BEFORE setting launchRequested or issuing t3_thread_launch:
@@ -106,7 +109,7 @@ context/memory text. Reads need no `operationId`.
 | `revoke` | `operationId,scope?,handle` | Canonical tombstone event and `deleted:true`; bytes unlinked after commit |
 | `usage` read | `scope?,contextId?` | Authorized accounting/observations; no usage is invented |
 | `usage` observe | `operationId,contextId,scope?` | New event from injected trusted `providerUsage`, or explicit unknown |
-| `status` | none | Scoped policies/version metadata/spill metadata/usage/limits; no cached memory text |
+| `status` | none | Scoped policies/version metadata/passthrough metadata/spill metadata/usage/limits; no cached memory text |
 
 `source` is `{kind,reference,observedAt}` with a valid timestamp, nonempty bounded
 strings. A GUI-created capacity override is `kind:'configured'` and keeps the
@@ -129,19 +132,34 @@ current Owner requirements, decisions, acceptance/errors from authoritative
 records, not blindly promote body items or memory. It must not auto-ingest hidden
 reasoning, credentials or unauthorized private text.
 
-`preDispatch({projectId,taskId,runId,operationId,route,baseMessage,memory?},caller)`
-validates the existing run/task, approved canonical plan and current exact project
-route. It derives task state, plan acceptance, permission constraint, existing
+`preDispatch({projectId,taskId,runId,operationId,route,selection?,assistanceContext?,baseMessage,memory?},caller,trustedOptions?)`
+validates the existing run/task, approved canonical plan and admitted route. For
+Assistance it derives the exact provider/model/options from durable `run.selection`,
+requires equality with `run.assistanceContext.selection`, and checks
+`providerInstanceId` when present. The durable role must be Executor/Asst under
+the admitted approval-required Assistance context. Ordinary runs still match the
+current project profile, including options. Supplied native snapshots must match
+the durable selection/context exactly; no profile mutation occurs. T3 admission
+remains responsible for validating the actual Assistance reservation/decision.
+
+It derives task state, plan acceptance, permission constraint, existing
 run error, linked artifact IDs/revisions/hashes, whole native FORGE `baseMessage`,
 and optional trusted `contentResolver` facts. Those critical facts survive whole.
 The seam uses `operationId:'context:'+run.id` to make reconciliation idempotent.
+String errors are redacted. Object errors serialize only public code/message,
+category/name, integer status/statusCode and boolean retryable; private details,
+stacks and arbitrary provider internals are omitted. Unknown objects receive an
+explicit generic classification, never `[object Object]` or a text-validation error.
 Changed canonical facts, policy or route reject replay; a revised run must be
 reconciled through the existing execution lifecycle. This API creates no run,
 changes no task status, launches no model and grants no approval.
 
 Context results include `id/contextId,version,route,policyId,scope,taskId,runId,
 message,accounting,pressure,budget,omitted,evidenceRefs,memoryRefs,memoryAvailable,
-capabilities,metrics,receipt,authority`. Read-only resolution measures the current
+capabilities,metrics,receipt,authority,mode,passthrough,memoryGroups,selection`.
+`memoryRefs` remains available for a single original-scope group; multi-scope
+results use `memoryGroups` exclusively and return an empty legacy `memoryRefs`.
+Read-only resolution measures the current
 prefix again after memory deletion. Event accounting records the originally
 composed prefix; provider usage remains a separate immutable observation.
 
@@ -174,8 +192,12 @@ not generate pricing. No hidden chain of thought is collected. Measured UTF-8
 bytes and monotonic elapsed latency are recorded; model quality/resource cost
 remain unknown unless independently observed.
 
-Memory input follows the memory worker exactly:
+Each memory request follows the memory worker exactly:
 `{scope,query?,limit?:1..100,maxCharacters?:256..64000,includeStale?,memoryType?,backend?}`.
+`input.memory` accepts that single request (backward compatible) or an array of
+authorized requests, for example project/task/agent/session. The trusted
+`memoryForRun(run)` callback accepts the same single-or-array result. No global
+OwnerMemory policy or global/project sharing is inferred from scope names.
 The context service supplies its own `projectId`. Bind both
 `memoryContext -> memory.context` and `memoryResolveRefs -> memory.resolveRefs`.
 The latter receives `{projectId,scope,refs:[{id,revision,sha256}]}` (max 100).
@@ -183,15 +205,60 @@ Only exact current revision+raw UTF-8 content hash matches are used. Missing,
 forgotten, changed or expired references disappear without a cached fallback.
 
 Memory text never enters context events, receipts, compacted summaries or spill
-storage. Only refs and the bounded retrieval request are stored. Current memory
+storage. New versions store `memoryGroups:[{request,refs}]`, grouped by the exact
+**original source scope**, never a flattened cross-scope refs list. Duplicate
+source records are deduplicated within their source group; active memory item IDs
+include a hash of the original scope so identical memory IDs cannot collide across
+groups. Legacy single `memoryRequest/memoryRefs` versions still resolve/compact
+without a migration or cached-text fallback. Current memory
 is re-authorized/re-resolved for preview, resolve, compaction, retry and dispatch.
 Verification, conflicts and stale flags remain claims in escaped untrusted DATA.
 The finalized memory seam's `provenanceStale` annotation also survives current
 resolution, explicitly distinguishing source drift from time-based staleness.
 Memory cannot become a canonical critical instruction, permission or approval.
-This first implementation accepts records in the exact requested memory scope;
-cross-scope shared records must be requested/resolved in their original scope
-under an explicit trusted grant. Native harness memory is not ingested or copied.
+When a permitted recall returns a shared record in another original scope, the
+context service separately authorizes that source scope and stores/resolves its
+refs there. A target-scope read grant does not confer a source-scope grant. A
+source grant that is absent/revoked fails closed. Every group is re-authorized,
+including empty requests. Exact revision/hash/scope checks exclude deleted,
+mutated, tampered or moved records; another scope's matching ID/hash cannot
+substitute for a saved reference. Native harness memory is not ingested or copied.
+
+## Optional native management without a FORGE policy
+
+Default `compose`, `compact` and native pre-dispatch remain strict. The trusted
+native dispatcher may opt in with
+`createT3ContextSeam({...,allowNativePassthrough:true})`, or call the internal
+`preDispatch(input,caller,{allowNativePassthrough:true})`. This is a trusted option,
+not an input-body field. The HTTP allowlist still excludes preDispatch entirely.
+
+Only an **absent exact-route policy** and an adapter explicitly reporting
+`contextOwner:'native'` allow passthrough. No negotiated adapter means failure.
+This mode does not require permission to rewrite a FORGE prefix, since it does
+not rewrite one. It returns the trusted native dispatcher's original `baseMessage`
+unchanged and does not append optional memory or extra FORGE-composed facts.
+The native admission boundary continues to own authorization/redaction of that
+original message. The context receipt persists no copy of it.
+
+The result explicitly contains `mode:'native-managed',passthrough:true,
+reason:'NO_FORGE_CONTEXT_POLICY',version:null,policyId:null,budget:null,
+pressure:'native-managed',compacted:false,budgetGuarantee:false`. Prefix/native
+tokens and pricing are unknown; only actual UTF-8 bytes/hash/elapsed time are
+recorded. `memoryStatus:'not-appended-without-forge-policy'` explains requested
+memory omission; no memory recall occurs. No FORGE token estimate or compaction
+claim is fabricated for a native-owned surface.
+
+The existing event store retains a `context.passthrough` event and normal command
+receipt with the admitted selection, scope, fact hashes and reason. The root
+persists its `contextId/receipt` on the run as usual. `status().passthroughs`
+projects metadata; `resolve` returns receipt metadata with `message:null`, because
+the canonical native message belongs to T3 and was not cached here. `usage` can
+still expose unknown or trusted reported provider observations. `compact` fails
+`CONTEXT_NATIVE_MANAGED`. At most `maxVersions` passthrough receipts/project are
+admitted. A configured policy, changed canonical facts/selection/approval or a
+newly configured policy during replay requires reconciliation instead of an
+implicit mode switch. **Configured critical overflow, missing capabilities or
+unknown accounting never fall back to passthrough.**
 
 ## Deterministic compaction and spill semantics
 
@@ -220,7 +287,8 @@ point; offsets are bytes, not characters. Retrieval DATA is never executable.
 
 Limits: 2,000,000 bytes per context item; 4,000,000 admitted context text bytes;
 8,000,000 bytes per spill; 64,000,000 live spill bytes/project; 32,768 bytes/page;
-at most 256 Unicode-safe pages per selected page size; 10,000 versions/project.
+at most 256 Unicode-safe pages per selected page size; 10,000 versions/project;
+16 original memory scope groups and 100 memory refs across all groups combined.
 Injected limits may only tighten those maxima. Very small requested page sizes
 are rejected if the complete output would exceed the conservative page bound.
 Evidence pagination returns item records; individual item bytes remain bounded
@@ -269,7 +337,7 @@ Installed existing locked development dependencies with
 The plain `npm` PowerShell wrapper was blocked by execution policy; `npm.cmd`
 worked without changing host policy.
 
-- `node --test tests/context*.test.mjs tests/adaptive-context.test.mjs tests/governance-context.test.mjs`
+- Initial `node --test tests/context*.test.mjs tests/adaptive-context.test.mjs tests/governance-context.test.mjs`
   with `FORGE_MEMORY_TEST_MODULE` pointing to the actual memory worker module:
   **29/29 PASS**, no skipped test cases. This includes 21 context tests, two
   existing adaptive context regressions and six governance context regressions.
@@ -288,6 +356,26 @@ worked without changing host policy.
   exercised and emits an explicit diagnostic. It is not a passed symlink test.
 - `npm.cmd run build`: PASS; existing vendor directive/chunk-size warnings remain.
 - `node --check app/context/*.mjs` individually and `git diff --check`: PASS.
+
+Integration follow-up verification (same isolated worktree, same model/effort):
+
+- `node --test tests/context*.test.mjs tests/adaptive-context.test.mjs tests/governance-context.test.mjs tests/assistance-workflow.test.mjs`
+  with the actual finalized Memory module: **53/53 PASS**, no skipped test cases.
+  This covers 31 context tests, 14 existing Assistance workflow tests, two Adaptive
+  context tests and six Governance context tests. The existing Windows file-link
+  privilege diagnostic remains explicit; directory junction protection is tested.
+- The real Assistance reservation/validator fixture drives Executor -> Asst on
+  different providers/models/options through the context seam while the project
+  profile remains unchanged. Conflicting durable/provider/context snapshots fail.
+- Real Memory Manager + SQLite recalls project/task/agent/session records and a
+  shared source record into original-scope groups; edit/forget/restart exclusions
+  and source-scope grant checks pass. Malicious resolver fixtures cover duplicate
+  IDs, identical cross-scope hashes, moved scope and old single-scope versions.
+- Native no-policy opt-in, metadata-only replay/restart, no memory append, no fake
+  token/budget guarantee, public object errors and strict configured failures pass.
+- The unchanged panel's real HTTP/SQLite/Chromium test passes again. The production
+  build PASS above belongs to the initial implementation; it was not repeated for
+  these backend-only changes, which add no dependency or UI source change.
 
 **Shared-path implementation still required by lead:** mount ContextBudget in
 App/Settings, wire the authenticated CSRF-protected HTTP allowlist, provide

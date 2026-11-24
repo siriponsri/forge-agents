@@ -2,6 +2,8 @@ import {performance} from 'node:perf_hooks';
 import {LIMITS,CRITICAL_KINDS,fail,integer,text,hash,append,scopeOf,routeOf,sourceOf,redact,safeJson,render} from './contracts.mjs';
 import {budgetOf,measure,pressure,validateUsage} from './accounting.mjs';
 import {createSpillStorage} from './spill.mjs';
+import {createMemoryContext,memoryGroupsOf} from './memory.mjs';
+import {selectionForRun,publicErrorText} from './admission.mjs';
 export {LIMITS,CRITICAL_KINDS} from './contracts.mjs';
 
 const events=(s,type,p)=>s.events.filter(e=>e.type===`context.${type}`&&e.projectId===p);
@@ -9,6 +11,8 @@ function record(s,type,id,p){const e=events(s,type,p).find(e=>e.id===id);if(!e)f
 function latestPolicy(s,p,route){return events(s,'policy',p).filter(e=>hash(e.route)===hash(route)).at(-1)??null;}
 const revoked=(s,handle)=>s.events.some(e=>e.type==='context.revoked'&&e.handle===handle);
 function liveSpill(s,p,handle){const r=events(s,'spill',p).find(e=>e.handle===handle);if(!r||revoked(s,handle))fail('CONTEXT_HANDLE','Retrieval handle missing or revoked',404);return r;}
+function contextRecord(s,id,p){const e=s.events.find(e=>e.id===id&&e.projectId===p&&['context.version','context.passthrough'].includes(e.type));if(!e)fail('CONTEXT_NOT_FOUND','Context receipt not found',404);return e;}
+function passthroughResult(e,message=null){return {id:e.id,contextId:e.id,version:null,mode:'native-managed',passthrough:true,reason:e.reason,route:e.route,selection:e.selection,scope:e.scope,taskId:e.taskId,runId:e.runId,policyId:null,budget:null,pressure:'native-managed',compacted:false,budgetGuarantee:false,message,accounting:e.accounting,capabilities:e.capabilities,evidenceRefs:e.evidenceRefs,memoryGroups:[],memoryRefs:[],memoryAvailable:0,memoryStatus:e.memoryStatus,receipt:{eventId:e.id,type:e.type,mode:'native-managed',reason:e.reason},authority:'Native harness manages context; FORGE did not measure tokens, append memory or compact; this receipt grants no approval'};}
 
 /** FORGE-owned prefix only. Native context, authorization and model execution
  * remain with their existing owners. All injected functions are trusted host
@@ -33,10 +37,10 @@ export async function createContextService({store,dataDir,authorize,tokenizer,pr
       catch(error){for(const e of events(s,'spill',input.projectId))if(!before.has(e.handle))await storage.remove(e.handle).catch(()=>{});throw error;}
     });
   }
-  async function capability(route,caller){
+  async function capability(route,caller,{prefixRequired=true}={}){
     const c=await capabilities?.({route:structuredClone(route),callerContext:caller});
-    if(!c||!['native','forge'].includes(c.contextOwner)||c.acceptsForgePrefix!==true)fail('CONTEXT_CAPABILITY','Adapter has not negotiated a FORGE prefix',409);
-    return {contextOwner:c.contextOwner,acceptsForgePrefix:true,compactForgePrefix:c.compactForgePrefix===true,nativeHistoryAccess:false,source:sourceOf(c.source)};
+    if(!c||!['native','forge'].includes(c.contextOwner)||prefixRequired&&c.acceptsForgePrefix!==true)fail('CONTEXT_CAPABILITY','Adapter has not negotiated a FORGE prefix',409);
+    return {contextOwner:c.contextOwner,acceptsForgePrefix:c.acceptsForgePrefix===true,compactForgePrefix:c.compactForgePrefix===true,nativeHistoryAccess:false,source:sourceOf(c.source)};
   }
   async function checkScopeRefs(s,items,caller,action){for(const i of items)if(i.scope)await access(s,action,scopeOf(i.scope.projectId,i.scope),caller);}
   function policyRequired(s,p,route){const policy=latestPolicy(s,p,route);if(!policy)fail('CONTEXT_POLICY_REQUIRED','Configure context budget for the exact provider/model route',409);return policy;}
@@ -56,29 +60,9 @@ export async function createContextService({store,dataDir,authorize,tokenizer,pr
     if(active.reduce((n,r)=>n+r.bytes,0)+Buffer.byteLength(content)>limits.maxProjectSpillBytes)fail('CONTEXT_LIMIT','Project spill storage budget exceeded');
     const stored=await storage.write(content);return append(s,'spill',p,{...stored,scope,source:safeJson(source),trust:'untrusted-data',executable:false});
   }
-  async function resolveMemory(s,p,request,refs,caller){
-    if(!request||!refs?.length)return [];
-    const scope=scopeOf(p,request.scope);await access(s,'resolve',scope,caller);
-    if(typeof memoryResolveRefs!=='function')return []; // Fail closed; never cache forgotten text.
-    const result=await memoryResolveRefs({projectId:p,scope,refs:structuredClone(refs)},caller);
-    const items=result?.items??[];if(!Array.isArray(items)||items.length>limits.maxItems)fail('CONTEXT_MEMORY','Invalid memory reference resolution');
-    return items.filter(i=>refs.some(r=>r.id===i.id&&r.revision===i.revision&&r.sha256===hash(i.content)&&r.sha256===i.sha256)).map(i=>{
-      if(hash(scopeOf(p,i.scope))!==hash(scope))fail('CONTEXT_SCOPE','Resolved memory scope differs from its authorized request',403);
-      text(i.content,'memory content',limits.maxTextBytes);
-      return {id:`memory:${i.id}`,kind:'memory',text:redact(i.content),sha256:hash(redact(i.content)),scope,sourceRefs:safeJson([{kind:'memory',id:i.id,revision:i.revision,sha256:i.sha256},...(i.sourceRefs??[])]),verification:safeJson(i.verification??null),stale:i.stale===true,provenanceStale:i.provenanceStale===true,conflicts:safeJson(i.conflicts??[]),trust:'untrusted-data',memory:true};
-    });
-  }
-  async function gatherMemory(s,input,caller){
-    if(!input.memory)return {memory:[],memoryRefs:[],memoryRequest:null};
-    if(typeof memoryContext!=='function'||typeof memoryResolveRefs!=='function')fail('CONTEXT_MEMORY_UNAVAILABLE','Memory context and reference resolvers required',409);
-    const request={...safeJson(input.memory),projectId:input.projectId,scope:scopeOf(input.projectId,input.memory.scope)};await access(s,'compose',request.scope,caller);
-    const start=performance.now(),recalled=await memoryContext(request,caller);
-    if(!Array.isArray(recalled?.items)||recalled.items.length>limits.maxMemoryRefs)fail('CONTEXT_MEMORY','Invalid bounded memory data');
-    const memoryRefs=recalled.items.map(i=>({id:text(i.id,'memory id'),revision:integer(i.revision,'memory revision',1,1e9),sha256:text(i.sha256,'memory hash',64)}));
-    const memory=await resolveMemory(s,input.projectId,request,memoryRefs,caller);await checkScopeRefs(s,memory,caller,'compose');
-    if(memory.reduce((n,i)=>n+Buffer.byteLength(i.text),0)>limits.maxContextBytes)fail('CONTEXT_LIMIT','Memory context exceeds byte limit');
-    return {memory,memoryRequest:request,memoryRefs,memoryLatencyMs:performance.now()-start};
-  }
+  const memoryBridge=createMemoryContext({access,memoryContext,memoryResolveRefs,limits});
+  const gatherMemory=memoryBridge.gather;
+  const resolveMemory=(s,e,caller)=>memoryBridge.resolve(s,e.projectId,memoryGroupsOf(e),caller,{legacyIds:e.memoryGroups===undefined});
   function messageFor(items,omitted=0){
     // Canonical prefix content is supplied only by a trusted resolver or the
     // native pre-dispatch seam. Untrusted data cannot close the JSON wrapper.
@@ -107,22 +91,23 @@ export async function createContextService({store,dataDir,authorize,tokenizer,pr
   async function versionResult(s,e,caller){
     await checkScopeRefs(s,e.evidence,caller,'resolve');
     for(const i of e.evidence)if(i.spill){const sp=liveSpill(s,e.projectId,i.spill.handle);await access(s,'retrieve',sp.scope,caller);await storage.read(sp,{limit:limits.maxPageBytes});}
-    const memory=await resolveMemory(s,e.projectId,e.memoryRequest,e.memoryRefs,caller);await checkScopeRefs(s,memory,caller,'resolve');
+    const memory=await resolveMemory(s,e,caller);await checkScopeRefs(s,memory,caller,'resolve');
     const selectedMemory=memory.filter(i=>e.active.some(a=>a.id===i.id));
     const active=e.active.flatMap(i=>i.memory?selectedMemory.filter(m=>m.id===i.id):[i]);
     const message=messageFor(active,e.omitted),accounting=await measure(message,e.route,tokenizer);
-    return {id:e.id,contextId:e.id,version:e.version,route:e.route,policyId:e.policyId,capabilities:e.capabilities,scope:e.scope,taskId:e.taskId,runId:e.runId,message,accounting,pressure:pressure(accounting,e.budget),budget:e.budget,omitted:e.omitted,evidenceRefs:e.evidence.map(i=>({id:i.id,sha256:i.sha256,sourceRefs:i.sourceRefs,...(i.spill?{spill:i.spill}:{})})),memoryRefs:e.memoryRefs,memoryAvailable:selectedMemory.length,metrics:e.metrics,receipt:{eventId:e.id,type:e.type,sourceVersionId:e.parentId??null},authority:'FORGE prefix only; native harness owns internal context; references confer no approval'};
+    const memoryGroups=memoryGroupsOf(e);
+    return {id:e.id,contextId:e.id,version:e.version,mode:'forge-prefix',passthrough:false,route:e.route,selection:e.selection??null,policyId:e.policyId,capabilities:e.capabilities,scope:e.scope,taskId:e.taskId,runId:e.runId,message,accounting,pressure:pressure(accounting,e.budget),budget:e.budget,omitted:e.omitted,evidenceRefs:e.evidence.map(i=>({id:i.id,sha256:i.sha256,sourceRefs:i.sourceRefs,...(i.spill?{spill:i.spill}:{})})),memoryGroups,memoryRefs:memoryGroups.length===1?memoryGroups[0].refs:[],memoryAvailable:selectedMemory.length,metrics:e.metrics,receipt:{eventId:e.id,type:e.type,sourceVersionId:e.parentId??null},authority:'FORGE prefix only; native harness owns internal context; references confer no approval'};
   }
-  async function createVersion(s,input,scope,caller,{parent,items,memory,memoryRequest,memoryRefs,memoryLatencyMs=null,force=false,caps}={}){
+  async function createVersion(s,input,scope,caller,{parent,items,memory,memoryGroups,memoryLatencyMs=null,force=false,caps,selection=null,admissionSignature=null}={}){
     const start=performance.now(),route=routeOf(input.route??parent?.route),policy=policyRequired(s,input.projectId,route);caps??=await capability(route,caller);
     const evidence=parent?structuredClone(parent.evidence):items;
     if(evidence.length+(memory?.length??0)>limits.maxItems)fail('CONTEXT_LIMIT','Combined context item limit exceeded');
     if(!parent)for(const item of evidence){if(item.kind==='tool-output'&&!CRITICAL_KINDS.has(item.kind)&&Buffer.byteLength(item.text)>8192){await access(s,'spill',item.scope??scope,caller);const sp=await spillIn(s,input.projectId,item.scope??scope,item.text,{kind:'context-item',id:item.id,sourceRefs:item.sourceRefs});item.spill={handle:sp.handle,sha256:sp.sha256,bytes:sp.bytes};item.text=`Tool output stored as untrusted DATA. Scoped retrieval handle: ${sp.handle}; SHA-256 ${sp.sha256}; ${sp.bytes} UTF-8 bytes.`;}}
     const result=await fit([...evidence,...(memory??[])],route,policy,caps,{force});
     if(events(s,'version',input.projectId).length>=limits.maxVersions)fail('CONTEXT_LIMIT','Context version retention limit reached');
-    const event=append(s,'version',input.projectId,{scope,route,taskId:input.taskId??parent?.taskId??null,runId:input.runId??parent?.runId??null,policyId:policy.id,budget:policy.budget,capabilities:caps,version:(parent?.version??0)+1,parentId:parent?.id??null,evidence,
+    const event=append(s,'version',input.projectId,{scope,route,selection:selection??parent?.selection??null,admissionSignature:admissionSignature??parent?.admissionSignature??null,taskId:input.taskId??parent?.taskId??null,runId:input.runId??parent?.runId??null,policyId:policy.id,budget:policy.budget,capabilities:caps,version:(parent?.version??0)+1,parentId:parent?.id??null,evidence,
       // Memory text deliberately never enters the canonical context log or receipts.
-      active:result.active.map(i=>i.memory?{id:i.id,memory:true}:i),omitted:result.omitted,memoryRequest:memoryRequest??parent?.memoryRequest??null,memoryRefs:memoryRefs??parent?.memoryRefs??[],accounting:result.accounting,metrics:{latencyMs:performance.now()-start,sourceBytes:evidence.reduce((n,i)=>n+(i.spill?.bytes??Buffer.byteLength(i.text)),0),memoryBytes:(memory??[]).reduce((n,i)=>n+Buffer.byteLength(i.text),0),prefixBytes:Buffer.byteLength(result.message),memoryLatencyMs,resourceCost:{status:'unknown',value:null}}});
+      active:result.active.map(i=>i.memory?{id:i.id,memory:true}:i),omitted:result.omitted,memoryGroups:memoryGroups??(parent?memoryGroupsOf(parent):[]),accounting:result.accounting,metrics:{latencyMs:performance.now()-start,sourceBytes:evidence.reduce((n,i)=>n+(i.spill?.bytes??Buffer.byteLength(i.text)),0),memoryBytes:(memory??[]).reduce((n,i)=>n+Buffer.byteLength(i.text),0),prefixBytes:Buffer.byteLength(result.message),memoryLatencyMs,resourceCost:{status:'unknown',value:null}}});
     return versionResult(s,event,caller);
   }
   const service={
@@ -138,41 +123,61 @@ export async function createContextService({store,dataDir,authorize,tokenizer,pr
       const items=validateItems(resolved,{trusted:!!contentResolver});await checkScopeRefs(s,items,caller,'compose');
       return createVersion(s,input,scope,caller,{items,...await gatherMemory(s,input,caller)});
     });},
-    async compact(input,caller){return mutate('compact',input,caller,async(s,scope,prior)=>{const e=record(s,'version',prior?.contextEventId??input.contextId,input.projectId);await access(s,'compact',e.scope,caller);if(prior)return versionResult(s,e,caller);await versionResult(s,e,caller);const memory=await resolveMemory(s,input.projectId,e.memoryRequest,e.memoryRefs,caller);return createVersion(s,input,e.scope,caller,{parent:e,memory,force:true});});},
-    async resolve(input,caller){const s=store.read();await access(s,'resolve',scopeOf(input.projectId,input.scope),caller);const e=record(s,'version',input.contextId,input.projectId);await access(s,'resolve',e.scope,caller);const result=await versionResult(s,e,caller);if(input.evidence===true){const offset=integer(input.offset??0,'offset',0,e.evidence.length),limit=integer(input.limit??16,'limit',1,32);result.evidence=e.evidence.slice(offset,offset+limit);result.nextOffset=offset+limit<e.evidence.length?offset+limit:null;}return result;},
+    async compact(input,caller){return mutate('compact',input,caller,async(s,scope,prior)=>{if(events(s,'passthrough',input.projectId).some(e=>e.id===input.contextId))fail('CONTEXT_NATIVE_MANAGED','Native-managed passthrough receipts have no FORGE compaction surface',409);const e=record(s,'version',prior?.contextEventId??input.contextId,input.projectId);await access(s,'compact',e.scope,caller);if(prior)return versionResult(s,e,caller);await versionResult(s,e,caller);const memory=await memoryBridge.resolve(s,input.projectId,memoryGroupsOf(e),caller);return createVersion(s,input,e.scope,caller,{parent:e,memory,force:true});});},
+    async resolve(input,caller){const s=store.read();await access(s,'resolve',scopeOf(input.projectId,input.scope),caller);const e=contextRecord(s,input.contextId,input.projectId);await access(s,'resolve',e.scope,caller);if(e.type==='context.passthrough'){await checkScopeRefs(s,e.evidenceRefs,caller,'resolve');return passthroughResult(e);}const result=await versionResult(s,e,caller);if(input.evidence===true){const offset=integer(input.offset??0,'offset',0,e.evidence.length),limit=integer(input.limit??16,'limit',1,32);result.evidence=e.evidence.slice(offset,offset+limit);result.nextOffset=offset+limit<e.evidence.length?offset+limit:null;}return result;},
     async spill(input,caller){return mutate('spill',input,caller,async(s,scope,prior)=>{if(prior){const e=record(s,'spill',prior.contextEventId,input.projectId);liveSpill(s,input.projectId,e.handle);return e;}text(input.text,'tool output',limits.maxSpillBytes);return spillIn(s,input.projectId,scope,redact(input.text),sourceOf(input.source));});},
     async retrieve(input,caller){const start=performance.now(),s=store.read(),scope=scopeOf(input.projectId,input.scope);await access(s,'retrieve',scope,caller);const e=liveSpill(s,input.projectId,input.handle);if(hash(e.scope)!==hash(scope))fail('CONTEXT_SCOPE','Retrieval scope mismatch',403);const result=await storage.read(e,input);await access(store.read(),'retrieve',scope,caller);liveSpill(store.read(),input.projectId,input.handle);return {...result,handle:e.handle,source:e.source,scope,latencyMs:performance.now()-start};},
     async revoke(input,caller){const result=await mutate('revoke',input,caller,async(s,scope,prior)=>{if(prior)return record(s,'revoked',prior.contextEventId,input.projectId);const e=liveSpill(s,input.projectId,input.handle);if(hash(e.scope)!==hash(scope))fail('CONTEXT_SCOPE','Revocation scope mismatch',403);return append(s,'revoked',input.projectId,{handle:e.handle,scope,reason:'caller-revoked'});});await storage.remove(input.handle);return {...result,deleted:true};},
     async usage(input,caller){const s=store.read();await access(s,'usage',scopeOf(input.projectId,input.scope),caller);
       if(!input.contextId){const observations=[];for(const e of events(s,'usage',input.projectId)){try{await access(s,'usage',e.scope,caller);observations.push(e);}catch(error){if(error.code!=='CONTEXT_FORBIDDEN')throw error;}}return {observations,cost:{status:'unknown',value:null}};}
-      const e=record(s,'version',input.contextId,input.projectId);await access(s,'usage',e.scope,caller);
+      const e=contextRecord(s,input.contextId,input.projectId);await access(s,'usage',e.scope,caller);
       if(!input.operationId)return {accounting:e.accounting,observations:events(s,'usage',input.projectId).filter(u=>u.contextId===e.id)};
       return mutate('usage',input,caller,async(state,scope,prior)=>{if(prior)return record(state,'usage',prior.contextEventId,input.projectId);const usage=validateUsage(await providerUsage?.({contextId:e.id,route:e.route,requestHash:e.accounting.requestHash,callerContext:caller}),e.route,e.accounting.requestHash);return append(state,'usage',input.projectId,{contextId:e.id,scope:e.scope,usage});});
     },
     async status(input,caller){const s=store.read();await access(s,'status',scopeOf(input.projectId),caller);const visible=[];for(const e of s.events.filter(e=>e.projectId===input.projectId&&e.type.startsWith('context.'))){try{await access(s,'status',e.scope,caller);visible.push(e);}catch(e){if(e.code!=='CONTEXT_FORBIDDEN')throw e;}}
-      return {policies:visible.filter(e=>e.type==='context.policy'),versions:visible.filter(e=>e.type==='context.version').map(e=>({id:e.id,version:e.version,parentId:e.parentId,taskId:e.taskId,runId:e.runId,scope:e.scope,route:e.route,accounting:e.accounting,budget:e.budget,omitted:e.omitted,createdAt:e.createdAt})),spills:visible.filter(e=>e.type==='context.spill').map(e=>({id:e.id,handle:e.handle,scope:e.scope,sha256:e.sha256,bytes:e.bytes,revoked:revoked(s,e.handle),source:e.source})),usage:visible.filter(e=>e.type==='context.usage'),limits};
+      return {policies:visible.filter(e=>e.type==='context.policy'),versions:visible.filter(e=>e.type==='context.version').map(e=>({id:e.id,version:e.version,parentId:e.parentId,taskId:e.taskId,runId:e.runId,scope:e.scope,route:e.route,accounting:e.accounting,budget:e.budget,omitted:e.omitted,createdAt:e.createdAt})),passthroughs:visible.filter(e=>e.type==='context.passthrough').map(e=>({id:e.id,taskId:e.taskId,runId:e.runId,scope:e.scope,route:e.route,mode:'native-managed',reason:e.reason,accounting:e.accounting,createdAt:e.createdAt})),spills:visible.filter(e=>e.type==='context.spill').map(e=>({id:e.id,handle:e.handle,scope:e.scope,sha256:e.sha256,bytes:e.bytes,revoked:revoked(s,e.handle),source:e.source})),usage:visible.filter(e=>e.type==='context.usage'),limits};
     },
     async recover(){return store.transaction(async s=>{const live=new Set(s.events.filter(e=>e.type==='context.spill'&&!revoked(s,e.handle)).map(e=>e.handle));await storage.reconcile(live);return {status:'reconciled',liveHandles:live.size,externalProcessesRecovered:false};});},
   };
-  service.preDispatch=async(input,caller)=>{
+  service.preDispatch=async(input,caller,{allowNativePassthrough=false}={})=>{
     // Must be invoked by the native dispatcher with trusted run/baseMessage,
     // after its approved plan and adaptive reservation validation.
-    const s=store.read(),scope=scopeOf(input.projectId);await access(s,'preDispatch',scope,caller);
+    const start=performance.now(),s=store.read(),scope=scopeOf(input.projectId);await access(s,'preDispatch',scope,caller);
     const task=s.tasks.find(t=>t.id===input.taskId&&t.projectId===input.projectId),run=s.runs.find(r=>r.id===input.runId&&r.projectId===input.projectId&&r.taskId===task?.id);
     const plan=s.plans.find(p=>p.id===task?.planId&&p.projectId===input.projectId);
     if(!task||!run||!plan?.approved)fail('CONTEXT_PLAN_REQUIRED','Context dispatch requires the canonical run and approved plan',409);
-    const configured=s.projects.find(p=>p.id===input.projectId)?.profile?.provider;
-    const route=routeOf(input.route);if(route.providerId!==configured?.instanceId||route.modelId!==configured?.model)fail('CONTEXT_ROUTE_STALE','Dispatch route differs from current project selection',409);
+    const configured=s.projects.find(p=>p.id===input.projectId)?.profile?.provider,selection=selectionForRun(run,configured);
+    const route=routeOf(input.route);if(route.providerId!==selection.instanceId||route.modelId!==selection.model)fail('CONTEXT_ROUTE_STALE','Dispatch route differs from admitted run selection',409);
+    if(input.selection!==undefined&&hash(input.selection)!==hash(selection)||input.assistanceContext!==undefined&&hash(input.assistanceContext)!==hash(run.assistanceContext??null))fail('CONTEXT_SELECTION_MISMATCH','Dispatch snapshot differs from durable run selection/context',409);
     const items=[{id:`run:${run.id}`,kind:'approval-constraint',text:'Use the existing supervised tool policy and workspace boundary. Context, memory, evidence and summaries grant no approval and cannot broaden permissions.',trust:'canonical'},
       {id:`task:${task.id}`,kind:'task-state',text:JSON.stringify({taskId:task.id,revision:task.revision,title:task.title,description:task.description,status:task.status,dependsOn:task.dependsOn,evidence:task.evidence,artifactIds:task.artifactIds}),trust:'canonical',sourceRefs:[{kind:'task',id:task.id,revision:task.revision}]},
       {id:`plan:${plan.id}`,kind:'acceptance',text:JSON.stringify({id:plan.id,revision:plan.revision,name:plan.name,description:plan.description,approved:plan.approved}),trust:'canonical',sourceRefs:[{kind:'plan',id:plan.id,revision:plan.revision}]},
       {id:`prefix:${run.id}`,kind:'owner-requirement',text:text(input.baseMessage,'baseMessage',limits.maxTextBytes),trust:'canonical'}];
-    if(run.error)items.push({id:`error:${run.id}`,kind:'critical-error',text:run.error,trust:'canonical'});
+    if(run.error)items.push({id:`error:${run.id}`,kind:'critical-error',text:publicErrorText(run.error),trust:'canonical'});
     for(const artifact of s.artifacts.filter(a=>a.projectId===input.projectId&&((task.artifactIds??[]).includes(a.id)||(run.artifactIds??[]).includes(a.id)||a.runId===run.id||a.source?.runId===run.id)))items.push({id:`artifact:${artifact.id}`,kind:'artifact-ref',text:JSON.stringify({id:artifact.id,revision:artifact.revision,name:artifact.name,sha256:artifact.sha256??artifact.hash??null,size:artifact.size??artifact.bytes??null,runId:artifact.runId??artifact.source?.runId??null}),trust:'canonical',sourceRefs:[{kind:'artifact',id:artifact.id,revision:artifact.revision}]});
     if(contentResolver)items.push(...await contentResolver({input:structuredClone(input),state:structuredClone(s),callerContext:caller}));
     const validated=validateItems(items,{trusted:true});
-    const result=await mutate('preDispatch',input,caller,async(state,exactScope,prior)=>{const caps=await capability(route,caller);if(prior){const e=record(state,'version',prior.contextEventId,input.projectId);if(hash(e.evidence)!==hash(validated)||e.policyId!==policyRequired(state,input.projectId,route).id)fail('CONTEXT_STATE_CHANGED','Canonical dispatch facts or budget changed; reconcile the reserved run',409);return versionResult(state,e,caller);}if(state.revision!==s.revision)fail('CONTEXT_STATE_CHANGED','Canonical task state changed before context commit; reconcile dispatch',409);return createVersion(state,input,exactScope,caller,{items:validated,caps,...await gatherMemory(state,input,caller)});});
-    if(result.pressure!=='within-budget')fail('CONTEXT_BUDGET','Prefix no longer fits its policy',409);
+    await checkScopeRefs(s,validated,caller,'preDispatch');
+    const admissionSignature=hash({selection,assistanceContext:run.assistanceContext??null,providerInstanceId:run.providerInstanceId??null,facts:validated});
+    const result=await mutate('preDispatch',input,caller,async(state,exactScope,prior)=>{
+      const policy=latestPolicy(state,input.projectId,route),nativeRequested=allowNativePassthrough===true&&!policy;
+      const caps=await capability(route,caller,{prefixRequired:!nativeRequested});
+      if(!policy&&(!nativeRequested||caps.contextOwner!=='native'))policyRequired(state,input.projectId,route);
+      if(prior){
+        const e=contextRecord(state,prior.contextEventId,input.projectId);
+        if(e.admissionSignature!==admissionSignature||(e.policyId??null)!==(policy?.id??null))fail('CONTEXT_STATE_CHANGED','Canonical dispatch facts or budget changed; reconcile the reserved run',409);
+        if(e.type==='context.passthrough')return passthroughResult(e,input.baseMessage);
+        return versionResult(state,e,caller);
+      }
+      if(state.revision!==s.revision)fail('CONTEXT_STATE_CHANGED','Canonical task state changed before context commit; reconcile dispatch',409);
+      if(!policy){
+        if(events(state,'passthrough',input.projectId).length>=limits.maxVersions)fail('CONTEXT_LIMIT','Native context receipt retention limit reached');
+        const e=append(state,'passthrough',input.projectId,{scope:exactScope,route,selection:safeJson(selection),taskId:task.id,runId:run.id,admissionSignature,policyId:null,reason:'NO_FORGE_CONTEXT_POLICY',capabilities:caps,memoryStatus:input.memory?'not-appended-without-forge-policy':'not-requested',evidenceRefs:validated.map(({id,sha256,sourceRefs,scope})=>({id,sha256,sourceRefs,...(scope?{scope}:{})})),accounting:{status:'unknown',tokens:null,upperBound:null,route,bytes:Buffer.byteLength(input.baseMessage),requestHash:hash(input.baseMessage),surface:'native-managed-passthrough',nativeHistoryTokens:{status:'unknown',value:null},cost:{status:'unknown',value:null},latencyMs:performance.now()-start}});
+        return passthroughResult(e,input.baseMessage);
+      }
+      return createVersion(state,input,exactScope,caller,{items:validated,caps,selection:safeJson(selection),admissionSignature,...await gatherMemory(state,input,caller)});
+    });
+    if(!result.passthrough&&result.pressure!=='within-budget')fail('CONTEXT_BUDGET','Prefix no longer fits its policy',409);
     return result;
   };
   await service.recover();return service;

@@ -35,3 +35,27 @@ test('real Memory Manager + SQLite context seam preserves conflicts and propagat
   await memory.close();await store.close();store=await openStore(dir);memory=await initMemory();context=await initContext();
   const resolved=await context.resolve({projectId:'p',contextId:r.id},caller);assert.equal(resolved.memoryAvailable,1);assert.ok(!resolved.message.includes('REMEMBERED_UNIQUE'));
 });
+
+test('real multi-scope Memory Manager recall groups shared records at source scope and honors edit/forget/restart',{skip:!existsSync(memoryModule)?'Memory worker module not merged; set FORGE_MEMORY_TEST_MODULE to test its checkout':false},async t=>{
+  const {createMemoryService}=await import(pathToFileURL(memoryModule).href),dir=await mkdtemp(path.join(os.tmpdir(),'forge-context-memory-scopes-'));
+  let store=await openStore(dir),memory;const caller={},projectScope={projectId:'p',kind:'project',id:'p'},taskScope={projectId:'p',kind:'task',id:'task'},agentScope={projectId:'p',kind:'agent',id:'agent'},sessionScope={projectId:'p',kind:'session',id:'session'};
+  const route={providerId:'fixture-native',modelId:'fixture-scopes'},source={kind:'fixture',reference:'real local multi-scope Memory Manager; no provider call',observedAt:'2026-11-24T00:00:00Z'};
+  const authorize=({callerContext,scope})=>callerContext===caller&&scope.projectId==='p';
+  await store.transaction(s=>{s.projects.push({id:'p',profile:{provider:{instanceId:route.providerId,model:route.modelId}}});s.plans.push({id:'plan',projectId:'p',revision:1,approved:true,name:'Approved local verification'});s.tasks.push({id:'task',projectId:'p',planId:'plan',title:'Scoped recall',revision:1});s.runs.push({id:'run',projectId:'p',taskId:'task',revision:1});});
+  const initMemory=()=>createMemoryService({store,dataDir:dir,authorize});memory=await initMemory();
+  const requests=[projectScope,taskScope,agentScope,sessionScope].map(scope=>({scope,query:'SCOPE_FIXTURE',maxCharacters:16000}));
+  const initContext=()=>createContextService({store,dataDir:dir,authorize,memoryContext:(input,c)=>memory.context(input,c),memoryResolveRefs:(input,c)=>memory.resolveRefs(input,c),capabilities:async()=>({contextOwner:'native',acceptsForgePrefix:true,compactForgePrefix:true,source})});
+  let context=await initContext();t.after(async()=>{await memory.close();await store.close();await rm(dir,{recursive:true,force:true});});
+  const records=[];for(const [i,scope] of [projectScope,taskScope,agentScope,sessionScope].entries())records.push(await memory.remember({projectId:'p',scope,operationId:crypto.randomUUID(),memoryType:'working',title:`Scope ${scope.kind}`,content:`SCOPE_FIXTURE_${i} ภาษาไทย`},caller));
+  const shared=await memory.update({projectId:'p',scope:projectScope,id:records[0].id,expectedRevision:records[0].revision,operationId:crypto.randomUUID(),patch:{shares:[taskScope]}},caller);
+  await context.policy({projectId:'p',route,operationId:crypto.randomUUID(),budget:{contextWindow:20000,outputReserve:500,safetyReserve:100},source},caller);
+  const prepare=createT3ContextSeam({service:context,callerContextForRun:async()=>caller,memoryForRun:async()=>requests});
+  const r=await prepare({run:store.read().runs[0],project:store.read().projects[0],baseMessage:'Owner requires exact scope and approval.'});assert.equal(r.memoryAvailable,4);assert.equal(r.memoryGroups.length,4);
+  const projectGroup=r.memoryGroups.find(g=>g.request.scope.kind==='project'),taskGroup=r.memoryGroups.find(g=>g.request.scope.kind==='task');assert.ok(projectGroup.refs.some(ref=>ref.id===shared.id));assert.ok(!taskGroup.refs.some(ref=>ref.id===shared.id));
+  const sourceOnly=await context.compose({projectId:'p',route,operationId:crypto.randomUUID(),items:[],memory:{scope:taskScope,query:'SCOPE_FIXTURE_0',maxCharacters:16000}},caller);assert.equal(sourceOnly.memoryAvailable,1);assert.ok(sourceOnly.memoryGroups.some(g=>g.request.scope.kind==='project'&&g.refs[0]?.id===shared.id));
+  await memory.update({projectId:'p',scope:taskScope,id:records[1].id,expectedRevision:records[1].revision,operationId:crypto.randomUUID(),patch:{content:'NEW_EDIT_EXCLUDED_FROM_OLD_REF'}},caller);
+  await memory.forget({projectId:'p',scope:agentScope,id:records[2].id,expectedRevision:records[2].revision,operationId:crypto.randomUUID()},caller);
+  let resolved=await context.resolve({projectId:'p',contextId:r.id},caller);assert.equal(resolved.memoryAvailable,2);assert.ok(!resolved.message.includes('NEW_EDIT_EXCLUDED_FROM_OLD_REF'));assert.ok(!resolved.message.includes('SCOPE_FIXTURE_1'));assert.ok(!resolved.message.includes('SCOPE_FIXTURE_2'));
+  await memory.close();await store.close();store=await openStore(dir);memory=await initMemory();context=await initContext();resolved=await context.resolve({projectId:'p',contextId:r.id},caller);assert.equal(resolved.memoryAvailable,2);
+  const eventText=JSON.stringify(store.read().events.filter(e=>e.type.startsWith('context.')));assert.ok(!eventText.includes('SCOPE_FIXTURE_3 ภาษาไทย'));assert.ok(!eventText.includes('NEW_EDIT_EXCLUDED_FROM_OLD_REF'));
+});
