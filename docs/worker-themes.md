@@ -75,9 +75,11 @@ Keep Univer live theme updates in its own API; no lifecycle/remount changes here
   labels, reduced motion, editor CSS boundary, no root/dialog overflow and no
   truncated theme names at **320, 375, 414, 768, 1440px**. No browser errors.
 - Theme-picker desktop/mobile/Thai screenshots inspected locally. Last capture:
-  `C:/Users/siripon.sri/AppData/Local/Temp/forge-theme-verification-uEyexz/`.
+  `C:/Users/siripon.sri/AppData/Local/Temp/forge-theme-verification-OnsnXU/`.
   Captures are disposable verification artifacts, not checked-in product assets.
-- `git diff --check`: passed.
+- `git diff --check`: passed for authored files. Vendored source retains upstream
+  whitespace byte-for-byte via local `.gitattributes` (`-text -whitespace`),
+  including Quiet Light's three mixed-indentation lines.
 
 Implementation gap: none within the assigned theme/styling scope. The lead still
 needs the integrated Overview/font/persistence visual check after cherry-picking.

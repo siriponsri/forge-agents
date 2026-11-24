@@ -1,0 +1,2 @@
+# Keep vendored upstream bytes/hash fidelity, including upstream indentation.
+source/** -text -whitespace
