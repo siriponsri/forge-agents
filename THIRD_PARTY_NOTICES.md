@@ -13,6 +13,11 @@ evaluated target is `stablyai/orca` release `v1.4.204`, commit
 source, installer, binary, account data or runtime state is included here.
 # FORGE v3 workbench additions
 
+Manrope and IBM Plex Sans Thai, @fontsource5.3.0: SIL Open Font License1.1;
+unmodified bundled webfont subsets and copyright/license text are served at
+`font-notices.txt`. See app/web/public/font-notices.txt. VS Code named theme palette
+source is Microsoft/vscode MIT, source pin recorded in design.md and theme notices.
+
 T3 Code: MIT, copyright2026 T3 Tools Inc. Source releasev0.1.11,
 commit59651c1761f6c63e9b6056839067066968e6a406. Copied launcher/license and
 modification record are in app/vendor/t3; matching release GUI/server remains an
