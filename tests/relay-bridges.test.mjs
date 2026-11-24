@@ -46,6 +46,7 @@ test('OpenClaw official inbound_claim context signs native human identity, not b
   await hooks.inbound_claim(event, { ...ctx, accountId: 'other' });
   await hooks.inbound_claim(event, { ...ctx, conversationId: 'other' });
   await hooks.inbound_claim(event, { ...ctx, messageId: undefined });
+  assert.deepEqual(await hooks.inbound_claim(event, undefined), { handled: true });
   assert.equal(w.received.length, 1);
   assert.deepEqual(await hooks.inbound_claim({ content: 'ordinary chat' }, ctx), { handled: false });
   assert.equal(nativeServices[0].id, 'forge-mobile-relay');

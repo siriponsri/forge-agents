@@ -28,8 +28,9 @@ export function installOpenClawRelay(api, options) {
     finally { pumping = false; }
   };
   api.on('inbound_claim', async (event, ctx) => {
-    const content = event.content;
+    const content = event?.content;
     if (typeof content !== 'string' || !content.startsWith('FORGE ')) return { handled: false };
+    ctx ??= {}; // An incompatible/missing native context must also fail closed.
     // All provenance is derived from trusted hook context. Never use bodyForAgent,
     // senderIsOwner, model tool args, supplied actors or quoted/replied text.
     const native = { platform: ctx.channelId, chatId: ctx.conversationId, threadId: event.threadId == null ? null : String(event.threadId), ownerId: ctx.senderId, messageId: ctx.messageId, text: content };
