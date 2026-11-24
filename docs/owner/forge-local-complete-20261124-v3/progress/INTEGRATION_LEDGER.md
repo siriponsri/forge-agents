@@ -1,6 +1,22 @@
 # Integration Ledger
 
-## Inspected implementation ledger — 2026-11-24
+## Current integration update — 2026-11-24
+
+Provider install/setup/catalog/selection, scoped supervised MCP, OAuth, Plugins,
+Assistance/Adaptive, Goals, Memory, Context and Compute now have production
+HTTP/App mounts. Telegram Inbox and signed private bridge/report lifecycle are
+mounted; native gateway live checks are still NOT_RUN. Central Owner memory is
+private until a current source revision is explicitly shared to a named project.
+Runtime key entry/OS-vault integration and standalone public website are active
+tasks. Earlier rows below describe the previous inspection and are retained as
+history; use CURRENT_STATUS and current evidence to resolve superseded gaps.
+
+Production checks: `controls-integrated-smoke.json`,
+`knowledge-integrated-smoke.json`, `visual-integrated-smoke.json`,
+`t3-provider-setup-live.json` under `docs/evidence`. Model turns and account login
+are expressly NOT_RUN in the latest fresh native setup qualification.
+
+## Earlier inspected ledger
 
 | Route | Implementation/evidence | Live qualification |
 |---|---|---|

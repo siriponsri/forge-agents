@@ -3,6 +3,8 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { entity, find, fail, confined, now } from './domain.mjs';
 import { validateState } from './store.mjs';
+import {mergeMemoryTombstones} from '../memory/index.mjs';
+import {mergeOwnerMemorySafety} from '../memory/owner.mjs';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 export function createArtifactService({store,dataDir}){
   return {
@@ -52,7 +54,9 @@ export function createArtifactService({store,dataDir}){
       if(!/^[0-9a-f-]{36}$/.test(id))fail('VALIDATION','Choose a local backup ID');
       const file=path.join(dataDir,'backups',`${id}.json`),bytes=await readFile(file);if(hash(bytes)!==(await readFile(`${file}.sha256`,'utf8')).trim())fail('INTEGRITY','Backup checksum mismatch',409);
       const restored=validateState(JSON.parse(bytes));const safety=await this.backup();
-      return store.transaction(s=>{if(s.revision!==expectedRevision)fail('REVISION_CONFLICT','Data changed before restore. Reload and retry.',409);const revision=s.revision;Object.assign(s,restored,{revision});for(const r of s.runs)if(['running','submitting'].includes(r.status))r.status='unknown';for(const j of s.jobs)if(['queued','running','rendering','preparing','validating'].includes(j.status))j.status='interrupted';return {status:'restored',safetyBackup:safety,scope:'Metadata only; verify all external bindings and artifact locations.'};});
+      // Memory deletion and explicit Owner sharing are current authority, not
+      // configuration that an older backup can silently reinstate.
+      return store.transaction(s=>{if(s.revision!==expectedRevision)fail('REVISION_CONFLICT','Data changed before restore. Reload and retry.',409);const revision=s.revision;mergeMemoryTombstones(restored,s);mergeOwnerMemorySafety(restored,s);restored.relay=structuredClone(s.relay);Object.assign(s,restored,{revision});for(const r of s.runs)if(['running','submitting'].includes(r.status))r.status='unknown';for(const j of s.jobs)if(['queued','running','rendering','preparing','validating'].includes(j.status))j.status='interrupted';return {status:'restored',safetyBackup:safety,scope:'Metadata only; verify all external bindings and artifact locations. Current mobile approval/delivery history and Owner memory authority are preserved.'};});
     },
   };
 }

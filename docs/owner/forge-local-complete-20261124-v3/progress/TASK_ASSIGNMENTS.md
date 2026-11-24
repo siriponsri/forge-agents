@@ -1,6 +1,36 @@
 # Task Assignments
 
-## Active assignments — 2026-11-24
+## Owner stop override
+
+All development/review assignments are stopped for the requested machine move.
+Completed website and secret work is included in the checkpoint. The interrupted
+compute environment delta is preserved as a gzip patch in `docs/handoff` rather
+than silently lost or treated as integrated. Independent review did not finish.
+Resume only after the Owner starts work again; see MACHINE_TRANSFER_20261124.md.
+
+## Current integration assignments — 2026-11-24
+
+Lead: shared T3 admission, opaque caller authorization, HTTP/session/CSRF,
+canonical persistence/restore, plugin gates, production App mounts and integrated
+verification on `integration/forge-local-complete`. Actual model `gpt-6.1-sol`,
+reasoningEffort `xhigh`, serviceTier `default`; no model switch inferred.
+
+Completed worker deltas integrated: full native catalog `5edc440`, central Owner
+Memory `26f6d6f`, Context role/multi-scope/passthrough `6ce0da7`, durable Goals
+`215a05e`, owned Python/Compute GUI `b7ca9d1`, plus the prior provider/strategy/
+relay/plugin/design work. Production integration evidence is recorded in
+CURRENT_STATUS and `docs/evidence`; worker harnesses retain their own labels.
+
+Still active in isolated T3 worktrees: no-code machine secret service/setup panel
+(`t3/implement-secret-manager`); independent public website
+(`t3/standalone-public-website`). Neither owns root manifests/shared contracts.
+
+Owner confirmed central Owner Memory with explicit project sharing, Telegram as
+the first Hermes/OpenClaw mobile channel, and final documentation/README diagrams
+as the last gate before main push. `docs/RELEASE_DOCUMENTATION_GATE.md` is pending
+final integrated verification. No push/public deployment has been performed.
+
+## Earlier assignment history — superseded statuses
 
 AS-01 Assistance Strategy / Auto-Model Selection: owner confirmed larger Asst. and
 smaller Executor roles; auto considers ALL connected-provider models, balances

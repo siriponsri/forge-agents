@@ -26,6 +26,7 @@ test('PluginManager browser: configure/enable/health/select/scope/disable/reload
   const bundle=await build({stdin:{contents:entry,resolveDir:fileURLToPath(new URL('../app/web/src/',import.meta.url)),loader:'jsx'},bundle:true,write:false,format:'esm',platform:'browser',logLevel:'silent'});
   const server=createServer(async(req,res)=>{
     try {
+      if(req.url==='/api/session'){res.setHeader('Content-Type','application/json');res.end(JSON.stringify({csrf:'isolated-component-fixture-only'}));return;}
       if(req.url==='/fixture/state'){res.setHeader('Content-Type','application/json');res.end(JSON.stringify(f.store.read()));return;}
       if(req.url==='/bundle.js'){res.setHeader('Content-Type','text/javascript');res.end(bundle.outputFiles[0].contents);return;}
       if(req.url.startsWith('/api/plugins/')){

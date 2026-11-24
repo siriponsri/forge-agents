@@ -1,0 +1,470 @@
+{
+  "result": "PASSED",
+  "model": "gpt-6.1-sol",
+  "effort": "xhigh",
+  "fixture": "Real application service with disposable engineering records; no provider live claim",
+  "fixtureDir": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-visual-refinement-rFK2fH",
+  "checks": [
+    "real GUI project creation, autofocus, busy/disabled state, empty project; canonical project-scoped task/status/owner and exact counts",
+    "real duplicate-workspace error with retained draft, dismissal and recovery",
+    "15 named themes; rendered text contrast in overview/hover/picker/empty search/form; keyboard selection, Escape focus restoration, reload persistence",
+    "Open your plan and Docs & sheets route through existing functional surfaces",
+    "320/375/414/768/1440/1920; real long mixed TH/EN task title; native theme dialog bounds; mobile navigation drawer",
+    "visible keyboard focus; forced colors; reduced motion and no page exceptions"
+  ],
+  "contrast": [
+    {
+      "label": "dark-modern overview",
+      "count": 76,
+      "min": 4.53,
+      "failures": []
+    },
+    {
+      "label": "dark-modern hover",
+      "count": 76,
+      "min": 4.53,
+      "failures": []
+    },
+    {
+      "label": "dark-modern no results",
+      "count": 83,
+      "min": 4.53,
+      "failures": []
+    },
+    {
+      "label": "dark-modern picker",
+      "count": 116,
+      "min": 4.53,
+      "failures": []
+    },
+    {
+      "label": "dark-modern form, input and placeholder",
+      "count": 85,
+      "min": 4.53,
+      "failures": []
+    },
+    {
+      "label": "dark-plus overview",
+      "count": 76,
+      "min": 4.53,
+      "failures": []
+    },
+    {
+      "label": "dark-plus hover",
+      "count": 76,
+      "min": 4.53,
+      "failures": []
+    },
+    {
+      "label": "dark-plus no results",
+      "count": 83,
+      "min": 4.53,
+      "failures": []
+    },
+    {
+      "label": "dark-plus picker",
+      "count": 116,
+      "min": 4.53,
+      "failures": []
+    },
+    {
+      "label": "dark-plus form, input and placeholder",
+      "count": 85,
+      "min": 4.53,
+      "failures": []
+    },
+    {
+      "label": "light-modern overview",
+      "count": 76,
+      "min": 5.07,
+      "failures": []
+    },
+    {
+      "label": "light-modern hover",
+      "count": 76,
+      "min": 5.26,
+      "failures": []
+    },
+    {
+      "label": "light-modern no results",
+      "count": 83,
+      "min": 5.26,
+      "failures": []
+    },
+    {
+      "label": "light-modern picker",
+      "count": 116,
+      "min": 5.26,
+      "failures": []
+    },
+    {
+      "label": "light-modern form, input and placeholder",
+      "count": 85,
+      "min": 5.26,
+      "failures": []
+    },
+    {
+      "label": "light-plus overview",
+      "count": 76,
+      "min": 4.51,
+      "failures": []
+    },
+    {
+      "label": "light-plus hover",
+      "count": 76,
+      "min": 4.51,
+      "failures": []
+    },
+    {
+      "label": "light-plus no results",
+      "count": 83,
+      "min": 4.51,
+      "failures": []
+    },
+    {
+      "label": "light-plus picker",
+      "count": 116,
+      "min": 4.51,
+      "failures": []
+    },
+    {
+      "label": "light-plus form, input and placeholder",
+      "count": 85,
+      "min": 4.51,
+      "failures": []
+    },
+    {
+      "label": "monokai overview",
+      "count": 76,
+      "min": 4.91,
+      "failures": []
+    },
+    {
+      "label": "monokai hover",
+      "count": 76,
+      "min": 4.91,
+      "failures": []
+    },
+    {
+      "label": "monokai no results",
+      "count": 83,
+      "min": 4.91,
+      "failures": []
+    },
+    {
+      "label": "monokai picker",
+      "count": 116,
+      "min": 4.91,
+      "failures": []
+    },
+    {
+      "label": "monokai form, input and placeholder",
+      "count": 85,
+      "min": 4.91,
+      "failures": []
+    },
+    {
+      "label": "monokai-dimmed overview",
+      "count": 76,
+      "min": 4.52,
+      "failures": []
+    },
+    {
+      "label": "monokai-dimmed hover",
+      "count": 76,
+      "min": 4.52,
+      "failures": []
+    },
+    {
+      "label": "monokai-dimmed no results",
+      "count": 83,
+      "min": 4.52,
+      "failures": []
+    },
+    {
+      "label": "monokai-dimmed picker",
+      "count": 116,
+      "min": 4.52,
+      "failures": []
+    },
+    {
+      "label": "monokai-dimmed form, input and placeholder",
+      "count": 85,
+      "min": 4.52,
+      "failures": []
+    },
+    {
+      "label": "solarized-dark overview",
+      "count": 76,
+      "min": 4.51,
+      "failures": []
+    },
+    {
+      "label": "solarized-dark hover",
+      "count": 76,
+      "min": 4.51,
+      "failures": []
+    },
+    {
+      "label": "solarized-dark no results",
+      "count": 83,
+      "min": 4.51,
+      "failures": []
+    },
+    {
+      "label": "solarized-dark picker",
+      "count": 116,
+      "min": 4.51,
+      "failures": []
+    },
+    {
+      "label": "solarized-dark form, input and placeholder",
+      "count": 85,
+      "min": 4.51,
+      "failures": []
+    },
+    {
+      "label": "solarized-light overview",
+      "count": 76,
+      "min": 5.03,
+      "failures": []
+    },
+    {
+      "label": "solarized-light hover",
+      "count": 76,
+      "min": 5.03,
+      "failures": []
+    },
+    {
+      "label": "solarized-light no results",
+      "count": 83,
+      "min": 4.5,
+      "failures": []
+    },
+    {
+      "label": "solarized-light picker",
+      "count": 116,
+      "min": 4.5,
+      "failures": []
+    },
+    {
+      "label": "solarized-light form, input and placeholder",
+      "count": 85,
+      "min": 4.5,
+      "failures": []
+    },
+    {
+      "label": "quiet-light overview",
+      "count": 76,
+      "min": 4.54,
+      "failures": []
+    },
+    {
+      "label": "quiet-light hover",
+      "count": 76,
+      "min": 4.54,
+      "failures": []
+    },
+    {
+      "label": "quiet-light no results",
+      "count": 83,
+      "min": 4.54,
+      "failures": []
+    },
+    {
+      "label": "quiet-light picker",
+      "count": 116,
+      "min": 4.54,
+      "failures": []
+    },
+    {
+      "label": "quiet-light form, input and placeholder",
+      "count": 85,
+      "min": 4.54,
+      "failures": []
+    },
+    {
+      "label": "abyss overview",
+      "count": 76,
+      "min": 4.88,
+      "failures": []
+    },
+    {
+      "label": "abyss hover",
+      "count": 76,
+      "min": 4.55,
+      "failures": []
+    },
+    {
+      "label": "abyss no results",
+      "count": 83,
+      "min": 4.88,
+      "failures": []
+    },
+    {
+      "label": "abyss picker",
+      "count": 116,
+      "min": 4.88,
+      "failures": []
+    },
+    {
+      "label": "abyss form, input and placeholder",
+      "count": 85,
+      "min": 4.88,
+      "failures": []
+    },
+    {
+      "label": "kimbie-dark overview",
+      "count": 76,
+      "min": 5.48,
+      "failures": []
+    },
+    {
+      "label": "kimbie-dark hover",
+      "count": 76,
+      "min": 5.48,
+      "failures": []
+    },
+    {
+      "label": "kimbie-dark no results",
+      "count": 83,
+      "min": 4.51,
+      "failures": []
+    },
+    {
+      "label": "kimbie-dark picker",
+      "count": 116,
+      "min": 4.51,
+      "failures": []
+    },
+    {
+      "label": "kimbie-dark form, input and placeholder",
+      "count": 85,
+      "min": 4.51,
+      "failures": []
+    },
+    {
+      "label": "red overview",
+      "count": 76,
+      "min": 5.87,
+      "failures": []
+    },
+    {
+      "label": "red hover",
+      "count": 76,
+      "min": 5.87,
+      "failures": []
+    },
+    {
+      "label": "red no results",
+      "count": 83,
+      "min": 5.87,
+      "failures": []
+    },
+    {
+      "label": "red picker",
+      "count": 116,
+      "min": 5.87,
+      "failures": []
+    },
+    {
+      "label": "red form, input and placeholder",
+      "count": 85,
+      "min": 5.87,
+      "failures": []
+    },
+    {
+      "label": "tomorrow-night-blue overview",
+      "count": 76,
+      "min": 4.5,
+      "failures": []
+    },
+    {
+      "label": "tomorrow-night-blue hover",
+      "count": 76,
+      "min": 4.5,
+      "failures": []
+    },
+    {
+      "label": "tomorrow-night-blue no results",
+      "count": 83,
+      "min": 4.5,
+      "failures": []
+    },
+    {
+      "label": "tomorrow-night-blue picker",
+      "count": 116,
+      "min": 4.5,
+      "failures": []
+    },
+    {
+      "label": "tomorrow-night-blue form, input and placeholder",
+      "count": 85,
+      "min": 4.5,
+      "failures": []
+    },
+    {
+      "label": "high-contrast-dark overview",
+      "count": 76,
+      "min": 7.08,
+      "failures": []
+    },
+    {
+      "label": "high-contrast-dark hover",
+      "count": 76,
+      "min": 7.08,
+      "failures": []
+    },
+    {
+      "label": "high-contrast-dark no results",
+      "count": 83,
+      "min": 7.08,
+      "failures": []
+    },
+    {
+      "label": "high-contrast-dark picker",
+      "count": 116,
+      "min": 7.08,
+      "failures": []
+    },
+    {
+      "label": "high-contrast-dark form, input and placeholder",
+      "count": 85,
+      "min": 7.08,
+      "failures": []
+    },
+    {
+      "label": "high-contrast-light overview",
+      "count": 76,
+      "min": 5.12,
+      "failures": []
+    },
+    {
+      "label": "high-contrast-light hover",
+      "count": 76,
+      "min": 5.22,
+      "failures": []
+    },
+    {
+      "label": "high-contrast-light no results",
+      "count": 83,
+      "min": 5.76,
+      "failures": []
+    },
+    {
+      "label": "high-contrast-light picker",
+      "count": 116,
+      "min": 4.91,
+      "failures": []
+    },
+    {
+      "label": "high-contrast-light form, input and placeholder",
+      "count": 85,
+      "min": 5.76,
+      "failures": []
+    }
+  ],
+  "pageErrors": [],
+  "homeUat": "HOME_UAT_NOT_RUN",
+  "liveProviders": "NOT_RUN"
+}

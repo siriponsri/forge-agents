@@ -2,6 +2,7 @@ import { randomUUID, createHash } from 'node:crypto';
 import { mkdir, realpath, stat } from 'node:fs/promises';
 import path from 'node:path';
 import {validateOfficeAgentSave} from '../office/agent-contract.mjs';
+import {validateProjectContext} from '../governance/context.mjs';
 export const now=()=>new Date().toISOString();
 export function fail(code,message,statusCode=400,details){throw Object.assign(new Error(message),{code,statusCode,details});}
 export function required(value,label){if(typeof value!=='string'||!value.trim())fail('VALIDATION',`${label} is required`);return value.trim();}
@@ -84,6 +85,7 @@ export async function command(store,input,{clock=Date.now}={}){
         Object.assign(x,patch); changed(x);
       }else fail('UNKNOWN_COMMAND',type);
     }
+    if(input.projectId&&/^(bot|task|plan)\./.test(type))validateProjectContext(s,{projectId:input.projectId});
     const receipt={operationId,type,entityId:x.id,revision:x.revision,outcome:'applied',at:now()};
     if(type==='document.save')Object.assign(receipt,{projectId:input.projectId,baseRevision:input.expectedRevision,actor:structuredClone(data.actor??{kind:'human'}),operation:structuredClone(data.operation??data.edit??null)});
     const result={receipt,entity:structuredClone(x),stateRevision:s.revision+1};

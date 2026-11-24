@@ -26,7 +26,7 @@ function notebook(n){
   const cells=n.cells?.length&&codeOf({cells:n.cells})===codeOf(n)?structuredClone(n.cells):[{cell_type:'code',metadata:{},source:codeOf(n).split(/(?<=\n)/),outputs:[],execution_count:null}];
   return {nbformat:4,nbformat_minor:5,metadata:{kernelspec:{name:'python3',display_name:'Python 3',language:'python'}},cells:cells.map(c=>({...c,metadata:c.metadata??{},...(c.cell_type==='code'?{execution_count:null,outputs:[]}:{} )}))};
 }
-export function createComputeService({dataDir,store,localJobs}){
+export function createComputeService({dataDir,store,localJobs,admit}){
   const inflight=new Map(),deadlines=new Map();let closing=false;
   function armDeadline(j){
     const c=j.configSnapshot?.executor??j.configSnapshot;
@@ -94,7 +94,7 @@ export function createComputeService({dataDir,store,localJobs}){
         }else if(input.checkpointArtifactId)error('COMPUTE_MODE','Checkpoint requires resume mode');
         if(c.kind==='local'){
           if(!localJobs)error('COMPUTE_SETUP','Local job owner is not connected',409);
-          if(store.read().jobs.some(j=>j.projectId===p.id&&active.has(j.status)))error('WORKSPACE_BUSY','Reconcile or stop the active workspace execution first',409);
+          if(store.read().jobs.some(j=>j.projectId===p.id&&j.computeAttempt&&active.has(j.status)))error('WORKSPACE_BUSY','Reconcile or stop the active workspace execution first',409);
           const j=await localJobs.start({...input,resolvedCompute:{kind:'local',notebookRevision:n.revision,projectRevision:p.revision,targetId:target?.id??null,targetRevision:target?.revision??null}});
           return update(j.id,{computeFingerprint:fingerprint,computeAttempt:{kind:'local',targetId:target?.id??null},source:{notebookId:n.id,revision:j.sourceRevision,sha256:hash(j.code??sourceCode)},configSnapshot:c,environment:{revision:c.environmentRevision??null,qualification:'local-job-owner'},artifactRefs:[],checkpointRefs:[],mode:'restart'});
         }
@@ -102,7 +102,8 @@ export function createComputeService({dataDir,store,localJobs}){
         const j=await store.transaction(s=>{
           const duplicate=s.jobs.find(x=>x.operationId===input.operationId);if(duplicate){if(duplicate.computeFingerprint!==fingerprint)error('OPERATION_REUSE','Operation ID conflict',409);return {...duplicate,replayed:true};}
           const current=selected(s,input);if(current.project.revision!==p.revision||current.notebook.revision!==n.revision||current.target?.revision!==target?.revision)error('REVISION_CONFLICT','Notebook or compute selection changed before dispatch',409);
-          if(s.jobs.some(x=>x.projectId===p.id&&active.has(x.status)))error('WORKSPACE_BUSY','Another execution owns the workspace; reconcile first',409);
+          if(s.jobs.some(x=>x.projectId===p.id&&x.computeAttempt&&active.has(x.status)))error('WORKSPACE_BUSY','Another execution owns the workspace; reconcile first',409);
+          admit?.(s,input);
           const limitSeconds=Math.min(Math.max(Number(p.profile?.limits?.jobSeconds)||120,1),86400);
           const job=entity({kind:'compute-notebook',computeFingerprint:fingerprint,operationId:input.operationId,notebookId:n.id,phaseId:input.phaseId??null,computeAttempt:{kind:c.kind,targetId:target?.id??null,targetRevision:target?.revision??null},sourceRevision:n.revision,source:{notebookId:n.id,revision:n.revision,sha256:hash(sourceCode)},sourceNotebook:notebook(n),code:sourceCode,configSnapshot:c,configRevision:hash(c),environment:{revision:c.environmentRevision??null,qualification:'not-yet-observed'},workspace:p.workspace,profileRevision:p.revision,ownerToken:randomUUID(),status:'submitting',logs:'',remote:null,mode:input.mode??'restart',previousJobId:input.previousJobId??null,checkpoint,checkpointRefs:checkpoint?[checkpoint.artifactId]:[],artifactRefs:[],limitSeconds,startedAt:stamp(),deadlineAt:new Date(Date.now()+limitSeconds*1000).toISOString()},p.id);s.jobs.push(job);return job;
         });
@@ -116,6 +117,7 @@ export function createComputeService({dataDir,store,localJobs}){
           if(stopped())return update(j.id,{status:'stopped',finishedAt:stamp()});
           if(!health.execution)error('COMPUTE_NOT_READY','Selected target is not execution-ready; inspect health and configure its identity/executor',409);
           const exec=c.executor??c;let r;
+          admit?.(store.read(),input,{jobId:j.id});
           dispatchStarted=true;
           if(exec.kind==='owner-ssh')r=await ssh(exec,'start',j);
           else r=await jupyterStart(exec,j,remote=>update(j.id,{remote}),stopped);
@@ -137,7 +139,7 @@ export function createComputeService({dataDir,store,localJobs}){
     async reconcile(input={}){
       if(input.projectId)find(store.read(),'projects',input.projectId);
       if(input.jobId)return service.status(input);
-      const jobs=store.read().jobs.filter(j=>j.computeAttempt&&(!input.projectId||j.projectId===input.projectId)&&active.has(j.status));
+      const jobs=store.read().jobs.filter(j=>j.computeAttempt&&j.computeAttempt.kind!=='colab-mcp'&&(!input.projectId||j.projectId===input.projectId)&&active.has(j.status));
       const results=[];for(const j of jobs)results.push(await refresh(j));
       for(const r of store.read().receipts.filter(r=>r.kind==='compute-lifecycle'&&(!input.projectId||r.projectId===input.projectId)&&['submitting','requested','unknown'].includes(r.status))){
         let patch;try{const observation=await resource(r.configSnapshot);const reached=r.action==='start'?observation.running:['stopped','EXITED'].includes(observation.state);patch={status:reached?'completed':'unknown',observation,lastObservationAt:stamp()};}catch(e){patch={status:'unknown',message:clean(e.message,r.configSnapshot),lastObservationAt:stamp()};}

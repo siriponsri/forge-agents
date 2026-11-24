@@ -93,7 +93,7 @@ export function workspaceFree(s,g,exceptClaimId) {
   // No execution adapter currently proves separate workspaces. Advisory task
   // scope and a goal checkout are never advertised as filesystem isolation.
   const projects=workspaceProjects(s,g.projectId);
-  if(s.runs.some(r=>projects.has(r.projectId)&&!terminal.has(r.status))||s.events.some(c=>c.type==='goal.claim'&&projects.has(c.projectId)&&c.status==='held'&&c.id!==exceptClaimId))fail('WORKSPACE_BUSY','Active or unknown execution owns this workspace; reconcile it first',409);
+  if(s.runs.some(r=>projects.has(r.projectId)&&(!r.kind||r.taskId||r.kind==='conversation')&&!terminal.has(r.status)&&r.status!=='stopped')||s.jobs.some(j=>projects.has(j.projectId)&&j.computeAttempt&&['queued','submitting','submitted','starting','running','stopping','unknown','interrupted','awaiting-owner'].includes(j.status))||s.events.some(c=>c.type==='goal.claim'&&projects.has(c.projectId)&&c.status==='held'&&c.id!==exceptClaimId))fail('WORKSPACE_BUSY','Active or unknown execution owns this workspace; reconcile it first',409);
   if(s.events.some(e=>['adaptive.loop','assistance.loop'].includes(e.type)&&projects.has(e.projectId)&&!['completed','stopped','exhausted'].includes(e.status)))fail('CONTROLLER_BUSY','An existing role/skill controller owns this workspace',409);
 }
 

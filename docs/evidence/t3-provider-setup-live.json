@@ -1,0 +1,27 @@
+{
+  "result": "PASSED",
+  "fixtureDir": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-t3-setup-live-Q02ePC",
+  "source": "T3 0.1.11 / 59651c1761f6c63e9b6056839067066968e6a406",
+  "checks": [
+    "actual providers:manage/orchestration:read ticket + Effect RPC",
+    "actual project registration",
+    "actual isolated Codex provider instance configuration",
+    "actual native refresh/readiness",
+    "actual full native model-catalog contract (unauthenticated fixture, no completeness claim)",
+    "all issued auth sessions revoked"
+  ],
+  "readiness": "error",
+  "nativeCatalog": {
+    "modelCount": 0,
+    "catalogComplete": false,
+    "reasons": [
+      "provider-unhealthy",
+      "workspace-snapshot-pending"
+    ],
+    "checkedAt": "2026-11-24T08:45:46.123Z",
+    "source": "server.refreshProviders"
+  },
+  "providerTurns": 0,
+  "accountLogin": "NOT_RUN",
+  "homeUat": "HOME_UAT_NOT_RUN"
+}

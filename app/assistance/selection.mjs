@@ -51,7 +51,7 @@ export function selectFromState(s,input,providers,t3,clock=Date.now){
       if(!providers?.catalog||!providers?.validateSelection)fail('PROVIDER_SERVICE_REQUIRED','Owned provider catalog validator is required',409);
       const observed=providers.catalog({projectId:project.id,connectionId:c.id});
       if(observed.stale||observed.error||!catalog||catalog.providerInstanceId!==c.providerInstanceId||clock()-catalog.observedAt>=CATALOG_TTL_MS||catalog.observedAt>clock())fail('CATALOG_STALE','Refresh the exact route catalog',409);
-      if(catalog.omittedModels>0)fail('CATALOG_INCOMPLETE','Runtime omitted models; obtain a complete catalog before claiming selection across all connected models',409);
+      if(catalog.catalogComplete===false||catalog.omittedModels===null||catalog.omittedModels>0||catalog.orchestrationKnown===false)fail('CATALOG_INCOMPLETE','Obtain a complete native catalog with observed orchestration eligibility before selecting across all connected models',409);
       const check=c.lastCheck;
       if(!check||check.providerInstanceId!==c.providerInstanceId||check.installed!==true||check.enabled!==true||check.authentication!=='authenticated'||check.status!=='ready'||!Number.isFinite(check.checkedAt)||clock()-check.checkedAt>=CATALOG_TTL_MS||check.checkedAt>clock())fail('AUTH_REQUIRED','Check this route installation/authentication again; catalog membership is insufficient',409);
       if(!catalog.runtimeModes?.includes('approval-required')||catalog.canRunChildTask!==true||hooks.some(h=>typeof t3?.[h]!=='function'))fail('CAPABILITY_REQUIRED','Observed supervised T3 execution/stop/reconcile capabilities required',409);

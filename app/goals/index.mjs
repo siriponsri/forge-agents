@@ -14,7 +14,7 @@ export async function dispatchGoalRequest(service,method,input,caller) {
 }
 
 export function createGoalService({store,t3,authorize,clock=Date.now}) {
-  let closed=false,driving=false,scheduled;const pending=new Set(),timers=new Map();
+  let closed=false,driving=false,scheduled,suspended=false;const pending=new Set(),timers=new Map();
   const get=(i,s=store.read())=>record(s,'goal',i.goalId,i.projectId);
   const last=g=>g.attempts.at(-1);
   function trace(s,g,action,data={}){changed(g);append(s,'transition',{goalId:g.id,goalRevision:g.goalRevision,action,status:g.status,at:clock(),...data},g.projectId);}
@@ -29,12 +29,12 @@ export function createGoalService({store,t3,authorize,clock=Date.now}) {
   }
   function arm(g){
     clearTimeout(timers.get(g.id));timers.delete(g.id);
-    if(closed||!g.deadlineAt||inactive.has(g.status)||g.stopRequested)return;
+    if(closed||suspended||g.restoreReviewRequired||!g.deadlineAt||inactive.has(g.status)||g.stopRequested)return;
     const timer=setTimeout(()=>{timers.delete(g.id);track(stopGoal({projectId:g.projectId,goalId:g.id,operationId:`goal-deadline:${g.id}:${g.goalRevision}`},'budget')).catch(()=>{});},Math.max(1,g.deadlineAt-clock()));
     timer.unref?.();timers.set(g.id,timer);
   }
   function track(p){pending.add(p);p.then(()=>pending.delete(p),()=>pending.delete(p));return p;}
-  function schedule(){if(closed||scheduled||driving)return;scheduled=setTimeout(()=>{scheduled=null;track(drive()).catch(()=>{});},10);scheduled.unref?.();}
+  function schedule(){if(closed||suspended||scheduled||driving)return;scheduled=setTimeout(()=>{scheduled=null;track(drive()).catch(()=>{});},10);scheduled.unref?.();}
   async function command(method,input,fn,{checkRevision=true}={}){
     exact(input,[...common,...(extras[method]??[])]);input=structuredClone(input);
     boundedText(input.operationId,'operationId',200);
@@ -146,7 +146,7 @@ export function createGoalService({store,t3,authorize,clock=Date.now}) {
       if(inactive.has(g.status)||unresolved(g))fail('RECONCILE_REQUIRED','Reconcile the exact prior attempt before resume; unknown dispatch is never replayed',409);
       validateDefinition(s,g);const reason=budget(s,g);if(reason){budgetBlock(s,g,reason);return;}
       if(!g.startedAt){g.startedAt=clock();g.deadlineAt=clock()+g.policy.maxMs;}
-      g.stopRequested=null;g.blocker=null;g.status='active';trace(s,g,'resumed');
+      delete g.restoreReviewRequired;g.stopRequested=null;g.blocker=null;g.status='active';trace(s,g,'resumed');
     });schedule();return r.goal;},
     pause:input=>stopGoal(input,'pause'),
     cancel:input=>stopGoal(input,'cancel'),
@@ -262,19 +262,22 @@ export function createGoalService({store,t3,authorize,clock=Date.now}) {
         }return result;
       });for(const g of goals)arm(g);return goals;
     },
+    async suspendForRestore(){suspended=true;clearTimeout(scheduled);scheduled=null;for(const t of timers.values())clearTimeout(t);timers.clear();await Promise.allSettled([...pending]);},
+    async afterRestore(){await store.transaction(s=>{for(const g of s.events.filter(e=>e.type==='goal.goal')){if(inactive.has(g.status))continue;g.restoreReviewRequired=true;g.stopRequested='pause';g.status=unresolved(g)?'unknown':'paused';trace(s,g,'restored_requires_owner_review');}});suspended=false;},
+    cancelRestore(){suspended=false;for(const g of store.read().events.filter(e=>e.type==='goal.goal'))arm(g);schedule();},
     async close(){closed=true;unsubscribe();clearTimeout(scheduled);for(const t of timers.values())clearTimeout(t);timers.clear();await Promise.allSettled([...pending]);},
   };
   async function drive(){
-    if(driving||closed)return;driving=true;
+    if(driving||closed||suspended)return;driving=true;
     try{
       // A late durable observation after Stop/deadline still belongs to that
       // stopped goal. Stop only that exact owner, once; do not dispatch or poll.
-      for(const g of store.read().events.filter(e=>e.type==='goal.goal'&&e.stopRequested&&unresolved(e))){
+      for(const g of store.read().events.filter(e=>e.type==='goal.goal'&&!e.restoreReviewRequired&&e.stopRequested&&unresolved(e))){
         if(closed)break;
         const a=last(g);
         try{const r=ownedRun(store.read(),g,a,{context:false});if(r&&(!a.stopRequest||terminal.has(r.status)))await stopOwned({projectId:g.projectId,goalId:g.id});}catch{/* Foreign/ambiguous owners remain unresolved for explicit reconciliation. */}
       }
-      for(const g of store.read().events.filter(e=>e.type==='goal.goal'&&e.policy.mode==='bounded-auto'&&!e.stopRequested&&e.status==='active')){
+      for(const g of store.read().events.filter(e=>e.type==='goal.goal'&&!e.restoreReviewRequired&&e.policy.mode==='bounded-auto'&&!e.stopRequested&&e.status==='active')){
         if(closed)break;
         const a=last(g),input={projectId:g.projectId,goalId:g.id,expectedRevision:g.revision,operationId:`goal-auto:${g.id}:${g.revision}`};
         try{

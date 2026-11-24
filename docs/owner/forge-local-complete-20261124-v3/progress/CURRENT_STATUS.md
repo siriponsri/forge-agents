@@ -1,6 +1,66 @@
 # Current Status — Complete Local FORGE
 
-## Developer checkpoint — 2026-11-24
+## Owner stop / transfer instruction — latest
+
+Development is stopped at the Owner's request. Push the preserved checkpoint to
+main for moving machines; this overrides the earlier instruction to continue
+until complete. **IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN** still apply.
+Read `docs/handoff/MACHINE_TRANSFER_20261124.md` first on the next machine.
+Completed website work is included; unfinished compute-env delta is preserved as
+an unapplied patch. Independent review was stopped before inspection. No claim
+of a complete release, new full-suite pass, account qualification or deployment.
+
+## Current lead checkpoint — 2026-11-24, integrated application
+
+Overall **IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN**. Work continues on
+`integration/forge-local-complete`; main has not been advanced or pushed.
+
+- Production HTTP/GUI mounts now include provider setup, exact observed model
+  selection, governed MCP, OAuth callback, Plugins, Assistance/Adaptive,
+  Context budgets, Goals, Memory Studio, Compute targets and Telegram Inbox.
+- Central Owner Memory is one private canonical source. Owner explicitly shares
+  a particular revision with a named project. Edit/revoke/delete invalidates old
+  context refs, and old metadata restore cannot resurrect deleted content or
+  revoked sharing. Project/provider state does not expose central source events.
+- Native full T3 catalogs preserve typed options, workspace scope, source/cache
+  qualification and content-observation timestamps. A real fresh unauthenticated
+  Codex instance passed the native RPC/catalog shape check; it returned zero
+  models/incomplete, correctly, without a model turn or account sign-in.
+- Local Python uses an owned Windows process tree. The integrated Compute GUI
+  executes real Python; local phase selection under a remote default, immutable
+  operation replay and overlapping-workspace admission passed. Hosted Colab and
+  baseline compute dispatch have distinct owners; downloaded managed results
+  publish through the shared verified artifact service.
+- Goal context, Assistance route selection and relay approval are checked in the
+  authoritative T3 reservation. Context receipt is retained before launch, with
+  admission checked again after awaited preparation. Restore cannot resume an
+  old automatic goal without explicit review.
+- Telegram is the Owner-confirmed first mobile channel, via Hermes Agent of Nous
+  Research or OpenClaw. Inbox, local task-link review, same-channel approval,
+  HMAC bridge, durable reports and readiness are mounted. Native gateway/account
+  roundtrips remain **LIVE_HERMES_NOT_RUN / LIVE_OPENCLAW_NOT_RUN**.
+
+Developer evidence: production build; real core GUI/Univer/Python/restart smoke;
+15-theme visual verification with 75 contrast checks; integrated MCP one-effect
+approval flow; production Memory/Owner share/Context/Goals/Compute/Inbox browser
+smoke; 30 compute/Colab/local process/shutdown tests; 42 Goals/Owner/integrated
+boundary checks. These are separate commands, not an aggregate deduplicated
+test-suite total. Evidence: `docs/evidence/*integrated-smoke.json` and
+`docs/evidence/t3-provider-setup-live.json`.
+
+Next executable tasks: integrate no-code machine-secret vault into setup/runtime
+resolvers; complete native relay setup qualification and common recovery UX;
+integrate/review the independent public website; run the final integrated suite
+and release-package checks. Remaining protocol contract gaps, optional DSH/native
+parallel isolation and other explicit adapter boundaries must retain truthful
+implementation status. Missing external/live checks are not code-completion claims.
+
+Owner release instruction: documentation synchronization and a professional
+README with architecture/workflow diagrams are the **final work item before
+push main**, after integrated verification. See
+`docs/RELEASE_DOCUMENTATION_GATE.md`. This checkpoint is not that final gate.
+
+## Earlier checkpoint history — superseded sequencing
 
 Latest lead checkpoint supersedes the older sequencing below: Office MCP queue
 is mounted at `/mcp/office` and GUI review/apply/save uses the actual domain

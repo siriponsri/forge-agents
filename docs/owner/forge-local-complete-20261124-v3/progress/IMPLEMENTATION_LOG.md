@@ -1,5 +1,36 @@
 # Implementation Log
 
+## Lead integration checkpoint — 2026-11-24
+
+Integrated native full catalogs, real setup Effect-RPC, governed MCP/OAuth,
+private/team conversation ownership, capability gates, Assistance/Adaptive
+contexts and UI, canonical Goals, Memory/central Owner grants, scoped Context,
+local/remote/hosted-Colab dispatch and Telegram Inbox/report projection.
+Server-created opaque callers and GUI session/CSRF provide the human boundary;
+body actor labels do not confer memory, policy or QA authority.
+
+Observed developer results: build PASS; root core GUI/Univer/Python/restart PASS;
+root visual suite PASS (15 themes, 75 contrast checks); production MCP controls
+PASS (real SDK stdio effect exactly once); production knowledge/compute GUI PASS;
+30 compute/Colab/Windows lifecycle/shutdown checks PASS; 42 Goals/central Owner/
+integrated checks PASS. Counts describe separate commands, not a unique suite
+total. Actual fresh native T3 setup/catalog RPC PASS without sign-in/model turns;
+its unauthenticated catalog correctly reports incomplete rather than inventing
+model membership. See the JSON evidence in `docs/evidence` and scoped worker notes.
+
+Root metadata restore unions deletion and Owner share/revoke safety; current
+relay delivery/approval history is retained. Restored automatic goals require
+explicit review, and interrupted/unknown attempts are never silently redispatched.
+Known unimplemented dependency/adapter boundaries remain separately recorded.
+
+Active next work: no-code encrypted machine keys/runtime integration, independent
+public website, final combined verification/recovery/package checks. Owner's
+last pre-push task is documentation/README synchronization with diagrams; gate
+is recorded in `docs/RELEASE_DOCUMENTATION_GATE.md`. No push/main advancement,
+public deploy, account migration, purchase, or prototype activation performed.
+
+## Earlier checkpoints
+
 - Desktopfd10045 ->16ae6c9; lead added actual target setup/readiness/window/lease/
   action/Stop/Take over GUI, hash-verified common screenshot downloads, explicit
   screenshot owner capture in complete bundles and workspace-owned restore. Pinned

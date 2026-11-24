@@ -1,0 +1,17 @@
+{
+  "result": "PASSED",
+  "fixtureDir": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-knowledge-integrated-nMZO7B",
+  "checks": [
+    "actual production Memory Studio + central Owner sharing by named project",
+    "actual session/CSRF authenticated Context budget and reference-only memory composition",
+    "central source appears only after explicit grant",
+    "production Goals mount",
+    "real local Python through production Compute GUI",
+    "production Telegram Inbox setup and honest empty/readiness state",
+    "TH/EN, 320/375/414/768 no horizontal overflow, no page exceptions"
+  ],
+  "providerExecution": "NOT_RUN",
+  "liveHermes": "NOT_RUN",
+  "liveOpenClaw": "NOT_RUN",
+  "homeUat": "HOME_UAT_NOT_RUN"
+}

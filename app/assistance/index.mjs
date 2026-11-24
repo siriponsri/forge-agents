@@ -1,6 +1,7 @@
 import {append,record,records,receipt,saveReceipt,find,fail,changed,revision,text,integer,keys,provenance} from './records.mjs';
 import {validatePolicy,selectFromState,validateDecision,latestPolicy} from './selection.mjs';
 import {terminal,durableRun,validateTaskScope} from './context.mjs';
+import {assertWorkspaceAvailable} from '../server/admission.mjs';
 export {validateAssistanceContext,assistancePrompt} from './context.mjs';
 export {validatePolicy,validateDecision} from './selection.mjs';
 
@@ -120,7 +121,7 @@ export function createAssistanceService({store,providers,t3,clock=Date.now}){
         if(t3?.assistanceContextVersion!==1||['startRun','stop','reconcile'].some(k=>typeof t3?.[k]!=='function'))fail('ASSISTANCE_CONTEXT_UNSUPPORTED','T3 must validate, honor and persist version-1 assistance routes before execution',409);
         const d=record(s,'decision',l.decisionId,i.projectId);validateDecision(s,d,i.projectId,clock);validateTaskScope(s,l);
         const previous=durableRun(s,l);if(l.attempts.length&&(!previous||!terminal.has(previous.status)||l.attempts.at(-1).reconciled!==true))fail('RECONCILE_REQUIRED','Reconcile the exact previous attempt to a terminal outcome',409);
-        if(s.runs.some(r=>r.projectId===i.projectId&&!terminal.has(r.status)))fail('WORKSPACE_BUSY','Another task or chat is active/unknown in this workspace',409);
+        assertWorkspaceAvailable(s,i.projectId,{assistanceLoopId:l.id});
         const budget=checkBudget(s,l);if(budget){l.status='exhausted';trace(l,'limit_reached',{reason:budget});return l;}
         const role=l.pendingRole,number=l.attempts.length+1;
         const context={version:1,decisionId:d.id,loopId:l.id,attemptNumber:number,role,taskSignature:d.taskSignature,selection:structuredClone(d.selection[role].selection),feedback:l.feedback,reason:structuredClone(l.reason),runtimeMode:'approval-required'};

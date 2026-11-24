@@ -15,11 +15,12 @@ export const T3_PROTOCOL_CAPABILITIES=Object.freeze({
 export function rejectFrontendToolResult(){
   fail('T3_FRONTEND_TOOL_UNSUPPORTED',T3_PROTOCOL_CAPABILITIES.frontendToolBlocker,409,T3_PROTOCOL_CAPABILITIES);
 }
-export function identity(run){return {projectId:run.projectId,botId:run.botId??null,taskId:run.taskId,conversationId:run.conversationId??null,runId:run.id,attemptId:run.attemptId,threadId:run.threadId??null,providerRunId:run.providerRunId??null,providerInstanceId:run.providerInstanceId??run.profile?.provider?.instanceId??null};}
+export function identity(run){return {projectId:run.projectId,botId:run.botId??null,taskId:run.taskId??null,conversationId:run.conversationId??null,operationId:run.operationId??null,runId:run.id,attemptId:run.attemptId,threadId:run.threadId??null,providerRunId:run.providerRunId??null,providerInstanceId:run.providerInstanceId??run.profile?.provider?.instanceId??null};}
 export function projectState(state,run){
-  const task=find(state,'tasks',run.taskId,run.projectId);
+  const task=run.taskId?find(state,'tasks',run.taskId,run.projectId):null;
   const refs=key=>state[key].filter(x=>x.projectId===run.projectId).map(x=>({id:x.id,revision:x.revision,...(x.status?{status:x.status}:{}),...(x.jobId?{jobId:x.jobId}:{})}));
-  return {identity:identity(run),run:{status:run.status,lastKnownStatus:run.lastKnownStatus??null,observation:run.connection?.status??'disconnected',stop:run.stopRequest?.status??null,providerAttempts:run.providerAttempts??[]},task:{id:task.id,revision:task.revision,status:task.status},documents:refs('documents'),reports:refs('reports'),artifacts:refs('artifacts'),pendingInputs:run.pendingInputs??[],pendingApprovals:run.pendingApprovals??[],tools:Object.values(run.toolObservations??{})};
+  const conversation=run.conversationId?find(state,'conversations',run.conversationId,run.projectId):null;
+  return {identity:identity(run),run:{status:run.status,lastKnownStatus:run.lastKnownStatus??null,observation:run.connection?.status??'disconnected',stop:run.stopRequest?.status??null,providerAttempts:run.providerAttempts??[]},task:task?{id:task.id,revision:task.revision,status:task.status}:null,conversation:conversation?{id:conversation.id,revision:conversation.revision,kind:conversation.kind}:null,documents:refs('documents'),reports:refs('reports'),artifacts:refs('artifacts'),pendingInputs:run.pendingInputs??[],pendingApprovals:run.pendingApprovals??[],tools:Object.values(run.toolObservations??{})};
 }
 export function publishState(state,run,{snapshot=false}={}){
   const next=projectState(state,run),previous=run.protocolState;
@@ -139,7 +140,7 @@ export function applyObservation(state,run,observation,{source='native',snapshot
     if(['failed','rolled_back'].includes(run.status))emit(state,run,{type:'RUN_ERROR',message:`T3 run ${run.status}`,code:`T3_${run.status.toUpperCase()}`},'run:terminal');
     else emit(state,run,{type:'RUN_FINISHED',threadId:run.threadId,runId:run.id,outcome:{type:run.status==='completed'?'success':'cancelled'}},'run:terminal');
     run.terminalEvent=true;
-    const task=find(state,'tasks',run.taskId,run.projectId);task.status=run.status==='completed'?'review':'blocked';changed(task);
+    if(run.taskId){const task=find(state,'tasks',run.taskId,run.projectId);task.status=run.status==='completed'?'review':'blocked';changed(task);}
   }
   publishState(state,run,{snapshot});changed(run);
 }

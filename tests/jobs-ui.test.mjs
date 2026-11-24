@@ -26,6 +26,7 @@ test('Compute no-code screen: actual HTTP/local Python, forms, conflict, TH/EN, 
   const compiled=await transformWithEsbuild(moduleSource.replace('<select value={lang}','<select aria-label="Language" value={lang}'),'fixture.jsx',{loader:'jsx'});
   const fixtureHtml=html.replace(/<script type="module">[\s\S]*?<\/script>/,`<script type="module">${compiled.code}</script>`);
   const server=http.createServer(async(req,res)=>{
+    if(req.url==='/api/session'){res.setHeader('Content-Type','application/json');res.end(JSON.stringify({csrf:'isolated-compute-wire-fixture'}));return;}
     if(req.url==='/fixture'){res.setHeader('Content-Type','text/html');res.end(await vite.transformIndexHtml('/fixture',fixtureHtml));return;}
     if(req.url==='/api/state'){res.setHeader('Content-Type','application/json');res.end(JSON.stringify(store.read()));return;}
     if(req.url.startsWith('/api/compute/')){

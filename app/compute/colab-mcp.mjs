@@ -53,7 +53,7 @@ function select(s, input) {
   if (target.kind !== 'compute' || target.enabled === false) fail('COLAB_TARGET', 'Select an enabled compute connection');
   return { project, notebook, target, config: validateColabMcpConfig(target.config) };
 }
-function owned(s, input) {
+function findOwned(s, input) {
   find(s, 'projects', input.projectId);
   const j = find(s, 'jobs', input.jobId, input.projectId);
   if (j.computeAttempt?.kind !== 'colab-mcp') fail('COLAB_SCOPE', 'Expected a Colab MCP attempt');
@@ -110,7 +110,7 @@ else:
 `)}, '<forge-supervisor>', 'exec'))`;
 }
 
-export function createColabMcpAdapter({ store, dataDir, machineEnv = process.env, resolveBearer,
+export function createColabMcpAdapter({ store, dataDir, machineEnv = process.env, resolveBearer, resolveEnvironment, admit,
   // Only engineering fixtures may replace the endpoint; never persisted/configurable in the GUI.
   fixtureEndpoint, maxArtifactBytes = 128 * 1024 * 1024,
 } = {}) {
@@ -121,12 +121,14 @@ export function createColabMcpAdapter({ store, dataDir, machineEnv = process.env
     endpoint = u.href;
   }
   const secrets = new Set(), clients = new Set(), workers = new Map(), timers = new Map();
+  const configScopes=new WeakMap();
+  const owned=(s,input)=>{const j=findOwned(s,input);configScopes.set(j.configSnapshot,j.projectId);return j;};
   const redact = value => { let s = String(value ?? ''); for (const v of secrets) if (v) s = s.split(v).join('[REDACTED]'); return s.replace(/((?:Bearer|token|password|api[_-]?key)\s*[:= ]\s*)[^\s"'<>]+/gi, '$1[REDACTED]'); };
   const patch = (id, values) => store.transaction(s => { const j = find(s, 'jobs', id); const next = { ...values }; if (terminal.has(j.status) && next.status && !terminal.has(next.status)) delete next.status; Object.assign(j, next); changed(j); return j; });
   const safeError = e => ({ errorCode: typeof e.code === 'string' && /^COLAB_|^CREDENTIAL_REQUIRED$/.test(e.code) ? e.code : [401, 403].includes(e.code) ? 'COLAB_AUTH' : 'COLAB_UNCERTAIN', lastError: 'Colab request failed; check machine authentication, API enablement and the recorded runtime. Remote outcome requires reconciliation.' });
   async function bearer(c) {
     let token;
-    try { token = c.authEnv ? machineEnv[c.authEnv] : await resolveBearer?.({ vaultRef: c.authVaultRef }); } catch { fail('CREDENTIAL_REQUIRED', 'Machine vault bearer could not be resolved'); }
+    try { const projectId=configScopes.get(c);token = c.authEnv ? resolveEnvironment?await resolveEnvironment({projectId,name:c.authEnv}):machineEnv[c.authEnv] : await resolveBearer?.({ vaultRef: c.authVaultRef,projectId }); } catch { fail('CREDENTIAL_REQUIRED', 'Machine vault bearer could not be resolved'); }
     if (typeof token !== 'string' || !token || /[\r\n]/.test(token)) fail('CREDENTIAL_REQUIRED', 'Configure the selected machine bearer reference');
     secrets.add(token); return token;
   }
@@ -242,6 +244,7 @@ export function createColabMcpAdapter({ store, dataDir, machineEnv = process.env
     } catch (e) { return patch(j.id, { status: 'unknown', ...safeError(e), lastObservationAt: stamp() }); }
   }
   async function dispatch(j) {
+    configScopes.set(j.configSnapshot,j.projectId);
     let started = false;
     try {
       const dir = path.join(dataDir, 'compute', j.id); await mkdir(dir, { recursive: true });
@@ -253,6 +256,7 @@ export function createColabMcpAdapter({ store, dataDir, machineEnv = process.env
         if (owned(store.read(), { projectId: j.projectId, jobId: j.id }).stopRequested || closed) { await patch(j.id, { dispatchStage: 'no-execution', status: 'stopped' }); return; }
         const listed = await x.call('list_sessions', { parent: j.remote.runtimeName });
         if (!Array.isArray(listed.sessions) || listed.sessions.some(s => s.name === j.remote.session)) fail('COLAB_SESSION_COLLISION', 'Dedicated session identity is already occupied');
+        admit?.(store.read(),{projectId:j.projectId,notebookId:j.notebookId,operationId:j.operationId},{jobId:j.id});
         await patch(j.id, { dispatchStage: 'creating-session' }); started = true;
         const session = await x.call('create_session', { parent: j.remote.runtimeName, sessionId: j.remote.sessionId });
         if (session.name !== j.remote.session) fail('COLAB_IDENTITY', 'Created session differs from durable reserved identity');
@@ -290,7 +294,7 @@ export function createColabMcpAdapter({ store, dataDir, machineEnv = process.env
       });
     },
     async health(input) {
-      const { config, target } = select(store.read(), input); let result;
+      const { config, target } = select(store.read(), input);configScopes.set(config,input.projectId); let result;
       try { result = await withClient(config, async x => ({ status: 'observed', verified: true, execution: true, executionVerified: false, runtime: checkRuntime(config, await x.call('get_runtime', { name: config.runtimeName })), requiredTools: Object.keys(requiredTools), schemaSha256: sha(Object.fromEntries([...x.tools].filter(([n]) => Object.hasOwn(requiredTools,n)).map(([n,t]) => [n,t.inputSchema]))), resume: false, provisioning: false, authentication: 'selected bearer accepted; principal email not exposed by this API', quotaProject: config.quotaProject ?? null })); }
       catch (e) { result = { status: 'error', verified: false, execution: false, ...safeError(e) }; }
       result.checkedAt = stamp();
@@ -308,7 +312,8 @@ export function createColabMcpAdapter({ store, dataDir, machineEnv = process.env
         if (!n || (n.language && n.language !== 'python')) fail('COLAB_LANGUAGE', 'Select a Python notebook');
         if ((input.mode ?? 'restart') !== 'restart' || input.checkpointArtifactId) fail('RESUME_UNSUPPORTED', 'Kernel reconnect is not application checkpoint restoration; use an explicit fresh restart');
         if (input.previousJobId) { const prev = owned(s, { projectId: p.id, jobId: input.previousJobId }); if (prev.notebookId !== n.id || !terminal.has(prev.status)) fail('COLAB_PREVIOUS', 'Previous notebook attempt must be terminal in this project'); }
-        if (s.jobs.some(j => !terminal.has(j.status) && j.kind !== 'storage' && (j.projectId === p.id || j.configSnapshot?.runtimeName === c.runtimeName))) fail('WORKSPACE_BUSY', 'Reconcile or stop the active/uncertain workspace or selected runtime execution');
+        if (s.jobs.some(j => j.computeAttempt && !terminal.has(j.status) && (j.projectId === p.id || j.configSnapshot?.runtimeName === c.runtimeName))) fail('WORKSPACE_BUSY', 'Reconcile or stop the active/uncertain workspace or selected runtime execution');
+        admit?.(s,input);
         const code = sourceOf(n); if (!code.trim() || Buffer.byteLength(code) > 1000000) fail('COLAB_SOURCE', 'Use nonempty Python source up to 1 MB');
         const id = randomUUID(), sessionId = `forge-${randomUUID()}`;
         const limitSeconds = Math.min(86400, Math.max(1, Math.floor(Number(p.profile?.limits?.jobSeconds) || 120)));

@@ -1,6 +1,7 @@
 import { append, record, records, replay, find, fail, revision, changed, boundedText, integer, digest } from './records.mjs';
 import { validateDecision } from './selection.mjs';
 import { checkEvidence, validateChecks } from './evidence.mjs';
+import {assertWorkspaceAvailable} from '../server/admission.mjs';
 
 const terminal = new Set(['completed','failed','cancelled','interrupted','rolled_back']);
 const inactive = new Set(['completed','stopped','exhausted']);
@@ -100,7 +101,7 @@ export function createLoopMethods({store,t3}) {
         find(s,'projects',input.projectId);const {prior,fingerprint}=replay(s,input,'createLoop');if(prior)return prior.result;
         const task=find(s,'tasks',input.taskId,input.projectId),decision=record(s,'decision',input.decisionId,input.projectId);
         if(decision.taskId !== task.id)fail('SCOPE','Decision belongs to another task');validateDecision(s,decision,input.projectId);
-        if(records(s,'loop',input.projectId).some(l => l.taskId === task.id && !inactive.has(l.status)))fail('LOOP_EXISTS','Reconcile the existing task loop',409);
+        if(records(s,'loop',input.projectId).some(l => !inactive.has(l.status))||s.events.some(e=>e.projectId===input.projectId&&e.type==='assistance.loop'&&!inactive.has(e.status)))fail('LOOP_EXISTS','Reconcile the existing project task strategy',409);
         if(task.botId){const bot=find(s,'bots',task.botId,input.projectId);if(bot.kind === 'helper' && bot.taskId !== task.id)fail('BOT_SCOPE','Helper belongs to another task',409);}
         if(input.conversationId){const c=find(s,'conversations',input.conversationId,input.projectId);if(c.botId && c.botId !== task.botId)fail('SCOPE','Conversation belongs to another bot');}
         const limits={maxAttempts:integer(input.limits?.maxAttempts ?? 2,'maxAttempts',1,LOOP_LIMITS.maxAttempts),maxSteps:integer(input.limits?.maxSteps ?? 16,'maxSteps',1,LOOP_LIMITS.maxSteps),maxMs:integer(input.limits?.maxMs ?? 300000,'maxMs',1,LOOP_LIMITS.maxMs)};
@@ -126,7 +127,7 @@ export function createLoopMethods({store,t3}) {
         } else if(loop.stage === 'execute') {
           if(!t3?.startRun || !t3?.reconcile || !t3?.stop || t3.adaptiveContextVersion !== 1)fail('ADAPTIVE_CONTEXT_UNSUPPORTED','T3 owner must support version 1 adaptive context before dispatch',409);
           if(loop.attempts.length >= loop.limits.maxAttempts){loop.status='exhausted';history(loop,'attempt_budget_exhausted');return;}
-          if(s.runs.some(r => r.projectId === i.projectId && !terminal.has(r.status)))fail('WORKSPACE_BUSY','Reconcile the existing T3 run first',409);
+          assertWorkspaceAvailable(s,i.projectId,{adaptiveLoopId:loop.id});
           const number=loop.attempts.length+1;
           const context={version:1,decisionId:decision.id,loopId:loop.id,skillSnapshots:structuredClone(decision.skills),harness:structuredClone(decision.harness),
             taskSignature:decision.taskSignature,goal:task.title,feedback:loop.feedback ?? null};

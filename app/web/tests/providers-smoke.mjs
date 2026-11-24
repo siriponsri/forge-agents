@@ -70,7 +70,8 @@ const server = await createServer({ root: path.resolve('app/web'), configFile: f
       let body; if (req.method === 'POST') { const parts = []; for await (const part of req) parts.push(part); body = JSON.parse(Buffer.concat(parts).toString() || '{}'); }
       requests.push({ method: req.method, path: p, body });
       let result;
-      if (p === '/api/state') result = store.read();
+      if(p==='/api/session')result={csrf:'isolated-component-fixture-only'};
+      else if (p === '/api/state') result = store.read();
       else if (p === '/api/providers/routes') result = [...providers.routes(), { id: 'future-kob-api', brand: 'KOB fixture descriptor', mode: 'opencode-api', baseURL: 'https://example.invalid/v1', apiFamily: 'responses', implemented: true }];
       else if (p.startsWith('/api/providers/')) result = await providers[p.split('/').at(-1)](body);
       else if (p === '/api/governance/policy') result = req.method === 'GET' ? governance.policy(Object.fromEntries(url.searchParams)) : await governance.configurePolicy({ ...body, actor: { kind: 'human', id: 'trusted-fixture-http-session' } });

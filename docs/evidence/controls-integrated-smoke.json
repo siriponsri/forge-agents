@@ -1,0 +1,16 @@
+{
+  "result": "PASSED",
+  "fixtureDir": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-controls-integrated-Oadi62",
+  "checks": [
+    "actual production Settings provider/MCP/Plugin Manager mounts",
+    "actual production Assistance/Adaptive mounts",
+    "server-created session/CSRF rejects forged human payload",
+    "actual SDK stdio tool discovery and filesystem effect",
+    "Ask exact GUI request/decision/call with one consumed authorization",
+    "same operation replay returns durable result without a second effect",
+    "320/375/768 no overflow",
+    "no browser exceptions"
+  ],
+  "liveProvider": "NOT_RUN",
+  "homeUat": "HOME_UAT_NOT_RUN"
+}

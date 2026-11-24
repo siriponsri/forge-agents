@@ -195,6 +195,11 @@ export function createPluginService({store,adapters = {},builtins = createBuilti
   }
 
   const service = {
+    // Pure reservation-time check for existing native owners. This does not
+    // activate a factory, grant permission or publish a second execution record.
+    check(raw,state=store.read()){
+      open();json(raw);keys(raw,[...ctxKeys,'requires']);return structuredClone(select(state,context(state,raw),raw.requires));
+    },
     list(input) {
       open(); json(input); keys(input,base); const state = store.read(), s = scope(state,input), ctx = scopeContext(input.projectId,s);
       return structuredClone({scope:s,plugins:[...plugins.values()].map(p => {
@@ -281,7 +286,7 @@ export function createPluginService({store,adapters = {},builtins = createBuilti
           validateConfigReferences(state,input.arguments,ctx.projectId);
           for (const [k,c] of [['taskId','tasks'],['runId','runs']]) if (input.arguments[k]) find(state,c,input.arguments[k],ctx.projectId);
           const {fingerprint,prior} = replay(state,'invoke',input); if (prior) return {replayed:true,...state.events.find(e => e.id === prior.result.callId)};
-          const call = event(state,'call',ctx.projectId,{operationId:input.operationId,context:ctx,capability:input.capability,method:input.method,requestHash:digest(input.arguments),selectionSignature:live.signature,plugins:live.plugins,status:'pending'});
+          const call = event(state,'call',ctx.projectId,{operationId:input.operationId,nativeOperationId:`plugin-native:${digest(input.operationId)}`,context:ctx,capability:input.capability,method:input.method,requestHash:digest(input.arguments),selectionSignature:live.signature,plugins:live.plugins,status:'pending'});
           receipt(state,input,fingerprint,{callId:call.id}); return call;
         });
       }).catch(async e => { if (lease) { await locked(async () => { lease.forEach(r => r.active--); await sweep(); }); } throw e; });
@@ -290,7 +295,7 @@ export function createPluginService({store,adapters = {},builtins = createBuilti
         const rec = lease.find(r => r.plugin.id === p.id);
         let result;
         try {
-          result = await rec.value.services[input.capability][input.method](structuredClone(input.arguments));
+          result = await rec.value.services[input.capability][input.method](structuredClone(input.arguments),{nativeOperationId:admission.nativeOperationId});
           json(result); // Runtime check even for trusted adapters; never record output.
         } catch {
           await store.transaction(s => Object.assign(s.events.find(e => e.id === admission.id),{status:'unknown',finishedAt:time(),code:'NATIVE_OUTCOME_UNCONFIRMED'}));

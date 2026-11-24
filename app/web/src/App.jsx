@@ -34,6 +34,10 @@ import Desktop from './Desktop.jsx';
 import Overview from './Overview.jsx';
 import ThemePicker from './ThemePicker.jsx';
 import { DEFAULT_THEME, getTheme } from './themes.mjs';
+import Strategies from './Strategies.jsx';
+import Memory from './Memory.jsx';
+import Compute from './Compute.jsx';
+import MobileInbox from './MobileInbox.jsx';
 
 export default function App() {
   const [theme,setTheme]=useState(()=>getTheme(localStorage.getItem('forge.theme')||DEFAULT_THEME).id);
@@ -147,7 +151,11 @@ export default function App() {
     ["plan", Layers3, "แผนงาน", "Plan & tasks"],
     ["team", Users, "ทีมบอท", "Bot team"],
     ["chat", MessagesSquare, "ห้องสนทนา", "Conversations"],
+    ['strategies',Zap,'กลยุทธ์และการเรียนรู้','Strategies & skills'],
+    ['memory',Layers3,'ความจำและความรู้','Memory Studio'],
+    ['mobile',MessagesSquare,'กล่องงานจากมือถือ','Mobile Inbox'],
     ["notebooks", NotebookPen, "สมุดงาน Python", "Notebooks"],
+    ['compute',Code2,'เป้าหมายประมวลผล','Compute targets'],
     ['serving',Zap,'โมเดลและการทำนาย','Models & serving'],
     ["office", FileSpreadsheet, "เอกสารและตาราง", "Docs & sheets"],
     ["reports", FileText, "รายงาน", "Report Studio"],
@@ -325,6 +333,10 @@ export default function App() {
               {page === "plan" && <Planning {...props} />}{" "}
               {page === "team" && <Team key={projectId} {...props} />}{" "}
               {page === "chat" && <Chat key={projectId} {...props} />}{" "}
+              {page==='strategies'&&<Strategies key={projectId} {...props}/>}
+              {page==='memory'&&<Memory key={projectId} {...props}/>}
+              {page==='compute'&&<Compute key={projectId} {...props}/>}
+              {page==='mobile'&&<MobileInbox key={projectId} {...props}/>}
               {page === "notebooks" && <Notebooks key={projectId} {...props} />}{" "}
               {page === "office" && (
                 <Office key={projectId} {...props} onDirty={setDirtyOffice} />

@@ -5,8 +5,9 @@ import { routes, routeById, envName } from './routes.mjs';
 import { createProviderCatalog } from './catalog.mjs';
 import { createConversationService } from './conversations.mjs';
 import { createMcpService } from './mcp.mjs';
+import {compileKobApiConfig,discoverKobModels} from './kob-api.mjs';
 
-export function createProviderService({dataDir,store,t3,clock=Date.now,catalogTimeoutMs=1500,authorizeTool}){
+export function createProviderService({dataDir,store,t3,clock=Date.now,catalogTimeoutMs=1500,authorizeTool,validateAdmission,mcpTransportOptions,resolveEnv,mcpCredentialVersion,checkCapabilities,prepareCapabilities}){
   if(!dataDir||!store||!t3)throw new Error('dataDir, store and the owned T3 service are required');
   const catalogs=createProviderCatalog({store,t3,clock,timeoutMs:catalogTimeoutMs});
   const scoped=({projectId,connectionId},s=store.read())=>{find(s,'projects',required(projectId,'projectId'));const c=find(s,'connections',connectionId,projectId);if(c.kind!=='provider')fail('SCOPE','Expected provider connection',409);return c;};
@@ -25,7 +26,8 @@ export function createProviderService({dataDir,store,t3,clock=Date.now,catalogTi
       if(executable&&(/[\r\n\0]/.test(executable)||executable.length>1024))fail('SETUP_INPUT','Invalid executable');
       if(route.id==='custom-acp'&&!executable)fail('SETUP_INPUT','Select an installed ACP executable');
       let apiConfig;
-      if(route.mode==='opencode-api'){
+      if(route.id==='kob')apiConfig=compileKobApiConfig({baseURL:input.baseURL??route.baseURL,apiKeyEnv:input.apiKeyEnv,models:input.models}).opencodeConfig;
+      else if(route.mode==='opencode-api'){
         if(!envName(input.apiKeyEnv))fail('SECRET_REFERENCE','Choose a machine environment variable for this API key');
         const base=new URL(required(input.baseURL??route.baseURL,'exact API base URL'));
         if(base.username||base.password||base.search||base.hash||base.protocol!=='https:'&&!(['127.0.0.1','localhost','[::1]'].includes(base.hostname)&&base.protocol==='http:'))fail('API_URL','Use HTTPS or a local test endpoint, without credentials/query/fragment');
@@ -39,7 +41,7 @@ export function createProviderService({dataDir,store,t3,clock=Date.now,catalogTi
       const fingerprint=digest(input);let replay;
       const c=await store.transaction(s=>{const prior=s.receipts.find(r=>r.operationId===operationId);if(prior){if(prior.fingerprint!==fingerprint)fail('OPERATION_REUSE','Setup operation belongs to another configuration',409);replay=true;return find(s,'connections',prior.connectionId,input.projectId);}
         if(s.runs.some(r=>r.operationId===operationId)||s.events.some(r=>r.operationId===operationId))fail('OPERATION_REUSE','Operation belongs to other work',409);
-        const c=entity({name:input.name??route.brand,kind:'provider',enabled:true,route:'t3',config:{routeId:route.id,accountRoute:route.authRoute,generation:1,envRefs:input.envRefs??(input.apiKeyEnv?[input.apiKeyEnv]:[]),setupStatus:'submitting'},providerInstanceId:`forge_${digest(operationId).slice(0,32)}`},input.projectId);
+        const c=entity({name:input.name??route.brand,kind:'provider',enabled:true,route:'t3',config:{routeId:route.id,accountRoute:route.authRoute,generation:1,envRefs:input.envRefs??(input.apiKeyEnv?[input.apiKeyEnv]:[]),...(apiConfig?{baseURL:apiConfig.providers.forge?.settings.baseURL??input.baseURL??route.baseURL,apiKeyEnv:input.apiKeyEnv}:{}),setupStatus:'submitting'},providerInstanceId:`forge_${digest(operationId).slice(0,32)}`},input.projectId);
         s.connections.push(c);s.receipts.push({operationId,fingerprint,type:'provider.configure',connectionId:c.id,status:'submitting',projectId:input.projectId});return c;});
       if(replay)return c;
       const root=path.join(dataDir,'providers',c.providerInstanceId);
@@ -55,14 +57,27 @@ export function createProviderService({dataDir,store,t3,clock=Date.now,catalogTi
       // Never let a native adapter fall back to an owner's existing account home.
       await mkdir(config.homePath??root,{recursive:true});
       if(apiConfig){const configDir=path.join(root,'.config','opencode');await mkdir(configDir,{recursive:true});await writeFile(path.join(configDir,'opencode.json'),JSON.stringify(apiConfig,null,2),{flag:'wx',mode:0o600});const xdgDir=path.join(root,'config','opencode');await mkdir(xdgDir,{recursive:true});await writeFile(path.join(xdgDir,'opencode.json'),JSON.stringify(apiConfig,null,2),{flag:'wx',mode:0o600});}
+        await t3.providers?.assertEnvironment?.(c);
         await rpc('server.updateSettings',{patch:{},providerInstanceMutation:{operation:'create',instanceId:c.providerInstanceId,instance:{driver:route.driver,displayName:c.name,enabled:true,config,environment}}});
         await store.transaction(s=>{const x=scoped({projectId:c.projectId,connectionId:c.id},s);x.config.setupStatus='configured';changed(x);s.receipts.find(r=>r.operationId===operationId).status='completed';});
       }catch(error){await store.transaction(s=>{const x=scoped({projectId:c.projectId,connectionId:c.id},s);x.config.setupStatus='unknown';x.setupError=safeError(error);changed(x);s.receipts.find(r=>r.operationId===operationId).status='unknown';});}
       return scoped({projectId:c.projectId,connectionId:c.id});
     },
+    async discoverModels(input){
+      const c=scoped(input),key=digest([c.revision,c.config,c.providerInstanceId]);if(c.config?.routeId!=='kob')fail('ROUTE_UNAVAILABLE','Direct API discovery is available for KOB; use T3 catalog for other providers',409);
+      const result=await discoverKobModels({baseURL:c.config.baseURL,apiKeyEnv:c.config.apiKeyEnv},{...(resolveEnv?{resolveEnv:name=>resolveEnv(name,c)}:{})});
+      await store.transaction(s=>{const current=scoped(input,s);if(digest([current.revision,current.config,current.providerInstanceId])!==key)fail('CONNECTION_CHANGED','Provider changed during discovery; discard this result and retry explicitly',409);current.apiModelDiscovery=result;changed(current);});
+      return {...result,selectionAuthority:'Refresh and select the actual T3 instance catalog; API discovery does not qualify a T3 run.'};
+    },
+    async previewModels(input){
+      if(Object.keys(input).some(k=>!['projectId','baseURL','apiKeyEnv'].includes(k)))fail('SETUP_INPUT','Preview accepts project, endpoint and saved key name only');find(store.read(),'projects',input.projectId);
+      const scope={projectId:input.projectId,kind:'provider'},key=resolveEnv?await resolveEnv(input.apiKeyEnv,scope):undefined;
+      const result=await discoverKobModels({baseURL:input.baseURL,apiKeyEnv:input.apiKeyEnv},{...(resolveEnv?{resolveEnv:()=>key}:{})});
+      if(resolveEnv&&await resolveEnv(input.apiKeyEnv,scope)!==key)fail('CREDENTIAL_CHANGED','Key changed during discovery. Discard this preview and request it again.',409);return result;
+    },
     async check(input){
       const c=scoped(input);let result;
-      try{const response=await rpc('server.refreshProviders',{instanceId:c.providerInstanceId,fresh:true});const p=response.providers?.find(p=>p.instanceId===c.providerInstanceId);if(!p)fail('ROUTE_UNAVAILABLE','Instance missing',409);
+      try{await t3.providers?.assertEnvironment?.(c);const response=await rpc('server.refreshProviders',{instanceId:c.providerInstanceId,fresh:true});const p=response.providers?.find(p=>p.instanceId===c.providerInstanceId);if(!p)fail('ROUTE_UNAVAILABLE','Instance missing',409);
         result={checkedAt:clock(),providerInstanceId:p.instanceId,driver:p.driver,installed:p.installed,enabled:p.enabled,authentication:p.auth?.status??'unknown',status:p.status,version:p.version??null,canInstall:p.setup?.canInstall??false,canAuthenticate:p.setup?.canAuthenticate??false,live:'Dependency/auth status only; model execution NOT_RUN'};
         if(routes.find(r=>r.id===c.config.routeId)?.mode==='opencode-api'&&!/^2\./.test(p.version??'')){result.status='unsupported-version';result.error={code:'OPENCODE_VERSION',message:'This API configuration uses OpenCode 2.x. Select a 2.x executable; v1 is a different configuration contract.'};}
       }catch(error){result={checkedAt:clock(),providerInstanceId:c.providerInstanceId,status:'error',error:safeError(error)};}
@@ -104,8 +119,8 @@ export function createProviderService({dataDir,store,t3,clock=Date.now,catalogTi
     },
     settle:()=>catalogs.settle(),
   };
-  api.conversations=createConversationService({store,t3,providers:api});
-  api.mcp=createMcpService({store,authorizeTool});
+  api.conversations=createConversationService({store,t3,providers:api,checkCapabilities,prepareCapabilities});
+  api.mcp=createMcpService({store,authorizeTool,validateAdmission,transportOptions:mcpTransportOptions,resolveCredential:resolveEnv,credentialVersion:mcpCredentialVersion,checkCapability:input=>checkCapabilities?.(store.read(),input,['mcp'])});
   api.close=async()=>{await api.settle();await api.conversations.close();await api.mcp.close();};
   return api;
 }

@@ -5,6 +5,13 @@ export class ApiError extends Error {
   }
 }
 export const operationId = () => crypto.randomUUID();
+let browserSession;
+async function ownerHeaders(path,body){
+  const needs=/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|memory|owner-memory|context|goals|compute|plugins|relay|secrets)\//.test(path);
+  if(body===undefined||!needs)return {};
+  browserSession??=fetch('/api/session',{cache:'no-store'}).then(async r=>{const data=await r.json();if(!r.ok||!data.csrf)throw new ApiError('Reload the FORGE page before performing this Owner action.',403,'BROWSER_SESSION_REQUIRED');return data;}).catch(e=>{browserSession=null;throw e;});
+  return {'X-Forge-CSRF':(await browserSession).csrf};
+}
 export async function request(
   path,
   body,
@@ -14,10 +21,11 @@ export async function request(
   try {
     response = await fetch(path, {
       method,
-      headers: body === undefined ? {} : { "Content-Type": "application/json" },
+      headers: body === undefined ? {} : { "Content-Type": "application/json",...await ownerHeaders(path,body) },
       body: body === undefined ? undefined : JSON.stringify(body),
     });
-  } catch {
+  } catch (error) {
+    if(error instanceof ApiError)throw error;
     throw new ApiError(
       "Connection lost. Refresh state before retrying; the server may have completed this action.",
       0,
@@ -26,12 +34,13 @@ export async function request(
   }
   const data = await response.json().catch(() => null);
   if (!response.ok)
+    {if(data?.error?.code==='BROWSER_SESSION_REQUIRED')browserSession=null;
     throw new ApiError(
       data?.error?.message || `HTTP ${response.status}`,
       response.status,
       data?.error?.code,
       data?.error?.details,
-    );
+    );}
   return data;
 }
 export function command(type, projectId, data, entity, opId = operationId()) {

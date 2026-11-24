@@ -77,7 +77,7 @@ test('setup uses isolated T3 instance, safe homes, executable actions and no cre
   assert.doesNotMatch(JSON.stringify(store.read()),/transient-test-code|never-persist/);
   t3.failAuth=true;assert.equal((await api.check(context)).error.code,'AUTH_REQUIRED');assert.doesNotMatch(JSON.stringify(store.read()),/secret-test-token|private\/\?code/);
   await assert.rejects(api.configure({...config,operationId:'other',apiKey:'forbidden'}),{code:'SETUP_INPUT'});
-  await assert.rejects(api.configure({...config,operationId:'kob',routeId:'kob'}),{code:'UNSUPPORTED_ROUTE'});
+  await assert.rejects(api.configure({...config,operationId:'kob',routeId:'kob'}),{code:'KOB_SECRET_REFERENCE'});
 });
 
 test('OpenCode API setup emits actual v2 config, native OpenRouter package, explicit custom protocol/model IDs',async t=>{
@@ -100,6 +100,8 @@ test('catalog retains late/failing results, deduplicates refresh and validates e
   assert.equal(t3.calls.slice(before).filter(c=>c.tag==='server.refreshProviders').length,1);assert.equal(api.validateSelection({...context,selection}).model,'fixture-model');
   resolve();t3.holdCatalog=null;await api.settle();assert.equal(api.catalog(context).refreshing,false);
   t3.catalogError=new Error('401 raw-bearer-value');await api.refresh(context);assert.equal(api.catalog(context).error.code,'AUTH_REQUIRED');assert.ok(api.catalog(context).catalog.models.length);assert.doesNotMatch(JSON.stringify(store.read()),/raw-bearer/);
+  assert.throws(()=>api.validateSelection({...context,selection}),{code:'CATALOG_STALE'});
+  t3.catalogError=null;await api.refresh(context);await api.settle();
   assert.throws(()=>api.validateSelection({...context,selection:{...selection,instanceId:'wrong'}}),{code:'PROVIDER_IDENTITY'});
   assert.throws(()=>api.validateSelection({...context,selection:{...selection,model:'gpt-6.2-made-up'}}),{code:'MODEL_UNVERIFIED'});
   assert.throws(()=>api.validateSelection({...context,selection:{...selection,options:[{id:'universalReasoning',value:'xhigh'}]}}),{code:'MODEL_OPTIONS'});

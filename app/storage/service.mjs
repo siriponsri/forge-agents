@@ -9,6 +9,7 @@ import { createLocalAdapter } from './local.mjs';
 import { createDriveAdapter } from './drive.mjs';
 import { createDriveAuth } from './auth.mjs';
 import { recordsFor, filePlan, sourceFingerprint, validateManifest, portableCollections, portable } from './bundle.mjs';
+import {validateProjectContext} from '../governance/context.mjs';
 
 const ACTIVE = ['queued','running','validating','publishing'];
 const rootSource = fileURLToPath(new URL('../../', import.meta.url));
@@ -291,6 +292,7 @@ export async function createStorageService({ dataDir, store, artifacts, vault, e
           }
           s[key].push(x);
         }
+        validateProjectContext(s,{projectId});
         Object.assign(live, { status: 'completed', restoredProjectId: projectId, targetDirectory: target, filesRestored: manifest.files.length, bytesRestored: manifest.files.reduce((n,f) => n + f.bytes, 0), finishedAt: now(), updatedAt: now(), scope: manifest.scope });
         s.events.push(entity({ type: 'storage.restored', jobId: job.id, restoredProjectId: projectId, bundleId: input.bundleId }, job.projectId));
         return live;

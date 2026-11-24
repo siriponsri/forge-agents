@@ -1,10 +1,83 @@
-> **FORGE v3 development:** งานผลิตภัณฑ์ล่าสุดอยู่บน `integration/forge-local-complete`
-> สถานะ **IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN**.
-> เปิด workbench ที่รวมแล้วด้วย `Start-FORGE.cmd` (Node.js24.13+), ปิดด้วย
-> `Stop-FORGE.cmd`, เริ่มใหม่ด้วย `Restart-FORGE.cmd`.
-> ดู [วิธีเริ่มและข้อจำกัดปัจจุบัน](docs/FORGE_LOCAL_QUICKSTART_TH.md) และ
-> [progress v3](docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md).
-> ข้อมูล P11 ด้านล่างเป็นผลของ portable release เดิม ไม่ใช่ผลรับรอง v3.
+# FORGE
+
+**A local workspace for ideas, agents, documents, and verified delivery.**
+
+พื้นที่ทำงานสำหรับผู้ใช้ no-code: จัดทีมและแผนงาน รัน Python แก้เอกสารและตาราง
+สร้างรายงาน และติดตามผลผ่าน GUI บนเครื่อง โดยใช้ T3 เป็นเจ้าของการเรียกโมเดล
+
+[เริ่มใช้งาน](docs/FORGE_LOCAL_QUICKSTART_TH.md) ·
+[สถานะจริง](docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md) ·
+[ย้ายเครื่องและงานค้าง](docs/handoff/MACHINE_TRANSFER_20261124.md) ·
+[Public website](apps/website/README.md)
+
+> **Machine-transfer checkpoint · 24 November 2026**
+> Owner สั่งหยุดพัฒนาและส่งงานปัจจุบันผ่าน `main` เพื่อย้ายเครื่อง
+> สถานะยังเป็น **IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN**
+> checkpoint นี้ไม่ใช่การรับรอง complete product หรือ production release
+
+## Open locally
+
+ต้องมี Node.js **24.13+**; Python ใช้สำหรับ notebook/local compute
+
+1. Pull หรือดาวน์โหลด source ทั้ง repository
+2. Windows: เปิด **`Start-FORGE.cmd`** แล้วรอ browser แสดง readiness
+3. ปิดด้วย `Stop-FORGE.cmd`; เริ่มใหม่ด้วย `Restart-FORGE.cmd`
+4. macOS: มี launcher source; native macOS qualification ยัง **NOT_RUN**
+
+```powershell
+git pull --ff-only origin main
+npm ci --include=dev
+npm run build
+npm start
+```
+
+ค่าเริ่มต้น: **http://127.0.0.1:4317**
+ข้อมูลและการเชื่อมต่อเป็นของแต่ละเครื่อง; Git ไม่ย้าย credentials หรือฐานข้อมูลส่วนตัว
+
+## One workspace, clear ownership
+
+```mermaid
+flowchart TB
+  owner["Owner · goals, review, release"] --> gui["FORGE GUI · TH / EN · 15 themes"]
+  gui --> core["Canonical services · SQLite + durable events"]
+  core --> t3["T3 · supervised model execution"]
+  core --> office["Univer · Sheets + Docs"]
+  core --> reports["WordCraft / PdfCraft · Report Studio"]
+  core --> adapters["Compute · Serving · Storage · Desktop"]
+  memory["Memory + explicit Owner sharing"] --> core
+  context["Context budgets + evidence references"] --> t3
+  t3 --> evidence["Artifacts · receipts · verification"]
+  office --> evidence
+  reports --> evidence
+  adapters --> evidence
+  evidence --> review["QA + Owner acceptance"]
+  review --> owner
+  classDef owner fill:#ff8a33,color:#171717,stroke:#ff8a33;
+  classDef core fill:#172b45,color:#e7f0ff,stroke:#5b9cdb;
+  class owner,review owner;
+  class gui,core,t3 core;
+```
+
+Assistance เริ่มด้วย Executor ที่เหมาะกับงาน และใช้ Asst. สำหรับงานยากหรือติดขัด
+การเลือกโมเดลใช้ catalog ของ provider ที่เชื่อมไว้ พร้อม policy ที่มีที่มา
+Owner Memory เป็นส่วนกลางแบบส่วนตัว และแชร์ revision ให้แต่ละโปรเจกต์อย่างชัดเจน
+Telegram เป็นช่องทางแรกของ Hermes/OpenClaw: Inbox → อนุมัติในห้องเดิม → เริ่มงาน
+
+## Verification and limits
+
+ตรวจจริงแล้วในเครื่องพัฒนา: build/start, GUI และ persistence, Univer undo/redo,
+รายงานจาก Windows engines, Python process lifecycle, scoped memory/restore,
+และ MCP ผ่าน SDK กับ disposable fixtures ดูคำสั่งและขอบเขตใน
+[integration ledger](docs/owner/forge-local-complete-20261124-v3/progress/INTEGRATION_LEDGER.md)
+
+Live account/provider/mobile/remote-compute checks, งาน integration ที่ค้าง,
+independent review และ Home UAT แยกไว้ใน handoff ไม่ถือว่าผ่านจาก fixture
+เว็บสาธารณะเตรียมไว้สำหรับ local review และ Cloudflare; **ยังไม่ deploy**
+
+<details>
+<summary>Legacy P11 documentation — historical portable release, not the current v3 acceptance status</summary>
+
+เอกสารด้านล่างเป็น baseline รุ่น P11 ที่เก็บรักษาไว้ แนะนำใช้ quickstart v3 ด้านบนสำหรับงานล่าสุด
 
 <div align="center">
 
@@ -279,3 +352,5 @@ P12 requires a separate OWNER instruction. This repository update does not start
 **Goal → Work → Evidence → Verified Delivery**
 
 </div>
+
+</details>

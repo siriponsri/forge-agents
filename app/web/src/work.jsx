@@ -118,19 +118,21 @@ export function Team({ t, state, projectId, mutate, busy }) {
   );
 }
 
-export function Chat({ t, state, projectId, mutate, busy }) {
+export function Chat({ t, state, projectId, mutate, busy,run }) {
   const rooms = scoped(state, "conversations", projectId),
     bots = scoped(state, "bots", projectId);
   const [selected, setSelected] = useState(""),
-    [draft, setDraft] = useState("");
+    [draft, setDraft] = useState(""),[replyBot,setReplyBot]=useState(''),
+    [providerReply,setProviderReply]=useState(!!state.projects.find(p=>p.id===projectId)?.profile?.provider?.connectionId);
+  const pendingMessage=useRef(null);
   const room = rooms.find((r) => r.id === selected) || rooms[0];
   return (
     <>
       <Heading
         title={t("Conversations · ห้องสนทนา", "Conversations")}
         description={t(
-          "ข้อความในเครื่อง ไม่มีการสร้างคำตอบบอทอัตโนมัติ เรียกใช้งานจริงจากแผนงานหรือพื้นที่ T3",
-          "Local message history. Execute tasks from the plan or T3 coding surface.",
+          "เก็บบันทึกในเครื่อง หรือให้บอทที่เลือกตอบผ่าน provider จริงของโครงการ คำแนะนำไม่ใช่การอนุมัติแผนงาน",
+          "Save a local note or request a reply from the project's connected provider. Conversation advice does not approve a task plan.",
         )}
       />
       <div className="split chat-layout">
@@ -191,6 +193,7 @@ export function Chat({ t, state, projectId, mutate, busy }) {
               >
                 <div className="message-meta">
                   {m.role || "user"} · {date(m.createdAt || m.timestamp)}
+                  {m.botId&&` · ${bots.find(b=>b.id===m.botId)?.name||m.botId}`}
                 </div>
                 <p>{m.text || m.content}</p>
               </article>
@@ -206,6 +209,12 @@ export function Chat({ t, state, projectId, mutate, busy }) {
               onSubmit={async (e) => {
                 e.preventDefault();
                 if (!draft.trim()) return;
+                if(providerReply){
+                  const payload={projectId,conversationId:room.id,botId:room.botId||replyBot,text:draft};
+                  const key=JSON.stringify(payload);if(pendingMessage.current?.key!==key)pendingMessage.current={key,input:{...payload,operationId:operationId()}};
+                  const r=await run(()=>request('/api/conversations/send',pendingMessage.current.input));
+                  if(r){setDraft('');pendingMessage.current=null;}return;
+                }
                 const r = await mutate(
                   "message.send",
                   { conversationId: room.id, text: draft, role: "user" },
@@ -214,6 +223,9 @@ export function Chat({ t, state, projectId, mutate, busy }) {
                 if (r) setDraft("");
               }}
             >
+              <label className="check"><input type="checkbox" checked={providerReply} onChange={e=>setProviderReply(e.target.checked)}/>{t('ให้บอทตอบผ่าน provider ที่เชื่อมไว้','Request a connected provider reply')}</label>
+              {providerReply&&room.kind==='team'&&<Field label={t('บอทผู้ตอบ','Replying bot')}><select required value={replyBot} onChange={e=>setReplyBot(e.target.value)}><option value="">{t('เลือกบอท','Select bot')}</option>{bots.filter(b=>b.status!=='retired').map(b=><option key={b.id} value={b.id}>{b.name}</option>)}</select></Field>}
+              {providerReply&&!state.projects.find(p=>p.id===projectId)?.profile?.provider?.connectionId&&<p className="help">{t('เลือกบัญชีและโมเดลใน ตั้งค่า → โมเดลและบัญชี ก่อนส่งคำขอ','Select an account and model in Settings → Providers & models before requesting a reply.')}</p>}
               <Field label={t("ข้อความ", "Message")}>
                 <textarea
                   required
@@ -225,6 +237,7 @@ export function Chat({ t, state, projectId, mutate, busy }) {
               <Submit busy={busy}>{t("ส่งข้อความ", "Send message")}</Submit>
             </form>
           )}
+          {room&&scoped(state,'runs',projectId).filter(r=>r.kind==='conversation'&&r.conversationId===room.id).slice(-5).reverse().map(r=><Run key={r.id} runRecord={r} {...{t,run,busy}}/>)}
         </section>
       </div>
     </>

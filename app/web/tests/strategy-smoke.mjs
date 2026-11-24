@@ -43,6 +43,7 @@ try {
         const html=await vite.transformIndexHtml('/harness','<!doctype html><html lang="en" data-theme="dark-modern"><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>FORGE strategy wire-contract harness</title></head><body><div id="root"></div><script type="module" src="/strategy-harness-entry.jsx"></script></body></html>');res.setHeader('Content-Type','text/html');res.end(html);return;
       }
       if(url.pathname==='/harness-state'){send(res,200,(url.searchParams.get('service')==='adaptive'?d:a).store.read());return;}
+      if(url.pathname==='/api/session'){send(res,200,{csrf:'isolated-component-fixture-only'});return;}
       if(!url.pathname.startsWith('/api/'))return next();
       try {
         assert.equal(req.method,'POST');let bytes='';for await(const chunk of req)bytes+=chunk;

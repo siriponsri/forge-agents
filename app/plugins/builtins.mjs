@@ -29,7 +29,7 @@ export function createBuiltinPlugins(adapters = {}) {
       const adapter = adapters[capability];
       if (!adapter || typeof adapter.health !== 'function' || typeof adapter.invoke !== 'function') fail('ADAPTER_MISSING', `Register the native ${capability} adapter`, 409);
       return {
-        services:{[capability]:Object.fromEntries(Object.keys(contract.methods).map(method => [method,args => adapter.invoke(method,args,ctx)]))},
+        services:{[capability]:Object.fromEntries(Object.keys(contract.methods).map(method => [method,(args,invocation) => adapter.invoke(method,args,{...ctx,operationId:invocation?.nativeOperationId})]))},
         health:() => adapter.health(ctx),
         dispose:() => adapter.dispose?.(ctx),
       };

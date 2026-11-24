@@ -34,6 +34,7 @@ test('browser fixture uses named scope records and real central Owner create/sha
   const vite=await createViteServer({root:path.resolve('app/web'),configFile:false,cacheDir:path.join(temp,'vite-cache'),appType:'custom',server:{host:'127.0.0.1',port:0},plugins:[{
     name:'owner-memory-browser-fixture',resolveId:id=>id==='/memory-fixture.jsx'?'\0memory-fixture.jsx':null,load:async id=>id==='\0memory-fixture.jsx'?(await transformWithEsbuild(entry,'memory-fixture.jsx',{loader:'jsx'})).code:null,
     configureServer(server){server.middlewares.use((req,res,next)=>{void(async()=>{
+      if(req.url==='/api/session'){res.setHeader('Content-Type','application/json');res.end(JSON.stringify({csrf:'isolated-memory-wire-fixture'}));return;}
       if(await ownerHandler(req,res)||await projectHandler(req,res))return;
       if(req.url==='/api/fixture-state'){const s=store.read();res.setHeader('Content-Type','application/json');res.end(JSON.stringify(Object.fromEntries(['projects','tasks','bots','conversations','skills','runs','artifacts'].map(k=>[k,s[k]]))));return;}
       if(req.url==='/'){res.setHeader('Content-Type','text/html');res.end('<div id="root"></div><script type="module" src="/memory-fixture.jsx"></script>');return;}

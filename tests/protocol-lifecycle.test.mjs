@@ -16,7 +16,7 @@ async function fixture(t){
   let store=await openStore(dir);t.after(()=>store.close());
   const task=entity({status:'running',title:'Fixture'},'project-a');
   const run=entity({taskId:task.id,botId:'bot-a',conversationId:'conversation-a',attemptId:'attempt-a',threadId:'thread-a',t3ProjectId:'t3-project-a',providerRunId:'native-run-a',status:'running'},'project-a');
-  await store.transaction(s=>{s.tasks.push(task);s.runs.push(run);});
+  await store.transaction(s=>{s.tasks.push(task);s.conversations.push({id:'conversation-a',projectId:'project-a',kind:'team',revision:1,messages:[]});s.runs.push(run);});
   return {dir,run,store,async restart(){await store.close();store=await openStore(dir);this.store=store;},async apply(observation,options){return store.transaction(s=>applyObservation(s,find(s,'runs',run.id),observation,options));}};
 }
 function native(status='running',items=[]){return {thread:{id:'thread-a',projectId:'t3-project-a',providerInstanceId:'codex'},runs:[{id:'native-run-a',status,modelSelection:{model:'gpt-6.1-sol'}}],turnItems:items,runtimeRequests:[],attempts:[{id:'native-attempt-a',runId:'native-run-a',providerThreadId:'native-thread-a',providerTurnId:'native-turn-a',status}]};}

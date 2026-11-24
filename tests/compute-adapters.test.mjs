@@ -28,7 +28,7 @@ async function setup(t){
   const dir=await mkdtemp(path.join(os.tmpdir(),'forge-compute-fixture-'));const store=await openStore(dir);
   const workspace=path.join(dir,'workspace');await mkdir(workspace);let project,other,notebook,phase;
   await store.transaction(s=>{project=entity({name:'Disposable compute contract fixture',workspace,profile:{compute:{kind:'local'},phaseOverrides:{},limits:{jobSeconds:3}}});other=entity({name:'Isolation fixture',workspace,profile:{compute:{kind:'local'}}});notebook=entity({name:'Harmless Python',language:'python',code:"print('actual Python behind labelled HTTP fixture')"},project.id);phase=entity({name:'Fixture phase'},project.id);s.projects.push(project,other);s.notebooks.push(notebook);s.phases.push(phase);});
-  const localJobs=createJobService({store,dataDir:dir});const service=createComputeService({store,dataDir:dir,localJobs});
+  const localJobs=createJobService({store,dataDir:dir});const localFacade={start:({resolvedCompute,...input})=>localJobs.start(input,{resolvedCompute}),stop:id=>localJobs.stop(id)};const service=createComputeService({store,dataDir:dir,localJobs:localFacade});
   t.after(async()=>{await service.shutdown();await localJobs.shutdown();await new Promise(r=>setTimeout(r,60));await store.close();await rm(dir,{recursive:true,force:true});});
   return {dir,store,project,other,notebook,phase,service,localJobs};
 }

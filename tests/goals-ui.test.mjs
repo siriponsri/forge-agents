@@ -16,6 +16,7 @@ test('Goals TH/EN form uses exact routes, actual evidence, QA and same authentic
   const page=await browser.newPage({viewport:{width:1000,height:1000}});page.on('pageerror',e=>errors.push(e.message));
   await page.route('http://127.0.0.1:43199/**',async route=>{
     const request=route.request(),url=new URL(request.url());
+    if(url.pathname==='/api/session')return route.fulfill({json:{csrf:'isolated-goals-wire-fixture'}});
     if(url.pathname==='/')return route.fulfill({contentType:'text/html',body:'<!doctype html><html><body><main id="root"></main></body></html>'});
     if(!url.pathname.startsWith('/api/goals/'))return route.fulfill({status:404,body:'not found'});
     const method=url.pathname.slice('/api/goals/'.length),input=request.postDataJSON();calls.push({method,input});

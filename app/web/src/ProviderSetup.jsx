@@ -67,6 +67,7 @@ function ProviderForm({ route, projectId, t, busy, run, onCreated }) {
   const [args, setArgs] = useState(''), [refs, setRefs] = useState(''), [keyEnv, setKeyEnv] = useState('');
   const [baseURL, setBaseURL] = useState(route.baseURL ?? ''), [family, setFamily] = useState(route.apiFamily ?? 'chat-completions');
   const [models, setModels] = useState('');
+  const [preview,setPreview]=useState(null),previewIdentity=useRef('');previewIdentity.current=JSON.stringify([projectId,keyEnv,baseURL]);
   const api = route.mode === 'opencode-api';
   return <form onSubmit={e => {
     e.preventDefault(); if (pending.current) return; pending.current = true; setError('');
@@ -88,10 +89,11 @@ function ProviderForm({ route, projectId, t, busy, run, onCreated }) {
     {api && <p>{t('API ใช้ OpenCode 2.x ต้องตรวจ runtime และ catalog ก่อนเลือกโมเดล', 'API routes require OpenCode 2.x. Check the runtime and actual catalog before selecting a model.')}</p>}
     <Field label={t('ชื่อบัญชีใน FORGE', 'Account label')}><input required value={name} onChange={e => setName(e.target.value)} /></Field>
     {api && <>
-      <Field label={t('ชื่อ environment variable ของ API key', 'API key environment reference')} hint={t('กรอกเฉพาะชื่อ ไม่ใช่ค่า secret', 'Name only. Set its secret value on this machine; never paste it here.')}><input required pattern="[A-Za-z_][A-Za-z0-9_]{0,127}" autoComplete="off" spellCheck={false} value={keyEnv} onChange={e => setKeyEnv(e.target.value)} placeholder="FORGE_API_KEY" /></Field>
-      <Field label={t('API base URL ที่ตรงกับบัญชี', 'Exact API base URL')}><input required type="url" value={baseURL} onChange={e => setBaseURL(e.target.value)} /></Field>
+      <Field label={t('ชื่อ environment variable ของ API key', 'API key environment reference')} hint={t('บันทึก key ในแท็บกุญแจของเครื่อง แล้วนำชื่อที่ได้มาใส่ที่นี่ ไม่ใส่ค่า secret', 'Save the key in Machine keys, then enter its saved name here. Never paste the secret value here.')}><input required pattern="[A-Za-z_][A-Za-z0-9_]{0,127}" autoComplete="off" spellCheck={false} value={keyEnv} onChange={e => {setKeyEnv(e.target.value);setPreview(null);}} placeholder="FORGE_API_KEY" /></Field>
+      <Field label={t('API base URL ที่ตรงกับบัญชี', 'Exact API base URL')}><input required type="url" value={baseURL} onChange={e => {setBaseURL(e.target.value);setPreview(null);}} /></Field>
       <Field label={t('โปรโตคอล API', 'API protocol')}><select value={family} disabled={!!route.apiFamily} onChange={e => setFamily(e.target.value)}>{['chat-completions', 'responses', 'anthropic-messages', 'openrouter'].map(value => <option key={value}>{value}</option>)}</select></Field>
       <Field label={t('Model ID จาก provider (หนึ่งชื่อต่อบรรทัด)', 'Upstream model IDs (one per line)')} hint={t('เป็นรายการที่ขอตั้งค่า ต้องตรวจพบใน catalog จริงอีกครั้ง', 'Configured candidates must subsequently appear in the actual catalog.')}><textarea required={route.id !== 'openrouter'} rows={3} value={models} onChange={e => setModels(e.target.value)} /></Field>
+      {route.id==='kob'&&<><button type="button" disabled={busy||!keyEnv||!baseURL} onClick={()=>{const own=previewIdentity.current;run(async()=>{try{const result=await request('/api/providers/preview-models',{projectId,baseURL,apiKeyEnv:keyEnv});if(own===previewIdentity.current)setPreview(result);return result;}catch(e){if(own===previewIdentity.current)setError(e.message);throw e;}});}}>{t('อ่านรายการโมเดลจาก KOB API','Discover KOB API models')}</button>{preview&&<div><p className="help">{t('พบจาก API เท่านั้น ยังต้องตรวจ catalog ของ T3 ก่อนเลือกใช้งานจริง','API discovery only. Refresh the actual T3 catalog before selecting a runnable model.')}</p><div className="actions">{preview.models.map(m=><button type="button" key={m.id} disabled={busy} onClick={()=>setModels([...new Set([...models.split('\n').filter(Boolean),m.id])].join('\n'))}>{m.id}</button>)}</div></div>}</>}
     </>}
     <details open={route.id === 'custom-acp'}><summary>{t('โปรแกรมและ environment (ขั้นสูง)', 'Executable & environment (advanced)')}</summary>
       <Field label={t('พาธโปรแกรมที่ติดตั้งไว้', 'Installed executable path')} hint={route.command ? `${route.command} ${(route.args ?? []).join(' ')}` : t('เว้นว่างเพื่อใช้การตั้งค่า native', 'Leave empty for the native runtime default.')}><input required={route.id === 'custom-acp'} value={executable} onChange={e => setExecutable(e.target.value)} /></Field>
@@ -124,7 +126,7 @@ function ProviderAccount({ t, connection: c, project, projectId, run, busy }) {
     if (live.current) { setSetup(value); setCallback(''); } return value;
   });
   const catalog = catalogState?.catalog ?? c.providerCatalog, models = catalog?.models ?? [], model = models.find(m => m.id === modelId);
-  const saved = project?.profile?.provider, currentCatalog = !catalogState?.error && !catalogState?.refreshing && catalog?.providerInstanceId === c.providerInstanceId;
+  const saved = project?.profile?.provider, currentCatalog = !catalogState?.error && !catalogState?.refreshing && !catalogState?.stale && catalog?.catalogComplete!==false && catalog?.providerInstanceId === c.providerInstanceId;
   const interaction = setup?.interaction, url = authorizationLink(interaction?.url ?? setup?.authorizationUrl);
   const uncertain = setup?.status === 'unknown' || setup?.status === 'already-submitted';
   const cancel = (action, id, extra) => { if (cancelled.current.has(id)) return; cancelled.current.add(id); setupAction(action, extra); };

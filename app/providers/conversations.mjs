@@ -1,7 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import { busy, changed, digest, entity, fail, find, required, safeError, terminal } from './common.mjs';
+import {assertWorkspaceAvailable} from '../server/admission.mjs';
 
-export function createConversationService({store,t3,providers}){
+export function createConversationService({store,t3,providers,checkCapabilities,prepareCapabilities}){
   const pending=new Set();let closing=false;
   function scope(input,s=store.read()){
     const project=find(s,'projects',required(input.projectId,'projectId'));
@@ -63,6 +64,7 @@ export function createConversationService({store,t3,providers}){
   const api={
     list(input){const {conversation}=scope(input);return conversation;},
     async send(input){
+      await prepareCapabilities?.(input.projectId);
       required(input.operationId,'operationId');required(input.text,'text');if(input.text.length>50000)fail('MESSAGE_LIMIT','Use an artifact for long content');
       const fingerprint=digest(input),state=store.read();const prior=state.runs.find(r=>r.operationId===input.operationId);
       if(prior){if(prior.kind!=='conversation'||prior.fingerprint!==fingerprint)fail('OPERATION_REUSE','Chat operation reused for different work',409);return prior;}
@@ -77,17 +79,21 @@ export function createConversationService({store,t3,providers}){
         const prior=s.runs.find(r=>r.operationId===input.operationId);if(prior){if(prior.fingerprint!==fingerprint)fail('OPERATION_REUSE','Chat operation reused',409);replay=true;return prior;}
         const {conversation:c}=scope(input,s);botScope(s,project.id,bot.id);
         if(s.receipts.some(x=>x.operationId===input.operationId))fail('OPERATION_REUSE','Operation belongs to a different command',409);
-        if(s.runs.some(r=>r.projectId===project.id&&busy(r)))fail('WORKSPACE_BUSY','Reconcile the project’s current run before starting another chat or task',409);
-        const r=entity({kind:'conversation',fingerprint,operationId:input.operationId,attemptId:randomUUID(),botId:bot.id,helperTaskId:bot.kind==='helper'?bot.taskId:null,conversationId:c.id,status:'submitting',providerInstanceId:selection.instanceId,selection,profileRevision:project.revision,profile:structuredClone(project.profile),inputText:input.text,messages:[],protocolEvents:[],clientRequestId:`forge-chat-${digest(input.operationId)}`,...(binding?{threadId:binding.threadId,t3ProjectId:binding.t3ProjectId}:{})},project.id);
+        assertWorkspaceAvailable(s,project.id);
+        const harnessSelection=checkCapabilities?.(s,{projectId:project.id,conversationId:c.id,botId:bot.id},['provider']);
+        const r=entity({kind:'conversation',fingerprint,operationId:input.operationId,attemptId:randomUUID(),botId:bot.id,helperTaskId:bot.kind==='helper'?bot.taskId:null,conversationId:c.id,...(harnessSelection?{harnessSelection}:{}),status:'submitting',providerInstanceId:selection.instanceId,selection,profileRevision:project.revision,profile:structuredClone(project.profile),inputText:input.text,messages:[],protocolEvents:[],clientRequestId:`forge-chat-${digest(input.operationId)}`,...(binding?{threadId:binding.threadId,t3ProjectId:binding.t3ProjectId}:{})},project.id);
         const user=entity({role:'user',text:input.text,botId:bot.id,conversationId:c.id,runId:r.id,attemptId:r.attemptId,operationId:r.operationId,status:'submitting'},project.id);r.userMessageId=user.id;c.messages.push(user);s.runs.push(r);changed(c);return r;
       });if(replay)return run;
       let dispatched=false;
       try{
         if(!t3.providers?.ensureProject||!t3.providers?.call)fail('T3_UNAVAILABLE','Owned T3 conversation hook is unavailable',409);
+        await t3.providers.assertEnvironment?.(find(store.read(),'connections',selection.connectionId,project.id));
         const actual=await t3.providers.ensureProject(project.id);const t3ProjectId=actual.id??actual.projectId;if(!t3ProjectId)fail('T3_IDENTITY','Missing owned T3 project',502);
         if(binding&&binding.t3ProjectId!==t3ProjectId)fail('T3_IDENTITY','Binding belongs to another workspace',409);
         await store.transaction(s=>{const r=find(s,'runs',run.id);r.t3ProjectId=t3ProjectId;changed(r);});
         if(binding)await validateThread({...run,t3ProjectId});
+        const currentHarness=checkCapabilities?.(store.read(),{projectId:project.id,conversationId:conversation.id,botId:bot.id},['provider']);
+        if(run.harnessSelection&&digest(currentHarness?.plugins)!==digest(run.harnessSelection.plugins))fail('CONNECTION_CHANGED','Scoped capabilities changed before dispatch',409);
         const text=prompt(run,project,conversation,bot,binding);if(text.length>120000)fail('MESSAGE_LIMIT','Bot instructions and visible context exceed the T3 prompt limit');dispatched=true;
         const response=await t3.providers.call(binding?'t3_thread_send':'t3_thread_launch',binding?{threadId:binding.threadId,message:text,mode:'auto',clientRequestId:run.clientRequestId}:{projectId:t3ProjectId,clientRequestId:run.clientRequestId,title:`FORGE ${bot.name} chat ${run.id}`,message:text,runtimeMode:'approval-required',interactionMode:'default',modelSelection:{instanceId:selection.instanceId,model:selection.model,options:selection.options},workspaceStrategy:{type:'root'}});
         if(!response.threadId||!response.runId||binding&&response.threadId!==binding.threadId||response.projectId&&response.projectId!==t3ProjectId)fail('T3_IDENTITY','T3 returned incomplete or mismatched execution identity',502);
