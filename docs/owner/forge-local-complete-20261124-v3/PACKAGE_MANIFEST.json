@@ -1,0 +1,267 @@
+{
+  "package": "FORGE_LOCAL_COMPLETE_HANDOFF_v3_20261124",
+  "date": "2026-11-24",
+  "timezone": "Asia/Bangkok",
+  "type": "documentation_and_prompts_only",
+  "scope": "Complete no-code localhost FORGE plus AG-UI, Univer, WordCraft/PdfCraft; no prototype product this round",
+  "archive_root": "docs/owner/forge-local-complete-20261124-v3",
+  "files_including_manifest": 52,
+  "manifest_self_hash": "omitted",
+  "files": [
+    {
+      "path": "00_START_HERE_TH.md",
+      "bytes": 10878,
+      "sha256": "bc3c480b73300a4f546908f8a9ebf44aefb97bf51e4099ff5ad45db120b07084"
+    },
+    {
+      "path": "01_PRODUCT_BRIEF.md",
+      "bytes": 15102,
+      "sha256": "6b9e480f3d44aa70f3927bbb6069a4033e0b168e1f11196ee6258afc93ed3e03"
+    },
+    {
+      "path": "02_IMPLEMENTATION_PLAN.md",
+      "bytes": 15931,
+      "sha256": "957203e60ec976350a19677e088a86e9ed197d653a427a7b7d7250b298a9a9fc"
+    },
+    {
+      "path": "03_ACCEPTANCE_MATRIX.md",
+      "bytes": 15114,
+      "sha256": "d42966e2367917eabaf0f6e9c12be2cf7f39ff4ba201e4bcdad4ec9c3327e42e"
+    },
+    {
+      "path": "04_REPO_STATE_AND_PRECEDENCE.md",
+      "bytes": 6188,
+      "sha256": "43c185c2bc50f1a85df1852d84a42b57a73eecb2469a0ba2bf6e6b6bded5b9d8"
+    },
+    {
+      "path": "05_ARCHITECTURE_AND_SETTINGS.md",
+      "bytes": 13851,
+      "sha256": "e52251781b271ad80bab70698b48379e239d58df75139a94d39b2962b88826b7"
+    },
+    {
+      "path": "06_LOCALHOST_SETUP_AND_HOME_UAT.md",
+      "bytes": 9911,
+      "sha256": "66d4b5bad044ee64793efbc9b8cb00384072a230042d6edcf95db5a3be92ebb9"
+    },
+    {
+      "path": "07_MODELS_AND_WORKTREES.md",
+      "bytes": 16284,
+      "sha256": "dad301ea97ded1c896fb0770de3b9e20abd935055a01cba997c72a6706deddc8"
+    },
+    {
+      "path": "08_RELEASE_MAIN_AND_HOME_HANDOFF.md",
+      "bytes": 7546,
+      "sha256": "ed4cf8233ca146c92f59f6ff9a0f2fde91c21783528fae9138896eda57ad4d94"
+    },
+    {
+      "path": "09_COMPONENT_REUSE_MAP.md",
+      "bytes": 8872,
+      "sha256": "a7cae4203e074f269907a4b47d4ec307ca1fb80c9fa9d244e84356d92ce0a98d"
+    },
+    {
+      "path": "10_AGUI_HARNESS_PROTOCOL.md",
+      "bytes": 6813,
+      "sha256": "2f9eaac322d6a4ceb381a761f228c8f9d24b9febc6d1c954b048dbb55d6ff907"
+    },
+    {
+      "path": "11_OFFICE_AND_REPORTS.md",
+      "bytes": 21422,
+      "sha256": "b5784117d673a4cc87301e79918d90de1a114c532067cb135c31dab550da7d29"
+    },
+    {
+      "path": "12_T3_MODEL_DIAGNOSTIC_TH.md",
+      "bytes": 14137,
+      "sha256": "50d7939acff5ea14c8ea2895512979588f549691b31336fda10e3ec7ffe111ac"
+    },
+    {
+      "path": "PACKAGE_VALIDATION.md",
+      "bytes": 2196,
+      "sha256": "176948c18a958e80173f54e83f3c6fb25c3757e8f33270fa6ca754a41e499f4e"
+    },
+    {
+      "path": "REFERENCE_MANIFEST.json",
+      "bytes": 4295,
+      "sha256": "58b7b612e749720ec9d1340fe927602751263bf15a8ff881acb527f5086dc58e"
+    },
+    {
+      "path": "UPSTREAM_REFERENCE_PINS.json",
+      "bytes": 2918,
+      "sha256": "40b12d6ec130af8a9d107036b1946fc9ec02e1829f4236448347f61228b05796"
+    },
+    {
+      "path": "progress/CURRENT_STATUS.md",
+      "bytes": 3745,
+      "sha256": "4f28b6d609eaa74bf7a910be36951ec148cce1687188adde657a10fd761b0abd"
+    },
+    {
+      "path": "progress/DECISIONS.md",
+      "bytes": 3458,
+      "sha256": "1f1e916bfa595d4fcc422a46b6f5e06eb291455e14a5f3af703991484142f4a1"
+    },
+    {
+      "path": "progress/HOME_UAT_RESULTS.md",
+      "bytes": 1676,
+      "sha256": "49fe95e14da6e14acb235bcb72c752d0ba23ffbf3dc122a5e24914abda202b34"
+    },
+    {
+      "path": "progress/IMPLEMENTATION_LOG.md",
+      "bytes": 1158,
+      "sha256": "0ac6bda55e7cd90219252a47958130b9557e993ddc022b5c96c4eeea372a47ec"
+    },
+    {
+      "path": "progress/INTEGRATION_LEDGER.md",
+      "bytes": 5163,
+      "sha256": "f0d1e612a413c45c5439bd6067ab8843a2d8ae87df33ba205cb2cc0e5f7deab0"
+    },
+    {
+      "path": "progress/RELEASE_REPORT.md",
+      "bytes": 1537,
+      "sha256": "1377ffb1c04ddff5e68f66243a6eb5657ae1b4030288ce5945af0480059641b5"
+    },
+    {
+      "path": "progress/TASK_ASSIGNMENTS.md",
+      "bytes": 2608,
+      "sha256": "cbae69c8d91cbc2fe88f3a4d692fed9ce43385a0ec808b63d2a82c81b11ab880"
+    },
+    {
+      "path": "prompts/CONTINUE.txt",
+      "bytes": 3021,
+      "sha256": "8f7dbc16da708e278d4086f31c270a101aa76fa17b515e3f1761fe83f3d11ef1"
+    },
+    {
+      "path": "prompts/DIAGNOSE_T3_MODELS.txt",
+      "bytes": 6421,
+      "sha256": "019f42d37eb0da22454e2b2fd3b8cba4d9ef69ee706a8bad2eb6aa3cfab1fc74"
+    },
+    {
+      "path": "prompts/HOME_UAT.txt",
+      "bytes": 3982,
+      "sha256": "18da4ef9f7f413a980dcf9761111e8ece634ca2fa35a9e59b5644845ed2000ee"
+    },
+    {
+      "path": "prompts/ORCHESTRATOR.txt",
+      "bytes": 6300,
+      "sha256": "db00b195e86f06cfe41e49b786fa619d952e57ae6743f1c44c794c9c9d38f678"
+    },
+    {
+      "path": "prompts/RELEASE_MAIN.txt",
+      "bytes": 3495,
+      "sha256": "e0f008d604559b4a18851e7bed12314f13f2aa8a93e6dd263dc1c3b57c668b15"
+    },
+    {
+      "path": "prompts/REVIEW_RELEASE.txt",
+      "bytes": 4372,
+      "sha256": "692b114cf3a52eed4674c3124ee123f0a4bdf671995bc38f8e4a677d2f34924d"
+    },
+    {
+      "path": "prompts/START_FULL_PRODUCT.txt",
+      "bytes": 10165,
+      "sha256": "a328d8df186cac7312399a3b0c7bd71a29721a3433fd9edcc6bd50f2f760cf6c"
+    },
+    {
+      "path": "prompts/WORKER.txt",
+      "bytes": 3040,
+      "sha256": "c7d5a7fc607bc1c4214563a52153c62b468b048a77521c05f494d77442cf21bd"
+    },
+    {
+      "path": "reference/PRODUCT.md",
+      "bytes": 16656,
+      "sha256": "31809df1d874b6041ee194f12eb0176986e358453bd7735fb78263d63538981a"
+    },
+    {
+      "path": "reference/REFERENCE_INDEX.md",
+      "bytes": 6126,
+      "sha256": "e4cceece31215269cb804c2aec73210419e7679e7b0ac134d8976a4579eaaec1"
+    },
+    {
+      "path": "reference/docs/COMPONENTS.md",
+      "bytes": 5435,
+      "sha256": "f5d6a73172595cb8cc23ddc23c714604ffed9751948b2407f99ef933e2cda48a"
+    },
+    {
+      "path": "reference/docs/FORGE_AI_MCP_RESEARCH_TH.md",
+      "bytes": 42729,
+      "sha256": "6a531a836e8547bc65ead285bf55d7d9b9b92b2f5cfa499e846cd68fd1b6d0e6"
+    },
+    {
+      "path": "reference/docs/HERMES_ADAPTATION.md",
+      "bytes": 5533,
+      "sha256": "bb60e96c2016b059c1a9b81683f2815e3d26e7392700f39599e71ddc12d2e3a1"
+    },
+    {
+      "path": "reference/docs/PROJECT_STORAGE_SETTINGS_TH.md",
+      "bytes": 13106,
+      "sha256": "a5dcda431309e72061d6adad2c716ee6222404aaef21105c41119e186f6cf77b"
+    },
+    {
+      "path": "reference/docs/REQUIREMENTS_INTERVIEW_TH.md",
+      "bytes": 37549,
+      "sha256": "08e0060a659e8b6fdbc161334361236223ab3c8acba46e57fdcc08ef0893ebcf"
+    },
+    {
+      "path": "reference/docs/projects/CA_EWS_FORGE_PILOT_TH.md",
+      "bytes": 40373,
+      "sha256": "ec7e95840182f4b8ae35ae0d67096cd98e20723f51b94e9a849b034704ffa06d"
+    },
+    {
+      "path": "reference/docs/research/CA_EWS_FORGE_UX_REQUIREMENTS.md",
+      "bytes": 18293,
+      "sha256": "c2ce795931408abbceea4728be1308afa9a73fb56ace4debfbb4102f586df746"
+    },
+    {
+      "path": "reference/docs/research/COMPUTER_USE_MCP_RESEARCH.md",
+      "bytes": 10635,
+      "sha256": "ee57cd418c7d29244cd421edb625242d089c7f9bbc67a43c8abe856cc0db7f06"
+    },
+    {
+      "path": "reference/docs/research/COMPUTE_MCP_RESEARCH.md",
+      "bytes": 50321,
+      "sha256": "84e9fcfeb643abe7a7d15d7a1ee9e372867b1c9e4d39f3c75e3f9eb673ab7941"
+    },
+    {
+      "path": "reference/docs/research/PLANNING_UI_MCP_RESEARCH.md",
+      "bytes": 22983,
+      "sha256": "122fc284447796494c231069158a74f837dd69007a48bbdce9d1494fd4f5edff"
+    },
+    {
+      "path": "reference/docs/research/PROVIDER_MCP_RESEARCH.md",
+      "bytes": 29809,
+      "sha256": "9b73d34f898487f992a6f5d1d1754ac0b3994316dcb1d763ea7da2df3cd82b33"
+    },
+    {
+      "path": "reference/docs/research/TRAINING_MONITORING_MCP_RESEARCH.md",
+      "bytes": 22789,
+      "sha256": "6536e863f4261ad518fb62746890b6384b0114189edcc05f4ae591586e70a239"
+    },
+    {
+      "path": "reference/research/AGUI_INTEGRATION_RESEARCH.md",
+      "bytes": 6117,
+      "sha256": "c6d1dd841130d9a638cae725f6fe0c33c3898933b32b3e54645cf9e935a9d2eb"
+    },
+    {
+      "path": "reference/research/REPORT_ENGINES_RESEARCH.md",
+      "bytes": 13757,
+      "sha256": "cf5c50cf76a70d4b15d46a34dcd9d3ebe8226903a793c5c78cfac402b552631f"
+    },
+    {
+      "path": "reference/research/T3_MODEL_DISCOVERY_RESEARCH.md",
+      "bytes": 10283,
+      "sha256": "207198e9cf4394814d7c26c30840d8df236c99d57dcaa290ef85d82f1a459287"
+    },
+    {
+      "path": "reference/research/UNIVER_INTEGRATION_RESEARCH.md",
+      "bytes": 11040,
+      "sha256": "df518f63e30d83bff8cd4ac270fa3c7bc1687cf9bd33b0cae10bc9b70834e7b3"
+    },
+    {
+      "path": "reference/source/CARDIAC_ARREST_MASTER_PLAN.md",
+      "bytes": 64271,
+      "sha256": "494f1c2634a3d3529e3992e5188c4068acd4b8e1f31b48e7dc125dff665b2ec5"
+    },
+    {
+      "path": "templates/AGENTS_POINTER_SNIPPET.md",
+      "bytes": 1209,
+      "sha256": "27c4a6b18e5a79d7a4bd6ebfd9732f67e9416f27a99720c6cf0a054c1ec9176b"
+    }
+  ]
+}

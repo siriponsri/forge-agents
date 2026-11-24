@@ -1,0 +1,21 @@
+ทำ FORGE complete local product ต่อจากโค้ดและ progress ที่มีจริง
+
+อ่าน applicable AGENTS.md และ:
+docs/owner/forge-local-complete-20261124-v3/00_START_HERE_TH.md
+docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md
+docs/owner/forge-local-complete-20261124-v3/progress/IMPLEMENTATION_LOG.md
+docs/owner/forge-local-complete-20261124-v3/progress/DECISIONS.md
+docs/owner/forge-local-complete-20261124-v3/progress/INTEGRATION_LEDGER.md
+docs/owner/forge-local-complete-20261124-v3/progress/TASK_ASSIGNMENTS.md
+
+เทียบกับ Git HEAD/status/worktrees และ code จริง เลือก next executable task จากแผน G0–G6 แล้ว implement/run/verify/fix ต่อ ไม่เริ่มใหม่ ไม่ audit/research รอบใหญ่ซ้ำ และรักษางานที่เสร็จแล้ว
+
+เป้าหมายคือ FORGE ครบสำหรับ no-code localhost พร้อม main delivery และ home UAT; G1 เป็น milestone ระหว่างทาง รอบนี้ยังไม่สร้าง CA-EWS หรือ product ต้นแบบอื่น แต่ capabilities notebook/compute/training/inference/deployment/monitoring ต้องมีใน FORGE
+
+รวม amendment v3: AG-UI harness-to-UI protocol ตามเอกสาร 10, embedded Univer Sheets/Docs และ WordCraft/PdfCraft report facilities ตามเอกสาร 11 ต้องมี persistence/agent edits/export validation/engine setup จริง ไม่ลดขอบเขตเดิม ใช้โมเดลที่รันได้ใน T3 ต่อไป; การไม่แสดง 6.2 ให้ตรวจแยกตามเอกสาร 12 ไม่ใช่ blocker ของทั้งโครงการ
+
+ถ้าใช้หลาย agent ให้รักษา branch/worktree/path ownership ที่ตกลงไว้ Lead รวม shared contracts และ evidence ก่อน main ห้าม agent สลับ branch หรือแก้ working directory ของอีกตัว
+
+ตรวจ core flows และ meaningful risks ในเครื่องพัฒนาก่อนส่งงาน งานรอ live auth/guest VM/home machine ให้ระบุ NOT_RUN เฉพาะส่วนแล้วทำอิสระต่อ Missing implementation ไม่ใช่ pending UAT และห้ามนับ catalog/placeholder เป็น complete
+
+อัปเดต progress ในโฟลเดอร์ v3 เดิมก่อนจบ พร้อมหลักฐานจริง วิธีเปิดแอป release readiness และ next task ตอบภาษาไทย เดินต่อในขอบเขตที่อนุญาตโดยไม่ขอเลือก requirements เดิมใหม่

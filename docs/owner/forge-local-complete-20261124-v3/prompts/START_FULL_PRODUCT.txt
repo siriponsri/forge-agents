@@ -1,0 +1,51 @@
+คุณเป็น lead engineer ที่พัฒนา FORGE ให้ครบตาม requirements สำหรับผู้ใช้ no-code
+
+Owner development repo:
+C:\Users\siripon.sri\Desktop\my_project\forge-agents
+
+อ่าน applicable AGENTS.md จาก checkout จริง แล้วอ่าน:
+docs/owner/forge-local-complete-20261124-v3/00_START_HERE_TH.md
+และ core documents ตามลำดับในไฟล์นั้น
+
+ใน prompt นี้ ชื่อเอกสารแบบย่อทั้งหมดอ้างอิงใต้ docs/owner/forge-local-complete-20261124-v3/ ไม่ใช่ repo root
+
+Owner correction ล่าสุด:
+รอบนี้ต้องพัฒนา FORGE product ให้ complete ผู้ใช้ no-code เปิด localhost และใช้งานผ่าน GUI ได้ง่าย ยังไม่สร้าง CA-EWS หรือ product ต้นแบบอื่น เมื่อพัฒนาและตรวจแล้วจะส่งงานผ่าน main จากนั้นผม pull ไปเครื่องบ้านและทดสอบ flow ระบบ เป้าหมายเก่า G0–G1 เป็นเพียง milestone ระหว่างทาง ส่วน embedded prompt ในแผน CA-EWS ไม่ถูก activate
+
+ให้ทำตาม 02_IMPLEMENTATION_PLAN.md ทั้ง G0–G6 และใช้ 03_ACCEPTANCE_MATRIX.md ตรวจงาน เดินงานต่อเนื่องจน implementation scope ครบและพร้อม home UAT หรือมี blocker ที่ระบุขอบเขตจริง ไม่จบที่ audit/plan/first slice/menu/placeholder/mock
+
+ข้อกำหนดหลัก:
+1. ใช้ source/components และ matching server/provider-thread runtime ของ T3 เป็นฐาน FORGE จริง การที่ผมเปิด repo ใน T3 เป็นแค่ development environment
+2. GUI ภาษาไทยเป็นค่าเริ่มต้น มี TH/EN, project/workspace, ทีม bot ประจำ + task helpers, private chat/team room และ task tracking
+3. เสนอแผนภาพรวมก่อนทำงาน; canvas/Kanban/phase/task ใช้ persistent state ชุดเดียวและเชื่อม actual thread/run/artifact/evidence
+4. มี notebook, compute/job control, model weights/artifacts, inference UI/serving/deployment facilities และ monitoring dashboard เป็นความสามารถของผลิตภัณฑ์ โดยยังไม่สร้างโปรเจกต์ต้นแบบ
+5. Provider/harness, compute, serving, storage, tracker, MCP และ desktop target เลือกได้ใน per-project Settings ผ่าน GUI รวมทั้ง custom compatible integrations
+6. Native computer use ทั้ง main Windows และ desktop/VM แยก พร้อม browser capability, target identity, Stop/Take over
+7. Skill/Harness Adaptive ตามแนว Hermes และการปรับ task loop ตาม single-agent-loop-kit โดยมี capability/evidence และไม่ทำลาย multi-bot model
+8. นำ references ทั้ง T3, Orca, Paseo, Happy, Agent Orchestrator, loop-kit, Hermes, OpenBot, AG-UI, Univer, WordCraft, PdfCraft และ MCP/component research มาพิจารณา พร้อมระบุสิ่งที่นำมาใช้และเหตุผล ไม่รวม runtime ทุกตัวซ้อนกัน
+9. ทำ Windows setup/start ให้ no-code: entry point ที่เปิดง่าย, dependency preflight, localhost readiness, เปิด browser, stop/restart/logs/recovery, persistent data และ clean-clone portability
+10. ทำ AG-UI bridge ตาม 10_AGUI_HARNESS_PROTOCOL.md ให้ harness events, tool state, task/bot/run และ UI เชื่อมจริง ใช้ domain state เดิม ไม่สร้าง turn owner ซ้อน; reload/stop/retry ต้องไม่ทำ effects ซ้ำ และอย่าอ้าง SSE resume อัตโนมัติ
+11. ฝัง Univer Sheets/Docs ตาม 11_OFFICE_AND_REPORTS.md มี save/reopen และ agent edit ผ่าน command/revision boundary เดียวกับผู้ใช้ ไม่ใช้เพียง iframe/demo และไม่ทำให้ commercial AI SDK เป็น dependency บังคับ
+12. ทำ Report Studio: versioned ReportSpec/source/template → WordCraft สร้าง DOCX/PDF → PdfCraft operations ที่รองรับจริง มี preview/download/provenance และ output validation; ตั้งค่า engines/fonts ผ่าน GUI ไม่ให้ no-code user compile Rust; แยก optional Office Exchange/LibreOffice และข้อจำกัดตาม capability
+
+ก่อนแก้ code ตรวจ HEAD/branch/status/remotes/worktrees/scripts/source/lockfiles และงานที่มีจริง รักษางานที่ยังไม่ commit และ protected legacy boundaries หากทำบางส่วนจาก v1 ไปแล้วให้ทำต่อจากหลักฐาน ไม่เริ่มใหม่
+
+เสนอ architecture/gap/task map สั้น ๆ แล้วลงมือใน session เดียวกัน อ่าน research เฉพาะ component ที่ต้องใช้ ตรวจ upstream revision/license/API ของส่วนที่จะ integrate จริง
+
+โมเดลและการแบ่งงาน:
+อ่าน 07_MODELS_AND_WORKTREES.md เริ่มด้วย GPT 6.1 xhigh ที่ผมเลือกและรันได้จริง โดยตรวจ exact model ID/variant ไม่เดาว่าเป็น Sol หาก Astra หรือ 6.2 มีใน provider route และทดสอบเรียกได้แล้วค่อยใช้แบ่งบทบาทตามความเหมาะสม การไม่เห็น 6.2 ไม่บล็อกงาน FORGE ตรวจ models/options และ orchestration tools ที่มีจริง หากไม่มี worker tools ให้พัฒนาต่อแบบ sequential หรือเตรียม assignment ที่พร้อมใช้ ไม่อ้างว่า spawn/switch model แล้วถ้ายังไม่ได้ทำ
+
+แยกการตรวจ T3 ที่ติดตั้งใช้พัฒนาออกจาก T3-derived source ใน FORGE ใช้ 12_T3_MODEL_DIAGNOSTIC_TH.md และ prompts/DIAGNOSE_T3_MODELS.txt เมื่อจำเป็น Upstream มี issue ที่อาการตรงกันแต่ยังไม่ใช่การยืนยันสาเหตุบนเครื่องผม ห้ามลบ cache/ย้าย credentials/แก้ installed app โดยเดา หรืออ้างว่า PR ที่ยัง open เป็น fix ที่ปล่อยแล้ว
+
+ถ้าแบ่งงาน ให้ทุก writer มี branch และ worktree ของตัวเอง เริ่ม workers สองตัวเมื่อ foundation/contracts พร้อม Lead เป็นเจ้าของ integration branch, shared contracts/migrations/lockfiles และรวมงานก่อน main ห้ามหลาย agent เขียน checkout เดียวกัน
+
+ตรวจ build/launch/core UI/persistence/recovery และ adapter behavior ที่ทำได้ในเครื่องพัฒนา ใช้ disposable engineering fixtures ได้ แต่ติดป้ายชัดและไม่สร้าง product ใหม่ การทดสอบบนเครื่องบ้านภายหลังไม่ใช่เหตุผลให้ข้าม developer verification
+
+เมื่อ service ไม่มีบัญชี/สิทธิ์/VM ให้ทำ adapter และ setup flow ให้พร้อม บันทึก live check ที่ NOT_RUN และทำงานอิสระต่อ แต่หาก code ของ required feature ยังขาด ให้ถือว่า IMPLEMENTATION_INCOMPLETE ไม่เรียก complete
+
+เก็บ progress/CURRENT_STATUS.md, progress/IMPLEMENTATION_LOG.md, progress/DECISIONS.md, progress/INTEGRATION_LEDGER.md และ progress/TASK_ASSIGNMENTS.md ให้ตรง code จริง Workers ใช้โน้ตเฉพาะ task ให้ lead รวม ห้ามทุกตัวเขียน central status พร้อมกัน
+
+ส่งมอบ implementation ครบ, developer verification, วิธีเปิด localhost, release report และ home UAT guide เป้าหมายปลายทางคือ main โดยเตรียมพร้อมตาม 08_RELEASE_MAIN_AND_HOME_HANDOFF.md ผมจะ push เองหรือมอบหมายผ่าน RELEASE_MAIN prompt; ถ้ามี instruction ให้ push แล้วใน session ให้ทำตามขอบเขตนั้นโดยไม่ถามอนุมัติซ้ำ
+
+ไม่ซื้อ compute/upgrade/เปิด public hosting/ย้าย credentials เอง และไม่ activate prototype project
+ก่อน context หมดให้ checkpoint สถานะและ next executable task ตอบภาษาไทย แยก implementation coverage, developer-verified evidence, external checks pending และ HOME_UAT_NOT_RUN ตามจริง แล้วทำงานต่อจนถึงขอบเขตที่รับมอบหมาย

@@ -1,0 +1,19 @@
+ผมมอบหมายให้คุณรวมงาน FORGE ที่พัฒนาและตรวจพร้อมแล้วเข้า main และ push ไป remote ของ repository FORGE นี้ เพื่อให้ผม pull ไปใช้เครื่องบ้าน
+
+อ่านและทำตาม:
+docs/owner/forge-local-complete-20261124-v3/08_RELEASE_MAIN_AND_HOME_HANDOFF.md
+พร้อม acceptance matrix, current status และ integration ledger ใน handoff v3
+
+ก่อน publish ตรวจ actual repo/remotes/HEAD/status/worktrees และ release diff ให้ชัด รักษางานคนอื่นและไฟล์ที่ไม่เกี่ยวข้อง ตรวจ integrated build/launch/core flows และ clean-checkout readiness ตามหลักฐานที่จำเป็น
+
+Coverage รอบนี้รวม AG-UI, Univer และ WordCraft/PdfCraft ด้วย ตรวจ protocol recovery, office persistence/agent edits, report artifacts/Thai layout และ guided engine setup พร้อม source/dependency notices ไม่ใช้ผลตรวจเอกสารหรือ upstream PR เป็นหลักฐานว่า application/installed T3 ผ่านแล้ว
+
+หากยังมี required feature ที่ไม่มี implementation หรือ material defect ให้แก้จนพร้อม อย่า push พร้อมรายงานว่า complete ทั้งที่ยังขาดงาน การรอ home UAT/live login ที่บันทึกชัดไม่เท่ากับ missing code และไม่จำเป็นต้องรอผลจากเครื่องบ้านก่อนส่ง source ไปให้ทดสอบ
+
+ทำ scoped commits, integrate กับ main ล่าสุดอย่างเหมาะสม แล้ว normal push ไป remote main ที่ตรวจว่าเป็น FORGE repository จริง ห้าม force-push/reset งานคนอื่น/bypass branch protection หากต้องใช้ PR ให้ใช้ route ที่สิทธิ์อนุญาตและรายงานสถานะจริง ไม่อ้างว่า main update จนกว่าจะเกิดขึ้นจริง
+
+ไม่ใส่ secrets/provider sessions/credentials/local databases/cache/dependencies หรือ model weights ของผู้ใช้ลง Git ไม่สร้าง CA-EWS หรือ prototype project และไม่ deploy/public-host ระบบในคำสั่งนี้
+
+คำสั่งนี้เป็นการมอบหมาย release แล้ว ไม่ต้องถามอนุมัติซ้ำสำหรับการ commit/merge/normal push ที่อยู่ในขอบเขตนี้ หากถูกบล็อกด้วยสิทธิ์หรือ branch policy ให้ระบุการกระทำและเหตุผลตรงจริง
+
+หลังเสร็จตรวจ observed remote revision แล้วรายงาน commit, branch/remote, build/check evidence, วิธี pull/setup/start บนเครื่องบ้าน และรายการ HOME_UAT_NOT_RUN ที่ต้องตรวจต่อ

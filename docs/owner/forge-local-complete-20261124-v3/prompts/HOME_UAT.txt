@@ -1,0 +1,23 @@
+ตอนนี้ให้ช่วยเปิดและทดสอบ FORGE บนเครื่องบ้านจาก repo ที่ผมเปิดอยู่
+ยังไม่สร้าง CA-EWS หรือ product ต้นแบบอื่น
+
+อ่าน applicable AGENTS.md และ:
+docs/owner/forge-local-complete-20261124-v3/06_LOCALHOST_SETUP_AND_HOME_UAT.md
+docs/owner/forge-local-complete-20261124-v3/08_RELEASE_MAIN_AND_HOME_HANDOFF.md
+พร้อม release report/progress/integration ledger ล่าสุด
+
+ตรวจ repo path/remote/branch/HEAD/status จริงบนเครื่องนี้ก่อน update รักษา local changes และไม่ hard-code path จากเครื่องพัฒนา ถ้าต้อง pull main ให้ใช้ normal fast-forward/update flow ที่เหมาะสมโดยไม่ reset ทับงาน ถ้าประวัติ diverge ให้แก้สถานการณ์เฉพาะอย่างรักษางาน
+
+ใช้ setup/start entry point ที่ส่งมอบ ตรวจ prerequisites และเปิด localhost ให้ใช้งานได้ด้วย GUI ตรวจ displayed version/commit ให้ตรง release
+
+ทดสอบ no-code flows: setup, project/workspace, bots/private chat/team room, visual plan/Kanban/task/thread, settings persistence, provider/MCP connection, notebook/job/artifact/inference/monitoring facilities, storage routing/sync controls, native desktop/browser targets, Stop/Take over, retry/restart/recovery และ TH/EN
+
+เพิ่ม flow v3: AG-UI แสดง task/bot/tool status และ reconnect/reconcile โดยไม่ทำ effects ซ้ำ; Univer Sheets/Docs สร้าง/แก้/save/reopen และ agent edits/undo; Report Studio ใช้ WordCraft สร้าง DOCX/PDF จาก source revision ตรวจภาษาไทย/อังกฤษ ตาราง/รูป/หน้า และ PdfCraft operations พร้อม dependencies ที่ตั้งค่าแล้ว ตรวจ engine setup ผ่าน GUI ไม่สั่งผู้ใช้ compile Rust
+
+ใช้ model ที่เรียกได้จริง หาก 6.2 ไม่แสดงให้บันทึก route/version/catalog ตามคู่มือ 12 และทดสอบ flow อื่นต่อได้ อย่าอ้างว่าเป็นสาเหตุเดียวกับ upstream issue จนมีหลักฐานบนเครื่องนี้
+
+ใช้ disposable engineering inputs และบัญชี/ทรัพยากรที่เข้าถึงได้จริง ไม่เปิด paid resources/upgrade/public hosting เอง ถ้าต้อง sign in ให้ใช้ supported flow และขอเฉพาะ concrete account/destination binding ที่จำเป็น ไม่ถาม requirements ที่เลือกแล้วซ้ำ
+
+แยก developer evidence เดิมออกจากผลบนเครื่องบ้านที่เพิ่งตรวจ ไม่ให้ mocks แทน live qualification บันทึก PASSED/FAILED/NOT_RUN ตามแต่ละ flow พร้อมหลักฐานและ reproduction steps
+
+เมื่อพบ product bug ให้แก้ใน branch/worktree ที่เหมาะสม รักษาข้อมูลผู้ใช้ ตรวจซ้ำส่วนที่เกี่ยวข้อง และเตรียมผลกลับ main ตาม release authorization ที่มีจริง อัปเดต home UAT report โดยไม่ประกาศว่าผ่านทั้งระบบถ้ายังมีรายการไม่ได้ตรวจ

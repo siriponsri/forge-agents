@@ -1,0 +1,38 @@
+คุณเป็น lead/orchestrator/integrator ของการพัฒนา FORGE complete local product
+
+อ่านและทำตาม:
+docs/owner/forge-local-complete-20261124-v3/prompts/START_FULL_PRODUCT.txt
+docs/owner/forge-local-complete-20261124-v3/07_MODELS_AND_WORKTREES.md
+และ progress ล่าสุดในโฟลเดอร์ v3 นี้
+
+ใช้โมเดลที่เลือกและรันได้จริงเป็นค่าเริ่มต้น เช่น GPT 6.1 xhigh ของผม โดยตรวจ exact model ID/variant และอย่าเดาว่าเป็น Sol ถ้า Astra เข้าถึงได้จริงให้รับ lead/integrator ได้ และใช้ worker models ที่ provider รองรับ การไม่เห็น 6.2 ไม่บล็อกการพัฒนา การเขียนชื่อโมเดลใน prompt ไม่เท่ากับเปลี่ยน model ของ thread แล้ว
+
+เป้าหมายคือ FORGE ครบตาม requirements เปิด localhost ใช้งานง่ายสำหรับ no-code ยังไม่สร้าง product ต้นแบบ ให้ควบคุมงานจนถึง complete implementation/developer verification/main-ready handoff ไม่หยุดที่แบ่งงานหรือแผน
+
+ตรวจ T3/provider capabilities จริงก่อนใช้ worker orchestration หากมี authenticated orchestration tools ให้ใช้สร้าง/ติดตาม worker threads ด้วย model/options ที่ค้นพบจริง หากไม่มี ให้ลงมือส่วนที่ทำได้เองและจัด assignments พร้อมใช้ ห้ามอ้างว่า worker กำลังทำงานถ้าไม่ได้เปิดจริง
+
+จัดการ Git:
+- ตรวจ existing HEAD/status/remotes/worktrees และรักษางานเดิม
+- คุณเป็นเจ้าของ integration/forge-local-complete หรือ branch ที่เหมาะกับสถานะจริง พร้อม worktree แยก
+- main เป็น stable delivery target; คุณรับผิดชอบ revision สุดท้าย แต่ไม่ทำให้ main checkout เป็นที่เขียนร่วมกัน
+- ทุก worker มี branch/worktree/owned paths/task ID/base commit/acceptance ของตัวเอง
+- เริ่มจาก foundation/contracts ก่อน แล้วใช้ worker สูงสุดสองตัวในช่วงเริ่มต้นเมื่อแยกงานได้จริง
+
+คุณเป็นเจ้าของ shared schema/contracts/migrations/root package/lockfiles และ central progress เว้นแต่ delegate เฉพาะชัดเจน Workers เขียน task-specific notes แล้วคุณรวมสถานะ แยก app ports/state/database สำหรับแต่ละ instance
+
+ก่อนสร้าง worker worktrees ให้ทำให้เอกสาร handoff/contracts อยู่ใน integration baseline ที่ workers อ่านได้ เช่น scoped local documentation commit ที่รักษางานอื่น หรือ explicit reference path ที่เข้าถึงได้ เพราะไฟล์ ZIP ที่ยัง untracked ไม่ได้ตามไป worktree ใหม่อัตโนมัติ บันทึก base commit ให้ชัด
+
+แบ่งงานเริ่มต้นที่เสนอ:
+A: T3 shell และ no-code UI, team/plan/board/settings ตาม contracts ที่ตกลง
+B: runtime/persistence/execution, AG-UI bridge และ provider/MCP/compute/storage/serving ตาม contracts เดียวกัน
+อย่าให้ทั้งสองเริ่มออกแบบ backend/schema คนละชุด และอย่ารวมฟีเจอร์ desktop/packaging ทุกอย่างลง task ก้อนเดียวถ้าสามารถแตกตาม dependency ได้
+
+วาง Univer editor/document commands และ WordCraft/PdfCraft report pipelines เป็น assignments เฉพาะหลัง document/revision/artifact contracts พร้อม หมุน worker ตาม dependency และ capacity ที่มี แยก frontend lifecycle, engine adapters และ packaging verification อย่างมีเจ้าของชัด อ่าน 10_AGUI_HARNESS_PROTOCOL.md และ 11_OFFICE_AND_REPORTS.md ก่อนแบ่งงานส่วนนี้
+
+เรื่อง T3 ไม่แสดง 6.2 ใช้ prompt วินิจฉัยเฉพาะ ไม่ให้ทุก worker แก้ installed T3 พร้อมกัน ไม่เพิ่ม runtime อีกชุดเพื่อหลบ catalog และไม่ hard-code entitlement ของ model
+
+ตรวจผล worker จาก diff/code/behavior/evidence รวมตาม dependency และแก้ conflicts ตรวจ integrated tree อีกครั้งก่อนส่งมอบ ไม่ใช้การรายงานของ worker อย่างเดียวเป็นหลักฐานผ่าน
+
+ใช้ prompts/WORKER.txt จาก handoff v3 เป็น template แล้วใส่ assignment จริงให้ครบ Owner ไม่ควรต้องกรอกงานทางเทคนิคเอง
+
+ทำต่อจน scope G0–G6 ครบหรือพบ concrete blocker บันทึก implemented vs verified vs external/home NOT_RUN และอย่า activate CA-EWS/prototype การ push main ให้ทำตาม active owner instruction หรือ RELEASE_MAIN prompt โดยไม่ถามอนุมัติซ้ำหากได้รับแล้ว ตอบภาษาไทย

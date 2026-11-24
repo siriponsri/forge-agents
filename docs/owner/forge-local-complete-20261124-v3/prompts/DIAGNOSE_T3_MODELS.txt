@@ -1,0 +1,36 @@
+ช่วยตรวจว่าทำไม T3 ของผมไม่แสดง GPT-6.2 โดยทำ read-only diagnosis ก่อน และตอบภาษาไทย
+
+บริบท: ผมจะพัฒนา FORGE ให้ครบ เปิด localhost ใช้ได้ง่ายสำหรับ no-code ยังไม่สร้าง product ต้นแบบ Repository ที่ผมระบุคือ C:\Users\siripon.sri\Desktop\my_project\forge-agents แต่ให้ตรวจ cwd/repository จริงของ session ก่อน ไม่เดาว่าคุณเข้าถึงเครื่องหรือ T3 server นี้อยู่แล้ว
+
+อ่าน:
+docs/owner/forge-local-complete-20261124-v3/12_T3_MODEL_DIAGNOSTIC_TH.md
+docs/owner/forge-local-complete-20261124-v3/07_MODELS_AND_WORKTREES.md
+docs/owner/forge-local-complete-20261124-v3/reference/research/T3_MODEL_DISCOVERY_RESEARCH.md
+
+เป้าหมายรอบนี้คือเก็บข้อเท็จจริงและเสนอ next action ที่เล็กที่สุด ยังไม่เปลี่ยน settings, update/reinstall T3 หรือ Codex, login/logout, ลบ cache, ลบ credentials หรือแก้ installed T3 source ไม่อ่านหรือแสดง auth.json, access token, cookie, API key, credential files หรือ environment dump
+
+ตรวจเท่าที่ session มีสิทธิ์และเครื่องมือรองรับจริง:
+
+1. T3 desktop/server versions, local/remote environment, thread และ provider instance ที่ใช้อยู่
+2. Connection เป็น managed Connect with ChatGPT หรือ Use an existing Codex login; account/workspace จาก metadata ที่ไม่ใช่ความลับ
+3. Actual Codex executable/runtime path และ version ของ selected provider แยกจาก codex ที่ shell หาได้บน PATH อย่าสรุปว่าเป็นตัวเดียวกันโดยไม่มีหลักฐาน
+4. Model catalog, custom-model support, selected/effective model และ reasoning options จาก capability/metadata ที่มีจริง การพิมพ์ชื่อโมเดลใน prompt ไม่ได้เปลี่ยนโมเดลของ thread
+5. Catalog freshness / last successful refresh / warning ที่เกี่ยวข้องจาก diagnostics ที่เข้าถึงได้ ไม่ dump log ทั้งชุดและปกปิด secrets/ข้อมูลส่วนบุคคลที่ไม่จำเป็น
+
+มี upstream report ที่ตรงกับอาการคือ https://github.com/pingdotgg/t3code/issues/38609 ซึ่งระบุ gpt-6.2-sol หายเพราะ refresh รอ 3 วินาทีแล้วใช้ cache เก่า ผู้รายงานใช้ T3 0.1.10, Codex 0.169.0, macOS arm64 และ ChatGPT sign-in ไม่ใช่หลักฐานว่า Windows ของผมมีสาเหตุเดียวกัน
+
+ณ วันที่เอกสารตรวจ 2026-11-24 issue ยัง open และ https://github.com/pingdotgg/t3code/pull/38889 ยัง open/unmerged ห้ามอ้างว่ามี shipped fix หากจะเสนอ release ที่แก้ ให้ตรวจ merge commit และ release ที่รวมจริงจาก upstream ล่าสุด พร้อมแหล่งอ้างอิง
+
+OpenAI ระบุ prerequisite Codex CLI 0.166.0+ สำหรับ GPT-6.2 Astra/Sol ใน https://help.openai.com/en/articles/20001275-chatgpt-work-and-codex ให้ตรวจเอกสารปัจจุบันหากเข้าถึงได้ แต่ version ผ่านไม่ได้แปลว่า catalog หรือ entitlement ผ่าน แยก managed catalog จาก existing CLI route; custom slug ไม่เพิ่มสิทธิ์และไม่รับประกัน reasoning controls
+
+ไม่ต้องส่ง model request เพิ่มใน read-only รอบนี้ ถ้าไม่มีหลักฐาน execution ให้ระบุ NOT_RUN และเสนอการทดสอบ request สั้นบน route เดิมเป็นขั้นถัดไป เมื่อการเข้าถึง UI/status ทำไม่ได้ ให้ทำส่วนที่อ่านได้ทั้งหมดก่อน แล้วบอกเฉพาะข้อมูลที่ต้องให้ผมส่งจาก About/Providers/thread controls โดยไม่ขอ secret หรือ credential files
+
+ส่งรายงาน:
+
+- Observed facts พร้อมที่มา และ UNKNOWN/NOT_VERIFIED สำหรับส่วนที่ยังไม่รู้
+- ตาราง possible cause / evidence / confidence: version, route/account, stale catalog, picker/custom entry, execution/access error
+- การตั้งค่าที่ใช้พัฒนา FORGE ต่อได้ทันที: GPT-6.1 xhigh ที่เลือกและรันได้จริง โดยยังไม่เดาว่าเป็น Sol หรือ Astra จนพบ exact model ID
+- Next action ที่เล็กที่สุด พร้อมเหตุผลและข้อมูลที่ใช้ยืนยันว่าช่วยจริง ไม่เสนอการลบข้อมูลหรือหลายการเปลี่ยนพร้อมกัน
+- สิ่งที่ตรวจแล้ว สิ่งที่ยัง NOT_RUN และยืนยันว่าไม่มีการเปลี่ยน settings/account/cache/source ในรอบนี้
+
+ไม่ต้องรอให้ 6.2 ใช้ได้เพื่อกลับไปทำ FORGE อย่าอ้างว่าเชื่อม orchestrator/เปิด worker/เปลี่ยนโมเดลสำเร็จถ้าไม่ได้เกิดขึ้นจริง

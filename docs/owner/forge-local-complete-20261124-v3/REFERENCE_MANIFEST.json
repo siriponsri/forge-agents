@@ -1,0 +1,91 @@
+{
+  "snapshot_date": "2026-11-24",
+  "timezone": "Asia/Bangkok",
+  "files": [
+    {
+      "path": "reference/PRODUCT.md",
+      "source": "PRODUCT.md",
+      "kind": "historical_requirement_or_research_input_apply_v3_scope",
+      "sha256": "31809df1d874b6041ee194f12eb0176986e358453bd7735fb78263d63538981a"
+    },
+    {
+      "path": "reference/docs/REQUIREMENTS_INTERVIEW_TH.md",
+      "source": "docs/REQUIREMENTS_INTERVIEW_TH.md",
+      "kind": "historical_requirement_or_research_input_apply_v3_scope",
+      "sha256": "08e0060a659e8b6fdbc161334361236223ab3c8acba46e57fdcc08ef0893ebcf"
+    },
+    {
+      "path": "reference/docs/PROJECT_STORAGE_SETTINGS_TH.md",
+      "source": "docs/PROJECT_STORAGE_SETTINGS_TH.md",
+      "kind": "historical_requirement_or_research_input_apply_v3_scope",
+      "sha256": "a5dcda431309e72061d6adad2c716ee6222404aaef21105c41119e186f6cf77b"
+    },
+    {
+      "path": "reference/docs/FORGE_AI_MCP_RESEARCH_TH.md",
+      "source": "docs/FORGE_AI_MCP_RESEARCH_TH.md",
+      "kind": "historical_requirement_or_research_input_apply_v3_scope",
+      "sha256": "6a531a836e8547bc65ead285bf55d7d9b9b92b2f5cfa499e846cd68fd1b6d0e6"
+    },
+    {
+      "path": "reference/docs/projects/CA_EWS_FORGE_PILOT_TH.md",
+      "source": "docs/projects/CA_EWS_FORGE_PILOT_TH.md",
+      "kind": "historical_requirement_or_research_input_apply_v3_scope",
+      "sha256": "ec7e95840182f4b8ae35ae0d67096cd98e20723f51b94e9a849b034704ffa06d"
+    },
+    {
+      "path": "reference/docs/HERMES_ADAPTATION.md",
+      "source": "docs/HERMES_ADAPTATION.md",
+      "kind": "research_reference",
+      "sha256": "bb60e96c2016b059c1a9b81683f2815e3d26e7392700f39599e71ddc12d2e3a1"
+    },
+    {
+      "path": "reference/docs/COMPONENTS.md",
+      "source": "docs/COMPONENTS.md",
+      "kind": "research_reference",
+      "sha256": "f5d6a73172595cb8cc23ddc23c714604ffed9751948b2407f99ef933e2cda48a"
+    },
+    {
+      "path": "reference/docs/research/CA_EWS_FORGE_UX_REQUIREMENTS.md",
+      "source": "docs/research/CA_EWS_FORGE_UX_REQUIREMENTS.md",
+      "kind": "historical_requirement_or_research_input_apply_v3_scope",
+      "sha256": "c2ce795931408abbceea4728be1308afa9a73fb56ace4debfbb4102f586df746"
+    },
+    {
+      "path": "reference/docs/research/COMPUTER_USE_MCP_RESEARCH.md",
+      "source": "docs/research/COMPUTER_USE_MCP_RESEARCH.md",
+      "kind": "historical_requirement_or_research_input_apply_v3_scope",
+      "sha256": "ee57cd418c7d29244cd421edb625242d089c7f9bbc67a43c8abe856cc0db7f06"
+    },
+    {
+      "path": "reference/docs/research/COMPUTE_MCP_RESEARCH.md",
+      "source": "docs/research/COMPUTE_MCP_RESEARCH.md",
+      "kind": "historical_requirement_or_research_input_apply_v3_scope",
+      "sha256": "84e9fcfeb643abe7a7d15d7a1ee9e372867b1c9e4d39f3c75e3f9eb673ab7941"
+    },
+    {
+      "path": "reference/docs/research/PLANNING_UI_MCP_RESEARCH.md",
+      "source": "docs/research/PLANNING_UI_MCP_RESEARCH.md",
+      "kind": "historical_requirement_or_research_input_apply_v3_scope",
+      "sha256": "122fc284447796494c231069158a74f837dd69007a48bbdce9d1494fd4f5edff"
+    },
+    {
+      "path": "reference/docs/research/PROVIDER_MCP_RESEARCH.md",
+      "source": "docs/research/PROVIDER_MCP_RESEARCH.md",
+      "kind": "historical_requirement_or_research_input_apply_v3_scope",
+      "sha256": "9b73d34f898487f992a6f5d1d1754ac0b3994316dcb1d763ea7da2df3cd82b33"
+    },
+    {
+      "path": "reference/docs/research/TRAINING_MONITORING_MCP_RESEARCH.md",
+      "source": "docs/research/TRAINING_MONITORING_MCP_RESEARCH.md",
+      "kind": "historical_requirement_or_research_input_apply_v3_scope",
+      "sha256": "6536e863f4261ad518fb62746890b6384b0114189edcc05f4ae591586e70a239"
+    },
+    {
+      "path": "reference/source/CARDIAC_ARREST_MASTER_PLAN.md",
+      "source": "owner-supplied CARDIAC_ARREST_MASTER_PLAN.md",
+      "kind": "original_reference_project_plan_with_later_owner_amendments",
+      "sha256": "494f1c2634a3d3529e3992e5188c4068acd4b8e1f31b48e7dc125dff665b2ec5"
+    }
+  ],
+  "scope_amendment": "v3: Complete general FORGE localhost product plus required AG-UI, Univer and WordCraft/PdfCraft facilities. Prototype creation/execution remains deferred. Original copied references are preserved unchanged; model 6.2 visibility is a separate diagnostic."
+}

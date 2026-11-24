@@ -1,0 +1,77 @@
+{
+  "review_date": "2026-11-24",
+  "timezone": "Asia/Bangkok",
+  "status": "READ_ONLY_SOURCE_RESEARCH_NOT_RUNTIME_VERIFICATION",
+  "usage": "Observed source pins support traceability. Select compatible released packages/binaries during implementation; these are not mandatory install commands or claims of integration.",
+  "repositories": [
+    {
+      "repository": "ag-ui-protocol/ag-ui",
+      "url": "https://github.com/ag-ui-protocol/ag-ui",
+      "branch_observed": "main",
+      "commit": "c31e1e819e3a3c3b4af14add04f5b9a9a0208cae",
+      "manifest_versions": {
+        "@ag-ui/core": "1.0.5",
+        "@ag-ui/client": "1.0.5"
+      },
+      "code_license": "MIT",
+      "research": "reference/research/AGUI_INTEGRATION_RESEARCH.md"
+    },
+    {
+      "repository": "dream-num/univer",
+      "url": "https://github.com/dream-num/univer",
+      "branch_observed": "dev",
+      "commit": "abcfd79f56f218920f9d3084a3ebbc2330a5f15a",
+      "manifest_versions": {
+        "root": "1.6.1"
+      },
+      "code_license": "Apache-2.0 core; separately licensed extensions",
+      "research": "reference/research/UNIVER_INTEGRATION_RESEARCH.md"
+    },
+    {
+      "repository": "storytold/wordcraft",
+      "url": "https://github.com/storytold/wordcraft",
+      "commit": "bf2be3cad86d6c6a72d604676ab6ff3f0aa9478d",
+      "manifest_versions": {
+        "workspace": "0.18.1"
+      },
+      "code_license": "MIT OR Apache-2.0; assets and marks separate",
+      "research": "reference/research/REPORT_ENGINES_RESEARCH.md"
+    },
+    {
+      "repository": "storytold/pdfcraft",
+      "url": "https://github.com/storytold/pdfcraft",
+      "commit": "6e910675c68dd5092e889065cfe8d0274c1b2742",
+      "manifest_versions": {
+        "workspace": "0.22.0"
+      },
+      "code_license": "MIT OR Apache-2.0; assets and marks separate",
+      "research": "reference/research/REPORT_ENGINES_RESEARCH.md"
+    },
+    {
+      "repository": "pingdotgg/t3code",
+      "url": "https://github.com/pingdotgg/t3code",
+      "branch_observed": "main",
+      "commit": "8a9e8d12a86fd5640a609ea277afba948a9470dd",
+      "release_observed": "v0.1.11",
+      "issue": {
+        "number": 38609,
+        "url": "https://github.com/pingdotgg/t3code/issues/38609",
+        "state_at_review": "OPEN"
+      },
+      "pull_request": {
+        "number": 38889,
+        "url": "https://github.com/pingdotgg/t3code/pull/38889",
+        "state_at_review": "OPEN_UNMERGED",
+        "head_commit": "c880f7c759266f3930849012814a4373fd66516f"
+      },
+      "research": "reference/research/T3_MODEL_DISCOVERY_RESEARCH.md"
+    },
+    {
+      "repository": "siriponsri/forge-agents",
+      "url": "https://github.com/siriponsri/forge-agents",
+      "branch_observed": "main",
+      "commit": "efcd1322ef22c0ca2c5760a893d236870291dce6",
+      "note": "Remote source baseline observed during preparation; owner Windows HEAD/dirty files not inspected."
+    }
+  ]
+}

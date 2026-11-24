@@ -1,0 +1,31 @@
+ตรวจและแก้ FORGE ทั้งผลิตภัณฑ์ก่อนส่งเข้า main เพื่อให้ผม pull ไปทดสอบที่บ้าน
+
+อ่าน applicable AGENTS.md และ handoff v3:
+docs/owner/forge-local-complete-20261124-v3/00_START_HERE_TH.md
+docs/owner/forge-local-complete-20261124-v3/01_PRODUCT_BRIEF.md
+docs/owner/forge-local-complete-20261124-v3/03_ACCEPTANCE_MATRIX.md
+docs/owner/forge-local-complete-20261124-v3/06_LOCALHOST_SETUP_AND_HOME_UAT.md
+docs/owner/forge-local-complete-20261124-v3/08_RELEASE_MAIN_AND_HOME_HANDOFF.md
+พร้อม progress และ integration ledger ล่าสุด
+
+ตรวจ actual integrated code/diff, build และ behavior ไม่ใช้คำว่า DONE ในเอกสารแทนหลักฐาน:
+1. T3 source/server/provider lifecycle reuse จริง และไม่มีเจ้าของ turn ซ้อนกัน
+2. No-code localhost setup/start/stop/restart/diagnostics ทำงานจาก clean checkout ได้
+3. Project/team/private chat/room/plan/canvas/board/task/thread/run/artifact persist และเชื่อมกันจริง
+4. Provider/MCP/compute/notebook/storage/serving/monitoring flows ทำงาน มี connection/setup/error/retry ที่ตรง capability ไม่ใช่ปุ่มเปล่า
+5. Per-project Settings flexible และไม่ hard-code CA-EWS, Colab, developer path หรือ provider เดียว
+6. Native main Windows/guest/browser control แยก scope, Stop/Take over และ adaptive behavior มี implementation/evidence ตรงจริง
+7. TH/EN, keyboard focus, loading/empty/error states และ primary interactions ใช้ได้
+8. Source/lockfiles/migrations/notices/release docs ครบ และไม่มี secrets/session/database/cache/model binaries ที่ไม่ควรอยู่ใน Git
+9. Home machine/live-service checks ที่ยังไม่ run ถูกแยกจาก developer verification ชัดเจน
+10. AG-UI events/state/tool lifecycle ใช้ identities ถูกตัว; reload/disconnect/cancel/retry reconcile จริง ไม่ duplicate tool effects และไม่สร้าง parallel runtime/state owner
+11. Univer Sheets/Docs ทำงานฝังใน FORGE มี persisted snapshots, command/revision/undo และ human/agent attribution; native save ไม่ถูกอ้างเป็น Office exchange ที่ยังไม่มี
+12. WordCraft/PdfCraft jobs สร้างและตรวจ artifacts ได้จริง มี source/template/engine/font revisions, Thai/English fidelity, failure/partial-output handling และ progress/cancellation ตาม capability ไม่ใช่ fake progress
+13. Windows engine setup ทำจาก clean checkout ได้โดย no-code users ไม่ต้อง compile Rust มี notices และ optional Exchange/LibreOffice dependencies แยกชัด
+14. Model catalog freshness/slow refresh/error มีการตรวจจริง ไม่อ้างว่า installed T3 ถูกแก้เพราะ FORGE source ถูกแก้ และไม่ให้การขาด 6.2 กลายเป็น blocker เมื่อมีโมเดลอื่นใช้ได้
+
+สรุป findings ตามผลกระทบแล้วแก้ material findings ใน scope ตรวจซ้ำเฉพาะความเสี่ยงที่เกี่ยวข้อง ประสาน lead เรื่อง shared paths/worktree ownership
+
+ไม่สร้าง product ต้นแบบ ไม่รัน prompt ในแผน CA-EWS หาก required feature ยังไม่มี code ให้รายงาน IMPLEMENTATION_INCOMPLETE และทำต่อ หาก code พร้อมแต่ขาด external auth ให้แยกรายการ live NOT_RUN
+
+อัปเดต progress และ release readiness พร้อม evidence จริง ตอบภาษาไทย งานนี้เป็น review+fix ยังไม่ใช่การอ้างว่าทดสอบ flow ที่บ้านผ่านแล้ว
