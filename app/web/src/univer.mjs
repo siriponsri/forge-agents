@@ -1,6 +1,7 @@
 // Public APIs verified against published @univerjs/* 1.6.1 declarations and source.
 // Only the preset for the active document kind is registered on each instance.
-import { assertDurableSnapshot, boundedSheetEdit } from "./api.mjs";
+import { boundedSheetEdit } from "./api.mjs";
+import { createProjectImageIO, imageAssets, insertProjectImage, MAX_IMAGE_BYTES, resolveSheet, snapshotWithImages } from './office-drawings.mjs';
 export const PACKAGE_VERSION = "1.6.1";
 export function newSnapshot(kind, name) {
   const id = crypto.randomUUID();
@@ -46,9 +47,9 @@ export async function mountEditor(container, record, onChange) {
     throw new Error(
       `Snapshot requires Univer ${record.packageVersion}; installed ${PACKAGE_VERSION}. Download it for recovery or open with the matching version.`,
     );
-  const { createUniver, LocaleType, defaultTheme } =
+  const { createUniver, LocaleType, defaultTheme, mergeLocales, IImageIoService } =
     await import("@univerjs/presets");
-  let preset, locale;
+  let preset, locale, drawingPreset, drawingLocale, ImageIoService, UniverDrawingPlugin;
   if (record.kind === "sheet") {
     const [module, language] = await Promise.all([
       import("@univerjs/preset-sheets-core"),
@@ -61,6 +62,15 @@ export async function mountEditor(container, record, onChange) {
       toolbar: true,
     });
     locale = language.default;
+    const [drawing, drawingLanguage] = await Promise.all([
+      import('@univerjs/preset-sheets-drawing'),
+      import('@univerjs/preset-sheets-drawing/locales/en-US'),
+      import('@univerjs/preset-sheets-drawing/lib/index.css'),
+    ]);
+    drawingPreset = drawing.UniverSheetsDrawingPreset({ allowImageSize: MAX_IMAGE_BYTES });
+    drawingLocale = drawingLanguage.default;
+    ImageIoService = drawing.ImageIoService;
+    UniverDrawingPlugin = drawing.UniverDrawingPlugin;
   } else if (record.kind === "doc") {
     const [module, language] = await Promise.all([
       import("@univerjs/preset-docs-core"),
@@ -73,7 +83,29 @@ export async function mountEditor(container, record, onChange) {
       toolbar: true,
     });
     locale = language.default;
+    const [drawing, drawingLanguage] = await Promise.all([
+      import('@univerjs/preset-docs-drawing'),
+      import('@univerjs/preset-docs-drawing/locales/en-US'),
+      import('@univerjs/preset-docs-drawing/lib/index.css'),
+    ]);
+    drawingPreset = drawing.UniverDocsDrawingPreset();
+    drawingLocale = drawingLanguage.default;
+    ImageIoService = drawing.ImageIoService;
+    UniverDrawingPlugin = drawing.UniverDrawingPlugin;
   } else throw new Error("Unsupported native document kind.");
+  const imageIO = createProjectImageIO(ImageIoService, {
+    projectId: record.projectId,
+    assets: imageAssets(record.snapshot, record.projectId),
+  });
+  // Configure the preset's existing drawing plugin through its public config.
+  // createUniver.override only covers core dependencies; image I/O is plugin-owned.
+  drawingPreset = { ...drawingPreset, plugins: drawingPreset.plugins.map(entry => {
+    const [plugin, config = {}] = Array.isArray(entry) ? entry : [entry];
+    return plugin === UniverDrawingPlugin ? [plugin, { ...config, allowImageSize: MAX_IMAGE_BYTES,
+      override: [...(config.override || []).filter(([id]) => id !== IImageIoService),
+        [IImageIoService, { useValue: imageIO }]],
+    }] : entry;
+  }) };
   const accent=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||defaultTheme.primary[500];
   const theme = {
     ...defaultTheme,
@@ -84,13 +116,22 @@ export async function mountEditor(container, record, onChange) {
       700: accent,
     },
   };
-  const { univer, univerAPI } = createUniver({
-    locale: LocaleType.EN_US,
-    locales: { [LocaleType.EN_US]: locale },
-    theme,
-    presets: [preset],
-  });
+  let univer, univerAPI;
   try {
+    const drawingLocaleKey = record.kind === 'sheet' ? 'sheets-drawing-ui' : 'docs-drawing-ui';
+    ({ univer, univerAPI } = createUniver({
+      locale: LocaleType.EN_US,
+      locales: { [LocaleType.EN_US]: mergeLocales(locale, drawingLocale, {
+        [drawingLocaleKey]: {
+          ...drawingLocale[drawingLocaleKey],
+          'update-status': { ...drawingLocale[drawingLocaleKey]['update-status'],
+            invalidImage: 'Image could not be uploaded. Check the PNG/JPEG file and connection, then retry.',
+          },
+        },
+      }) },
+      theme,
+      presets: [preset, drawingPreset],
+    }));
     const snapshot = structuredClone(
       record.snapshot || newSnapshot(record.kind, record.name),
     );
@@ -100,17 +141,23 @@ export async function mountEditor(container, record, onChange) {
         : univerAPI.createDocument(snapshot);
     if (!unit || typeof unit.save !== "function")
       throw new Error("Native snapshot API is unavailable.");
-    let timeout;
+    let timeout, disposed = false;
     const subscription = univerAPI.addEvent(
       univerAPI.Event.CommandExecuted,
       () => {
         clearTimeout(timeout);
-        timeout = setTimeout(onChange, 80);
+        if (!disposed) timeout = setTimeout(onChange, 80);
       },
     );
     return {
-      snapshot: () => assertDurableSnapshot(structuredClone(unit.save())),
-      rawSnapshot: () => structuredClone(unit.save()),
+      snapshot: () => snapshotWithImages(unit.save(), [...imageIO.assets.values()], record.projectId),
+      rawSnapshot: () => snapshotWithImages(unit.save(), [...imageIO.assets.values()], record.projectId, { validate: false }),
+      uploadImage: (file) => imageIO.uploadImage(file),
+      insertImage: async (file, options) => {
+        const result = await insertProjectImage({ io: imageIO, unit, kind: record.kind, file, options });
+        if (!disposed) onChange();
+        return result;
+      },
       undo: () => (record.kind === "doc" ? unit.undo() : univerAPI.undo()),
       redo: () => (record.kind === "doc" ? unit.redo() : univerAPI.redo()),
       dark: (value) => {
@@ -121,7 +168,7 @@ export async function mountEditor(container, record, onChange) {
       apply: (edit) => {
         if (edit.kind === "sheet.setValues" && record.kind === "sheet") {
           const parsed = boundedSheetEdit(edit.range, edit.text);
-          const sheet = unit.getActiveSheet();
+          const sheet = resolveSheet(unit, edit.sheetId);
           if (!sheet || typeof sheet.getRange !== "function")
             throw new Error("Active sheet is unavailable.");
           // One public command gives a single live undo boundary for the batch.
@@ -158,14 +205,18 @@ export async function mountEditor(container, record, onChange) {
         throw new Error("Unsupported bounded edit for this document kind.");
       },
       dispose: () => {
+        if (disposed) return;
+        disposed = true;
         clearTimeout(timeout);
         subscription.dispose();
+        imageIO.dispose();
         univerAPI.disposeUnit(unit.getId());
         univer.dispose();
       },
     };
   } catch (error) {
-    univer.dispose();
+    imageIO.dispose();
+    univer?.dispose();
     throw error;
   }
 }
