@@ -4,6 +4,15 @@ import {Field,Heading,Badge,Json,Empty} from './ui.jsx';
 
 const types=['working','episodic','semantic','procedural','collective','owner'];
 const kinds=['project','owner','team','agent','session','task'];
+// Actual domain records accepted by the host authority; no typed UUIDs or
+// invented session/team identities. Owner identity is the fixed local authority.
+export function memoryScopeChoices(state,projectId,kind) {
+  const project=(state.projects??[]).find(p=>p.id===projectId);if(!project)return [];
+  if(kind==='project')return [{id:project.id,name:project.name}];
+  if(kind==='owner')return [{id:'local-owner',name:'Local Owner'}];
+  if(kind==='team')return [{id:project.id,name:project.name+' · project team'},...scoped(state,'conversations',projectId).filter(c=>c.kind==='team').map(c=>({id:c.id,name:c.name}))];
+  return scoped(state,{agent:'bots',session:'conversations',task:'tasks'}[kind]??'',projectId).map(r=>({id:r.id,name:r.name??r.title??r.id}));
+}
 const timestamp=value=>value?new Date(value).toISOString():null;
 const localTime=value=>value?new Date(Date.parse(value)-new Date(value).getTimezoneOffset()*60000).toISOString().slice(0,16):'';
 
@@ -39,9 +48,9 @@ function MemoryEditor({t,item,state,projectId,busy,act}) {
     </form>
     <button disabled={busy} onClick={()=>write('update',{patch:{pinned:!item.pinned}})}>{item.pinned?t('เลิกปักหมุด','Unpin'):t('ปักหมุด','Pin')}</button>
     <fieldset><legend>{t('แชร์แบบอ่านได้เท่านั้น','Read-only sharing')}</legend>
-      {shares.map(s=><div key={JSON.stringify(s)}>{s.kind}: {s.id} <button type="button" onClick={()=>setShares(shares.filter(x=>JSON.stringify(x)!==JSON.stringify(s)))}>{t('นำออก','Remove')}</button></div>)}
-      <div className="form-grid"><Field label={t('ขอบเขตปลายทาง','Destination scope')}><select value={shareKind} onChange={e=>setShareKind(e.target.value)}>{kinds.map(k=><option key={k}>{k}</option>)}</select></Field><Field label={t('รหัสปลายทาง','Destination ID')}><input maxLength={200} value={shareId} onChange={e=>setShareId(e.target.value)}/></Field></div>
-      <button type="button" disabled={busy||!shareId||shares.length>=12} onClick={()=>{const next={projectId,kind:shareKind,id:shareKind==='project'?projectId:shareId};if(!shares.some(x=>JSON.stringify(x)===JSON.stringify(next))&&JSON.stringify(next)!==ownScope)setShares([...shares,next]);setShareId('');}}>{t('เพิ่มขอบเขต','Add scope')}</button>
+      {shares.map(s=><div key={JSON.stringify(s)}>{s.kind}: {memoryScopeChoices(state,projectId,s.kind).find(x=>x.id===s.id)?.name??t('ไม่พบรายการเดิม','Record unavailable')} <button type="button" onClick={()=>setShares(shares.filter(x=>JSON.stringify(x)!==JSON.stringify(s)))}>{t('นำออก','Remove')}</button></div>)}
+      <div className="form-grid"><Field label={t('ขอบเขตปลายทาง','Destination scope')}><select value={shareKind} onChange={e=>{setShareKind(e.target.value);setShareId('');}}>{kinds.map(k=><option key={k}>{k}</option>)}</select></Field><Field label={t('รายการปลายทาง','Share destination')}><select value={shareId} onChange={e=>setShareId(e.target.value)}><option value="">{t('เลือกรายการที่มีอยู่จริง','Choose an existing record')}</option>{memoryScopeChoices(state,projectId,shareKind).map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select></Field></div>
+      <button type="button" disabled={busy||!shareId||shares.length>=12} onClick={()=>{const next={projectId,kind:shareKind,id:shareId};if(!shares.some(x=>JSON.stringify(x)===JSON.stringify(next))&&JSON.stringify(next)!==ownScope)setShares([...shares,next]);setShareId('');}}>{t('เพิ่มขอบเขต','Add scope')}</button>
       <button type="button" disabled={busy} onClick={()=>write('update',{patch:{shares}})}>{t('บันทึกการแชร์','Save sharing')}</button>
       <p className="help">{t('บริการตรวจสิทธิ์แชร์ทั้งต้นทางและปลายทาง ผู้รับไม่ได้สิทธิ์เขียน','The server checks sharing grants on source and destination. Recipients receive no write permission.')}</p>
     </fieldset>
@@ -51,20 +60,72 @@ function MemoryEditor({t,item,state,projectId,busy,act}) {
   </section>;
 }
 
+function OwnerEditor({t,item,state,busy,act}) {
+  const [title,setTitle]=useState(item.title),[content,setContent]=useState(item.content),[project,setProject]=useState(''),[forget,setForget]=useState(false),[expiry,setExpiry]=useState(localTime(item.expiresAt));
+  const current=item.sharing.find(g=>g.projectId===project);
+  const bind={id:item.id,expectedRevision:item.revision};
+  return <section className="panel"><h2>{t('ความจำต้นฉบับของ Owner','Owner source memory')}</h2><p>r{item.revision} · {date(item.updatedAt)} · <Badge>{item.expired?'expired':item.stale?'stale':'unverified'}</Badge></p>
+    <form onSubmit={e=>{e.preventDefault();act('update',{...bind,patch:{title,content,expiresAt:timestamp(expiry)}});}}>
+      <Field label={t('ชื่อเรื่อง Owner','Owner title')}><input required maxLength={240} value={title} onChange={e=>setTitle(e.target.value)}/></Field>
+      <Field label={t('เนื้อหา Owner','Owner content')}><textarea rows={6} required maxLength={16000} value={content} onChange={e=>setContent(e.target.value)}/></Field>
+      <Field label={t('วันหมดอายุ','Expiry')}><input type="datetime-local" value={expiry} onChange={e=>setExpiry(e.target.value)}/></Field>
+      <p className="help">{t('แก้ไขแล้วทุกโครงการต้องได้รับการแชร์ revision ใหม่อีกครั้ง สิทธิ์เดิมไม่ย้ายตามอัตโนมัติ','After an edit, each project needs explicit sharing of the new revision. Existing grants do not follow edits automatically.')}</p>
+      <button className="primary" disabled={busy}>{t('บันทึก revision ของ Owner','Save Owner revision')}</button>
+    </form>
+    <button disabled={busy} onClick={()=>act('update',{...bind,patch:{pinned:!item.pinned}})}>{item.pinned?t('เลิกปักหมุด','Unpin Owner memory'):t('ปักหมุด','Pin Owner memory')}</button>
+    <fieldset><legend>{t('แชร์ให้โครงการที่เลือกเท่านั้น','Explicit project sharing')}</legend>
+      {!item.sharing.length&&<p>{t('ยังไม่ได้แชร์ให้โครงการใด','Not shared with any project.')}</p>}
+      {item.sharing.map(g=><div key={g.projectId}><strong>{g.projectName}</strong> · r{g.sourceRevision} · <Badge>{g.effective?'shared':g.status==='revoked'?'revoked':'needs-reshare'}</Badge>{g.status==='active'&&<button disabled={busy} onClick={()=>act('revoke',{...bind,projectId:g.projectId,expectedGrantRevision:g.grantRevision})}>{t('ถอนสิทธิ์','Revoke')} · {g.projectName}</button>}</div>)}
+      <form onSubmit={e=>{e.preventDefault();act('grant',{...bind,projectId:project,expectedGrantRevision:current?.grantRevision??0});}}>
+        <Field label={t('โครงการที่จะได้รับสิทธิ์','Share with project')}><select required value={project} onChange={e=>setProject(e.target.value)}><option value="">{t('เลือกชื่อโครงการ','Choose a project by name')}</option>{(state.projects??[]).map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></Field>
+        <button disabled={busy||!project||item.expired}>{t('แชร์ revision นี้ให้โครงการที่เลือก','Share this revision with selected project')}</button>
+      </form>
+      <p className="help">{t('ไม่มีสิทธิ์อ่านส่วนกลางโดยอัตโนมัติ โครงการอ่านได้เฉพาะ revision ที่ Owner แชร์ ถอนสิทธิ์แล้ว context refs เดิมใช้ไม่ได้ทันที','No automatic global read. Projects see only an explicitly shared revision. Revocation immediately invalidates existing context references.')}</p>
+    </fieldset>
+    <details><summary>{t('ที่มาและบันทึกการแชร์','Provenance & sharing receipts')}</summary><Json value={{id:item.id,scope:item.scope,revision:item.revision,origin:item.origin,sourceRefs:item.sourceRefs,createdAt:item.createdAt,updatedAt:item.updatedAt,sharing:item.sharing,trust:item.trust}}/></details>
+    <fieldset><legend>{t('ลืมความจำส่วนกลาง','Forget central memory')}</legend><label><input type="checkbox" checked={forget} onChange={e=>setForget(e.target.checked)}/> {t('ลบต้นฉบับและยกเลิก refs ของทุกโครงการ','Delete source and invalidate every project reference')}</label><button disabled={busy||!forget} onClick={()=>act('forget',bind)}>{t('ลืมความจำ Owner','Forget Owner memory')}</button></fieldset>
+  </section>;
+}
+
+function OwnerMemoryStudio({t,state,run,busy,onProject}) {
+  const [data,setData]=useState(null),[query,setQuery]=useState(''),[includeStale,setStale]=useState(false),[selected,setSelected]=useState(''),[title,setTitle]=useState(''),[content,setContent]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState('');
+  const pending=useRef(new Map()),epoch=useRef(0);
+  const refresh=async()=>{const own=epoch.current;const result=await request('/api/owner-memory/'+(query.trim()?'recall':'list'),{...(query.trim()?{query}:{}),includeStale,limit:100});if(own===epoch.current)setData(result);return result;};
+  useEffect(()=>{refresh().catch(e=>setError(e.message));return()=>{epoch.current++;};},[]);
+  const act=(method,body,onDone)=>run(async()=>{
+    setError('');setNotice('');const key=JSON.stringify({method,body}),write=['remember','update','forget','grant','revoke'].includes(method),id=write?(pending.current.get(key)??operationId()):undefined;
+    if(write)pending.current.set(key,id);
+    try{
+      const result=await request('/api/owner-memory/'+method,{...body,...(write?{operationId:id}:{})});pending.current.delete(key);
+      if(method==='export'){const url=URL.createObjectURL(new Blob([JSON.stringify(result,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='forge-owner-memory.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+      onDone?.(result);setNotice(t('บันทึกผลแล้ว','Owner operation completed'));await refresh();return result;
+    }catch(e){setError(e.message);if(e.status)pending.current.delete(key);throw e;}
+  });
+  const item=data?.items.find(r=>r.id===selected);
+  return <div className="memory-surface"><Heading title={t('ความจำส่วนกลางของ Owner','Central Owner memory')} description={t('ต้นฉบับเดียวข้ามโครงการ เริ่มต้นเป็นส่วนตัว แชร์ได้เฉพาะเมื่อ Owner เลือกชื่อโครงการอย่างชัดเจน','One canonical source across projects. Private by default; sharing requires the Owner to select a project explicitly.')}><button onClick={onProject}>{t('กลับความจำโครงการ','Project memory')}</button></Heading>
+    {error&&<p role="alert">{error}</p>}{notice&&<p role="status">{notice}</p>}
+    <section className="panel"><form onSubmit={e=>{e.preventDefault();run(refresh);}}><Field label={t('ค้นหาความจำ Owner','Search Owner memory')}><input maxLength={1000} value={query} onChange={e=>setQuery(e.target.value)}/></Field><label><input type="checkbox" checked={includeStale} onChange={e=>setStale(e.target.checked)}/> {t('รวมข้อมูลเก่า','Include stale Owner memories')}</label><button disabled={busy}>{t('ค้นหา Owner','Search Owner')}</button></form></section>
+    {data&&<div className="serving-layout"><section className="panel"><h2>{t('รายการส่วนกลาง','Central records')}</h2>{!data.items.length&&<Empty>{t('ยังไม่มีความจำส่วนกลาง','No central memories yet.')}</Empty>}<div className="collection">{data.items.map(r=><button key={r.id} className={r.id===selected?'selected':''} onClick={()=>setSelected(r.id)}><strong>{r.pinned?'★ ':''}{r.title}</strong><small>r{r.revision} · {r.sharing.filter(g=>g.effective).length} {t('โครงการที่แชร์','shared projects')}</small></button>)}</div><button onClick={()=>setSelected('')}>{t('เพิ่มความจำ Owner','New Owner memory')}</button><button disabled={busy} onClick={()=>act('export',{})}>{t('ส่งออกความจำ Owner','Export Owner memory')}</button></section>
+      {item?<OwnerEditor key={item.id+':'+item.revision+':'+item.sharing.map(g=>g.grantId).join(',')} {...{t,item,state,busy,act}}/>:<section className="panel"><form onSubmit={e=>{e.preventDefault();act('remember',{title,content},r=>{setSelected(r.id);setTitle('');setContent('');});}}><h2>{t('บันทึกความจำส่วนกลาง','Remember centrally')}</h2><Field label={t('ชื่อเรื่อง Owner','Owner title')}><input required maxLength={240} value={title} onChange={e=>setTitle(e.target.value)}/></Field><Field label={t('เนื้อหา Owner','Owner content')}><textarea required rows={6} maxLength={16000} value={content} onChange={e=>setContent(e.target.value)}/></Field><p className="help">{t('ข้อมูลไม่ใช่คำสั่งหรือการอนุมัติ ห้ามรหัสลับและเหตุผลภายในโมเดล บันทึกใหม่ยังไม่แชร์ให้ใคร','Content is DATA, never instructions or approval. No credentials or hidden reasoning. New memories are shared with nobody.')}</p><button className="primary" disabled={busy}>{t('บันทึกส่วนตัวก่อน','Save privately')}</button></form></section>}
+    </div>}
+  </div>;
+}
+
 function BackendForm({t,status,busy,act}) {
   const [backend,setBackend]=useState(status.backend.backend),[embeddingModel,setEmbedding]=useState(status.backend.embeddingModel??'nomic-embed-text'),[extractionModel,setExtraction]=useState(status.backend.extractionModel??'llama3.2'),[dimensions,setDimensions]=useState(status.backend.dimensions??768),[ollamaUrl,setUrl]=useState(status.backend.ollamaUrl??'http://127.0.0.1:11434');
   return <details><summary>{t('ตั้งค่าระบบความจำในเครื่อง','Local backend configuration')}</summary><form onSubmit={e=>{e.preventDefault();act('configure',{expectedRevision:status.backendRevision,config:backend==='keyword'?{backend}:{backend,vectorStore:'qdrant-local-disk',embeddingModel,extractionModel,dimensions:Number(dimensions),ollamaUrl}});}}>
     <Field label={t('ระบบค้นหา','Search backend')}><select value={backend} onChange={e=>setBackend(e.target.value)}><option value="keyword">SQLite FTS5 · {t('ไม่ใช้โมเดลหรือบัญชีภายนอก','No model or account needed')}</option><option value="mem0">Mem0 OSS + Qdrant local</option></select></Field>
     {backend==='mem0'&&<><Field label={t('ที่อยู่ Ollama ในเครื่อง','Local Ollama URL')}><input type="url" required value={ollamaUrl} onChange={e=>setUrl(e.target.value)}/></Field><Field label={t('โมเดล embedding ที่ติดตั้งแล้ว','Installed embedding model')}><input required maxLength={200} value={embeddingModel} onChange={e=>setEmbedding(e.target.value)}/></Field><Field label={t('จำนวนมิติ embedding','Embedding dimensions')}><input type="number" min={8} max={8192} required value={dimensions} onChange={e=>setDimensions(e.target.value)}/></Field><Field label={t('โมเดลสกัดบทเรียน (ไม่เรียกอัตโนมัติ)','Extraction model (never called automatically)')}><input required maxLength={200} value={extractionModel} onChange={e=>setExtraction(e.target.value)}/></Field><p className="help">{t('ใช้โมเดลที่ติดตั้งไว้แล้ว ไม่ดาวน์โหลดโมเดล ไม่เรียก API แบบเสียเงิน Qdrant เก็บเฉพาะดัชนีที่สร้างใหม่ได้','Uses installed models; no automatic model download or paid API calls. Qdrant contains only disposable indexes.')}</p></>}
     <button disabled={busy}>{t('บันทึกการตั้งค่า','Save configuration')}</button>
-  </form>{status.backend.backend==='mem0'&&<button disabled={busy} onClick={()=>act('setup',{})}>{t('ติดตั้งไลบรารี Mem0 แยกจากระบบหลัก','Set up isolated Mem0 dependencies')}</button>}<button disabled={busy} onClick={()=>act('health',{})}>{t('??????????????????????','Check local backend health')}</button><button disabled={busy} onClick={()=>act('rebuild',{})}>{t('สร้างดัชนีใหม่จาก event store','Rebuild index from event store')}</button><p className="help">{t('ต้องติดตั้ง Python ในเครื่องก่อน การติดตั้งไลบรารีไม่ใช่ผลทดสอบโมเดล','Python must be installed locally. Dependency setup does not qualify the model.')}</p></details>;
+  </form>{status.backend.backend==='mem0'&&<button disabled={busy} onClick={()=>act('setup',{})}>{t('ติดตั้งไลบรารี Mem0 แยกจากระบบหลัก','Set up isolated Mem0 dependencies')}</button>}<button disabled={busy} onClick={()=>act('health',{})}>{t('ตรวจระบบค้นหาในเครื่อง','Check local backend health')}</button><button disabled={busy} onClick={()=>act('rebuild',{})}>{t('สร้างดัชนีใหม่จาก event store','Rebuild index from event store')}</button><p className="help">{t('ต้องติดตั้ง Python ในเครื่องก่อน การติดตั้งไลบรารีไม่ใช่ผลทดสอบโมเดล','Python must be installed locally. Dependency setup does not qualify the model.')}</p></details>;
 }
 
 export default function Memory({t=(th,en)=>en,state={},projectId,run=fn=>fn(),busy=false}) {
+  const [central,setCentral]=useState(false);
   const [kind,setKind]=useState('project'),[scopeId,setScopeId]=useState(''),[query,setQuery]=useState(''),[backend,setBackend]=useState('keyword'),[includeStale,setIncludeStale]=useState(false),[data,setData]=useState(null),[status,setStatus]=useState(null),[selected,setSelected]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState('');
   const pending=useRef(new Map()),epoch=useRef(0),scope={projectId,kind,id:kind==='project'?projectId:scopeId},valid=!!projectId&&!!scope.id;
   const refresh=async()=>{if(!valid)return;const own=epoch.current;const [list,info]=await Promise.all([request('/api/memory/'+(query.trim()?'recall':'list'),{projectId,scope,...(query.trim()?{query,backend}:{}),includeStale,limit:100}),request('/api/memory/status',{projectId,scope})]);if(own===epoch.current){setData(list);setStatus(info);}return list;};
-  useEffect(()=>{epoch.current++;setData(null);setStatus(null);setSelected('');setError('');if(valid)refresh().catch(e=>setError(e.message));return()=>{epoch.current++;};},[projectId,kind,scopeId]);
+  useEffect(()=>{epoch.current++;setData(null);setStatus(null);setSelected('');setError('');if(valid&&!central)refresh().catch(e=>setError(e.message));return()=>{epoch.current++;};},[projectId,kind,scopeId,central]);
   const act=(method,body,onDone)=>run(async()=>{
     setError('');setNotice('');const own=epoch.current,key=JSON.stringify({projectId,scope,method,body}),mutating=['remember','update','forget','configure','retention','proposeLesson'].includes(method);
     const id=mutating?(pending.current.get(key)??operationId()):undefined;if(mutating)pending.current.set(key,id);
@@ -76,8 +137,9 @@ export default function Memory({t=(th,en)=>en,state={},projectId,run=fn=>fn(),bu
     } catch(e){if(own===epoch.current)setError(e.message);if(e.status)pending.current.delete(key);throw e;}
   });
   const item=data?.items.find(x=>x.id===selected);
-  return <div className="memory-surface"><Heading title={t('Memory Studio · ความจำ','Memory Studio')} description={t('ความจำถาวรที่ใช้ข้ามผู้ให้บริการได้ เก็บข้อมูลหลักใน FORGE และค้นหาในเครื่อง','Persistent memory across providers. FORGE owns canonical records; retrieval runs locally.')}><button disabled={busy||!valid} onClick={()=>run(refresh)}>{t('โหลดใหม่','Refresh')}</button></Heading>
-    <section className="panel"><div className="form-grid"><Field label={t('ขอบเขต','Scope')}><select value={kind} onChange={e=>{setKind(e.target.value);setScopeId('');}}>{kinds.map(k=><option key={k}>{k}</option>)}</select></Field>{kind!=='project'&&<Field label={t('รหัสขอบเขตที่ได้รับอนุญาต','Authorized scope ID')}><input required maxLength={200} value={scopeId} onChange={e=>setScopeId(e.target.value)} list={kind==='task'?'memory-task-ids':kind==='agent'?'memory-agent-ids':undefined}/></Field>}</div><datalist id="memory-task-ids">{scoped(state,'tasks',projectId).map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</datalist><datalist id="memory-agent-ids">{scoped(state,'bots',projectId).map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</datalist>
+  if(central)return <OwnerMemoryStudio {...{t,state,run,busy}} onProject={()=>setCentral(false)}/>;
+  return <div className="memory-surface"><Heading title={t('Memory Studio · ความจำ','Memory Studio')} description={t('ความจำถาวรที่ใช้ข้ามผู้ให้บริการได้ เก็บข้อมูลหลักใน FORGE และค้นหาในเครื่อง','Persistent memory across providers. FORGE owns canonical records; retrieval runs locally.')}><button onClick={()=>setCentral(true)}>{t('ความจำส่วนกลางของ Owner','Central Owner memory')}</button><button disabled={busy||!valid} onClick={()=>run(refresh)}>{t('โหลดใหม่','Refresh')}</button></Heading>
+    <section className="panel"><div className="form-grid"><Field label={t('ขอบเขต','Scope')}><select value={kind} onChange={e=>{setKind(e.target.value);setScopeId('');}}>{kinds.map(k=><option key={k}>{k}</option>)}</select></Field>{kind!=='project'&&<Field label={t('รายการในขอบเขต','Scope record')}><select required value={scopeId} onChange={e=>setScopeId(e.target.value)}><option value="">{t('เลือกรายการที่มีอยู่จริง','Choose an existing record')}</option>{memoryScopeChoices(state,projectId,kind).map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select></Field>}</div>
       <form onSubmit={e=>{e.preventDefault();run(refresh);}}><Field label={t('ค้นหาภาษาไทยหรืออังกฤษ','Search Thai or English')}><input maxLength={1000} value={query} onChange={e=>setQuery(e.target.value)}/></Field><Field label={t('วิธีค้นหา','Retrieval method')}><select value={backend} onChange={e=>setBackend(e.target.value)}><option value="keyword">SQLite FTS5</option><option value="mem0">Mem0 {t('(ต้องตั้งค่าก่อน)','(requires setup)')}</option></select></Field><label><input type="checkbox" checked={includeStale} onChange={e=>setIncludeStale(e.target.checked)}/> {t('รวมข้อมูลเก่า','Include stale information')}</label><button disabled={busy||!valid}>{t('ค้นหา','Search')}</button></form>
     </section>
     {error&&<p role="alert">{error}</p>}{notice&&<p role="status">{notice}</p>}

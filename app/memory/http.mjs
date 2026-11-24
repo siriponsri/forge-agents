@@ -25,3 +25,25 @@ export function createMemoryHttpHandler({service,resolveCaller}) {
     return true;
   };
 }
+
+// Central Owner writes are GUI/Owner-only; providers use the separately bound
+// projectContext/resolveProjectRefs seam. No lifecycle hook is remotely callable.
+export function createOwnerMemoryHttpHandler({service,resolveCaller}) {
+  if(typeof resolveCaller!=='function')throw new TypeError('Trusted Owner request authorization resolver required');
+  const allowed=new Set(['remember','update','forget','grant','revoke','list','recall','export','status']);
+  return async(req,res)=>{
+    const url=new URL(req.url,'http://127.0.0.1');if(!url.pathname.startsWith('/api/owner-memory/'))return false;
+    const send=(status,value)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
+    try{
+      const method=url.pathname.slice('/api/owner-memory/'.length);
+      if(!allowed.has(method))fail('MEMORY_NOT_FOUND','Owner memory operation not found',404);
+      if(req.method!=='POST'||url.search)fail('MEMORY_METHOD','Use POST with a JSON body',405);
+      const caller=await resolveCaller(req);if(!caller)fail('MEMORY_FORBIDDEN','Authenticated Owner session required',403);
+      if(!/^application\/json(?:;|$)/i.test(req.headers['content-type']??''))fail('MEMORY_CONTENT_TYPE','JSON body required',415);
+      const chunks=[];let length=0;for await(const chunk of req){length+=chunk.length;if(length>65536)fail('MEMORY_LIMIT','Owner memory request exceeds 64 KiB',413);chunks.push(chunk);}
+      let input;try{input=JSON.parse(Buffer.concat(chunks).toString('utf8'));}catch{fail('MEMORY_VALIDATION','Invalid JSON body');}
+      send(200,await service[method](input,caller));
+    }catch(e){const safe=e.code?.startsWith('MEMORY_');send(safe?e.status??400:500,{error:{code:safe?e.code:'MEMORY_INTERNAL',message:safe?e.message:'Owner memory request failed'}});}
+    return true;
+  };
+}

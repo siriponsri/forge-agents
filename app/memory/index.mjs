@@ -4,6 +4,7 @@ import { performance } from 'node:perf_hooks';
 import { openMemoryIndex } from './sqlite-index.mjs';
 import { MEMORY_TYPES, TRUST, scope, sameScope, authorizeExact, makeScopeAuthorizer, text, object, safeContent, projection, validateRefs, stampView, digest, fail } from './contracts.mjs';
 import { validateBackendConfig, createMem0Adapter } from './mem0-adapter.mjs';
+import { purgeAllMemoryVectorCaches } from './cache.mjs';
 export { MEMORY_TYPES, makeScopeAuthorizer };
 
 const commands={
@@ -27,11 +28,12 @@ const accessible=(r,s)=>sameScope(r.scope,s)||r.shares.some(x=>sameScope(x,s));
 
 export async function createMemoryService({store,dataDir,authorize,adapter,adaptive,now=()=>new Date().toISOString(),mem0Factory=createMem0Adapter}={}) {
   if(!store?.read||!store?.transaction||!path.isAbsolute(dataDir??''))throw new TypeError('Durable FORGE store and absolute dataDir required');
-  const index=await openMemoryIndex(dataDir), adapters=new Map(); let vectorPending=Promise.resolve(), closed=false;
-  const measurements=new WeakMap();
+  const index=await openMemoryIndex(dataDir), adapters=new Map(); let vectorPending=Promise.resolve(), closed=false,restoring=false,vectorsSuspended=false;
+  let measurements=new WeakMap();
   const metricMap=caller=>{if(!measurements.has(caller))measurements.set(caller,new Map());return measurements.get(caller);};
   const requireAccess=(action,input,caller,s=store.read())=>{
     if(closed)fail('MEMORY_CLOSED','Memory service is closed',503);
+    if(restoring)fail('MEMORY_RESTORING','Memory recovery is in progress',503);
     object(input,commands[action]??[]);safeContent(input);text(input.projectId,'projectId',200);const target=scope(input.scope,input.projectId);
     if(!s.projects.some(p=>p.id===target.projectId))fail('MEMORY_SCOPE','Unknown project',403);
     authorizeExact(authorize,['remember','update','forget','retention'].includes(action)?'write':['recall','list','context','resolveRefs','status','backend','health'].includes(action)?'read':action,target,caller,s);
@@ -54,6 +56,7 @@ export async function createMemoryService({store,dataDir,authorize,adapter,adapt
   };
   async function derived() {
     index.sync(store.read());
+    if(vectorsSuspended){const state=store.read(),projects=new Set(state.events.filter(e=>e.type==='memory.backend').map(e=>e.projectId));return adapter||[...projects].some(id=>configRecord(state,id)?.config.backend==='mem0')?[{code:'MEMORY_VECTOR_REBUILD_REQUIRED',message:'Optional vector cache cleared after restore. Explicitly rebuild to enable model-backed retrieval.'}]:[];}
     const task=vectorPending.then(async()=>{
       const s=store.read(); const active=all(s).filter(r=>!expired(r,now())); const errors=[];
       const projects=new Set([...adapters.keys(),...s.events.filter(e=>e.type==='memory.backend').map(e=>e.projectId)]);
@@ -101,6 +104,7 @@ export async function createMemoryService({store,dataDir,authorize,adapter,adapt
       text(input.query,'query',1000);safeContent(input.query);index.sync(s);
       if(input.backend && !['keyword','mem0'].includes(input.backend))fail('MEMORY_VALIDATION','Unsupported retrieval backend');
       if(input.backend==='mem0') {
+        if(vectorsSuspended)fail('MEMORY_VECTOR_REBUILD_REQUIRED','Explicitly rebuild the optional backend after restore',409);
         let a=adapter??adapters.get(target.projectId);
         if(!a){const config=configRecord(s,target.projectId)?.config;if(config?.backend==='mem0'){a=await mem0Factory({dataDir:path.join(dataDir,'memory',digest(target.projectId)),config});adapters.set(target.projectId,a);}}
         if(!a)fail('MEMORY_VECTOR_UNAVAILABLE','Set up the optional backend or choose keyword search',503);
@@ -174,7 +178,7 @@ export async function createMemoryService({store,dataDir,authorize,adapter,adapt
       const prior=adapters.get(target.projectId);if(prior){adapters.delete(target.projectId);await prior.close?.();}
       return {id:e.id,config,revision:e.revision};
     });},
-    async rebuild(input,caller){requireAccess('rebuild',input,caller);index.sync(store.read(),true);const warnings=await derived();return {rebuilt:true,derived:true,warnings};},
+    async rebuild(input,caller){requireAccess('rebuild',input,caller);vectorsSuspended=false;index.sync(store.read(),true);const warnings=await derived();return {rebuilt:true,derived:true,warnings};},
     retention(input,caller){return mutate('retention',input,caller,(s,target)=>{const victims=all(s).filter(r=>sameScope(r.scope,target)&&expired(r,now()));for(const r of victims)remove(s,r,'retention-expired');return {deleted:victims.length};});},
     async setup(input,caller){const s=store.read(),target=requireAccess('setup',input,caller,s);const config=configRecord(s,target.projectId)?.config;if(target.kind!=='project'||config?.backend!=='mem0')fail('MEMORY_VALIDATION','Choose Mem0 in project backend settings first');const a=await mem0Factory({dataDir:path.join(dataDir,'memory',digest(target.projectId)),config});await a.setup();await a.close?.();return {installed:true,qualification:'Dependency setup only. Local model health and vector roundtrip must still pass.'};},
     async proposeLesson(input,caller){
@@ -184,6 +188,19 @@ export async function createMemoryService({store,dataDir,authorize,adapter,adapt
       const base=s.skills.find(x=>x.id===input.skillId&&x.projectId===target.projectId);
       if(!base||base.revision!==input.skillRevision)fail('MEMORY_REVISION_CONFLICT','Select the current base skill revision',409);
       return adaptive.candidate({operationId:input.operationId,projectId:target.projectId,skillId:input.skillId,expectedRevision:input.skillRevision,version:input.version,instructions:input.instructions,lesson:r.content.slice(0,4000),evidenceRefs:r.sourceRefs.filter(x=>x.kind!=='task').map(({kind,id})=>({kind,id}))});
+    },
+    // Host-only lifecycle seam: pause API/run dispatch, merge restore safety in the
+    // canonical transaction, then call this. Never publish as an MCP/HTTP tool.
+    async afterRestore(){
+      if(closed)fail('MEMORY_CLOSED','Memory service is closed',503);
+      restoring=true;vectorsSuspended=true;
+      try{
+        await vectorPending;
+        const warnings=[];
+        for(const a of [...adapters.values(),...(adapter?[adapter]:[])]){if(a.purge)await a.purge();else warnings.push({code:'MEMORY_ADAPTER_PURGE_UNSUPPORTED',message:'Injected adapter disabled; host must remove its external derived cache.'});await a.close?.();}
+        adapters.clear();await purgeAllMemoryVectorCaches(dataDir);measurements=new WeakMap();index.sync(store.read(),true);
+        return {rebuilt:true,backend:'keyword',vectorsSuspended:true,modelCalls:0,warnings};
+      }finally{restoring=false;}
     },
     async close(){if(closed)return;await vectorPending;closed=true;index.close();await Promise.allSettled([...adapters.values(),...(adapter?[adapter]:[])].map(a=>a.close?.()));},
   };

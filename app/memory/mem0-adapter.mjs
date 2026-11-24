@@ -1,8 +1,9 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
-import { mkdir, access, realpath, lstat, rm } from 'node:fs/promises';
+import { mkdir, access } from 'node:fs/promises';
 import { object, text, fail, digest } from './contracts.mjs';
+import { purgeMem0Data } from './cache.mjs';
 
 const worker=fileURLToPath(new URL('./mem0_worker.py',import.meta.url));
 const requirements=fileURLToPath(new URL('./requirements.txt',import.meta.url));
@@ -41,13 +42,7 @@ export async function createMem0Adapter({dataDir,config,pythonCommand='python',f
   const env={MEM0_TELEMETRY:'false',DO_NOT_TRACK:'1',ANONYMIZED_TELEMETRY:'False',MEM0_DIR:path.join(dataDir,'mem0-private'),PYTHONIOENCODING:'utf-8',PYTHONUTF8:'1'};
   const call=(action,payload={})=>execute(python,[worker],{...payload,action,config,dataDir,fixtureMode},{env});
   const purge=async()=>{
-    const root=await realpath(dataDir);
-    // Only these dedicated derived paths, never python-env or the host data root.
-    for(const name of ['qdrant','history.sqlite','history.sqlite-wal','history.sqlite-shm','mem0-private']){
-      const target=path.resolve(root,name),relative=path.relative(root,target);
-      if(!relative||relative.startsWith('..')||path.isAbsolute(relative))throw new Error('Unsafe memory cache path');
-      try {const stat=await lstat(target);if(stat.isSymbolicLink()||!path.relative(root,await realpath(target)).startsWith('..'))await rm(target,{recursive:stat.isDirectory()&&!stat.isSymbolicLink(),force:true});else throw new Error('Derived cache escaped its dedicated root');}catch(e){if(e.code!=='ENOENT')throw e;}
-    }
+    await purgeMem0Data(dataDir);
     signature=undefined;return {purged:true};
   };
   return {

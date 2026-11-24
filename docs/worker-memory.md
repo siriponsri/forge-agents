@@ -1,5 +1,107 @@
 # Cognitive Memory worker handoff — 2026-11-24
 
+## Follow-up: Central Owner Memory + explicit project sharing
+
+Owner ยืนยัน requirement เพิ่มเติม: Owner Memory เป็น **ต้นฉบับส่วนกลางข้ามโครงการ** แต่ทุกโครงการเริ่มต้นไม่มีสิทธิ์อ่าน ต้องให้ Owner เลือกชื่อโครงการแล้วแชร์ revision นั้นอย่างชัดเจน โค้ด follow-up อยู่ใน worktree/branch เดิมและแก้เฉพาะ `app/memory/**`, `Memory.jsx`, `tests/memory*`, เอกสารนี้ ไม่มีการแก้ shared main/context/authority/storage/api/styles/manifests
+
+### Canonical architecture / authorization
+
+- `app/memory/owner.mjs` เพิ่ม `createOwnerMemoryService({store,dataDir,authorize,now?})` เป็นบริการส่วนกลาง ใช้ existing `state.events` ประเภท `owner-memory.record`, `.grant`, `.tombstone`, `.operation` **ไม่มี projectId ของต้นฉบับ ไม่มี hidden/synthetic project ไม่มี collection หรือ canonical database ใหม่** ดัชนี Owner ใช้ derived tables `owner_rows/owner_grants/owner_fts` ใน `dataDir/memory/index.sqlite` ไฟล์เดียวกับ project keyword cache ไม่มีสำเนา text แยกตามโครงการ
+- Export `OWNER_MEMORY_SCOPE={kind:'owner',id:'local-owner'}` เป็น identity scope คงที่ของ installation ไม่รับ Owner identity จาก body `authorize({action,scope,callerContext,state})` ต้องคืน literal true แบบ synchronous จาก opaque caller ที่ host ออกให้ ไม่มี body `actor`, `approved`, `ownerId`, grants หรือ callbacks
+- CRUD ส่วนกลาง: read ใช้ `owner.read`; remember/update/forget ใช้ `owner.write`; grant/revoke ใช้ `owner.share`; export ใช้ `owner.export`; sensitive source ต้องมี `owner.sensitive` เพิ่ม Root ต้องอนุญาต owner.* ให้ human browser-session handle เท่านั้น **ห้ามออก owner.* ให้ provider/run** Provider ไม่มี Owner write MCP tool และไม่สามารถแชร์เอง
+- Project view ใช้ `read` บน `{projectId,kind:'project',id:projectId}` ของโครงการจริงที่มีอยู่ใน canonical state แล้วตรวจ grant ปัจจุบันอีกชั้นหนึ่ง แม้ caller เป็น human Owner การเรียก projectContext ก็ยังต้องมี grant; ส่วน Owner.list เป็น authority/route คนละเส้นทาง Sensitive view ต้องมี existing `sensitive` project grant เพิ่ม
+- `sourceRefs?:[{projectId,kind,id}]` ของ source ต้องเป็น run/task/artifact/verification ที่มีจริงใน project ซึ่ง caller มี read grant เก็บ revision/hash จาก canonical records ไม่รับข้อความหลักฐานที่แต่งขึ้น Project context **ไม่เผย sourceRefs ของโครงการอื่น ไม่เผยชื่อผู้รับแชร์รายอื่น หรือ metadata ของ source ที่ยังไม่แชร์** provenance ที่ส่งออกเป็น minimal source/grant identity
+- Private content, credential/hidden-reasoning filters, revision/timestamp/provenance และ `trust:'untrusted-data', executable:false` ยังบังคับเหมือนเดิม Central Owner content ไม่เปลี่ยนคำสั่ง Owner/permissions/acceptance หรือ verified project state
+
+### Exact service and root integration seam
+
+```js
+import {
+  createOwnerMemoryService, OWNER_MEMORY_SCOPE, OWNER_GRANT_PREFIX,
+  mergeOwnerMemorySafety,
+} from '../memory/owner.mjs';
+import {createOwnerMemoryHttpHandler} from '../memory/http.mjs';
+
+const ownerMemory=await createOwnerMemoryService({store,dataDir,authorize:authority.authorize});
+// Root resolves an authenticated HttpOnly session + CSRF into an opaque human handle:
+const ownerHttp=createOwnerMemoryHttpHandler({service:ownerMemory,resolveCaller});
+// Dedicated GUI prefix POST /api/owner-memory/{method}; root shared api helper
+// must include this prefix in its existing X-Forge-CSRF handling.
+```
+
+| Method | Input before opaque caller |
+|---|---|
+| remember | `{operationId,title,content,sourceRefs?,staleAt?,expiresAt?,sensitive?}` |
+| list / recall | `{query?,limit?,includeStale?}`; recall ต้องมี query |
+| update | `{operationId,id,expectedRevision,patch:{title?,content?,pinned?,staleAt?,expiresAt?,sourceRefs?}}` |
+| forget | `{operationId,id,expectedRevision}` |
+| grant / revoke | `{operationId,id,expectedRevision,projectId,expectedGrantRevision}` |
+| status / export | `{}` |
+| ownerContext / projectContext (aliases) | `{projectId,query?,limit?,maxCharacters?,includeStale?}` |
+| resolveOwnerRefs / resolveProjectRefs (aliases) | `{projectId,refs:[{id,revision,sha256}]}` |
+
+HTTP helper whitelist เฉพาะ Owner CRUD/list/search/status/export/grant/revoke ไม่มี lifecycle/context/provider methods และรับ POST JSON ไม่เกิน 64 KiB ต้อง mount หลัง existing Host/Origin/session/CSRF checks; helper ไม่สร้าง public listenerหรือรับ identity จาก request body Root สามารถ route ตรงเข้า service methods ด้วย parser เดิมได้
+
+Grant เริ่ม `expectedGrantRevision:0` และผูกกับ **exact current source revision + raw content SHA-256** Revoke/re-share เพิ่ม grantRevision ทุกรอบ ทุก grant/revoke มี event UUID ใหม่ **แก้ไข source (รวม pin/expiry) ทำให้ grant เดิม ineffective จน Owner แชร์ revision ใหม่** ไม่มี auto-follow การเปลี่ยนแปลง ไม่มี auto-share ให้โครงการใหม่
+
+Project context คืน standard memory shape ที่ context worker ใช้ได้โดยไม่แก้ shared contract:
+
+```js
+{kind:'forge.memory.data',trust:'untrusted-data',executable:false,
+ items:[{
+   id:'owner-grant:<active-grant-event-UUID>', // read view ID <=200 chars
+   revision:sourceRevision,sha256:rawUtf8ContentHash,
+   scope:{projectId,kind:'project',id:projectId},title,content,
+   sourceRefs:[],verification:{status:'unverified'},stale,conflicts:[],
+   trust:'untrusted-data',executable:false,
+   provenance:{kind:'owner-memory',sourceMemoryId,sourceRevision,grantId,grantRevision}
+ }],provenance,metrics,authority}
+```
+
+`OWNER_GRANT_PREFIX='owner-grant:'` เป็น **view identity ที่คำนวณตอนอ่าน ไม่ใช่ shadow record** Root สามารถ union `memory.context()` กับ `ownerMemory.projectContext()` เฉพาะ project scope และต้องจัดงบ characters/tokens รวมอีกชั้นหนึ่ง ไม่ใช่ concatenate สอง budgets แล้วอ้างว่าผ่าน budget เดียวกัน
+
+`resolveProjectRefs` รับ standard refs `{id,revision,sha256}` ที่ context service strip ไว้อยู่แล้ว Lookup ต้องพบ **currently-active grant event UUID เดียวกัน**, project เดียวกัน, source revision/hash ตรง, source ไม่หมดอายุ/ถูกลบ และ caller ยังอ่านโครงการนั้นได้ Revoke/edit/delete จึง invalidates old refs ทันทีและหลัง restart Revoke → regrant source revision เดิมก็เป็น UUID ใหม่ จึงไม่ทำให้ old refs กลับมาใช้ได้
+
+Root split refs ตาม `OWNER_GRANT_PREFIX` ก่อนเรียก `memory.resolveRefs`/`ownerMemory.resolveProjectRefs` ทุก resolve/compaction/dispatch **เก็บเพียง refs ไม่เก็บ private memory text ใน context snapshots/spills/receipts/summaries** Ref ที่ missing ห้าม fallback ไป cached content Context ที่ยังไม่ dispatch ต้อง re-resolve เพื่อรับผล revoke/forget ล่าสุด ไม่มี grant = items ว่างโดยไม่มี source record metadata
+
+**Root projection boundary:** `owner-memory.*` เป็น global events ที่ไม่มี projectId ห้าม generic `/api/state`, project export, provider snapshot หรือ project backup ส่ง global source events ให้ project/provider caller Owner GUI อ่านผ่าน dedicated authorized service endpoints; canonical/installation backup ที่ได้รับอนุญาตอาจเก็บ full Owner history แต่ project backup ห้ามสร้างสำเนาหรือ remap grants อัตโนมัติ
+
+### Trusted restore hooks: keyword only, no model side effects
+
+ก่อน restore/import snapshot เก่า root ต้อง pause incoming operations/run dispatch แล้วทำใน existing canonical restore transaction:
+
+```js
+const restored=mergeOwnerMemorySafety(
+  mergeMemoryTombstones(restoredSnapshot,previousCanonicalState),
+  previousCanonicalState,
+);
+// Commit restored through the existing store transaction, then BEFORE reopening API:
+await memory.afterRestore();
+await ownerMemory.afterRestore();
+```
+
+`mergeOwnerMemorySafety(restored,previous)` เก็บ canonical installation Owner history ปัจจุบันไว้ร่วมกับ restored snapshot; projection เลือก record/grant revisions ล่าสุดและให้ tombstone ชนะเสมอ Helper preserve **source edits และ latest revoke/grant decisions** ด้วย ไม่ใช่เพียง tombstones จึงไม่ให้ old backup คืนสิทธิ์แชร์หรือ source revision เก่า ปกป้องกรณี project restore ไม่ควร overwrite central Owner store และ scrub deleted text/source refs ในทุก Owner record event
+
+ทั้ง `afterRestore()` เป็น **internal/trusted no-argument lifecycle seam** ไม่ออกเป็น HTTP/MCP tool `memory.afterRestore` รอ in-flight derived work, purge/dispose optional adapters, ล้าง known managed cache paths ของ Qdrant/Mem0 history แบบ static แม้ restored metadata ไม่มี backend config เดิม แล้ว rebuild project FTS จาก canonical state `ownerMemory.afterRestore` rebuild Owner FTS/grant index จาก canonical stateเท่านั้น **ไม่เรียก factory, embeddings, extraction model, setup หรือ provider** Result มี `modelCalls:0` ซึ่งมี spy assertions ทดสอบจริง
+
+Optional vector backend ถูก suspend หลัง restore จนมี explicit authorized `rebuild` ให้ผู้ใช้เลือกเอง Keyword core ใช้งานได้ต่อ Cache cleanup ไม่ลบ Python env, root authority store หรือไฟล์นอก managed cache roots Injected adapter ควรมี pure `purge()`; ถ้าไม่มี จะรายงาน warning และ suspend เพื่อให้ host จัดการ derived cache ภายนอก ไม่แอบใช้ replace([]) ที่อาจเรียกโมเดล
+
+### GUI and verification for this follow-up
+
+Memory Studio เพิ่มปุ่ม **Central Owner memory** ใช้ได้แม้ยังไม่มี project มีค้นหา สร้าง private source แก้ revision/pin/expiry แสดง source/provenance/share receipts เลือกแชร์จาก **ชื่อโครงการจริง** ถอนสิทธิ์ Export JSON และ forget source ไม่มี target project ที่เลือกไว้ล่วงหน้า ไม่ใช้ UUID input ใน share flow
+
+Project scope และ share destination เปลี่ยนเป็น dropdown ของ canonical project/bot/conversation/task records: team ใช้ project team หรือ team conversations, session ใช้ conversation records ตาม host authority, Owner ใช้ fixed Local Owner identity ใน project scope Existing six scoped native APIs ยังอยู่และไม่ย้าย project-scoped owner records เดิมไปส่วนกลางอัตโนมัติ
+
+New tests: `tests/memory-owner.test.mjs` ทดสอบ real SQLite/shared index, central source โดยไม่มี project, default no grants, opaque authorization, explicit project isolation, exact revision grants, edit/revoke/delete/regrant, source+grant restart, idempotency, provenance privacy, stale/expired/sensitive handling, tombstone+revoke+source-edit restore and keyword-only cache recovery แบบไม่เรียกโมเดล
+
+`tests/memory-owner-browser.test.mjs` เปิด Chromium จริงและ component จริงผ่าน isolated Vite+native HTTP handlers ทดสอบ named task dropdown → task memory create → private Owner create → explicit Alpha share → revoke → regrant → revision edit invalidation → explicit Beta share → JSON download export → forget และ lifecycle route ไม่เปิดให้เรียก ไม่มี browser page exceptions Fixture มี opaque session/cookie/CSRF token ที่ host สร้างเองสำหรับการทดสอบ **ไม่ใช่ production authentication implementation** และไม่ใช้ body approved claims
+
+Verification command `node --test tests/memory-*.test.mjs tests/adaptive-improvement.test.mjs` ผ่าน **36 tests, 0 fail, 0 skip** รวม real Mem0/Qdrant regression เดิม, official SDK in-memory MCP เดิม, Owner core ใหม่และ Chromium UI ใหม่ ไม่มี provider/model calls เพิ่ม ไม่มี dependency/manifests ใหม่
+
+Remaining root integration: instantiate central service/Owner-only authority actions; add owner-memory prefixใน shared CSRF helper; mount route; union granted view with project context + split refs resolution; filter generic state/backup projections; call both safety mergesและทั้ง afterRestore hooks; close both services on shutdown Worker ไม่แก้ shared files เหล่านี้
+
+NOT_RUN qualifications remain: production App/session/CSRF end-to-end with root wiring, production provider/MCP transport mount, live provider recall, model quality/token billing/resource costs and HOME_UAT ห้ามใช้ component browser fixture เป็นหลักฐาน live/provider quality
+
 ผู้พัฒนา: **gpt-6.1-sol, xhigh** ผ่าน Codex harness ใน T3 Code (ข้อมูล runtime ที่ได้รับ ไม่อ้างว่าเรียก provider เพิ่ม)
 Branch: `t3/local-memory-core`; ฐาน `65b78e9`; ไม่มี push, PR หรือแก้ main
 
