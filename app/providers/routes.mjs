@@ -1,4 +1,5 @@
 import { fail } from './common.mjs';
+import { kobApiRoute } from './kob-api.mjs';
 const pinned='https://github.com/pingdotgg/t3code/blob/59651c1761f6c63e9b6056839067066968e6a406/';
 // These are setup contracts, never a static model list or an inference runtime.
 export const routes = [
@@ -25,12 +26,7 @@ export const routes = [
     ['maxplus','MaxPlus',null,null,'https://maxplus-ai.cc/docs/api'],
     ['custom-api','Custom',null,null,'https://opencode.ai/docs/providers/'],
   ].map(([id,brand,baseURL,apiFamily,docs])=>({id,brand,driver:'opencode',authRoute:'machine-env-api-key',mode:'opencode-api',baseURL,apiFamily,docs,requiresRuntime:'OpenCode 2.x; T3 0.1.11 detects v1/v2 separately',limitations:'Configuration adapter only until observed catalog and actual T3 request. Tool support, account eligibility, cancellation and each custom endpoint require live qualification.'})),
-  ...['kob'].map(id=>({
-    id,brand:({openrouter:'OpenRouter','gemini-api':'Gemini','grok-api':'Grok','kimi-api':'Kimi','qwen-api':'Qwen','deepseek-api':'DeepSeek',maxplus:'MaxPlus',kob:'KOB','custom-api':'Custom'})[id],
-    mode:'model-api',implemented:false,
-    blocker:id==='kob'?'KOB endpoint-path and CLI-license conflict; no qualified T3 harness contract.':id==='maxplus'?'Pool/protocol/account contract requires qualification; no universal compatibility assumption.':'Use a configured OpenCode instance and its observed models. Direct model API execution is not a T3 coding harness.',
-    docs:id==='openrouter'?'https://openrouter.ai/docs/quickstart':'https://opencode.ai/docs/providers/',
-  })),
+  kobApiRoute,
 ];
 export function routeById(id){const route=routes.find(r=>r.id===id);if(!route)fail('ROUTE_UNAVAILABLE','Choose a documented provider setup route',409);if(route.implemented===false)fail('UNSUPPORTED_ROUTE',route.blocker,409);return route;}
 export const envName = value => typeof value==='string'&&/^[a-zA-Z_][a-zA-Z0-9_]{0,127}$/.test(value);
