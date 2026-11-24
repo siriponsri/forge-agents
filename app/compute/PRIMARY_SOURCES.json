@@ -1,0 +1,62 @@
+{
+  "inspectedAt": "2026-11-24",
+  "scope": "Protocol references only; no provider credentials, resources or live cloud executions were used",
+  "sources": [
+    {
+      "name": "Runpod REST v2 get Pod",
+      "url": "https://docs.runpod.io/api-reference-v2/pods/get-a-pod",
+      "documentationModified": "2026-11-18",
+      "base": "https://api.runpod.io/v2",
+      "routes": ["GET /pods/{id}"],
+      "response": "id, status, actions, ssh; environment and credentials are never projected"
+    },
+    {
+      "name": "Official Runpod MCP generated REST operations and transition wrappers",
+      "revision": "6f1cb5729bd1d5dc835f7f80b18066d40f400978",
+      "url": "https://github.com/runpod/runpod-mcp/blob/6f1cb5729bd1d5dc835f7f80b18066d40f400978/src/specgen/generated/tools.gen.ts",
+      "additionalUrl": "https://github.com/runpod/runpod-mcp/blob/6f1cb5729bd1d5dc835f7f80b18066d40f400978/src/specgen/tools/pod-transitions.ts",
+      "routes": ["POST /v2/pods/{id}/action"],
+      "request": {"action": "start|stop"},
+      "note": "Singular /action. No provisioning or terminate route is exposed. The live docs transition page timed out; immutable official generated operation was inspected instead."
+    },
+    {
+      "name": "Vast existing instance read and state control",
+      "url": "https://docs.vast.ai/api-reference/instances/show-instance",
+      "additionalUrl": "https://docs.vast.ai/api-reference/instances/manage-instance",
+      "sourceRevision": "138c1ddd5cfe5761c6391075c1fd0b6c517e059d",
+      "sourceUrl": "https://github.com/vast-ai/docs/blob/138c1ddd5cfe5761c6391075c1fd0b6c517e059d/api-reference/openapi.yaml",
+      "base": "https://console.vast.ai/api/v0",
+      "routes": ["GET /instances/{id}", "PUT /instances/{id}"],
+      "request": {"state": "running|stopped"},
+      "response": "instances.id, instances.actual_status; PUT success must be true"
+    },
+    {
+      "name": "Jupyter Server REST, default WebSocket and Python execution protocol",
+      "url": "https://jupyter-server.readthedocs.io/en/latest/developers/rest-api.html",
+      "additionalUrl": "https://jupyter-server.readthedocs.io/en/latest/developers/websocket-protocols.html",
+      "messageUrl": "https://jupyter-client.readthedocs.io/en/stable/messaging.html",
+      "messageVersion": "5.3 execute_request compatible with documented 5.5 specification",
+      "routes": ["GET /api/kernelspecs", "POST /api/sessions", "GET /api/sessions/{id}", "WS /api/kernels/{id}/channels", "POST /api/kernels/{id}/interrupt", "GET /api/contents/{path}"],
+      "note": "These documentation pages are mutable; exact supported route/message subset is pinned here and covered by labelled fixtures. No blanket claim for every custom REST server."
+    },
+    {
+      "name": "Google-owned Colab browser bridge",
+      "url": "https://github.com/googlecolab/colab-mcp/blob/b9ab3899e0f1fa493390b1fd6d54aa2e464ecdf1/README.md",
+      "revision": "b9ab3899e0f1fa493390b1fd6d54aa2e464ecdf1",
+      "currentUrl": "https://github.com/googlecolab/colab-mcp",
+      "note": "Bootstrap open_colab_browser_connection, then dynamic browser notebook tools. This service implements owner-interactive ipynb import/export/setup, not an invented fixed execution API."
+    },
+    {
+      "name": "Official hosted Colab MCP, distinct from browser import/export",
+      "url": "https://developers.google.com/colab/api/reference/mcp",
+      "endpoint": "https://colaboratory.googleapis.com/mcp",
+      "note": "Official API exists. Authenticated hosted session/execution/file-transfer integration is NOT implemented by this worker; no false claim that Colab has no API."
+    },
+    {
+      "name": "OpenSSH client contract",
+      "url": "https://www.openssh.com/manual.html",
+      "note": "System ssh, fixed remote python3 command, batch mode, explicit known-hosts file, StrictHostKeyChecking=yes, -F none, no shell interpolation of request data. Live handshake remains NOT_RUN."
+    }
+  ],
+  "licensing": "Original FORGE implementations against documented protocols; no upstream implementation source copied or new packages vendored. Existing root dependencies unchanged."
+}
