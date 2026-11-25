@@ -43,6 +43,9 @@ async function post(route,data){
 const command=async(type,projectId,data,record)=>(await post('/api/command',{type,projectId,data,operationId:crypto.randomUUID(),...(record?{id:record.id,expectedRevision:record.revision}:{})})).entity;
 async function nav(name){
   const menu=page.getByRole('button',{name:'Menu',exact:true});if(await menu.isVisible())await menu.click();
+  const route=page.getByRole('navigation').getByRole('button',{name,exact:true,includeHidden:true});
+  const group=route.locator('xpath=ancestor::details[1]');
+  if(await group.count()&&!await group.evaluate(element=>element.open))await group.locator('summary').click();
   await page.getByRole('navigation').getByRole('button',{name,exact:true}).click();
   await page.evaluate(()=>window.scrollTo(0,0));
 }

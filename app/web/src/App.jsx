@@ -44,6 +44,7 @@ import ParallelWorkspace from './ParallelWorkspace.jsx';
 import BudgetStudio from './BudgetStudio.jsx';
 import WorkflowPresets from './WorkflowPresets.jsx';
 import ResearchLab from './ResearchLab.jsx';
+import WorkspaceNavigation from './WorkspaceNavigation.jsx';
 
 export default function App() {
   const [theme,setTheme]=useState(()=>getTheme(localStorage.getItem('forge.theme')||DEFAULT_THEME).id);
@@ -228,25 +229,8 @@ export default function App() {
             {t("+ สร้างโครงการ", "+ Create project")}
           </button>
         </div>
-        <nav aria-label={t("พื้นที่ทำงาน", "Workspace")}>
-          <span className="nav-section">WORKSPACE</span>
-          {nav.map(([id, Icon, th, en]) => (
-            <button
-              key={id}
-              aria-current={page === id ? "page" : undefined}
-              className={page === id ? "active" : ""}
-              onClick={() =>
-                navigate(() => {
-                  setPage(id);
-                  setNavOpen(false);
-                })
-              }
-            >
-              <Icon size={18} />
-              <span className="nav-label">{t(th, en)}</span>
-            </button>
-          ))}
-        </nav>
+        <WorkspaceNavigation items={nav} activePage={page} t={t}
+          onSelect={id => navigate(() => { setPage(id); setNavOpen(false); })} />
         <div className="sidebar-foot">
           <span>
             {connected
