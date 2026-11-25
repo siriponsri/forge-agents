@@ -25,5 +25,6 @@ test('native observation collects inside its transaction and feeds only after re
   Object.assign(p,latest);p.providerTurns[0].turnTokenUsage.inputTokens=9;
   const terminal=await controller.reconcile(run.id);assert.equal(terminal.status,'completed');assert.equal(terminal.connection.status,'connected');assert.equal(terminal.nativeUsage.status,'unavailable');assert.equal(terminal.nativeUsage.reason,'NATIVE_USAGE_REGRESSION');
   assert.equal(terminal.reportedUsage,null,'a regressed or incomplete current source cannot retain a previously qualified run total');
+  const unavailable=(await f.state()).nativeUsage[0];assert.equal(unavailable.status,'unavailable');assert.equal(unavailable.reason,'NATIVE_USAGE_REGRESSION');assert.equal(unavailable.mainAgent,null);assert.equal(unavailable.usage,null);assert.equal(unavailable.lastConfirmed.usage.totalTokens,40,'historical receipt is retained without being presented as current qualification');
   assert.equal(f.store.read().events.filter(e=>e.type==='budget.observation').length,2,'invalid accounting cannot replace known receipts or discard valid lifecycle');
 });

@@ -68,6 +68,19 @@ restore and shutdown regression subset: **18 PASS**, no failures/skips. Review
 did not find another concrete defect in the other four original corrections;
 the final two corrections are lead-tested, not a new independent release pass.
 
+Independent review of `10e536b` found one P2 accounting presentation defect:
+Budget selected the last valid immutable receipt even when the latest canonical
+native read was unavailable. The lead now gates current counters on canonical
+qualification and matching receipt identity. Earlier receipts remain explicitly
+historical evidence; rejected regression clears both current display cells.
+The built production App and authenticated Budget endpoint reproduce 14 tokens,
+then reject input 10 -> 9 and show two Unknown cells with recovery text. API
+regression retains the historical 40-token receipt. Build and both targeted tests
+PASS; the 375px rendered result was inspected. This correction is lead-tested.
+The independent review's other 46 existing checks passed without another P0/P1
+finding in its scoped Memory/usage/navigation/media review; it is not release
+approval and does not cover subsequent Guarded activation.
+
 Native all-action
 automation qualification, authoritative billing ingestion, live provider/mobile
 checks and **HOME_UAT_NOT_RUN** remain separate from these corrected defects.

@@ -1,5 +1,19 @@
 # Current Status — Complete Local FORGE
 
+## Current accounting qualification correction — 2026-11-25
+
+Independent review of `10e536b` reproduced stale counter presentation after a
+rejected native regression. Budget now requires current canonical qualification
+and the matching immutable receipt before presenting current measured counts.
+Unavailable reads show Unknown; historical receipts remain unchanged. Production
+build and API/browser regressions both PASS (2 tests); the 375px failure state
+was inspected. The review's other 46 checks passed within its scoped coverage.
+
+Matching Guarded native modules are merged. Isolated workers are implementing
+the canonical execution bridge and the no-code artifact installer. Product
+activation, final integrated checks, refreshed media and main push remain open.
+**IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN**.
+
 ## Scoped Memory MCP, native usage and navigation — 2026-11-25
 
 Root merged Memory gatewayef9f89a asd3ff337 and native token bridge69a8677 as
