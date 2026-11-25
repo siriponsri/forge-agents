@@ -2,6 +2,7 @@ import {randomUUID} from 'node:crypto';
 import {verifyTrial,record,digest,append} from '../research/contracts.mjs';
 import {buildResearchContext,researchContextPolicy} from '../research/context.mjs';
 import {contextFor,pathKey} from '../workspaces/contracts.mjs';
+import {validateWorkspaceContext} from '../workspaces/context.mjs';
 
 const clone=structuredClone;
 const same=(a,b)=>digest(a??null)===digest(b??null);
@@ -44,6 +45,7 @@ export function createResearchNativeOwner({observeGuarded,resolveAllocation,cloc
     const project=s.projects.find(p=>p.id===trial.projectId);
     if(!project||pathKey(project.workspace)!==pathKey(workspace.sourceRoot)||digest(project.profile)!==workspace.profileDigest||!same(researchContextPolicy(s,{projectId:trial.projectId,components:m.components}),m.contextPolicy)||digest(m.contextPolicy)!==m.contextPolicyDigest)deny('RESEARCH_NATIVE_POLICY_CHANGED');
     if(run&&(run.projectId!==trial.projectId||run.taskId!==workspace.taskId||!run.attemptId||run.stopRequest||run.stopRequested||run.revoked||!['submitting','running'].includes(run.status)||!same(run.researchContext,buildResearchContext(s,{projectId:trial.projectId,trialId:trial.id}))||!same(run.workspaceContext,contextFor(workspace))||allocation&&!run.researchComponentContext||workspace.id===m.workspaceId&&(trial.runId&&trial.runId!==run.id||trial.attemptId&&trial.attemptId!==run.attemptId)||pathKey(run.workspace??run.actualWorkspace??'')!==pathKey(workspace.worktreePath)))deny('RESEARCH_NATIVE_RUN_CHANGED');
+    if(run)validateWorkspaceContext(s,{projectId:trial.projectId,taskId:workspace.taskId,operationId,workspaceContext:run.workspaceContext});
     return {request:expected,trial,workspace,run,allocation};
   }
   function observe(s,x,stage){

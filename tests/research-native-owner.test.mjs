@@ -55,7 +55,7 @@ test('Research private native owner: canonical resource and identity fences',asy
     const restarted=createResearchNativeOwner({clock:()=>now,observeGuarded:()=>observed});assert.equal(restarted.qualification(s,request),null);assert.throws(()=>restarted.retain(s,request),{code:'RESEARCH_NATIVE_RESTART_RECONCILE'});
   });
   await t.test('Stop/restore/account/policy/workspace/manifest/run/attempt/deadline drift deny',()=>{
-    for(const mutate of [s=>s.runs.at(-1).stopRequest={},s=>s.runs.at(-1).attemptId='foreign',s=>s.runs.at(-1).workspaceContext.workspaceId='foreign',s=>s.events.find(e=>e.id===trial.id).restoreReviewRequired=true,s=>s.events.find(e=>e.id===trial.id).deadlineAt++,s=>s.events.find(e=>e.id===trial.id).manifest.seed++]){
+    for(const mutate of [s=>s.runs.at(-1).stopRequest={},s=>s.runs.at(-1).attemptId='foreign',s=>s.runs.at(-1).workspaceContext.workspaceId='foreign',s=>s.events.find(e=>e.id===trial.id).restoreReviewRequired=true,s=>s.events.find(e=>e.id===trial.id).deadlineAt++,s=>s.events.find(e=>e.id===trial.id).manifest.seed++,s=>s.plans[0].approved=false,s=>s.tasks[0].title='changed canonical approval']){
       const {s,owner}=setup();mutate(s);assert.equal(owner.qualification(s,request),null);
     }
     for(const key of ['policyGeneration','toolGeneration']){const {s,owner,obs}=setup();obs[key]='rotated';assert.equal(owner.qualification(s,request),null);}
