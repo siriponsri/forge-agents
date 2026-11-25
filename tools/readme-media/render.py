@@ -8,7 +8,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 MEDIA = ROOT / 'docs' / 'media'
 manifest_path = MEDIA / 'manifest.json'
 manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
-manifest['nativeGuardedAutomation'] = 'NOT_QUALIFIED; actual native supervisor not qualified'
+manifest['nativeGuardedAutomation'] = 'NOT_EXERCISED_IN_MEDIA_CAPTURE; see docs/guarded-route.md for separate bounded native developer checks'
 manifest['encoder'] = subprocess.check_output(['ffmpeg', '-version'], text=True).splitlines()[0]
 for clip in manifest['walkthroughs']:
     # Chromium's first video frame can lag page creation slightly. Exclude the
