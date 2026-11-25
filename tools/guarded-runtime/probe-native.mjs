@@ -1,0 +1,12 @@
+import {spawnSync} from 'node:child_process';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import path from 'node:path';
+import {bytesDigest} from '../../app/guarded-runtime/profile.mjs';
+const [cache]=process.argv.slice(2);
+if(!path.isAbsolute(cache??''))throw Error('ABSOLUTE_CACHE_REQUIRED');
+const binary=path.join(cache,'opencode/forge-guarded-cli-build/cli-windows-x64/bin/opencode.exe'),home=path.join(cache,'probe-home');await mkdir(home,{recursive:true});
+const env={SystemRoot:process.env.SystemRoot,TEMP:home,TMP:home,HOME:home,USERPROFILE:home,APPDATA:home,LOCALAPPDATA:home,XDG_CONFIG_HOME:home,XDG_DATA_HOME:home,XDG_CACHE_HOME:home,OPENCODE_DISABLE_AUTOUPDATE:'1',OPENCODE_DISABLE_MODELS_FETCH:'1',OPENCODE_CONFIG_PROJECT_DISABLE:'1',OPENCODE_DISABLE_PROJECT_CONFIG:'1'};
+const result=spawnSync(binary,['--version'],{cwd:home,env,windowsHide:true,encoding:'utf8',timeout:15000});
+const report={version:1,sourceRevision:'6f0514052a3c859894ad01bb14cc14dda1e44b96',binarySha256:bytesDigest(await readFile(binary)),exitCode:result.status,observedVersion:result.stdout?.trim(),error:result.error?.code??null,stderr:result.stderr,proof:null};
+await writeFile(path.join(cache,'binary-probe.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
+if(result.status!==0)process.exitCode=1;
