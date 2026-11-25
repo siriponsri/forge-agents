@@ -1,5 +1,14 @@
 # Current Status — Complete Local FORGE
 
+## Local job recovery — 2026-11-25
+
+Explicit Compute reconciliation now reads source-bound `forge-local-cleanup/1`
+receipts from the existing local runner. A lost final state update can recover
+actual status/exit/logs without another Python execution or persisted-PID signal.
+Missing/legacy/foreign/tampered proof stays interrupted and retains its writer
+fence; no unsafe terminal disposition was added. Real Windows lifecycle/compute/
+production context subset20 PASS. No-code steps: `docs/LOCAL_JOB_RECOVERY_TH.md`.
+
 ## Research local integration — 2026-11-25
 
 Worker02fae1b merged as4187912. Research Lab now mounts in the production App with

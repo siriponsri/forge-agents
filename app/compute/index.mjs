@@ -140,9 +140,10 @@ export function createComputeService({dataDir,store,localJobs,admit,prepareRunti
     },
     async reconcile(input={}){
       if(input.projectId)find(store.read(),'projects',input.projectId);
-      if(input.jobId)return service.status(input);
+      const reconcileJob=async j=>j.computeAttempt.kind==='local'&&localJobs?.reconcile?publicJob(await localJobs.reconcile({projectId:j.projectId,jobId:j.id})):refresh(j);
+      if(input.jobId)return reconcileJob(owned(store.read(),input));
       const jobs=store.read().jobs.filter(j=>j.computeAttempt&&j.computeAttempt.kind!=='colab-mcp'&&(!input.projectId||j.projectId===input.projectId)&&active.has(j.status));
-      const results=[];for(const j of jobs)results.push(await refresh(j));
+      const results=[];for(const j of jobs)results.push(await reconcileJob(j));
       for(const r of store.read().receipts.filter(r=>r.kind==='compute-lifecycle'&&(!input.projectId||r.projectId===input.projectId)&&['submitting','requested','unknown'].includes(r.status))){
         let patch,runtime;try{runtime=await runtimeFor({projectId:r.projectId,config:r.configSnapshot,targetId:r.targetId});const observation=await resource(r.configSnapshot,runtime);const reached=r.action==='start'?observation.running:['stopped','EXITED'].includes(observation.state);patch={status:reached?'completed':'unknown',observation,lastObservationAt:stamp()};}catch(e){patch={status:'unknown',message:clean(e.message,r.configSnapshot,runtime??{env:{}}),lastObservationAt:stamp()};}finally{runtime?.dispose?.();}
         results.push(await store.transaction(s=>{const current=s.receipts.find(x=>x.operationId===r.operationId);Object.assign(current,patch);return current;}));

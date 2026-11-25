@@ -94,7 +94,7 @@ class PosixTree:
 
 
 def finish(m, status, code, reason):
-    receipt = {'jobId': m['jobId'], 'status': status, 'exitCode': code, 'reason': reason, 'treeCleaned': True,
+    receipt = {'protocol': 'forge-local-cleanup/1', 'jobId': m['jobId'], 'sourceSha256': m.get('sourceSha256'), 'status': status, 'exitCode': code, 'reason': reason, 'treeCleaned': True,
                'ownership': 'Windows JobObject; full owned tree drained' if os.name == 'nt' else 'POSIX owned process group; escaped groups excluded',
                'error': 'Python exited with code ' + str(code) if status == 'failed' else None}
     p = Path(m['receiptPath']); tmp = p.with_suffix('.tmp')

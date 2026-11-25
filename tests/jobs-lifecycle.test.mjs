@@ -70,3 +70,21 @@ test('unexpected Node owner hard crash stops owned Python tree; reopen is truthf
   await pause(1800);assert.equal(await readFile(path.join(dir,'post-crash')).catch(()=>null),null,errors);
   const s=await openStore(dir),jobs=createJobService({store:s,dataDir:dir});await jobs.recover();assert.equal(s.read().jobs[0].status,'interrupted');assert.equal((await jobs.start({projectId:'p',notebookId:'n',operationId:'crash-op'})).id,s.read().jobs[0].id);assert.equal(await readFile(path.join(dir,'executions'),'utf8'),'once');await jobs.shutdown();await s.close();
 });
+
+test('explicit local reconciliation consumes only matching source-bound cleanup proof without running again',async t=>{
+  const x=await setup(t,"from pathlib import Path\np=Path('once.txt')\np.write_text(p.read_text()+'x' if p.exists() else 'x')\nprint('verified local recovery')"),input=x.input(),job=await x.jobs.start(input);assert.equal((await x.done(job.id)).status,'completed');await x.jobs.shutdown();
+  const fresh=createJobService({store:x.store,dataDir:x.dir}),dir=path.join(x.dir,'jobs',job.id),receiptPath=path.join(dir,'receipt.json'),receipt=await readFile(receiptPath,'utf8'),script=await readFile(path.join(dir,'notebook.py'),'utf8');
+  t.after(()=>fresh.shutdown());
+  await x.store.transaction(s=>{const j=s.jobs[0];j.status='running';j.treeCleaned=false;j.pid=process.pid;});await fresh.recover();assert.equal(x.store.read().jobs[0].status,'interrupted');
+  await writeFile(receiptPath,JSON.stringify({...JSON.parse(receipt),jobId:crypto.randomUUID()}));let recovered=await fresh.reconcile({projectId:x.p.id,jobId:job.id});assert.equal(recovered.status,'interrupted');assert.equal(recovered.recovery.status,'unverified');
+  await writeFile(receiptPath,receipt);await writeFile(path.join(dir,'notebook.py'),'print("tampered snapshot")');recovered=await fresh.reconcile({projectId:x.p.id,jobId:job.id});assert.equal(recovered.recovery.status,'unverified');assert.equal(x.store.read().jobs[0].status,'interrupted');
+  await writeFile(path.join(dir,'notebook.py'),script);recovered=await fresh.reconcile({projectId:x.p.id,jobId:job.id});assert.equal(recovered.status,'completed');assert.equal(recovered.treeCleaned,true);assert.equal(recovered.recovery.status,'verified-cleanup');assert.equal(recovered.recovery.redispatched,0);assert.match(recovered.logs,/verified local recovery/);
+  assert.equal((await fresh.start(input)).id,job.id);assert.equal(await readFile(path.join(x.workspace,'once.txt'),'utf8'),'x');
+  await assert.rejects(fresh.reconcile({projectId:x.p.id,jobId:job.id,receipt:{treeCleaned:true}}),{code:'COMPUTE_SCOPE'});
+});
+
+test('missing legacy cleanup proof remains interrupted and still blocks another local writer',async t=>{
+  const x=await setup(t);let old;await x.store.transaction(s=>{old=entity({kind:'notebook',status:'running',operationId:'legacy-without-proof',workspace:x.workspace,source:{sha256:'0'.repeat(64)}},x.p.id);s.jobs.push(old);});await x.jobs.recover();
+  const result=await x.jobs.reconcile({projectId:x.p.id,jobId:old.id});assert.equal(result.status,'interrupted');assert.equal(result.recovery.code,'CLEANUP_RECEIPT_UNVERIFIED');assert.equal(x.store.read().jobs[0].status,'interrupted');
+  await assert.rejects(x.jobs.start(x.input()),{code:'WORKSPACE_BUSY'});await assert.rejects(x.jobs.reconcile({projectId:crypto.randomUUID(),jobId:old.id}),{code:'NOT_FOUND'});
+});

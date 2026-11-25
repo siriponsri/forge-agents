@@ -53,7 +53,7 @@ export function createJobService({store,dataDir,admit}) {
     const dir=path.resolve(dataDir,'jobs',job.id),logPath=path.join(dir,'output.log'),receiptPath=path.join(dir,'receipt.json');
     try {
       await mkdir(dir,{recursive:true});await writeFile(path.join(dir,'notebook.py'),job.code,'utf8');
-      await writeFile(path.join(dir,'manifest.json'),JSON.stringify({jobId:job.id,ownerPid:process.pid,script:path.join(dir,'notebook.py'),workspace:job.workspace,logPath,receiptPath,limitSeconds:job.limitSeconds}),{flag:'wx'});
+      await writeFile(path.join(dir,'manifest.json'),JSON.stringify({jobId:job.id,sourceSha256:job.source.sha256,ownerPid:process.pid,script:path.join(dir,'notebook.py'),workspace:job.workspace,logPath,receiptPath,limitSeconds:job.limitSeconds}),{flag:'wx'});
       if(control.stopRequested||current(job.id).stopRequested||closing)return await update(job.id,j=>{j.status='stopped';j.finishedAt=now();j.stopRequested=true;});
       const env=Object.fromEntries(Object.entries(process.env).filter(([k])=>['PATH','Path','SystemRoot','WINDIR','TEMP','TMP','USERPROFILE','LOCALAPPDATA'].includes(k)));
       const child=spawn(process.env.FORGE_PYTHON??'python',['-u',runner,path.join(dir,'manifest.json')],{cwd:job.workspace,env,windowsHide:true,stdio:['pipe','pipe','pipe'],shell:false});control.child=child;
@@ -67,7 +67,7 @@ export function createJobService({store,dataDir,admit}) {
         try {
           await control.logTask;
           let receipt;try{receipt=JSON.parse(await readFile(receiptPath,'utf8'));}catch{}
-          const logs=await tail(logPath),valid=receipt?.jobId===job.id&&receipt.treeCleaned===true&&terminal.has(receipt.status);
+          const logs=await tail(logPath),valid=receipt?.protocol==='forge-local-cleanup/1'&&receipt.jobId===job.id&&receipt.sourceSha256===job.source.sha256&&receipt.treeCleaned===true&&terminal.has(receipt.status);
           resolve(await update(job.id,j=>{
             j.logs=logs;j.finishedAt=now();j.pid=null;j.supervisorExitCode=code;
             if(valid){j.status=receipt.status;j.exitCode=receipt.exitCode;j.treeCleaned=true;j.timedOut=receipt.reason==='timeout';j.error=receipt.error??(j.timedOut?'Local job reached its time limit':null);j.evidenceScope=receipt.ownership;}
@@ -89,6 +89,29 @@ export function createJobService({store,dataDir,admit}) {
   }
   return {
     async recover(){await persist(s=>{for(const j of s.jobs)if(j.kind==='notebook'&&active.has(j.status)&&!processes.has(j.id)){j.status='interrupted';j.error='FORGE restarted; execution was not reattached. No persisted PID was signalled. Inspect partial outputs before a fresh restart.';j.pid=null;changed(j);}});},
+    async reconcile(input){
+      if(!input||Object.keys(input).some(k=>!['projectId','jobId'].includes(k)))fail('COMPUTE_SCOPE','Reconcile a canonical project and local job only',400);
+      const job=find(store.read(),'jobs',input.jobId,input.projectId);
+      if(job.kind!=='notebook')fail('COMPUTE_SCOPE','Not a local notebook attempt',409);
+      if(terminal.has(job.status)||processes.has(job.id)||starts.has(job.operationId))return job;
+      if(!/^[a-f0-9-]{36}$/.test(job.id))fail('COMPUTE_SCOPE','Invalid local attempt identity',409);
+      const dir=path.resolve(dataDir,'jobs',job.id),script=path.join(dir,'notebook.py');
+      let receipt,manifest,logs;
+      try{
+        const {confined}=await import('./domain.mjs');
+        const readProof=async name=>{const file=await confined(dataDir,path.join(dir,name)),f=await open(file,'r');try{const info=await f.stat();if(!info.isFile()||info.nlink!==1||info.size>16384)throw Error('Unverified receipt');return JSON.parse(await f.readFile('utf8'));}finally{await f.close();}};
+        manifest=await readProof('manifest.json');receipt=await readProof('receipt.json');
+        if(manifest.jobId!==job.id||manifest.sourceSha256!==job.source?.sha256||manifest.workspace!==job.workspace||manifest.script!==script||manifest.logPath!==path.join(dir,'output.log')||manifest.receiptPath!==path.join(dir,'receipt.json')||receipt.protocol!=='forge-local-cleanup/1'||receipt.jobId!==job.id||receipt.sourceSha256!==job.source.sha256||receipt.treeCleaned!==true||!terminal.has(receipt.status)||receipt.status==='completed'&&receipt.exitCode!==0||hash(await readFile(await confined(dataDir,script),'utf8'))!==job.source.sha256)throw Error('Unverified cleanup identity');
+        try{logs=await tail(await confined(dataDir,path.join(dir,'output.log')));}catch(e){if(e.code!=='ENOENT')throw e;logs='';}
+      }catch{return {...job,recovery:{status:'unverified',code:'CLEANUP_RECEIPT_UNVERIFIED',redispatched:0}};}
+      return persist(s=>{
+        const j=find(s,'jobs',job.id,job.projectId);
+        if(processes.has(j.id)||starts.has(j.operationId)||terminal.has(j.status))return j;
+        if(j.source?.sha256!==job.source.sha256||j.operationId!==job.operationId)fail('COMPUTE_SCOPE','Local attempt changed during reconciliation',409);
+        j.status=receipt.status;j.exitCode=receipt.exitCode;j.treeCleaned=true;j.pid=null;j.logs=logs;j.timedOut=receipt.reason==='timeout';j.error=receipt.error??(j.timedOut?'Local job reached its time limit':null);j.evidenceScope=receipt.ownership;
+        j.recovery={status:'verified-cleanup',protocol:receipt.protocol,receiptSha256:hash(receipt),observedAt:now(),redispatched:0};changed(j);return j;
+      });
+    },
     start(input,{resolvedCompute}={}){
       if(input.resolvedCompute!==undefined)return Promise.reject(Object.assign(new Error('resolvedCompute is host-only; use the private second argument'),{code:'COMPUTE_SCOPE',statusCode:403}));
       if(typeof input.operationId!=='string'||!input.operationId.trim())return Promise.reject(Object.assign(new Error('operationId required'),{code:'VALIDATION',statusCode:400}));
