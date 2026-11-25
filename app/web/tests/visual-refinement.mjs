@@ -20,9 +20,12 @@ const cmd = async(type,projectId,data,record) => {
   assert.ok(r.ok(),await r.text()); return (await r.json()).entity;
 };
 const nav = async name => {
-  const menu=page.getByRole('button',{name:'Menu',exact:true});
-  if(await menu.isVisible() && !await page.getByRole('navigation').isVisible())await menu.click();
-  await page.getByRole('navigation').getByRole('button',{name,exact:true}).click();
+  const navigation=page.locator('.sidebar nav');
+  if(!await navigation.isVisible())await page.getByRole('button',{name:'Menu',exact:true}).click();
+  const route=navigation.getByRole('button',{name,exact:true,includeHidden:true});
+  const group=route.locator('xpath=ancestor::details[1]');
+  if(await group.count() && !await group.evaluate(element=>element.open))await group.locator('summary').click();
+  await route.click();
 };
 const shot = name => page.screenshot({path:path.join(temp,name+'.png'),fullPage:true});
 const choose = async id => {
@@ -165,7 +168,7 @@ try {
   for(const width of [320,375,414,768,1440,1920]) {
     await page.setViewportSize({width,height:1000}); await fits('width '+width);
     await page.getByRole('button',{name:/^Choose theme:/}).click(); await fits('picker '+width); await page.keyboard.press('Escape');
-    if(width<960) {await page.getByRole('button',{name:'Menu',exact:true}).click(); await page.getByRole('navigation').waitFor(); await shot('drawer-'+width); await nav('Overview');}
+    if(width<960) {await page.getByRole('button',{name:'Menu',exact:true}).click(); await page.locator('.sidebar nav').waitFor(); await shot('drawer-'+width); await nav('Overview');}
     await shot('overview-long-'+width);
     for(const lang of ['th','en']) {await page.getByLabel('Language',{exact:true}).selectOption(lang); await fits(lang+' '+width);}
   }

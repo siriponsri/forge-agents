@@ -24,8 +24,16 @@ test('built App Mission journey uses real Owner forms, local tests, preview, QA 
   app.t3.reconcile=async id=>app.store.read().runs.find(r=>r.id===id);
   browser=await chromium.launch({headless:true});const page=await browser.newPage({viewport:{width:1440,height:1000},acceptDownloads:true});page.setDefaultTimeout(20000);
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  const nav=async name=>{
+    const navigation=page.locator('.sidebar nav');
+    if(!await navigation.isVisible())await page.getByRole('button',{name:'Menu',exact:true}).click();
+    const route=navigation.getByRole('button',{name,exact:true,includeHidden:true});
+    const group=route.locator('xpath=ancestor::details[1]');
+    if(await group.count() && !await group.evaluate(element=>element.open))await group.locator('summary').click();
+    await route.click();
+  };
   await page.addInitScript(({projectId})=>{if(window!==window.top)return;localStorage.setItem('forge.language','en');localStorage.setItem('forge.theme','dark-modern');localStorage.setItem('forge.project',projectId);},{projectId:project.id});
-  await page.goto(app.url);await page.getByRole('button',{name:'Missions & delivery',exact:true}).click();
+  await page.goto(app.url);await nav('Missions & delivery');
   await page.getByLabel('Mission title',{exact:true}).fill('From brief to verified delivery');
   await page.getByLabel('Objective and intended user').fill('A readable static engineering page with executable acceptance');
   await page.getByLabel('Deliverable name').fill('Verified page');
@@ -53,14 +61,14 @@ test('built App Mission journey uses real Owner forms, local tests, preview, QA 
   const captureDir=path.join(directory,'captures');await mkdir(captureDir);await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:path.join(captureDir,'missions-desktop.png'),fullPage:true});
   await page.getByRole('button',{name:'Stop preview',exact:true}).click();
   for(const [navigation,title,file] of [['Parallel workspaces','Parallel workspaces','parallel'],['Proactive workflows','Proactive workflows','proactive'],['Usage & budgets','Budgets & usage','budgets'],['Workflow presets','Workflow presets','workflows'],['Research Lab','Research Lab','research']]){
-    await page.getByRole('button',{name:navigation,exact:true}).click();await page.getByRole('heading',{name:title,exact:true}).waitFor();
+    await nav(navigation);await page.getByRole('heading',{name:title,exact:true}).waitFor();
     if(navigation==='Parallel workspaces'){await page.getByLabel('Maximum parallel attempts').fill('2');await page.getByRole('button',{name:'Save limits',exact:true}).click();}
     await page.screenshot({path:path.join(captureDir,file+'-desktop.png'),fullPage:true});
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   }
   await page.getByLabel('Language',{exact:true}).selectOption('th');await page.setViewportSize({width:375,height:900});
   for(const [label,title,file] of [['ภารกิจและการส่งมอบ','ภารกิจและชุดส่งมอบ','missions'],['พื้นที่งานแยก','พื้นที่ทำงานคู่ขนาน','parallel'],['เวิร์กโฟลว์อัตโนมัติ','งานเชิงรุก','proactive'],['การใช้งานและงบ','งบประมาณและการใช้งาน','budgets'],['รูปแบบการทำงาน','รูปแบบการทำงาน','workflows'],['ห้องวิจัยและประเมินผล','ห้องวิจัยและประเมินผล','research']]){
-    await page.getByRole('button',{name:'Menu',exact:true}).click();await page.getByRole('button',{name:label,exact:true}).click();await page.getByRole('heading',{name:title,exact:true}).waitFor();
+    await nav(label);await page.getByRole('heading',{name:title,exact:true}).waitFor();
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,file+' overflow');
     await page.screenshot({path:path.join(captureDir,file+'-mobile.png'),fullPage:true});
   }

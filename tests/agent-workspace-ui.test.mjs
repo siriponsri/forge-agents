@@ -14,6 +14,14 @@ test('built Chat transforms into a scoped graph and reuses guarded run controls 
   const browser = await chromium.launch({headless: true, ...(process.env.FORGE_TEST_BROWSER ? {executablePath: process.env.FORGE_TEST_BROWSER} : {})});
   context.after(() => browser.close());
   const page = await browser.newPage({viewport: {width: 1600, height: 1100}}), errors = [], writes = [];
+  const nav = async name => {
+    const navigation = page.locator('.sidebar nav');
+    if (!await navigation.isVisible()) await page.getByRole('button', {name: 'Menu', exact: true}).click();
+    const route = navigation.getByRole('button', {name, exact: true, includeHidden: true});
+    const group = route.locator('xpath=ancestor::details[1]');
+    if (await group.count() && !await group.evaluate(element => element.open)) await group.locator('summary').click();
+    await route.click();
+  };
   page.on('pageerror', error => errors.push(error.message));
   page.on('request', request => {if (request.method() === 'POST') writes.push(new URL(request.url()).pathname);});
   const bootstrap = await page.request.get(app.url + '/api/session');
@@ -38,7 +46,7 @@ test('built Chat transforms into a scoped graph and reuses guarded run controls 
   });
   await page.goto(app.url);
   await page.getByLabel('Language').selectOption('en');
-  await page.getByRole('navigation').getByRole('button', {name: 'Conversations', exact: true}).click();
+  await nav('Conversations');
   await page.getByRole('button', {name: /Software mission · fixture/}).click();
   await page.getByLabel('Message', {exact: true}).fill('Unsaved conversation draft');
   await page.getByRole('button', {name: 'Workspace', exact: true}).click();

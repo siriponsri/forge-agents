@@ -27,11 +27,16 @@ page.on("pageerror", (error) => {
 const state = async () =>
   (await page.request.get(`${app.url}/api/state`)).json();
 const click = (name) => page.getByRole("button", { name, exact: true }).click();
-const nav = (name) =>
-  page
-    .getByRole("navigation")
-    .getByRole("button", { name, exact: true })
-    .click();
+const nav = async (name) => {
+  const navigation = page.locator('.sidebar nav');
+  if (!await navigation.isVisible())
+    await page.getByRole('button', {name: 'Menu', exact: true}).click();
+  const route = navigation.getByRole('button', {name, exact: true, includeHidden: true});
+  const group = route.locator('xpath=ancestor::details[1]');
+  if (await group.count() && !await group.evaluate(element => element.open))
+    await group.locator('summary').click();
+  await route.click();
+};
 const waitState = async (predicate) => {
   for (let i = 0; i < 80; i++) {
     const s = await state();
