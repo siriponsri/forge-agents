@@ -1,0 +1,12 @@
+// Trusted, first-party FORGE metadata. Archive content is never loaded at runtime.
+const preset=(id,pattern,name,description,steps,owners)=>({id,version:'1',pattern,name,description,steps,owners,source:{kind:'forge-original',version:'forge-playbooks/v1',inspiration:'Owner SuperUser adoption decision, 2026-11-25',authority:'metadata only; existing FORGE services own execution'}});
+const compiled=[
+  preset('software-delivery','Loop',{th:'ส่งมอบซอฟต์แวร์',en:'Software delivery'},{th:'สรุปงาน สร้างฉบับร่าง ตรวจผล และบันทึกบทเรียนจากหลักฐาน',en:'Brief, draft a Mission, verify exact outputs, review and capture evidence-based lessons.'},['brief','mission-draft','existing-mission-execution','verification','review','draft-lesson'],['missions','goals','assistance','adaptive']),
+  preset('research-sources','Graph',{th:'ค้นคว้าพร้อมแหล่งอ้างอิง',en:'Research with sources'},{th:'แบ่งคำถาม ระบุแหล่งที่มา และตรวจความสอดคล้องของข้อสรุป',en:'Separate questions, record sources and inspect whether evidence supports conclusions.'},['brief','source-scope','mission-draft','source-check','review','draft-lesson'],['missions','goals','memory']),
+  preset('independent-split-merge','Graph',{th:'แบ่งงานอิสระและรวมผล',en:'Independent split and merge'},{th:'ระบุขอบเขตและสัญญาร่วม ใช้ Parallel เดิมเพื่อตรวจและรวมงาน',en:'Define independent scopes and shared interfaces; use existing Parallel review and integration.'},['brief','interfaces','mission-draft','parallel-workspaces','integration-review','draft-lesson'],['missions','goals','workspaces']),
+  preset('review-critique','Graph',{th:'ตรวจและวิจารณ์ผลงาน',en:'Review and critique'},{th:'บันทึกข้อสังเกต ความเสี่ยง และข้อขัดข้องตามฉบับหลักฐานจริง',en:'Record observations, risks and blockers against exact evidence revisions.'},['brief','mission-draft','evidence-scope','review','draft-lesson'],['missions','goals','adaptive']),
+  preset('bounded-improvement','Dynamic',{th:'ปรับปรุงภายในขอบเขต',en:'Bounded improvement'},{th:'กำหนดเกณฑ์หยุด ใช้วงรอบ Goals และ Adaptive ที่มีขอบเขตเดิม',en:'Define stop criteria and use existing bounded Goals and Adaptive evaluation.'},['brief','stop-criteria','mission-draft','existing-bounded-loop','review','draft-lesson'],['missions','goals','assistance','adaptive']),
+];
+export const PRESET_IDS=Object.freeze(compiled.map(p=>p.id));
+export const presets=()=>structuredClone(compiled);
+export const getPreset=id=>presets().find(p=>p.id===id);
