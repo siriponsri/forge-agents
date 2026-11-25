@@ -1,0 +1,68 @@
+{
+  "result": "PASSED",
+  "checks": [
+    "Home and all architecture layers: TH/EN × light/dark × 320/375/768/1440; no overflow; 16 WCAG AA axe audits; actual vertical Up/Down, Home/End, wrapping, focus and panel assertions in every variant",
+    "All 10 localized inner routes × both themes × 375/1440; 40 axe AA audits; missing release has source guide action and zero executable links",
+    "Keyboard Radix arrow-key tabs, capability filters, full-resolution screenshot, locale routes, theme persistence, 320px menu Escape and skip-link focus; reduced motion",
+    "Prerendered no-JavaScript install content; optional localStorage failure; forced colors",
+    "Every internal route and fragment resolves in the standalone build"
+  ],
+  "a11yAuditCount": 56,
+  "violations": [],
+  "pageErrors": [],
+  "requestsStayLocal": true,
+  "releaseSnapshot": {
+    "schemaVersion": 1,
+    "repository": "siriponsri/forge-agents",
+    "checkedAt": "2026-11-25T03:53:40.177Z",
+    "state": "no_public_releases",
+    "httpStatus": 200,
+    "note": "Anonymous GitHub API snapshot. Only uploaded Windows ZIP assets with GitHub SHA-256 digests and repository-scoped URLs are eligible.",
+    "releases": []
+  },
+  "deployment": "NOT_RUN",
+  "homeUat": "HOME_UAT_NOT_RUN",
+  "macosNative": "NOT_RUN",
+  "captureDate": "2026-11-25",
+  "runtime": {
+    "model": "gpt-6.1-sol",
+    "reasoningEffort": "xhigh",
+    "source": "inherited T3/Codex runtime declaration",
+    "node": "v24.19.0"
+  },
+  "sourceBase": "418791275f4a682cacf3c2b36a54d97ac0510be0",
+  "treeQualification": "Prepared base plus scoped precommit website edits; implementation commit recorded in docs/worker-website-publication.md",
+  "captureScope": "Actual built standalone website in local Playwright Chromium. Review evidence, not new core-product media or live model execution.",
+  "captures": [
+    {
+      "file": "github-en-light-1440.png",
+      "bytes": 101508,
+      "sha256": "9ba289ea5102b36237fc5ab5aaa57e5f61126337c98e9c70771f86b51730b08f"
+    },
+    {
+      "file": "github-th-dark-375.png",
+      "bytes": 71083,
+      "sha256": "0db19a6bd393940e6e280cb3d4a61152c79820eab48526f80fadb9b5fba8e05d"
+    },
+    {
+      "file": "changelog-en-dark-1440.png",
+      "bytes": 127722,
+      "sha256": "15e22e2d57f3b5b2c851f1a84e31f8d05307fb569c90c5f72708a11168b2aa3d"
+    },
+    {
+      "file": "changelog-th-light-375.png",
+      "bytes": 97165,
+      "sha256": "5ece5656068ada57f72db609d904f044c5a1b82f1d399ac711617b869d8fda60"
+    },
+    {
+      "file": "keyboard-en-light-1440.png",
+      "bytes": 559597,
+      "sha256": "4254905b35086379e095c9ee68f68bf3548c2b9fadc14580fb2ea767423a325c"
+    },
+    {
+      "file": "keyboard-th-dark-375.png",
+      "bytes": 356128,
+      "sha256": "081d4df4e62cb684ad003d893221e7c3277e079f90396bf051844e0ba514c64c"
+    }
+  ]
+}

@@ -54,3 +54,32 @@ returned an empty finding list for the staged website UI.
 
 Keep the actual screenshot, visible qualification limits, readable type, open
 workflow rows, accessible architecture controls and independent static build.
+
+## Publication refinement — 25 November 2026
+
+Scoped implementation and inline review, not an independent release approval.
+Preserved the established typography, orange identity, layout and TH/EN light/dark
+themes. Changed source/capability qualifications and vertical tab semantics.
+The earlier publication observation above is historical: anonymous GitHub now
+serves the pinned baseline and Office source. New integrations remain unpublished.
+
+Rendered source and changelog pages were reviewed at desktop 1440 and mobile 375
+in TH/EN and both themes; the home was checked at 320/375/768/1440. Up/Down,
+Home/End, wrapping, focus and matching panels were asserted in every home variant.
+Actual visible keyboard-focus captures were also reviewed. Fixed one editorial
+defect during review: changelog now points to the home-page screenshot, rather
+than an image supposedly above it. The public product PNG is unchanged.
+
+Final standalone browser run: **56 axe WCAG A/AA audits, zero violations, zero
+page/console errors, no overflow, all requests same-origin**. Build/typecheck,
+two release-policy tests, static/CSP/license checks and approved-branch config
+fixtures passed. Final config output has no origin, noindex and an empty sitemap.
+The source detector found **0 anti-pattern failures** with regex-only coverage;
+55 advisory notes concern documented incumbent type/radius values. No root setup
+drift was repaired and no clean detector result is treated as visual proof.
+
+Portable final report and six actual website review captures:
+`evidence/publication-20261125/`. They are review evidence, not new core-product
+screenshots or GIFs. The final root README/media task remains lead-owned.
+Implementation gaps (all-action native enforcement, billing receipts and Research
+shared integration) remain separate from live-provider/account checks and Home UAT.

@@ -12,6 +12,22 @@ for(const lang of ['th','en'])for(const page of ['','docs/','install/','download
   assert.ok(!/(?:src|href)=["']https?:\/\/(?:localhost|127\.0\.0\.1)|(?:src|href)=["']\/api\//.test(html),'No private API or loopback links in shipping HTML');
 }
 const html=await readFile('dist/en/index.html','utf8');
+// Publication claims must distinguish the authentic public baseline from the
+// unpublished development integrations, without turning fixtures into live proof.
+const baseline='01ee779ffd049ba875ad85bd36f2c8accd274ca0';
+for(const lang of ['th','en']){
+  const source=await readFile(`dist/${lang}/github/index.html`,'utf8');
+  assert.ok(source.includes(`/tree/${baseline}`),'Pinned public baseline link');
+  assert.ok(source.includes(`/blob/${baseline}/app/web/src/Office.jsx`),'Actual public Office source link');
+  assert.ok(source.includes('Public baseline')&&source.includes('Current development'),'Separate source qualifications');
+  const changes=await readFile(`dist/${lang}/changelog/index.html`,'utf8');
+  assert.ok(changes.includes('2026-11-25')&&changes.includes('2026-11-24'),'Exact development and baseline dates');
+  assert.ok(changes.includes('NOT_QUALIFIED'),'Native all-action execution gap remains explicit');
+}
+assert.ok(html.includes('Developer verified')&&html.includes('labelled injected provider/native observations'),'Developer evidence qualifier');
+assert.ok(html.includes('shared app integration is pending'),'Research module is not presented as integrated');
+const image=await readFile('public/forge-workbench.png');
+assert.equal(createHash('sha256').update(image).digest('hex'),'053c352b7c1a0235d8e9e866ed2b5b2a5f58dd4125312062faffa7f1da0bf705','Authentic screenshot remains unchanged');
 const script=html.match(/<script>([^]*?)<\/script>/)[1];
 const csp=await readFile('dist/_headers','utf8');
 assert.ok(csp.includes(`'sha256-${createHash('sha256').update(script).digest('base64')}'`),'Exact prepaint script CSP hash');

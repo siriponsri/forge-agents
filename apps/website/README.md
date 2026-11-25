@@ -64,8 +64,17 @@ The PNG response detaches CSP so the browser's own full-resolution image viewer
 can apply its native styles; HTML keeps the restrictive policy and PNG is served
 as `image/png` with nosniff. Static content uses no analytics, remote fonts or embeds.
 
-Product coverage and claims describe the local development evidence at the parent
-revision recorded in `docs/ASSETS.md`. That implementation was not public on GitHub
-when checked, so the site links to its own documentation and source-availability
-page instead of creating broken public blob links. Update the claims, evidence,
-and source availability together when the lead publishes an authorized revision.
+Publication was rechecked anonymously on **25 November 2026**: the pinned
+24 November baseline `01ee779` and its Office source are public, main is `4e8ebd3`,
+and Releases is empty. Newer development integrations remain unpublished. The
+unchanged workbench PNG depicts the baseline; it does not prove the new features.
+See `docs/ASSETS.md` and `docs/evidence/publication-20261125.json` for exact hashes
+and primary API observations. `node scripts/check-publication.mjs` performs a new
+anonymous check of those recorded revisions without changing build data.
+
+The capability inventory and changelog separately describe developer verification
+with labelled injected provider/native observations, native automatic-execution
+qualification and billing implementation gaps, and pending Research integration.
+They claim no live model quality improvement, benchmark score or Home UAT result.
+Update claims, evidence and source availability together only after the lead
+actually publishes an authorized revision.

@@ -12,11 +12,13 @@ branch ที่แน่นอนก่อนทำขั้นตอนที�
    Docs, Install, Changelog, GitHub และสถานะ Windows download
 3. public release snapshot อยู่ที่ `public/releases.json` ผู้พัฒนาสั่ง
    `npm run releases:refresh` แล้วตรวจ diff ก่อน commit การ build ปกติไม่เรียก GitHub
-4. ณ snapshot 24 พ.ย. 2026: GitHub Releases API แบบไม่ใช้บัญชีตอบ HTTP 200
+4. ณ snapshot 25 พ.ย. 2026: GitHub Releases API แบบไม่ใช้บัญชีตอบ HTTP 200
    และไม่มี release จึงไม่มีลิงก์ดาวน์โหลด Windows; source archive ไม่ใช่ signed installer
    macOS native และ Home UAT ยังไม่ได้ทดสอบ
-5. source รุ่นปัจจุบันยังไม่เผยแพร่ commit บน public GitHub เว็บจึงระบุความจริงนี้
-   ก่อนเผยแพร่จริง lead ต้องตรวจ copy นี้กับ revision ที่อนุมัติอีกครั้ง
+5. ตรวจ GitHub API วันที่ 25 พ.ย. 2026: source พื้นฐาน `01ee779` และ Office เป็น
+   สาธารณะแล้ว ส่วน main เป็น `4e8ebd3` แต่ integration ใหม่ยังไม่เผยแพร่ ภาพจริง
+   บนเว็บเป็นรุ่นพื้นฐานวันที่ 24 พ.ย. ก่อน integration ใหม่ ดูหลักฐานใน `ASSETS.md`
+   ก่อนเผยแพร่จริง lead ต้องตรวจ copy และ metadata กับ revision ที่อนุมัติอีกครั้ง
 
 ## ค่าที่เตรียมไว้ให้กรอกในหน้าเว็บ Cloudflare
 

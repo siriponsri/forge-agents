@@ -1,0 +1,46 @@
+{
+  "checkedAt": "2026-11-25T03:52:31.178Z",
+  "authentication": "anonymous; no token",
+  "observations": [
+    {
+      "key": "main",
+      "url": "https://api.github.com/repos/siriponsri/forge-agents/commits/main",
+      "httpStatus": 200,
+      "sha": "4e8ebd394c14b08d642a5f5e47a2305efb26fd25",
+      "items": null,
+      "message": null
+    },
+    {
+      "key": "baseline",
+      "url": "https://api.github.com/repos/siriponsri/forge-agents/commits/01ee779ffd049ba875ad85bd36f2c8accd274ca0",
+      "httpStatus": 200,
+      "sha": "01ee779ffd049ba875ad85bd36f2c8accd274ca0",
+      "items": null,
+      "message": null
+    },
+    {
+      "key": "office",
+      "url": "https://api.github.com/repos/siriponsri/forge-agents/contents/app/web/src/Office.jsx?ref=01ee779ffd049ba875ad85bd36f2c8accd274ca0",
+      "httpStatus": 200,
+      "sha": "69083e63594b5c16285b52811990e1c8b5e9d7d6",
+      "items": null,
+      "message": null
+    },
+    {
+      "key": "integration",
+      "url": "https://api.github.com/repos/siriponsri/forge-agents/commits/418791275f4a682cacf3c2b36a54d97ac0510be0",
+      "httpStatus": 422,
+      "sha": null,
+      "items": null,
+      "message": "No commit found for SHA: 418791275f4a682cacf3c2b36a54d97ac0510be0"
+    },
+    {
+      "key": "releases",
+      "url": "https://api.github.com/repos/siriponsri/forge-agents/releases",
+      "httpStatus": 200,
+      "sha": null,
+      "items": 0,
+      "message": null
+    }
+  ]
+}

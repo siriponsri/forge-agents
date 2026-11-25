@@ -2,6 +2,7 @@ export type Lang = 'th' | 'en';
 export type Page = 'home' | 'docs' | 'install' | 'download' | 'changelog' | 'github' | '404';
 export const pages: Page[] = ['home', 'docs', 'install', 'download', 'changelog', 'github'];
 export const repo = 'https://github.com/siriponsri/forge-agents';
+export const publicBaseline = `${repo}/tree/01ee779ffd049ba875ad85bd36f2c8accd274ca0`;
 export const href = (lang: Lang, page: Page = 'home') => `/${lang}/${page === 'home' ? '' : page + '/'}`;
 export function route(path: string): {lang: Lang; page: Page} {
   const parts = path.split('/').filter(Boolean);

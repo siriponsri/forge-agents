@@ -17,11 +17,20 @@ it did not claim live agent runs. No mutable state, database or secret was copie
 
 - Origin at capture: developer-local temp directory `forge-visual-refinement-rFK2fH`.
 - Source SHA-256: `053c352b7c1a0235d8e9e866ed2b5b2a5f58dd4125312062faffa7f1da0bf705`.
-- Product source inspected: local commit `01ee779ffd049ba875ad85bd36f2c8accd274ca0`.
-- Current workbench code/tokens were compared with the screenshot before copying.
-- GitHub commit API for that local commit returned HTTP 422 and named app/docs
-  paths were absent in the public tree. The public site therefore creates no
-  broken public source-file links, and explicitly explains publication status.
+- Product source inspected at capture: `01ee779ffd049ba875ad85bd36f2c8accd274ca0`,
+  the 24 November 2026 baseline. Code/tokens were compared before copying.
+- Fresh anonymous primary GitHub API check at **2026-11-25T03:52:31.178Z**:
+  that baseline commit and its `app/web/src/Office.jsx` both return HTTP **200**.
+  Public main is `4e8ebd394c14b08d642a5f5e47a2305efb26fd25` (HTTP 200).
+  The old 24 November HTTP 422 observation no longer describes public availability.
+- Local integration base `418791275f4a682cacf3c2b36a54d97ac0510be0` returns
+  HTTP **422**, and Releases returns HTTP **200** with **[]**. The new development
+  features remain unpublished and there is no public package download.
+  Exact endpoints/results: `evidence/publication-20261125.json`.
+- The website labels the actual screenshot as the **24 November baseline**,
+  before the new integrations. It is not evidence of Missions/Parallel/Visualization/
+  Proactive/Research. No screenshot or GIF was fabricated or recaptured for those
+  features. Final fresh product media remains the lead-owned release task.
 - Screenshot content belongs to FORGE and follows the repository license. No
   upstream product screenshot is included.
 
