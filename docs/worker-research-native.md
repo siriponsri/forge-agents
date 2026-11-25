@@ -205,10 +205,40 @@ Gateway tests:7/7 PASS, actual loopback upstream and SQLite writer, unauthorized
 prebind/path/model/auth, bounded continuation, failure/redirect no retry,
 absolute deadline abort and Stop close. No external provider/account calls.
 
-Actual compiled binary fixture status is recorded below after final run.
-This test exercises the existing compiled private T3/OpenCode/Windows broker
+Actual compiled binary fixture: **5/5 PASS,271.4s,no skips**. Actual compiled
+T3/OpenCode/Windows broker completed one canonical attempt and edited existing
+output to the independently asserted aggregate bytes. The native maxSteps
+continuation denial, durable action-budget batch and503 upstream-retry denial
+also passed. Full run observed5 loopback upstream requests,3 completed broker
+receipts, native prepared-request counts `[2,1,2,1]`,17 installation negatives
+and2 compiled T3 connection negatives. No outside edit occurred. Pinned actual
+T3 graph+Node hash `3494a3e4bce00e971a999fe51f5334d471e8d7a220db43e90f50f535314b0bf9`,
+OpenCode hash `33ef775f30afbf7808773e97bc4d70e1dc990155541162c92e5b6e2dc1c18ad3`.
+
+The test exercises the existing compiled private T3/OpenCode/Windows broker
 with deterministic loopback model protocol and injected canonical owner policy;
 it cannot independently qualify the assembled production Research owner.
+`productionResearchProof:null`, `externalProviderTurns:0`. Qualified cache
+`%TEMP%/forge-guarded-timeout30s-20261125` was read only; no binary/source/cache
+or native timeout/pin was changed. Earlier developer runs exposed and fixed
+the store Promise-return error; only the corrected final run is a passing result.
+
+**Timing boundary:** binary fixture uses existing native maxRunMs300000 and a
+fixed30s egress deadline captured at engineering final-send admission. Positive
+bind/attest/turn took58.8s including setup; this is NOT proof that the complete
+production Research preparation+execution fits the currently declared30s cap.
+Production must retain its one absolute trial deadline from dispatch, choose an
+explicit schema-supported cap that covers measured setup, and refuse on expiry.
+No resetting of actual trial deadlines or expansion of native30s fence patience.
+
+Action-only diagnostic rerun can be selected with
+`FORGE_RESEARCH_NATIVE_CASE=actions`; unselected cases are explicitly skipped.
+This case additionally requires an actual observed `onBeforeAction` budget
+denial, so a deadline-induced no-edit result alone cannot satisfy it.
+Strengthened action-only rerun: **PASS84.3s**, actual `deniedActions:1`,1
+upstream loopback request,1 broker receipt, native prepared requests `[2]`;
+3 unrelated cases explicitly skipped. This rerun does not replace the full
+5/5 result above. All processes/gateways/stores were closed by the fixtures.
 
 Worktree lacks dependency links. Verification used Node24.19.0 with an in-memory
 `node:module.registerHooks` fallback resolving already pinned dependencies from
