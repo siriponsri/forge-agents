@@ -74,7 +74,7 @@ test('built Chat transforms into a scoped graph and reuses guarded run controls 
   await page.getByRole('button', {name: 'Chat', exact: true}).click();
   assert.equal(await page.getByLabel('Message', {exact: true}).inputValue(), 'Unsaved conversation draft');
   await page.getByRole('button', {name: 'Workspace', exact: true}).click();
-  const captureDir = path.resolve('.impeccable/review/agent-workspace'); await mkdir(captureDir, {recursive: true});
+  const captureDir = path.join(directory,'captures'); await mkdir(captureDir, {recursive: true});
   for (const [theme, width, name] of [['dark-modern', 1600, 'desktop'], ['light-modern', 768, 'tablet'], ['dark-modern', 375, 'mobile']]) {
     await page.evaluate(theme => {document.documentElement.dataset.theme = theme;}, theme);
     await page.setViewportSize({width, height: 1100});

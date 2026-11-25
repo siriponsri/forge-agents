@@ -4,6 +4,7 @@ import {nextSchedule} from './schedule.mjs';
 import {proactiveEnforcementRequest,validateProactiveEnforcement} from './enforcement.mjs';
 export {validateProactiveContext,proactivePrompt,validateProactiveAction} from './context.mjs';
 export {proactiveEnforcementRequest,validateProactiveEnforcement} from './enforcement.mjs';
+export {mergeProactiveSafety} from './recovery.mjs';
 
 export const PROACTIVE_HTTP_METHODS=Object.freeze(['state','create','revise','approve','enable','pause','revoke','reconcile','resolve']);
 const common=['projectId','operationId','recipeId','expectedRevision'];

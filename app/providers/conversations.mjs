@@ -78,11 +78,13 @@ export function createConversationService({store,t3,providers,checkCapabilities,
       let replay=false;
       const run=await store.transaction(s=>{
         const prior=s.runs.find(r=>r.operationId===input.operationId);if(prior){if(prior.fingerprint!==fingerprint)fail('OPERATION_REUSE','Chat operation reused',409);replay=true;return prior;}
-        const {conversation:c}=scope(input,s);botScope(s,project.id,bot.id);
+        const {project:currentProject,conversation:c}=scope(input,s);const currentBot=botScope(s,project.id,bot.id);
+        if(currentProject.revision!==project.revision||digest(currentProject)!==digest(project)||digest(currentBot)!==digest(bot)||digest(c)!==digest(conversation))fail('REVISION_CONFLICT','Chat context changed before reservation; review the current conversation',409);
         if(s.receipts.some(x=>x.operationId===input.operationId))fail('OPERATION_REUSE','Operation belongs to a different command',409);
         assertWorkspaceAvailable(s,project.id);
         const harnessSelection=checkCapabilities?.(s,{projectId:project.id,conversationId:c.id,botId:bot.id},['provider']);
-        const r=entity({kind:'conversation',fingerprint,operationId:input.operationId,attemptId:randomUUID(),botId:bot.id,helperTaskId:bot.kind==='helper'?bot.taskId:null,conversationId:c.id,...(harnessSelection?{harnessSelection}:{}),status:'submitting',providerInstanceId:selection.instanceId,selection,profileRevision:project.revision,profile:structuredClone(project.profile),inputText:input.text,messages:[],protocolEvents:[],clientRequestId:`forge-chat-${digest(input.operationId)}`,...(binding?{threadId:binding.threadId,t3ProjectId:binding.t3ProjectId}:{})},project.id);
+        const chatAdmission={botDigest:digest(bot),conversationRevision:c.revision,kind:c.kind,botId:c.botId??null,bindingDigest:digest(binding??null),workspace:project.workspace};
+        const r=entity({kind:'conversation',fingerprint,operationId:input.operationId,attemptId:randomUUID(),botId:bot.id,helperTaskId:bot.kind==='helper'?bot.taskId:null,conversationId:c.id,...(harnessSelection?{harnessSelection}:{}),chatAdmission,status:'submitting',providerInstanceId:selection.instanceId,selection,profileRevision:project.revision,profile:structuredClone(project.profile),inputText:input.text,messages:[],protocolEvents:[],clientRequestId:`forge-chat-${digest(input.operationId)}`,...(binding?{threadId:binding.threadId,inheritedThreadId:binding.threadId,t3ProjectId:binding.t3ProjectId}:{})},project.id);
         const user=entity({role:'user',text:input.text,botId:bot.id,conversationId:c.id,runId:r.id,attemptId:r.attemptId,operationId:r.operationId,status:'submitting'},project.id);r.userMessageId=user.id;c.messages.push(user);s.runs.push(r);reserveBudget(s,{run:r,input});changed(c);return r;
       });if(replay)return run;
       let dispatched=false;
@@ -93,14 +95,20 @@ export function createConversationService({store,t3,providers,checkCapabilities,
         if(binding&&binding.t3ProjectId!==t3ProjectId)fail('T3_IDENTITY','Binding belongs to another workspace',409);
         await store.transaction(s=>{const r=find(s,'runs',run.id);r.t3ProjectId=t3ProjectId;changed(r);});
         if(binding)await validateThread({...run,t3ProjectId});
-        const currentHarness=checkCapabilities?.(store.read(),{projectId:project.id,conversationId:conversation.id,botId:bot.id},['provider']);
+        const current=store.read(),reserved=find(current,'runs',run.id),latest=scope(input,current),latestBot=botScope(current,project.id,bot.id);
+        if(closing||reserved.status!=='submitting'||reserved.stopRequest)fail('RUN_CANCELLED','Chat admission was cancelled during setup',409);
+        const admission=reserved.chatAdmission;
+        if(latest.project.revision!==reserved.profileRevision||latest.project.workspace!==admission.workspace||digest(latest.project.profile)!==digest(reserved.profile)||digest(latestBot)!==admission.botDigest||latest.conversation.revision!==admission.conversationRevision+1||latest.conversation.kind!==admission.kind||(latest.conversation.botId??null)!==admission.botId||digest(latest.conversation.bindings?.[bot.id]??null)!==admission.bindingDigest)fail('REVISION_CONFLICT','Bot, workspace or conversation changed during setup; review before a new attempt',409);
+        providers.validateSelection({projectId:project.id,connectionId:selection.connectionId,selection});
+        assertWorkspaceAvailable(current,project.id,{runId:run.id});
+        const currentHarness=checkCapabilities?.(current,{projectId:project.id,conversationId:conversation.id,botId:bot.id},['provider']);
         if(run.harnessSelection&&digest(currentHarness?.plugins)!==digest(run.harnessSelection.plugins))fail('CONNECTION_CHANGED','Scoped capabilities changed before dispatch',409);
         const text=prompt(run,project,conversation,bot,binding);if(text.length>120000)fail('MESSAGE_LIMIT','Bot instructions and visible context exceed the T3 prompt limit');validateBudgetAdmission(store.read(),{run:find(store.read(),'runs',run.id),input});dispatched=true;
         const response=await t3.providers.call(binding?'t3_thread_send':'t3_thread_launch',binding?{threadId:binding.threadId,message:text,mode:'auto',clientRequestId:run.clientRequestId}:{projectId:t3ProjectId,clientRequestId:run.clientRequestId,title:`FORGE ${bot.name} chat ${run.id}`,message:text,runtimeMode:'approval-required',interactionMode:'default',modelSelection:{instanceId:selection.instanceId,model:selection.model,options:selection.options},workspaceStrategy:{type:'root'}});
         if(!response.threadId||!response.runId||binding&&response.threadId!==binding.threadId||response.projectId&&response.projectId!==t3ProjectId)fail('T3_IDENTITY','T3 returned incomplete or mismatched execution identity',502);
         await store.transaction(s=>{const r=find(s,'runs',run.id),c=find(s,'conversations',r.conversationId,r.projectId);r.threadId=response.threadId;r.providerRunId=response.runId;r.status=response.status??'unknown';changed(r);
           c.bindings??={};c.bindings[bot.id]={threadId:r.threadId,t3ProjectId,botId:bot.id,lastMessageId:r.userMessageId,selection:{instanceId:selection.instanceId,model:selection.model,options:selection.options}};const m=c.messages.find(m=>m.id===r.userMessageId);m.status='accepted';m.threadId=r.threadId;m.providerRunId=r.providerRunId;changed(c);});
-      }catch(error){await store.transaction(s=>{const r=find(s,'runs',run.id);r.status=dispatched?'unknown':'failed';r.error=safeError(error);changed(r);});if(!dispatched&&!run.threadId)await onNotDispatched?.({projectId:run.projectId,runId:run.id,attemptId:run.attemptId,sourceReceiptId:`forge-chat:not-dispatched:${run.id}`});}
+      }catch(error){await store.transaction(s=>{const r=find(s,'runs',run.id);r.status=dispatched?'unknown':'failed';r.error=safeError(error);changed(r);});if(!dispatched)await onNotDispatched?.({projectId:run.projectId,runId:run.id,attemptId:run.attemptId,sourceReceiptId:`forge-chat:not-dispatched:${run.id}`});}
       const r=find(store.read(),'runs',run.id);
       if(r.threadId&&r.providerRunId){try{if(t3.observe)await t3.observe(r.id);else await api.reconcile({projectId:r.projectId,runId:r.id});await projectRun(r.id);}catch{/* Persisted identity stays recoverable; no automatic turn retry. */}}
       return find(store.read(),'runs',run.id);

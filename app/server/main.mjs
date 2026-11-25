@@ -102,7 +102,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
   let reports;try{const mod=await import('../reports/service.mjs');reports=await mod.createReportService({store,dataDir});}catch(e){if(e.code!=='ERR_MODULE_NOT_FOUND')throw e;}
   let commit='unknown';try{commit=execFileSync('git',['rev-parse','--short','HEAD'],{cwd:root,encoding:'utf8',windowsHide:true}).trim();}catch{try{commit=JSON.parse(await readFile(path.join(root,'release-info.json'),'utf8')).commit.slice(0,7);}catch{}}
   const clients=new Set(),browserSessions=new Map(),relayWork=new Set();let closed=false,restoring=false,closingPromise,officeMcpHandler,offProjection=()=>{},projectionPromise,projectionAgain=false;
-  function dispatchApprovedMobile(){for(const item of store.read().relay?.inbox??[])if(item.status==='approved'&&!item.reservation&&!item.stopRequested){const pending=relay.dispatch({projectId:item.projectId,inboxId:item.id}).catch(()=>{});relayWork.add(pending);pending.finally(()=>relayWork.delete(pending));}}
+  function dispatchApprovedMobile(){if(closed||restoring)return;for(const item of store.read().relay?.inbox??[])if(item.status==='approved'&&!item.reservation&&!item.stopRequested){const pending=relay.dispatch({projectId:item.projectId,inboxId:item.id}).catch(()=>{});relayWork.add(pending);pending.finally(()=>relayWork.delete(pending));}}
   function browserSession(req,res,{create=false}={}){
     const id=(req.headers.cookie??'').split(';').map(s=>s.trim()).find(s=>s.startsWith('forge_session='))?.slice('forge_session='.length);
     let session=browserSessions.get(id);if(session&&session.expiresAt<Date.now()){browserSessions.delete(id);session=null;}
@@ -125,7 +125,14 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
     await memory.close();await ownerMemory.close();await stopped;await store.close();
     })();return closingPromise;
   }};
+  const admittedPosts=new Set();
+  function admitPost(){
+    if(closed||restoring)fail('APPLICATION_BUSY','Application is shutting down or restoring metadata; retry after readiness',409);
+    let complete;const pending=new Promise(resolve=>{complete=resolve;});admittedPosts.add(pending);
+    return ()=>{admittedPosts.delete(pending);complete();};
+  }
   const server=http.createServer(async(req,res)=>{
+    let finishAdmission;
     try{
       const host=req.headers.host??'';if(!/^(127\.0\.0\.1|localhost|\[::1\])(:\d+)?$/.test(host))fail('HOST','Loopback Host required',403);
       if(req.headers.origin && req.headers.origin!==`http://${host}`)fail('ORIGIN','Cross-origin requests are blocked',403);
@@ -134,9 +141,11 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
         if(closed||restoring)fail('APPLICATION_BUSY','FORGE is not admitting relay work',409);
         if(!req.headers['content-type']?.startsWith('application/json'))fail('CONTENT_TYPE','Use application/json',415);
         let size=0;const chunks=[];for await(const part of req){size+=part.length;if(size>65536)fail('SIZE','Bridge body exceeds 64 KiB',413);chunks.push(part);}
+        if(closed||restoring)fail('APPLICATION_BUSY','FORGE is not admitting relay work',409);
+        finishAdmission=admitPost();
         const result=await relay.bridge({body:Buffer.concat(chunks).toString('utf8'),signature:req.headers['x-forge-relay-signature']});json(res,result);dispatchApprovedMobile();return;
       }
-      if(officeMcpHandler&&await officeMcpHandler(req,res))return;
+      if(officeMcpHandler&&p==='/mcp/office'){finishAdmission=admitPost();if(await officeMcpHandler(req,res))return;}
       if(method==='OPTIONS')return json(res,{error:{code:'ORIGIN',message:'CORS is disabled'}},403);
       if(method==='GET'&&p==='/api/session'){const session=browserSession(req,res,{create:true});return json(res,{csrf:session.csrf});}
       if(method==='GET'&&p==='/api/workspaces/state'){
@@ -200,6 +209,8 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
       if(method==='POST'){
         if(closed||restoring)fail('APPLICATION_BUSY','Application is shutting down or restoring metadata; retry after readiness',409);
         if(!req.headers['content-type']?.startsWith('application/json'))fail('CONTENT_TYPE','Use application/json',415);const input=await body(req);let value;
+        if(closed||restoring)fail('APPLICATION_BUSY','Application is shutting down or restoring metadata; retry after readiness',409);
+        if(p!=='/api/storage/restore')finishAdmission=admitPost();
         let owner;
         if(/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|plugins|memory|owner-memory|context|goals|compute|relay|secrets|missions|proactive|workspaces|budgets|playbooks)\//.test(p))owner=humanSession(req,res);
         if(p==='/api/command'){value=await command(store,input);if(input.type==='project.create')await capabilities.defaults(value.entity.id);}
@@ -272,7 +283,13 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
           assertWorkspaceRestoreAvailable(store.read());
           if(store.read().runs.some(r=>!['completed','failed','cancelled','interrupted','rolled_back','stopped'].includes(r.status))||store.read().jobs.some(j=>['submitting','queued','running','starting','stopping','unknown','preparing','rendering','validating','publishing'].includes(j.status)))fail('RESTORE_BUSY','Stop and reconcile active runs/jobs before restoring metadata',409);
           restoring=true;
-          try{await proactive.suspendForRestore();await playbooks.suspendForRestore();await missions.suspendForRestore();await goals.suspendForRestore();value=await artifacts.restore(input);await memory.afterRestore();await ownerMemory.afterRestore();await goals.afterRestore();await missions.afterRestore();await playbooks.afterRestore();await proactive.afterRestore();await governance.recover({invalidateUnconsumed:true});await officeAgent.recover();await providers.mcp.recover();await providers.conversations.recover();}finally{goals.cancelRestore();missions.cancelRestore();playbooks.cancelRestore();proactive.cancelRestore();restoring=false;}
+          try{
+            await proactive.suspendForRestore();await playbooks.suspendForRestore();await missions.suspendForRestore();await goals.suspendForRestore();
+            await Promise.allSettled([...admittedPosts,...relayWork]);
+            assertWorkspaceRestoreAvailable(store.read());
+            if(store.read().runs.some(r=>!['completed','failed','cancelled','interrupted','rolled_back','stopped'].includes(r.status))||store.read().jobs.some(j=>['submitting','queued','running','starting','stopping','unknown','preparing','rendering','validating','publishing'].includes(j.status)))fail('RESTORE_BUSY','Previously admitted work became active; reconcile it before restoring',409);
+            value=await artifacts.restore(input);await memory.afterRestore();await ownerMemory.afterRestore();await goals.afterRestore();await missions.afterRestore();await playbooks.afterRestore();await proactive.afterRestore();await governance.recover({invalidateUnconsumed:true});await officeAgent.recover();await providers.mcp.recover();await providers.conversations.recover();
+          }finally{goals.cancelRestore();missions.cancelRestore();playbooks.cancelRestore();proactive.cancelRestore();restoring=false;}
         }
         else if(p==='/api/storage/configure')value=await storage.configure(input);
         else if(p==='/api/storage/health')value=await storage.health(input);
@@ -315,7 +332,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
       if(relative.startsWith('..')||path.isAbsolute(relative))fail('PATH','Invalid asset path',403);
       let file=['/welcome','/welcome/'].includes(p)?path.join(dir,'welcome.html'):requested;try{if(!(await stat(file)).isFile())file=path.join(dir,'index.html');}catch{file=path.join(dir,'index.html');}
       const bytes=await readFile(file);res.writeHead(200,{'Content-Type':mime[path.extname(file)]??'application/octet-stream','X-Content-Type-Options':'nosniff'});res.end(bytes);
-    }catch(e){if(res.headersSent){res.end();return;}json(res,{error:{code:e.code??'INTERNAL',message:e.message,details:e.details}},e.statusCode??(Number.isInteger(e.status)&&e.status>=400&&e.status<=599?e.status:e.code==='ENOENT'?404:500));}
+    }catch(e){if(res.headersSent){res.end();return;}json(res,{error:{code:e.code??'INTERNAL',message:e.message,details:e.details}},e.statusCode??(Number.isInteger(e.status)&&e.status>=400&&e.status<=599?e.status:e.code==='ENOENT'?404:500));}finally{finishAdmission?.();}
   });
   app.server=server;await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',resolve);});app.url=`http://127.0.0.1:${server.address().port}`;
   oauth=createMcpOAuthService({store,dataDir,callbackOrigin:app.url});

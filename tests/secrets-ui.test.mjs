@@ -19,7 +19,9 @@ test('password form saves, clears, rotates, removes and retries uncertain writes
   await page.route('http://127.0.0.1:43991/**', async route => {
     const req = route.request(), url = new URL(req.url());
     if (url.pathname === '/') return route.fulfill({ contentType: 'text/html', body: '<!doctype html><html><body><main id="root"></main></body></html>' });
+    if (url.pathname === '/api/session') {assert.equal(req.method(),'GET');return route.fulfill({json:{csrf:'isolated-secret-browser-session'}});}
     assert.ok(url.pathname.startsWith('/api/secrets/')); assert.equal(req.method(), 'POST');
+    assert.equal(req.headers()['x-forge-csrf'],'isolated-secret-browser-session');
     const action = url.pathname.slice('/api/secrets/'.length), input = req.postDataJSON(); calls.push({ action, input });
     try {
       const result = await dispatchSecretRequest(f.service, action, input); responses.push(result);

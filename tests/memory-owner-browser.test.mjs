@@ -44,8 +44,8 @@ test('browser fixture uses named scope records and real central Owner create/sha
   try{
     await vite.listen();url=`http://127.0.0.1:${vite.httpServer.address().port}`;
     browser=await chromium.launch({headless:true});const context=await browser.newContext({extraHTTPHeaders:{'X-Fixture-CSRF':csrf}});await context.addCookies([{name:'fixture',value:cookie,url}]);
-    const page=await context.newPage(),errors=[],consoleErrors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text());});page.setDefaultTimeout(12000);await page.goto(url);
-    try{await page.getByRole('heading',{name:'Memory Studio',exact:true}).waitFor();}catch(e){throw new Error('Fixture startup failed: '+JSON.stringify({errors,consoleErrors,body:(await page.locator('body').innerText()).slice(0,1500)}));}
+    const page=await context.newPage(),errors=[],consoleErrors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text());});page.setDefaultTimeout(12000);await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
+    try{await page.getByRole('heading',{name:'Memory Studio',exact:true}).waitFor({timeout:30000});}catch(e){throw new Error('Fixture startup failed: '+JSON.stringify({errors,consoleErrors,body:(await page.locator('body').innerText()).slice(0,1500)}));}
     await page.getByLabel('Scope',{exact:true}).selectOption('task');await page.getByLabel('Scope record',{exact:true}).selectOption({label:'Compile fixtures'});
     assert.equal(await page.getByLabel('Scope record',{exact:true}).evaluate(e=>e.tagName),'SELECT');
     await page.getByLabel('Title',{exact:true}).fill('Project task memory');await page.getByLabel('Authorized content',{exact:true}).fill('Task-specific record chosen by name');

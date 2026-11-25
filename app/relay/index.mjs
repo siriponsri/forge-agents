@@ -1,7 +1,7 @@
 import { randomUUID, randomBytes } from 'node:crypto';
 import { digest, exact, fail, find, prose, relayState, routeKeys, sameRoute, signBridgeBody, taskDigest, text, verifySignature } from './common.mjs';
 export { signBridgeBody } from './common.mjs';
-export { validateRelayAdmission } from './admission.mjs';
+export { validateRelayAdmission,validateRelayDispatch } from './admission.mjs';
 
 const terminal = new Set(['completed', 'failed', 'cancelled', 'interrupted', 'rolled_back']);
 const nowMs = clock => new Date(clock()).getTime();

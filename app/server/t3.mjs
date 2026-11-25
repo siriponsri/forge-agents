@@ -15,7 +15,7 @@ import { openT3ReadFeed, openT3ApprovalChannel } from '../protocol/t3-rpc.mjs';
 import {openT3ProviderChannel,validateSetupRequest} from '../providers/t3-setup-rpc.mjs';
 import {validateAssistanceContext,assistancePrompt} from '../assistance/context.mjs';
 import {assertWorkspaceAvailable} from './admission.mjs';
-import {validateRelayAdmission} from '../relay/admission.mjs';
+import {validateRelayAdmission,validateRelayDispatch} from '../relay/admission.mjs';
 import {validateGoalContext,goalPrompt} from '../goals/context.mjs';
 import {createNativeProviderCatalog} from '../providers/native-catalog.mjs';
 import {validateProactiveContext,proactivePrompt,proactiveEnforcementRequest,validateProactiveEnforcement} from '../proactive/index.mjs';
@@ -185,7 +185,8 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
         const selection=structuredClone(assistanceContext?.selection??p.profile?.provider??null);
         if(!selection?.instanceId||!selection?.model)fail('MODEL_REQUIRED','Connect a provider and select an observed model before starting',409);
         const harnessSelection=checkCapabilities?.(s,{...input,botId:task.botId},['provider',...(adaptiveContext?['skills']:[])]);
-        const r=entity({operationId:input.operationId,taskId:task.id,botId:task.botId,conversationId:input.conversationId,...(adaptiveContext?{adaptiveContext}:{}),...(assistanceContext?{assistanceContext}:{}),...(relayContext?{relayContext}:{}),...(goalContext?{goalContext}:{}),...(proactiveContext?{proactiveContext}:{}),...(workspaceContext?{workspaceContext}:{}),...(harnessSelection?{harnessSelection}:{}),approvalSnapshot:{taskRevision:task.revision,planRevision:find(s,'plans',task.planId,p.id).revision,botRevision:task.botId?find(s,'bots',task.botId,p.id).revision:null},selection,providerInstanceId:selection?.instanceId,status:'submitting',attemptId:crypto.randomUUID(),profileRevision:p.revision,profile:structuredClone(p.profile),protocolEvents:[],messages:[]},p.id);s.runs.push(r);reserveBudget(s,{run:r,input});task.runIds.push(r.id);changed(task);return r;
+        const approvalSnapshot={taskRevision:task.revision,planRevision:find(s,'plans',task.planId,p.id).revision,botRevision:task.botId?find(s,'bots',task.botId,p.id).revision:null,...(relayContext?{relayTask:structuredClone(task)}:{})};
+        const r=entity({operationId:input.operationId,taskId:task.id,botId:task.botId,conversationId:input.conversationId,...(adaptiveContext?{adaptiveContext}:{}),...(assistanceContext?{assistanceContext}:{}),...(relayContext?{relayContext}:{}),...(goalContext?{goalContext}:{}),...(proactiveContext?{proactiveContext}:{}),...(workspaceContext?{workspaceContext}:{}),...(harnessSelection?{harnessSelection}:{}),approvalSnapshot,selection,providerInstanceId:selection?.instanceId,status:'submitting',attemptId:crypto.randomUUID(),profileRevision:p.revision,profile:structuredClone(p.profile),protocolEvents:[],messages:[]},p.id);s.runs.push(r);reserveBudget(s,{run:r,input});task.runIds.push(r.id);changed(task);return r;
       });if(replay)return run;
       let launchRequested=false;
       try{
@@ -200,6 +201,7 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
         const currentTask=find(current,'tasks',run.taskId,p.id),currentPlan=find(current,'plans',currentTask.planId,p.id);
         if(currentTask.revision!==run.approvalSnapshot.taskRevision+1||!currentPlan.approved||currentPlan.revision!==run.approvalSnapshot.planRevision||(currentTask.botId?find(current,'bots',currentTask.botId,p.id).revision:null)!==run.approvalSnapshot.botRevision||run.relayContext&&find(current,'projects',p.id).revision!==run.profileRevision)fail('REVISION_CONFLICT','Approved task, plan or bot changed during setup; review before a new attempt',409);
         validateAdaptiveContext(current,input);validateAssistanceContext(current,input);
+        validateRelayDispatch(current,input,run.id);
         validateGoalContext({...current,runs:current.runs.filter(r=>r.id!==run.id)},input);
         validateProactiveContext({...current,runs:current.runs.filter(r=>r.id!==run.id)},input);
         if(run.proactiveContext)validateProactiveEnforcement(current,input,api.qualifyProactive(current,proactiveEnforcementRequest(current,input)));

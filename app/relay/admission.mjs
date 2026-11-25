@@ -21,3 +21,16 @@ export function validateRelayAdmission(s, input) {
   if (!event || digest(c) !== digest(expected) || taskDigest(s, item.projectId, item.taskId) !== item.taskDigest) fail('RELAY_APPROVAL_STALE', 'Approval no longer matches this task');
   return structuredClone(expected);
 }
+
+// Final dispatch uses current channel authority. Only the canonical run's own
+// known reservation mutation is normalized; edits, Stop and revocation remain
+// visible to the original approval digest checker.
+export function validateRelayDispatch(s,input,runId){
+  if(!input.relayContext)return validateRelayAdmission(s,input);
+  const run=find(s,'runs',runId,input.projectId),before=run.approvalSnapshot?.relayTask;
+  const task=find(s,'tasks',input.taskId,input.projectId);
+  if(!before||run.taskId!==input.taskId||run.operationId!==input.operationId||digest(run.relayContext)!==digest(input.relayContext)||task.revision!==before.revision+1||digest(task.runIds)!==digest([...(before.runIds??[]),run.id]))fail('RELAY_APPROVAL_STALE','Mobile task reservation changed before dispatch');
+  const normalized={...task,revision:before.revision,updatedAt:before.updatedAt,runIds:before.runIds};
+  if(digest(normalized)!==digest(before))fail('RELAY_APPROVAL_STALE','Approved mobile task changed before dispatch');
+  return validateRelayAdmission({...s,tasks:s.tasks.map(t=>t.id===task.id?normalized:t)},input);
+}

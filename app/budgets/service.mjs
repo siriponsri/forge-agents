@@ -125,7 +125,8 @@ export function createBudgetService({store,t3,authorize}){
       return store.transaction(s=>{
         const r=reservation(s,input.runId);if(!r||r.projectId!==input.projectId||r.binding.attemptId!==input.attemptId)fail('BUDGET_OWNERSHIP','No-dispatch proof does not match reservation',409);
         const run=owned(s,r.binding);
-        if(!terminal(run)||run.threadId||run.providerRunId||accounting(s,r).latest)fail('BUDGET_RECONCILE','Observed or potentially live dispatch cannot be released as absent',409);
+        const inheritedThread=run.kind==='conversation'&&run.inheritedThreadId&&run.threadId===run.inheritedThreadId;
+        if(!terminal(run)||run.threadId&&!inheritedThread||run.providerRunId||accounting(s,r).latest)fail('BUDGET_RECONCILE','Observed or potentially live dispatch cannot be released as absent',409);
         if(r.notDispatched){if(r.notDispatched!==input.sourceReceiptId)fail('BUDGET_RECEIPT_REUSE','No-dispatch proof changed',409);return r;}
         r.notDispatched=input.sourceReceiptId;r.held=false;r.status='not-dispatched';changed(r);append(s,'reconciliation',{binding:r.binding,sourceReceiptId:input.sourceReceiptId,outcome:'confirmed-not-dispatched'},r.projectId);return r;
       });

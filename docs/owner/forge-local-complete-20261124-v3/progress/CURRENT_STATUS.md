@@ -1,5 +1,25 @@
 # Current Status — Complete Local FORGE
 
+## Independent review corrections — 2026-11-25
+
+Read-only independent review of71fd27e found five concrete final-admission/
+restore defects. Lead fixes now revalidate mobile channel authority after setup,
+revalidate chat bot/workspace/profile/visibility/catalog, distinguish inherited
+chat threads from a new attempt's no-dispatch proof, preserve proactive consumed
+event/run/budget history through metadata rollback, and gate incomplete bodies
+again after reads. Restore suspends controllers and drains admitted HTTP/mobile
+work before its final busy check and metadata swap. Office MCP shares that gate.
+
+Actual scoped regressions:116 PASS including the two corrected browser fixtures;
+latest restore/barrier/dispatch/shutdown subset19 PASS. Counts overlap. The broad
+run started at71fd27e reported565 entries:554 PASS,2 FAIL,9 SKIP (573.8s). Its two
+browser-fixture failures were corrected and passed in the116 subset; this does
+not claim a new all-green full merged run. See
+`docs/reviews/controller-integration-20261125.md` for exact corrections/limits.
+Current fixes await fresh independent re-review. Research worker delivered
+02fae1b and is ready for lead integration; Guarded native build work continues.
+Overall remains **IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN**.
+
 ## Integrated completion checkpoint — 2026-11-25
 
 Overall **IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN**. Owner's active goal and
