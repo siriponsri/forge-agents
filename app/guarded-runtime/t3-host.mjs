@@ -16,11 +16,18 @@ export function observeInstalledT3Host(host,handle){assertInstalledT3Host(host);
 // Install only during trusted in-process application bootstrap, before importing
 // the matching T3 server bundle. No HTTP/MCP/config method installs this slot.
 // It binds opaque process-local handles to canonical T3 thread/run selection.
-export function installT3GuardedHost({resolveThread,assertCurrent,runtimeDirectory,resolveConnection}){
+export function installT3GuardedHost({resolveThread,assertCurrent,runtimeDirectory,resolveConnection,toolNames}){
   if(globalThis[slot]||![resolveThread,assertCurrent,runtimeDirectory].every(x=>typeof x==='function'))fail('T3_HOST_ALREADY_INSTALLED');
   const seen=new WeakMap();
   const host=Object.freeze({
     directory:runtimeDirectory,
+    ...(toolNames?{toolNames(handle){
+      if(!seen.has(handle))fail('PRIVATE_PROFILE_REQUIRED');
+      const p=assertCurrent(handle);if(!p||p.then)fail('PRIVATE_PROFILE_REQUIRED');
+      const names=toolNames(handle,p);if(names?.then)fail('SYNCHRONOUS_ROUTE_OBSERVATION_REQUIRED');
+      if(names!==undefined&&(p.purpose!=='supervised-frontend-v1'||JSON.stringify(names)!==JSON.stringify(['forge_frontend_selection_read'])))fail('PRIVATE_TOOL_PROFILE_REQUIRED');
+      return names;
+    }}:{}),
     connection(input){
       for(const check of installationConnections.get(host)??[]){
         if(['serverUrl','serverPassword','binaryPath','directory'].every(k=>input[k]===check.input[k])){if(check.assertCurrent()?.then)fail('SYNCHRONOUS_ROUTE_OBSERVATION_REQUIRED');return;}

@@ -20,15 +20,26 @@ export function assertGuardedOwner(s,{input,run}){
   if(c.versionId!==version.id||c.grantId!==recipe.grant.id||o.operationId!==input.operationId||o.taskId!==input.taskId||!o.held||o.stopRequested||!['dispatching','dispatched','unknown'].includes(o.status)||Date.now()>=o.deadlineAt||digest(o.context)!==digest(c)||run&&(run.operationId!==o.operationId||o.runId!==null&&o.runId!==run.id))fail('GUARDED_GRANT_CHANGED','The exact recipe grant no longer owns this attempt',409);
   return true;
 }
-const privateRoot=fileURLToPath(new URL('../guarded-runtime',import.meta.url));
-function moduleGeneration(){return digest(readdirSync(privateRoot).filter(n=>n.endsWith('.mjs')).sort().map(name=>({name,sha256:bytesDigest(readFileSync(path.join(privateRoot,name)))})));}
+const appRoot=fileURLToPath(new URL('../',import.meta.url));
+function moduleGeneration(){
+  const files=[];
+  function walk(directory){for(const name of readdirSync(directory).sort()){
+    const target=path.join(directory,name),stat=lstatSync(target);
+    if(stat.isSymbolicLink())fail('GUARDED_MODULE_LINK','Private enforcement source must not follow links',409);
+    if(stat.isDirectory())walk(target);
+    else if(/\.(mjs|ts|json|cs)$/.test(name)){if(!stat.isFile()||stat.nlink!==1)fail('GUARDED_MODULE_LINK');files.push({name:path.relative(appRoot,target).replaceAll('\\','/'),sha256:fileDigest(target)});}
+  }}
+  for(const directory of ['guarded-runtime','research-native','research-components','frontend-tools','server'])walk(path.join(appRoot,directory));
+  return digest(files);
+}
 function regular(file){
   for(let p=file;;p=path.dirname(p)){const st=lstatSync(p);if(st.isSymbolicLink())fail('GUARDED_CONFIG_LINK','Guarded configuration must not follow links',409);if(p===path.dirname(p))break;}
   const st=lstatSync(file);if(!st.isFile()||st.nlink!==1||st.size>131072)fail('GUARDED_CONFIG_INVALID','Use the provider configuration created by FORGE',409);
   return readFileSync(file);
 }
 export function createGuardedPolicy({store,dataDir,secrets,providers,artifacts}){
-  const cache=new Map();
+  const cache=new Map(),generation=moduleGeneration();
+  const assertGeneration=()=>{if(moduleGeneration()!==generation)fail('GUARDED_MODULE_CHANGED','Restart with the verified private enforcement generation',409);return generation;};
   function selected(s,projectId){
     const p=find(s,'projects',projectId),selection=p.profile?.provider;
     if(!selection?.connectionId)fail('GUARDED_PROVIDER_REQUIRED','Select a connected API model in Settings first',409);
@@ -41,10 +52,11 @@ export function createGuardedPolicy({store,dataDir,secrets,providers,artifacts})
     const {p,c,selection}=selected(s,projectId),cached=cache.get(projectId);
     if(!cached||cached.connection!==digest(c)||cached.selection!==digest(selection)||cached.stamp!==secrets.bindingStamp()||cached.envName&&process.env[cached.envName]!==cached.envValue||bytesDigest(regular(cached.configPath))!==cached.configHash)fail('GUARDED_ROUTE_CHECK_REQUIRED','Check the exact selected route again after credential or configuration changes',409);
     const policyGeneration=digest({profile:p.profile,policies:s.events.filter(e=>e.projectId===projectId&&['governance.policy','plugin.binding'].includes(e.type))});
-    return {route:{providerInstanceId:c.providerInstanceId,apiProviderId:cached.apiProviderId,providerImplementation:'opencode2-api',accountGeneration:cached.accountGeneration,modelId:selection.model,options:selection.options??[],t3Revision:'59651c1761f6c63e9b6056839067066968e6a406',opencodeRevision:'6f0514052a3c859894ad01bb14cc14dda1e44b96',t3BinarySha256:cached.t3Hash,opencodeBinarySha256:cached.opencodeHash},policyGeneration,toolGeneration:digest({modules:moduleGeneration(),broker:cached.brokerHash})};
+    return {route:{providerInstanceId:c.providerInstanceId,apiProviderId:cached.apiProviderId,providerImplementation:'opencode2-api',accountGeneration:cached.accountGeneration,modelId:selection.model,options:selection.options??[],t3Revision:'59651c1761f6c63e9b6056839067066968e6a406',opencodeRevision:'6f0514052a3c859894ad01bb14cc14dda1e44b96',t3BinarySha256:cached.t3Hash,opencodeBinarySha256:cached.opencodeHash},policyGeneration,toolGeneration:digest({modules:assertGeneration(),broker:cached.brokerHash})};
   }
   return {
     async refresh({projectId}){
+      assertGeneration();
       const before=store.read(),{c,selection}=selected(before,projectId),connection=digest(c),stamp=secrets.bindingStamp();
       if(!/^[A-Za-z0-9_-]+$/.test(c.providerInstanceId))fail('GUARDED_PROVIDER_ID','Invalid configured provider identity',409);
       const configPath=path.join(dataDir,'providers',c.providerInstanceId,'config','opencode','opencode.json'),raw=regular(configPath),config=JSON.parse(raw);

@@ -9,10 +9,10 @@ const synchronous = (fn, ...args) => { const value = fn(...args); if (value?.the
 // Authenticated private native bootstrap transport. Owns no thread, turn, task,
 // model loop or second store. Root supplies actual current authority and observed
 // private adapter mapping; an unobserved session/turn cannot acquire a bearer.
-export async function openFrontendNativeGateway({ broker, assertCurrent, bindingProvider, authorizePhase, authenticateOwner }) {
+export async function openFrontendNativeGateway({ broker, assertCurrent, bindingProvider, authorizePhase, authenticateOwner, withFence = fn => fn() }) {
   if (![assertCurrent, bindingProvider, authorizePhase, authenticateOwner].every(x => typeof x === 'function')) throw TypeError('Canonical current/phase/binding/Owner callbacks required');
   const key = randomBytes(32), token = key.toString('hex');
-  let closed = false, http, grant, bindingHash;
+  let closed = false, http, grant, bindingHash, grantedScope;
   const current = () => {
     if (closed) throw Error('FRONTEND_GATEWAY_CLOSED');
     const profile = synchronous(assertCurrent);
@@ -41,25 +41,35 @@ export async function openFrontendNativeGateway({ broker, assertCurrent, binding
       if (!equal(req.headers['x-forge-mac'], createHmac('sha256', key).update(raw).digest('hex')) || body.profileDigest !== digest(profile)) throw Error('FRONTEND_NATIVE_AUTH');
       if (req.url === '/fence') {
         object(body, ['profileDigest', 'phase', 'sessionID']); identifier(body.phase);
-        if (synchronous(authorizePhase, body, profile) !== true) throw Error('FRONTEND_PHASE_DENIED');
-        return reply(200, { ok: true, result: { profileDigest: digest(profile) } });
+        const result = await withFence(() => {
+          const p = current();
+          if (body.profileDigest !== digest(p) || synchronous(authorizePhase, body, p) !== true) throw Error('FRONTEND_PHASE_DENIED');
+          return { profileDigest: digest(p) };
+        });
+        return reply(200, { ok: true, result });
       }
       object(body, ['profileDigest', 'sessionId', 'callId', 'messageId']);
       for (const k of ['sessionId', 'callId', 'messageId']) identifier(body[k]);
-      const binding = synchronous(bindingProvider, { sessionId: body.sessionId, callId: body.callId, messageId: body.messageId }, profile);
+      const result = await withFence(() => {
+      const p = current();if (body.profileDigest !== digest(p)) throw Error('FRONTEND_PROFILE_CHANGED');
+      const binding = synchronous(bindingProvider, { sessionId: body.sessionId, callId: body.callId, messageId: body.messageId }, p);
       if (binding?.identityKind !== 'private-adapter' || binding.nativeSessionId !== body.sessionId || binding.projectId !== profile.projectId || binding.runId !== profile.runId || binding.threadId !== profile.threadId) throw Error('FRONTEND_NATIVE_BINDING');
       // bindNativeTurn repeats canonical mapping/Stop/revision checks under the
       // supplied host callback. Neither this response nor a config flag is proof.
-      if (!grant) { grant = broker.bindNativeTurn(binding); bindingHash = digest(binding); }
+      if (!grant) { grant = broker.bindNativeTurn(binding); bindingHash = digest(binding); grantedScope = {projectId:binding.projectId,runId:binding.runId,attemptId:binding.attemptId}; }
       if (digest(binding) !== bindingHash) throw Error('FRONTEND_NATIVE_BINDING_CHANGED');
       broker.tools(grant.handle);
-      return reply(200, { ok: true, result: { binding, endpoint: url + '/mcp/frontend-tools', authorization: grant.authorization, expiresAt: grant.expiresAt } });
+      return { binding, endpoint: url + '/mcp/frontend-tools', authorization: grant.authorization, expiresAt: grant.expiresAt };
+      });
+      return reply(200, { ok: true, result });
     } catch (e) { if (!res.headersSent) reply(403, { ok: false, error: /^FRONTEND_[A-Z_]+$/.test(e.code ?? e.message) ? e.code ?? e.message : 'FRONTEND_NATIVE_DENIED' }); else res.destroy(); }
   });
   server.requestTimeout = 10000; server.headersTimeout = 5000; server.maxHeadersCount = 24;
   await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
   const url = `http://127.0.0.1:${server.address().port}`;
-  http = createFrontendToolsHttpHandler({ broker, endpoint: url + '/mcp/frontend-tools', authenticateOwner });
+  // This listener owns one attempt, while the application broker is shared.
+  // Closing a native process revokes its grant without closing other runs.
+  http = createFrontendToolsHttpHandler({ broker: {...broker,close:async()=>{if(grantedScope)await broker.revokeRun(grantedScope,'native-gateway-closed');}}, endpoint: url + '/mcp/frontend-tools', authenticateOwner });
   return Object.freeze({
     url,
     // HOST ONLY. Feed to the child through its inherited private pipe; never

@@ -20,7 +20,8 @@ export function relativeTextPath(p){
   return p;
 }
 export function checkProfile(p,now=Date.now()){
-  exact(p,['version','projectId','taskId','runId','threadId','envelopeDigest','identitySnapshot','scope','route','policyGeneration','toolGeneration','manifestDigest','contextDigest','expiresAt']);
+  exact(p,['version','projectId','taskId','runId','threadId','envelopeDigest','identitySnapshot','scope','route','policyGeneration','toolGeneration','manifestDigest','contextDigest','expiresAt',...(Object.hasOwn(p??{},'purpose')?['purpose']:[])]);
+  if(Object.hasOwn(p,'purpose')&&p.purpose!=='supervised-frontend-v1')fail('PROFILE_PURPOSE_DENIED');
   if(p.version!==1||!Number.isSafeInteger(p.expiresAt)||p.expiresAt<=now)fail('PROFILE_EXPIRED');
   for(const k of ['projectId','taskId','runId','threadId','policyGeneration','toolGeneration'])if(typeof p[k]!=='string'||!p[k]||p[k].length>200)fail('PROFILE_INVALID');
   for(const k of ['envelopeDigest','identitySnapshot','manifestDigest','contextDigest'])if(!/^[a-f0-9]{64}$/.test(p[k]))fail('PROFILE_INVALID');
@@ -36,7 +37,9 @@ export function checkProfile(p,now=Date.now()){
   exact(p.scope,['paths','capabilities','maxBytes']);
   if(!Array.isArray(p.scope.paths)||!p.scope.paths.length||p.scope.paths.length>32)fail('SCOPE_INVALID');
   p.scope.paths.forEach(x=>x==='.'?null:relativeTextPath(x));
-  if(!Array.isArray(p.scope.capabilities)||!p.scope.capabilities.length||p.scope.capabilities.some(x=>!['read','propose','workspace.write'].includes(x)))fail('SCOPE_INVALID');
+  if(p.purpose==='supervised-frontend-v1'){
+    if(JSON.stringify(p.scope.paths)!=='["."]'||JSON.stringify(p.scope.capabilities)!=='["frontend_selection_read"]')fail('SCOPE_INVALID');
+  }else if(!Array.isArray(p.scope.capabilities)||!p.scope.capabilities.length||p.scope.capabilities.some(x=>!['read','propose','workspace.write'].includes(x)))fail('SCOPE_INVALID');
   if(!Number.isSafeInteger(p.scope.maxBytes)||p.scope.maxBytes<1||p.scope.maxBytes>65536)fail('SCOPE_INVALID');
   return structuredClone(p);
 }

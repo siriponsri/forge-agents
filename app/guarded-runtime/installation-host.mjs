@@ -65,7 +65,7 @@ export function createGuardedInstallationHost({t3Host,observeSelectedRoute,artif
         const connection={binaryPath:artifacts.opencode.path,serverUrl:s.url,serverPassword:s.password,directory:runtimeDirectory,environment:{}};
         s.revokeT3=registerInstallationConnection(t3Host,connection,()=>current(s));
         const nativeT3=await import(pathToFileURL(artifacts.t3.entry).href),t3Check=await nativeT3.probeInstallationConnection(connection);current(s);
-        if(t3Check.negativeCount!==2||t3Check.providerTurns!==0||!t3Check.version.includes('2.4.1-forge-guarded.0'))fail('COMPILED_T3_CHECK_FAILED');
+        if(t3Check.negativeCount!==2||t3Check.providerTurns!==0||!['2.4.1-forge-guarded.0','2.4.1-forge-frontend.0'].includes(t3Check.version))fail('COMPILED_T3_CHECK_FAILED');
         const rules=[{action:'*',resource:'*',effect:'deny'},...['read_text','propose_change','edit_text'].map(name=>({action:'forge_guarded_'+name,resource:'*',effect:'allow'}))];
         const session=(await api(s,'/api/session',{location:{directory:runtimeDirectory},model:{providerID:provider.id,id:provider.model},permissions:rules})).data;s.nativeSessionId=session.id;
         const body={nonce:randomBytes(32).toString('hex'),sessionID:session.id},mac=createHmac('sha256',key).update(canonical(body)).digest('hex');
@@ -78,12 +78,23 @@ export function createGuardedInstallationHost({t3Host,observeSelectedRoute,artif
     },
     readiness(handle){const s=state(handle);try{current(s);if(!s.readiness||!s.child||s.child.exitCode!==null||s.child.signalCode)return null;return structuredClone(s.readiness);}catch{return null;}},
     qualifyRoute(handle,request){
-      const s=state(handle);try{current(s);if(!s.readiness||!s.child||s.child.exitCode!==null||s.child.signalCode||request.limits?.maxTokens!==null||request.limits?.maxCost!==null)return null;
+      const s=state(handle);try{current(s);if(request.purpose!==undefined||!s.readiness||!s.child||s.child.exitCode!==null||s.child.signalCode||request.limits?.maxTokens!==null||request.limits?.maxCost!==null)return null;
         exact(request.limits,['maxRunMs','maxTokens','maxCost']);if(!Number.isSafeInteger(request.limits.maxRunMs)||request.limits.maxRunMs<1000||request.limits.maxRunMs>3600000)return null;
         exact(request.scope,['paths','capabilities']);
         if(!request.scope?.paths?.length||request.scope.capabilities.some(c=>!['read','propose','workspace.write'].includes(c)))return null;request.scope.paths.forEach(p=>p==='.'?null:relativeTextPath(p));
         for(const key of ['projectId','taskId','envelopeDigest','identitySnapshot'])if(typeof request[key]!=='string'||!request[key])return null;
         return {version:1,projectId:request.projectId,taskId:request.taskId,envelopeDigest:request.envelopeDigest,identitySnapshot:request.identitySnapshot,scopeDigest:digest(request.scope),mode:'mediated-actions',nativeActions:'guarded',normalizedActions:'guarded',evidenceId:s.readiness.evidenceId,expiresAt:s.expiresAt};
+      }catch{return null;}
+    },
+    qualifyFrontendRoute(handle,request){
+      const s=state(handle);try{
+        current(s);if(request.purpose!=='supervised-frontend-v1'||!s.readiness||!s.child||s.child.exitCode!==null||s.child.signalCode)return null;
+        exact(request.scope,['paths','capabilities']);
+        if(digest(request.scope)!==digest({paths:['.'],capabilities:['frontend_selection_read']}))return null;
+        exact(request.limits,['maxRunMs','maxTokens','maxCost']);
+        if(request.limits.maxTokens!==null||request.limits.maxCost!==null||!Number.isSafeInteger(request.limits.maxRunMs)||request.limits.maxRunMs<1000||request.limits.maxRunMs>3600000)return null;
+        for(const key of ['projectId','taskId','envelopeDigest','identitySnapshot'])if(typeof request[key]!=='string'||!request[key])return null;
+        return {version:1,purpose:request.purpose,projectId:request.projectId,taskId:request.taskId,envelopeDigest:request.envelopeDigest,identitySnapshot:request.identitySnapshot,scopeDigest:digest(request.scope),mode:'supervised-frontend',nativeActions:'selection-only',normalizedActions:'selection-only',evidenceId:'frontend-route-v1:'+digest({selected:selected(),scope:request.scope,installation:s.readiness.evidenceId}),expiresAt:s.expiresAt};
       }catch{return null;}
     },
     close,

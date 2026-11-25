@@ -15,7 +15,7 @@ import {openLocalGateway} from './local-gateway.mjs';
  * sends a provider/model request. `attest` invokes the actual native gate probe.
  * No API here is mounted on HTTP/MCP or accepts model-owned configuration.
  */
-export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,authorizeCurrent,authorizeAction,authorizeNativePhase,beforeAction,recordReceipt,withFence,artifacts,clock=Date.now}){
+export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,authorizeCurrent,authorizeAction,authorizeNativePhase,beforeAction,recordReceipt,withFence,artifacts,createFrontendGateway,clock=Date.now}){
   assertInstalledT3Host(t3Host);
   if(![readRun,validateReservation,authorizeCurrent,authorizeAction,recordReceipt,withFence].every(x=>typeof x==='function'))fail('CANONICAL_HOST_REQUIRED');
   if([authorizeNativePhase,beforeAction].some(x=>x!==undefined&&typeof x!=='function'))fail('CANONICAL_HOST_REQUIRED');
@@ -48,6 +48,10 @@ export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,aut
     if(!response.ok)fail('NATIVE_ATTESTATION_DENIED');return response.json();
   }
   return Object.freeze({
+    // Observation only: never calls current(), root admission, or a qualifier.
+    privateSnapshot(lease){const s=state(lease);let live=s.phase==='attested'&&!!s.attestation&&!!s.child&&s.child.exitCode===null&&!s.child.signalCode&&clock()<s.profile.expiresAt;
+      if(live)try{artifact('t3',s.profile.route.t3BinarySha256);artifact('opencode',s.profile.route.opencodeBinarySha256);}catch{live=false;}
+      return structuredClone({profile:s.profile,attestation:s.attestation??null,phase:s.phase,phases:observeInstalledT3Host(t3Host,lease)?.phases??[],live});},
     assertCurrent(lease){return current(state(lease)).profile;},
     runtimeDirectory(lease){return state(lease).runtimeDirectory;},
     reserve(input){
@@ -70,6 +74,20 @@ export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,aut
       s.phase='binding';
       try{
         const authority=createProfileAuthority({readCurrent:()=>current(s),clock}),handle=authority.bind(s.profile);
+        if(s.profile.purpose==='supervised-frontend-v1'){
+          if(typeof createFrontendGateway!=='function')fail('FRONTEND_GATEWAY_REQUIRED');
+          s.gateway=await createFrontendGateway({profile:structuredClone(s.profile),assertCurrent:()=>current(s).profile,
+            withFence:fn=>withFence(s.profile.runId,fn),authorizePhase:(body,profile)=>{
+              const p=current(s).profile;if(digest(profile)!==digest(p)||body.profileDigest!==digest(p))fail('FRONTEND_PROFILE_CHANGED');
+              if(body.sessionID!==null&&body.sessionID!==s.nativeSessionId)fail('NATIVE_SESSION_CHANGED');
+              const permitted=s.phase==='attested'||['create','discovery'].includes(body.phase);
+              return permitted&&(!authorizeNativePhase||synchronous(authorizeNativePhase,{profile:p,run:synchronous(readRun,p.runId),workspace:s.workspace,runtimeDirectory:s.runtimeDirectory,body,phase:s.phase,attestation:s.attestation??null})===true);
+            }});
+          if(!s.gateway||!/^http:\/\/127\.0\.0\.1:[0-9]+$/.test(s.gateway.url)||typeof s.gateway.bootstrap!=='function'||typeof s.gateway.close!=='function')fail('FRONTEND_GATEWAY_REQUIRED');
+          const bootstrap=s.gateway.bootstrap();exact(bootstrap,['key','brokerUrl']);
+          if(bootstrap.brokerUrl!==s.gateway.url||!/^[a-f0-9]{64}$/.test(bootstrap.key))fail('FRONTEND_GATEWAY_REQUIRED');
+          s.key.fill(0);s.key=Buffer.from(bootstrap.key,'hex');
+        }else{
         const file=await openConfinedText({binary:artifacts.fileBroker.path,binarySha256:artifacts.fileBroker.sha256,root:s.workspace});
         s.broker=createBoundedBroker({authority,handle,key:s.key,file,receiptPath:s.receiptPath,withFence,recordReceipt,beforeAction:beforeAction?input=>{
           if(s.phase!=='attested')fail('NATIVE_ATTESTATION_REQUIRED');
@@ -82,6 +100,7 @@ export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,aut
           const permitted=s.phase==='attested'||['create','discovery'].includes(body.phase)||s.phase==='attesting'&&['attest','raw','resolved','executor'].includes(body.phase);
           return permitted&&(!authorizeNativePhase||synchronous(authorizeNativePhase,{profile:s.profile,run:synchronous(readRun,s.profile.runId),workspace:s.workspace,runtimeDirectory:s.runtimeDirectory,body,phase:s.phase,attestation:s.attestation??null})===true);
         }});
+        }
         const env={SystemRoot:process.env.SystemRoot,TEMP:s.homeDirectory,TMP:s.homeDirectory,HOME:s.homeDirectory,USERPROFILE:s.homeDirectory,APPDATA:s.homeDirectory,LOCALAPPDATA:s.homeDirectory,XDG_CONFIG_HOME:s.homeDirectory,XDG_DATA_HOME:s.homeDirectory,XDG_CACHE_HOME:s.homeDirectory,FORGE_GUARDED_BOOTSTRAP_FD:'3',OPENCODE_PASSWORD:s.password,OPENCODE_DISABLE_AUTOUPDATE:'1',OPENCODE_DISABLE_MODELS_FETCH:'1',OPENCODE_DISABLE_FILEWATCHER:'1',OPENCODE_DISABLE_FFF:'1',GIT_CONFIG_NOSYSTEM:'1',GIT_CONFIG_GLOBAL:'NUL'};
         s.child=spawn(artifacts.opencode.path,['serve','--hostname','127.0.0.1','--port','0'],{cwd:s.runtimeDirectory,env,windowsHide:true,stdio:['ignore','pipe','pipe','pipe']});
         s.childDone=new Promise(resolve=>s.child.once('close',resolve));
@@ -90,7 +109,7 @@ export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,aut
         const url=new Promise((resolve,reject)=>{let text='';const inspect=b=>{text+=b.toString();if(text.length>32000)text=text.slice(-32000);const match=text.match(/http:\/\/127\.0\.0\.1:[0-9]+/);if(match)resolve(match[0]);};s.child.stdout.on('data',inspect);s.child.stderr.on('data',inspect);s.child.once('error',reject);s.child.once('exit',()=>reject(Error('NATIVE_BOOTSTRAP_FAILED')));});
         s.child.stdio[3].end(canonical({version:1,profile:s.profile,key:s.key.toString('hex'),brokerUrl:s.gateway.url,provider:s.provider,runtimeDirectory:s.runtimeDirectory,toolManifest:s.toolManifest}));
         s.url=await Promise.race([url,new Promise((_,reject)=>{const timer=setTimeout(()=>reject(Error('NATIVE_BOOTSTRAP_TIMEOUT')),15000);s.childDone.then(()=>clearTimeout(timer));})]);
-        current(s);const info=await api(s,'/api/info');if(!String(info.version??info.data?.version).includes('2.4.1-forge-guarded.0'))fail('NATIVE_VERSION_CHANGED');
+        current(s);const info=await api(s,'/api/info');if(!['2.4.1-forge-guarded.0','2.4.1-forge-frontend.0'].includes(String(info.version??info.data?.version)))fail('NATIVE_VERSION_CHANGED');
         s.phase='bound';return Object.freeze({url:s.url,password:s.password,binaryPath:artifacts.opencode.path,runtimeDirectory:s.runtimeDirectory,profileHandle:lease});
       }catch(e){await close(lease,'bind-failed');throw e;}
     },
@@ -100,9 +119,18 @@ export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,aut
       const session=(await api(s,`/api/session/${encodeURIComponent(nativeSessionId)}`)).data;
       const variant=Array.isArray(s.profile.route.options)?s.profile.route.options.find(x=>x.id==='variant')?.value:s.profile.route.options.variant;
       if(session.location.directory!==s.runtimeDirectory||session.parentID||session.metadata?.forgeGuard?.profileDigest!==digest(s.profile)||session.model.providerID!==s.profile.route.apiProviderId||`${session.model.providerID}/${session.model.id}`!==s.profile.route.modelId||(session.model.variant??'default')!==(variant??'default'))fail('NATIVE_SESSION_CHANGED');
-      const expectedRules=[{action:'*',resource:'*',effect:'deny'},...['read_text','propose_change','edit_text'].map(name=>({action:'forge_guarded_'+name,resource:'*',effect:'allow'}))];
+      const frontend=s.profile.purpose==='supervised-frontend-v1';
+      const expectedRules=[{action:'*',resource:'*',effect:'deny'},...(frontend?['forge_frontend_selection_read']:['read_text','propose_change','edit_text'].map(name=>'forge_guarded_'+name)).map(action=>({action,resource:'*',effect:'allow'}))];
       if(digest(session.permissions)!==digest(expectedRules))fail('NATIVE_POLICY_CHANGED');
       s.nativeSessionId=nativeSessionId;s.phase='attesting';
+      if(frontend){
+        // The default three-tool negative probe cannot attest another purpose.
+        // Observe the authenticated actual session and shared T3 lifecycle only.
+        current(s);const native=observeInstalledT3Host(t3Host,lease);
+        if(!native?.phases.includes('openSession')||!native.phases.includes('ensureThread')||s.child.exitCode!==null||s.child.signalCode)fail('NATIVE_PROCESS_NOT_LIVE');
+        const p=s.profile,r={version:1,purpose:p.purpose,sessionID:nativeSessionId,pid:s.child.pid,binarySha256:p.route.opencodeBinarySha256,profileDigest:digest(p),manifestDigest:p.manifestDigest,contextDigest:p.contextDigest,toolGeneration:p.toolGeneration,policyGeneration:p.policyGeneration,runtimeDirectory:s.runtimeDirectory,names:['forge_frontend_selection_read']};
+        s.attestation=Object.freeze({...r,evidenceId:'frontend-session-v1:'+digest(r)});s.phase='attested';return structuredClone(s.attestation);
+      }
       const body={nonce:randomBytes(32).toString('hex'),sessionID:nativeSessionId},mac=createHmac('sha256',s.key).update(canonical(body)).digest('hex');
       try{
         const observed=await api(s,'/api/forge/attest',body,{'X-Forge-Probe':mac}),r=observed.result;
@@ -111,7 +139,7 @@ export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,aut
       }catch(e){await close(lease,'attestation-failed');throw e;}
     },
     qualify(lease,request){
-      const s=state(lease);try{current(s);if(s.phase!=='attested'||!s.attestation||!s.child||s.child.exitCode!==null||s.child.signalCode)return null;
+      const s=state(lease);try{current(s);if(s.profile.purpose||s.phase!=='attested'||!s.attestation||!s.child||s.child.exitCode!==null||s.child.signalCode)return null;
         const native=observeInstalledT3Host(t3Host,lease);if(!native?.phases.includes('openSession')||!native.phases.includes('ensureThread'))return null;
         const p=s.profile,scope={paths:p.scope.paths,capabilities:p.scope.capabilities};
         if(request.projectId!==p.projectId||request.taskId!==p.taskId||request.envelopeDigest!==p.envelopeDigest||request.identitySnapshot!==p.identitySnapshot||digest(request.scope)!==digest(scope)||digest(request.limits)!==digest(s.limits))return null;
