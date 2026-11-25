@@ -46,6 +46,18 @@ test('sole Workspace dispatch, opaque authority, actual Context consumption, bou
   const changed=await h.bridge.executionOwner.validate(h.validateInput(),h.owner);assert.equal(h.f.store.read().events.find(e=>e.id===changed.evidenceId).status,'FAILED');assert.equal(h.f.store.read().events.find(saved=>saved.id===e.id).digest,e.digest);
 });
 
+test('Research service rechecks evaluated owned bytes and keeps every prior evidence snapshot',async t=>{
+  const h=await fixture(t);await h.start();await output(h);
+  const input=()=>({projectId:h.f.p.id,trialId:h.trial.id,operationId:crypto.randomUUID(),expectedRevision:h.currentTrial().revision});
+  assert.equal((await h.research.reconcile(input(),h.owner)).status,'awaiting-validation');
+  const passed=await h.research.validate(input(),h.owner),first=structuredClone(h.f.store.read().events.find(e=>e.id===passed.evidenceId));assert.equal(passed.status,'PASSED');
+  await writeFile(path.join(h.w.worktreePath,'output.json'),'[]');
+  const failed=await h.research.validate(input(),h.owner);assert.equal(failed.status,'FAILED');assert.notEqual(failed.evidenceId,first.id);assert.deepEqual(h.f.store.read().events.find(e=>e.id===first.id),first);
+  await output(h);assert.equal((await h.research.validate(input(),h.owner)).status,'PASSED');
+  assert.equal(h.f.store.read().events.filter(e=>e.type==='research.evidence').length,3);assert.equal(h.f.starts,1);
+  await h.research.stop(input(),h.owner);await assert.rejects(h.research.validate(input(),h.owner),{code:'RESEARCH_EVIDENCE'});
+});
+
 test('default and incomplete native qualification refuse before the Workspace owner or dataset effect',async t=>{
   const h=await fixture(t,{qualified:false});await assert.rejects(h.start(),{code:'RESEARCH_ENFORCEMENT_UNAVAILABLE'});assert.equal(h.observed.starts.length,0);assert.equal(h.f.starts,0);assert.equal(h.currentTrial().prepared,undefined);
 });

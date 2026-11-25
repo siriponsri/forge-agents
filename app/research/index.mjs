@@ -173,7 +173,7 @@ export function createResearchService({store,dataDir,executionOwner,authorizeOwn
     validate(input,caller){return track(mutate('validate',input,caller,async i=>{
       const {t}=readTrial(i);revision(t,i.expectedRevision);
       if(t.manifest.execution==='local')return validateLocal(i);
-      if(!supported()||t.status!=='awaiting-validation')fail('RESEARCH_EVIDENCE','Completed owned run required for independent validation',409);
+      if(!supported()||!['awaiting-validation','PASSED','FAILED'].includes(t.status))fail('RESEARCH_EVIDENCE','Completed owned run required for independent validation',409);
       const r=canonicalRun(t,store.read());
       const result=await executionOwner.validate({projectId:i.projectId,runId:r.id,attemptId:r.attemptId,trialId:t.id,manifestDigest:t.manifestDigest,dataset:t.manifest.dataset},caller);
       // The owner returns a canonical evidence ID, never a success boolean.

@@ -12,6 +12,12 @@ deadline-during-setup1 PASS. The earlier combined bridge/production Research
 run19 PASS. Counts overlap; no new all-green full-suite claim. Fresh independent
 fix recheck and native implementation work remain active.
 
+The reviewer also found evaluated agent trials could not use the GUI's Recheck.
+The service now permits eligible PASSED/FAILED rechecks while the existing bridge
+requires the exact completed unstopped attempt and receipt. Service-level
+pass/tamper/fail/repair/pass history and Stop rejection regression1 PASS; no
+second execution or rewritten historical evidence.
+
 ## Research execution bridge and website integration — 2026-11-25
 
 Scoped bridge2e3bcbe is merged as e55e690 and connected to the production

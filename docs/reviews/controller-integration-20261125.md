@@ -15,9 +15,15 @@ Drive auth module with a gated, injected token response and counter-only vault,
 and an admitted held metadata restore. Cancelled/rolled-back Git/SQLite/Context
 bridge regressions2 PASS; actual deadline-during-setup1 PASS. Native execution
 and qualification remain explicitly injected; no provider/account call occurred.
-The latter test now has a realistic admission window, bounded timeout and an
+The deadline test now has a realistic admission window, bounded timeout and an
 early-dispatch failure race so a slow Git check cannot leave an unreached gate
-waiting forever. These are lead corrections; independent recheck is pending.
+waiting forever. A third P2 finding showed that the production Research service
+blocked the GUI's Recheck after PASSED/FAILED. Eligible evaluated trials now
+reach the same independent checker; its exact completed, unstopped attempt and
+receipt/ownership gates remain mandatory. A real service regression verifies
+PASSED -> changed bytes -> FAILED -> restored correct bytes -> PASSED, with all
+three prior evidence snapshots retained and one execution only. Stop prevents
+further recheck. This regression1 PASS; independent fix recheck is pending.
 
 Independent read-only review of `71fd27e`, 25 November2026. Reviewer actual runtime
 `gpt-6.1-sol`, `xhigh`; disposable SQLite/HTTP/native-wire reproductions, no real
