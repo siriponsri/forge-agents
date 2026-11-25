@@ -1,5 +1,16 @@
 # Decisions
 
+## L01 — Apache-2.0 local core — 2026-11-25
+
+Owner explicitly chose Apache-2.0 for FORGE's open-source local core. The root
+LICENSE now contains the unmodified official Apache2.0 text (SHA256
+cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30).
+NOTICE records first-party attribution; third-party licenses/notices and
+protected packaged legacy payloads remain unchanged. Final README/landing copy
+must reflect the actual license without claiming a released installer or full
+product qualification. Sources: https://www.apache.org/licenses/LICENSE-2.0 and
+https://opensource.org/license/mit (alternatives verified before the decision).
+
 ## Owner extensions and P01 — 2026-11-25
 
 Owner chose applying the attached SuperUser pack to **both the app and team

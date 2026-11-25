@@ -1,5 +1,9 @@
 # Third-Party Notices
 
+Original FORGE code is Apache-2.0 under the root LICENSE and NOTICE following
+the owner's decision of25 November2026. The grant does not replace any license
+or attribution below or in separately packaged dependencies and legacy payloads.
+
 The optional AO Limited adapter interoperates with Agent Orchestrator by
 Untrivial AI. The evaluated target is release `v0.13.0`, commit
 `15e9ea971f1711ec8b50e157d6eb300db6cbe0d6`, licensed under Apache-2.0.
