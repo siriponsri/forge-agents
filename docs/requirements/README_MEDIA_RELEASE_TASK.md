@@ -86,4 +86,8 @@ GitHub-compatible diagram rendering, readable GIF frames/screenshots, no sensiti
 content, verified file sizes and consistency with the final acceptance ledger.
 Do not mark this task complete from the current first Visualization slice.
 
-Status: **ACCEPTED / REFERENCE_RESEARCH_DONE / FINAL_REWRITE_AND_MEDIA_PENDING**.
+Status: **ENGLISH_REWRITE_AND_MEDIA_PREPARED / FINAL_MERGED_REFRESH_REVIEW_PENDING**.
+Prepared media47fba99 contains21 actual screenshots, four real step-by-step GIFs,
+source video, captions and provenance. Root English README is rewritten and P11
+history archived. Capture revision remainsf8dbd0d; do not claim the final release
+documentation gate passed before merged runtime verification and media refresh.

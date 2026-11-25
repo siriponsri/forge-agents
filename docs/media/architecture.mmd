@@ -1,13 +1,21 @@
 flowchart LR
-  Owner[Owner in localhost GUI] --> Forge[FORGE canonical services<br/>Projects ยท Plans ยท Tasks ยท Approvals ยท Evidence]
-  Forge --> T3[T3 provider threads<br/>Single execution owner]
-  T3 --> Projection[AG-UI state and events]
-  Projection --> Views[Chat and Nodeโ€“Edge Workspace<br/>Two views of canonical records]
+  Owner["Owner<br/>Decisions and approval"] --> Forge["FORGE canonical services<br/>Projects / plans / tasks / evidence"]
+  Forge --> T3["T3 provider threads<br/>Single execution owner"]
+  T3 --> Projection["AG-UI<br/>Observed state and events"]
+  Projection --> Views["Chat + Node-Edge Workspace<br/>Two views of the same records"]
   Views --> Forge
-  Forge --> Office[Univer native Docs and Sheets<br/>Revisioned save and reopen]
-  Office --> Reports[Saved ReportSpec and source revisions<br/>WordCraft / PdfCraft]
-  Reports --> Artifacts[Verified local artifacts and provenance]
+  Forge --> Office["Univer Docs + Sheets<br/>Revisioned save and reopen"]
+  Office --> Reports["Saved ReportSpec and source revisions<br/>WordCraft / PdfCraft"]
+  Reports --> Artifacts["Verified artifacts<br/>Content hashes and provenance"]
   T3 --> Artifacts
-  Artifacts --> Review[QA evidence and Owner acceptance]
-  Forge -.-> Guard[Native guarded automation<br/>NOT_QUALIFIED<br/>Native supervisor unqualified]
-  Forge -.-> Assist[Executor and Asst roles<br/>Existing execution authority; no second planner]
+  Artifacts --> Review["QA evidence<br/>Owner acceptance"]
+  Forge -.-> Guard["Guarded route<br/>Product activation pending"]
+  Forge -.-> Assist["Executor + Asst<br/>Roles within existing execution authority"]
+  classDef owner fill:#ff8a33,color:#171717,stroke:#e46c14,stroke-width:2px;
+  classDef core fill:#153c58,color:#edf6ff,stroke:#4f9bcc,stroke-width:2px;
+  classDef data fill:#202932,color:#edf6ff,stroke:#708494;
+  classDef pending fill:#292722,color:#efe5cd,stroke:#ad9666,stroke-dasharray:5 4;
+  class Owner,Review owner;
+  class Forge,T3 core;
+  class Projection,Views,Office,Reports,Artifacts,Assist data;
+  class Guard pending;

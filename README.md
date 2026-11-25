@@ -1,356 +1,287 @@
 # FORGE
 
-**A local workspace for ideas, agents, documents, and verified delivery.**
+**From an idea to a plan, working files, a preview and verified delivery.**
 
-พื้นที่ทำงานสำหรับผู้ใช้ no-code: จัดทีมและแผนงาน รัน Python แก้เอกสารและตาราง
-สร้างรายงาน และติดตามผลผ่าน GUI บนเครื่อง โดยใช้ T3 เป็นเจ้าของการเรียกโมเดล
+FORGE is a local-first workspace for coordinating AI agents and reviewing their
+work. Keep conversations, task dependencies, documents, code, test evidence and
+deliverables in one project, with explicit Owner approval at the boundaries that
+matter.
 
-[เริ่มใช้งาน](docs/FORGE_LOCAL_QUICKSTART_TH.md) ·
-[สถานะจริง](docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md) ·
-[ย้ายเครื่องและงานค้าง](docs/handoff/MACHINE_TRANSFER_20261124.md) ·
-[Public website](apps/website/README.md)
+[Get started](#run-locally) · [See the workflow](#idea-to-delivery) ·
+[Explore the screenshots](docs/media/README.md) ·
+[Thai setup guide](docs/FORGE_LOCAL_QUICKSTART_TH.md) ·
+[Development status](docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md)
 
-> **Machine-transfer checkpoint · 24 November 2026**
-> Owner สั่งหยุดพัฒนาและส่งงานปัจจุบันผ่าน `main` เพื่อย้ายเครื่อง
-> สถานะยังเป็น **IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN**
-> checkpoint นี้ไม่ใช่การรับรอง complete product หรือ production release
+![FORGE Mission showing a registered HTML preview and local test evidence. Engineering fixture with injected provider observations; actual local files, tests and preview.](docs/media/screenshots/mission-preview.png)
 
-## Open locally
+*Actual production App with disposable engineering data. Provider observations
+are injected; local tests, file preview and delivery artifacts are real.
+[Capture provenance and limitations](docs/media/manifest.json).*
 
-ต้องมี Node.js **24.13+**; Python ใช้สำหรับ notebook/local compute
+> **Development preview.** The local workbench is under active integration.
+> Native Guarded automation, native accounting coverage and final release checks
+> remain in progress. Live account checks and Home UAT are tracked separately.
+> There is no published signed desktop installer. Screenshots and recordings are
+> prepared documentation media, pending a refresh on the final integrated tree.
 
-1. Pull หรือดาวน์โหลด source ทั้ง repository
-2. Windows: เปิด **`Start-FORGE.cmd`** แล้วรอ browser แสดง readiness
-3. ปิดด้วย `Stop-FORGE.cmd`; เริ่มใหม่ด้วย `Restart-FORGE.cmd`
-4. macOS: มี launcher source; native macOS qualification ยัง **NOT_RUN**
+## A workspace that follows the work
+
+- **Plan and deliver.** Turn a brief into a reviewed Mission, canonical tasks and
+  measurable acceptance criteria. Register actual output files, run reviewed
+  local tests, preview supported static output and produce a verified Delivery Pack.
+- **See who is doing what.** Switch a team conversation into a Node-Edge Workspace
+  to inspect agents, runs, tools and artifacts. Both views use the same records
+  and existing permission-checked controls.
+- **Work in isolated checkouts.** Give independent tasks separate Git worktrees,
+  check their actual changes and review the integration queue. The original
+  workspace and its uncommitted work stay under their existing owner.
+- **Choose models deliberately.** Read connected provider catalogs and exact
+  model options. Assistance starts with a suitable Executor and brings in a
+  larger Asst for difficult or stuck work, under an explicit routing policy.
+- **Keep useful knowledge.** Search scoped local memory and retain provenance.
+  Central Owner Memory is private until the Owner shares an exact revision with
+  a named project. Editing or revoking that source invalidates the old grant.
+- **Create documents and reports.** Edit real Univer Docs and Sheets, save and
+  reopen revisions, then generate validated DOCX/PDF from saved report sources.
+- **Operate from the same project.** Run Python jobs, inspect artifacts, configure
+  compute and serving targets, review MCP permissions and monitor outcomes.
+  Unknown results and unreported costs remain visible as unknown.
+
+The interface defaults to Thai, supports English and includes 15 semantic themes.
+The local core is [Apache-2.0](LICENSE). Optional remote and team services are a
+future direction, not a dependency of the local workbench.
+
+## Run locally
+
+Windows is the currently developer-qualified platform. Install **Node.js 24.13+**
+and **Git** for coding and worktree features. Python is needed for local notebook
+and job execution. The first launch needs internet access to obtain the pinned
+dependencies and build the App.
+
+1. Clone the complete repository, or extract its complete source archive.
+2. Double-click **[Start-FORGE.cmd](Start-FORGE.cmd)** in the repository root.
+3. Wait for readiness and the browser to open. The default address is
+   **http://127.0.0.1:4317**; the launcher can select another available local port.
+4. Create a project with its own workspace folder. Keep it separate from FORGE's
+   source repository, then configure a provider in project Settings.
+5. Use **[Stop-FORGE.cmd](Stop-FORGE.cmd)** to stop the service, or
+   **[Restart-FORGE.cmd](Restart-FORGE.cmd)** to restart it.
+
+Closing the browser does not stop FORGE. Provider sign-in belongs to FORGE's
+isolated matching T3 runtime; your development application's sessions are not
+copied into it. API keys use the machine vault and explicit references.
+
+For a terminal-based start:
 
 ```powershell
-git pull --ff-only origin main
+git clone https://github.com/siriponsri/forge-agents.git
+cd forge-agents
 npm ci --include=dev
 npm run build
 npm start
 ```
 
-ค่าเริ่มต้น: **http://127.0.0.1:4317**
-ข้อมูลและการเชื่อมต่อเป็นของแต่ละเครื่อง; Git ไม่ย้าย credentials หรือฐานข้อมูลส่วนตัว
+macOS launcher sources are included as `.command` files. Native macOS operation
+and secure credential entry are not yet qualified; see the current status before
+choosing that platform.
 
-## One workspace, clear ownership
+## Idea to delivery
+
+1. **Write the brief.** Define the outcome, inputs, acceptance criteria,
+   dependencies and unresolved decisions. Workflow presets help structure it.
+2. **Review the plan.** Choose the team and task dependencies, then approve the
+   concrete plan before execution.
+3. **Inspect the work.** Follow the task's real run and registered output files.
+   Chat and Workspace provide conversation and graph views of the same evidence.
+4. **Verify the output.** Review the test command and source hashes, run supported
+   local checks and open the immutable static preview.
+5. **Accept the delivery.** Review QA evidence, record Owner acceptance and build
+   the Delivery Pack with its files, manifest, test results and limitations.
+
+![Step-by-step software Mission: brief, reviewed plan, injected run observation, actual local tests, preview and verified ZIP.](docs/media/software-mission.gif)
+
+*Real screen recording at 2x speed. Mission source files are predetermined
+engineering input; no model authored them in this recording. Local effects are
+real. [Static alternative](docs/media/screenshots/mission-preview.png) ·
+[Full steps and source recording](docs/media/README.md#software-mission).*
+
+```mermaid
+flowchart LR
+  Brief["Mission + resolved decisions"] --> Plan["Owner-approved plan"]
+  Plan --> Run["Scoped T3 execution"]
+  Run --> Files["Registered output bytes"]
+  Files --> Checks["Local tests + preview"]
+  Checks --> Review["QA + Owner acceptance"]
+  Review --> Pack["Verified Delivery Pack"]
+  Run -. "difficult or stuck" .-> Asst["Asst advice"]
+  Asst -. "reviewed next action" .-> Run
+  classDef decision fill:#ff8a33,color:#171717,stroke:#e46c14;
+  classDef work fill:#153c58,color:#edf6ff,stroke:#4f9bcc;
+  classDef evidence fill:#203b32,color:#edf9f2,stroke:#76a88e;
+  class Plan,Review decision;
+  class Brief,Run,Asst work;
+  class Files,Checks,Pack evidence;
+```
+
+Unknown execution outcomes are reconciled using their existing identities.
+Reconnection and page reload do not mean an uncertain action should run again.
+
+## More walkthroughs
+
+<details>
+<summary>Open the local workspace</summary>
+
+1. Open the ready local App and create a project.
+2. Select the saved project and open its workspace.
+
+![Real local readiness, project creation and project selection. The Windows launcher and clean installation are not recorded.](docs/media/start-forge.gif)
+
+[Static alternative](docs/media/screenshots/overview.png). This clip begins after
+the localhost service is ready; it does not film installation or the launcher.
+
+</details>
+
+<details>
+<summary>Switch Chat to a Node-Edge Workspace</summary>
+
+1. Select a team room and keep a conversation draft.
+2. Switch to Workspace and inspect the selected Executor run.
+3. Inspect persisted recovery and the tool's unconfirmed outcome.
+4. Return to Chat with the draft preserved.
+
+![Chat-to-Workspace recording with explicitly injected agent, run and tool observations. Canonical IDs and draft preservation are real; no live model or Stop effect is claimed.](docs/media/chat-workspace.gif)
+
+[Static alternative](docs/media/screenshots/workspace.png). The graph's provider
+observations are injected. An unconfirmed tool result stays unconfirmed.
+
+</details>
+
+<details>
+<summary>Edit a document and generate a report</summary>
+
+1. Apply a bounded edit in the actual Sheets editor, save and reopen it.
+2. Edit, save and reopen a document in the actual Docs editor.
+3. Save a ReportSpec from the saved Sheets source.
+4. Generate DOCX/PDF, inspect the rendered PDF and verify the downloads.
+
+![Actual Univer editing, revisioned saves and reopens, followed by native WordCraft and PdfCraft output generation and preview. Edits are manually requested; no model call.](docs/media/office-report.gif)
+
+[Static alternative](docs/media/screenshots/report-preview.png). These are actual
+Windows native engine outputs. Report engines and local fonts are configured
+separately; the recording does not redistribute them.
+
+</details>
+
+All clips are real Chromium recordings with numbered documentation captions,
+selected contiguous intervals and disclosed 2x speed. No synthetic frames are
+used. [All 21 screenshots, static alternatives and provenance](docs/media/README.md).
+
+## How the system fits together
 
 ```mermaid
 flowchart TB
-  owner["Owner · goals, review, release"] --> gui["FORGE GUI · TH / EN · 15 themes"]
-  gui --> core["Canonical services · SQLite + durable events"]
-  core --> t3["T3 · supervised model execution"]
-  core --> office["Univer · Sheets + Docs"]
-  core --> reports["WordCraft / PdfCraft · Report Studio"]
-  core --> adapters["Compute · Serving · Storage · Desktop"]
-  memory["Memory + explicit Owner sharing"] --> core
-  context["Context budgets + evidence references"] --> t3
-  t3 --> evidence["Artifacts · receipts · verification"]
-  office --> evidence
-  reports --> evidence
-  adapters --> evidence
-  evidence --> review["QA + Owner acceptance"]
-  review --> owner
-  classDef owner fill:#ff8a33,color:#171717,stroke:#ff8a33;
-  classDef core fill:#172b45,color:#e7f0ff,stroke:#5b9cdb;
-  class owner,review owner;
-  class gui,core,t3 core;
+  Owner["Owner: decisions and approval"] --> GUI["FORGE GUI: TH / EN"]
+  GUI --> Core["Canonical services: SQLite + durable events"]
+  Core --> T3["Matching T3 runtime: supervised execution"]
+  T3 --> State["AG-UI observations"]
+  State --> Chat["Chat + Node-Edge Workspace"]
+  Chat --> Core
+  Core --> Office["Univer Docs + Sheets"]
+  Office --> Reports["Saved ReportSpec: WordCraft / PdfCraft"]
+  Core --> Adapters["Compute / serving / storage / desktop"]
+  Memory["Scoped Memory + explicit Owner grants"] --> Context["Context policy + exact references"]
+  Context --> T3
+  T3 --> Evidence["Artifacts, receipts and verification"]
+  Reports --> Evidence
+  Adapters --> Evidence
+  Evidence --> Review["QA + Owner acceptance"]
+  classDef owner fill:#ff8a33,color:#171717,stroke:#e46c14;
+  classDef core fill:#153c58,color:#edf6ff,stroke:#4f9bcc;
+  classDef evidence fill:#203b32,color:#edf9f2,stroke:#76a88e;
+  class Owner,Review owner;
+  class GUI,Core,T3 core;
+  class Evidence evidence;
 ```
 
-Assistance เริ่มด้วย Executor ที่เหมาะกับงาน และใช้ Asst. สำหรับงานยากหรือติดขัด
-การเลือกโมเดลใช้ catalog ของ provider ที่เชื่อมไว้ พร้อม policy ที่มีที่มา
-Owner Memory เป็นส่วนกลางแบบส่วนตัว และแชร์ revision ให้แต่ละโปรเจกต์อย่างชัดเจน
-Telegram เป็นช่องทางแรกของ Hermes/OpenClaw: Inbox → อนุมัติในห้องเดิม → เริ่มงาน
+FORGE owns project, plan, task, approval and evidence records. T3 owns provider
+execution. Executor/Asst are execution roles; they do not introduce another
+planner or override approval. MCP selection does not itself grant permission:
+Allowed/Ask/Off policies and exact-operation checks apply at dispatch.
 
-## Verification and limits
+Telegram is the first supported mobile bridge channel through Hermes Agent or
+OpenClaw. New work enters an Inbox, is linked to a reviewed task and requires
+Owner approval in the originating channel. Live mobile qualification is tracked
+separately from the bridge's developer fixtures.
 
-ตรวจจริงแล้วในเครื่องพัฒนา: build/start, GUI และ persistence, Univer undo/redo,
-รายงานจาก Windows engines, Python process lifecycle, scoped memory/restore,
-และ MCP ผ่าน SDK กับ disposable fixtures ดูคำสั่งและขอบเขตใน
-[integration ledger](docs/owner/forge-local-complete-20261124-v3/progress/INTEGRATION_LEDGER.md)
+## Data, credentials and recovery
 
-Live account/provider/mobile/remote-compute checks, งาน integration ที่ค้าง,
-independent review และ Home UAT แยกไว้ใน handoff ไม่ถือว่าผ่านจาก fixture
-เว็บสาธารณะเตรียมไว้สำหรับ local review และ Cloudflare; **ยังไม่ deploy**
+Windows data defaults to `%LOCALAPPDATA%/FORGE/workbench`, outside the source
+checkout. Machine credentials, provider sessions and browser profiles are not
+portable project data and do not belong in Git.
 
-<details>
-<summary>Legacy P11 documentation — historical portable release, not the current v3 acceptance status</summary>
+Use the in-App storage and backup tools with their stated scope. Metadata backups
+and portable project bundles have different contents; neither should be treated
+as a copy of machine credentials or installed engines. Restoring older metadata
+preserves deletion, approval-revocation and execution-deduplication safeguards.
 
-เอกสารด้านล่างเป็น baseline รุ่น P11 ที่เก็บรักษาไว้ แนะนำใช้ quickstart v3 ด้านบนสำหรับงานล่าสุด
+For an interrupted local Python attempt, use explicit Compute reconciliation.
+FORGE can recover a verified cleanup receipt without executing Python again.
+Missing or tampered proof remains interrupted. See the
+[local job recovery guide](docs/LOCAL_JOB_RECOVERY_TH.md) and
+[security policy](SECURITY.md).
 
-<div align="center">
+## Verification and current limits
 
-<img src="assets/forge-mark.svg" alt="FORGE" width="104">
+Developer checks exercise real SQLite, Git, HTTP/session/CSRF, mounted Univer,
+native Windows report engines, Python process cleanup, actual local tests,
+previews and verified archives. Provider/native observations are injected only
+where the evidence explicitly says so. They do not establish model quality,
+live account access or cloud/mobile behavior.
 
-# FORGE
+| Area | Qualification boundary |
+|---|---|
+| Guarded proactive automation | Recipes, Inbox and admission exist; native route activation and all-action enforcement integration are in progress. |
+| Usage and budgets | Atomic policy holds and unknown accounting are implemented. Native monetary receipt coverage remains incomplete; completion never means zero cost. |
+| Research Lab | Fixed local CPU/file experiments, independent checks and exports are exercised. Agent component/action/resource qualification and official benchmark execution are separate. |
+| Remote providers, compute and mobile | Adapters and setup flows have scoped developer tests. Account-specific live checks require their own evidence. |
+| macOS and Home UAT | Native qualification and Owner home acceptance remain not run. |
 
-### Turn an idea into verified delivery—without giving up authority.
+Read the [current status](docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md),
+[acceptance evidence](docs/owner/forge-local-complete-20261124-v3/progress/ACCEPTANCE_EVIDENCE.md)
+and [integration ledger](docs/owner/forge-local-complete-20261124-v3/progress/INTEGRATION_LEDGER.md)
+for exact revisions, commands, results and remaining implementation work.
 
-**Local-first project orchestration with dynamic workers, independent QA, explicit release gates, and structured evidence.**
+## Development and contribution
 
-[![Status](https://img.shields.io/badge/status-FORGE_V1_PRODUCTION_ACTIVE-111827?style=flat-square)](#verified-status)
-[![Portable](https://img.shields.io/badge/portable-P11_RC_PASS-111827?style=flat-square)](#install-on-windows)
-[![Architecture](https://img.shields.io/badge/execution-AO_LIMITED-f97316?style=flat-square)](#execution-substrates)
-[![Orca](https://img.shields.io/badge/Orca-reference_only-6b7280?style=flat-square)](#orca-bake-off)
-
-</div>
-
----
-
-## Start here
-
-FORGE is a local project factory. You describe the outcome; FORGE separates discovery, planning, execution, independent checking, and the final release decision. It can use different worker tools without handing them planning or deployment authority.
-
-You do not need to write code to install or operate the portable package. On 64-bit Windows:
-
-1. On GitHub, choose **Code → Download ZIP**, then extract the complete folder.
-2. Open its `bootstrap` folder.
-3. Double-click **`bootstrap.cmd`**.
-4. If Windows reports a missing prerequisite, install only the named item, then run `bootstrap.cmd` again.
-5. Sign in to a provider only with that provider's own application and normal sign-in flow.
-6. Double-click **`doctor.cmd`**. Continue when the result is `READY` or `READY_WITH_MISSING_OPTIONAL_PROVIDER`.
-7. Double-click **`launch-forge.cmd`**.
-8. Keep the console window open while FORGE is running. Close it to stop the local runtime.
-
-The default install location is:
-
-```text
-%LOCALAPPDATA%\FORGE\forge-v1-portable
+```powershell
+npm ci --include=dev
+npm run check
+npm run build
+npm test
+npm run test:browser
 ```
 
-Bootstrap is repeatable. Running it again verifies the installed files instead of overwriting an unrelated folder. It does not install Agent Orchestrator or Orca, change global PATH, copy credentials, or merge provider homes.
-
-> Use the release folder's own `bootstrap` files. Do not copy individual scripts into another package.
-
-## The operating model
-
-![FORGE delivery flow](assets/diagrams/forge-delivery-flow.svg)
-
-The OWNER keeps irreversible decisions. FORGE turns intent into a task graph, selects bounded workers, collects receipts, and sends the frozen result to Independent QA. Deployment happens only after the release gate is explicitly satisfied.
-
-| Stage | What happens | Who has authority |
-|---|---|---|
-| Intent | Goal, constraints, risk and desired outcome are stated | OWNER |
-| Discovery | Missing facts and acceptance criteria are resolved | FORGE |
-| Plan | Dependencies, staffing and routing are defined | FORGE Planner |
-| Work | Bounded workers build or inspect assigned scopes | Selected worker substrate |
-| Verify | The exact candidate is tested independently | FORGE Independent QA |
-| Release | Evidence is reviewed; deployment may be approved or stopped | OWNER + FORGE gate |
-
-The governing relationship is:
-
-```text
-Role ≠ Agent ≠ Skill ≠ Work Cell ≠ Harness ≠ Provider ≠ Model ≠ Tool
-```
-
-Routing is an execution choice, not an identity. A worker can be replaced without changing who owns the plan or the release decision.
-
-## Install on Windows
-
-### What you need
-
-- 64-bit Windows
-- Node.js 20 or newer
-- Git for Windows
-- at least one optional provider tool if you want model-backed work
-
-FORGE's doctor reports missing prerequisites. Bootstrap will not install them globally for you.
-
-### First install
-
-1. Extract the complete approved package to a normal local folder.
-2. Double-click `bootstrap\bootstrap.cmd`.
-3. If the window pauses with `BLOCKED_WITH_ACTION`, follow only the listed action and retry. A successful bootstrap may close automatically.
-4. Do not move individual files out of the extracted package.
-5. Run `bootstrap\doctor.cmd`.
-6. Run `bootstrap\launch-forge.cmd`.
-
-Expected safe outcomes:
-
-- `READY` — core runtime and at least one provider are visible.
-- `READY_WITH_MISSING_OPTIONAL_PROVIDER` — core runtime is ready; provider sign-in can wait.
-- `BLOCKED_WITH_ACTION` — stop and complete the named prerequisite or integrity repair.
-- `FAIL_CLOSED` — stop; the target, package identity, or payload does not meet the safety contract.
-
-### Sign in to a provider
-
-FORGE does not contain or migrate provider credentials. Sign in with the provider's native tool. Keep each provider in its own home:
-
-```text
-Official Codex  → %USERPROFILE%\.codex
-MaxPlus         → %USERPROFILE%\.codex-maxplus
-```
-
-Never copy `auth.json`, tokens, browser profiles, or session caches between those homes. If a tool asks to import, switch, or consolidate accounts, decline it for a FORGE-managed provider.
-
-### Verify or repair
-
-- Run `bootstrap\doctor.cmd` whenever the machine or provider setup changes.
-- Run `bootstrap\bootstrap.cmd` again to verify an existing installation.
-- Do not manually replace files inside the managed install directory.
-- To remove the portable install, use `bootstrap\rollback-install.cmd`; it checks the install receipt before removing managed state.
-
-## Run a project
-
-Use this short OWNER brief:
-
-```text
-Goal:
-Users:
-Must have:
-Must not do:
-Where it may run:
-What requires my approval:
-How we will know it is done:
-```
-
-FORGE should ask you only for decisions that change architecture, security/privacy, credentials, public deployment, spending, or an irreversible outcome. Implementation details that are safe and reversible should be handled inside the approved scope.
-
-Before any real provider call, confirm the provider, expected scope, and spending boundary. Before deployment, inspect the Independent QA result and release evidence. A green UI alone is not release evidence.
-
-## Evidence and trust
-
-FORGE resolves conflicts in this order:
-
-```text
-Live structured JSON / JSONL
-        ↓
-Verified runtime receipts
-        ↓
-Frozen checkpoint projections
-        ↓
-Markdown summaries
-        ↓
-UI
-```
-
-Evidence records inputs, decisions, concise rationale, tests, outcomes, errors, and OWNER choices. It does not require or publish hidden chain-of-thought.
-
-## Execution substrates
-
-![FORGE execution substrate boundary](assets/diagrams/execution-substrates.svg)
-
-FORGE may delegate worker plumbing, but never its planning or assurance authority.
-
-| Substrate | Current position | Suitable use |
-|---|---|---|
-| Native FORGE | Default | Lowest-dependency execution and guaranteed fallback |
-| AO Limited | OWNER-approved, optional | Worker/session lifecycle, isolated worktrees, terminal supervision and bounded cleanup |
-| Orca | Reference-only after P11.5 | Source-informed future candidate; not qualified for FORGE execution |
-
-The active architecture decision remains:
-
-```text
-ADOPT_AO_LIMITED
-```
-
-AO is opt-in, worker-only, reversible, and never a second planner. Native execution remains the default and rollback path. See [AO Limited integration](docs/AO_LIMITED_INTEGRATION.md) and [execution substrate boundaries](docs/EXECUTION_SUBSTRATES.md).
-
-## Orca bake-off
-
-P11.5 evaluated [stablyai/orca](https://github.com/stablyai/orca) at the immutable target below:
-
-```text
-release  v1.4.204
-commit   4f7baefc4f5c49181d54046763e083a4628662d8
-license  MIT
-```
-
-Orca provides a broad structured CLI, durable run/task/dispatch concepts, worktree and terminal controls, browser ownership, receipts, and recovery semantics. Those are useful reference patterns.
-
-The same pin also exposes three blocking boundaries for FORGE:
-
-- orchestration is explicitly experimental;
-- account registration can import Codex authentication into Orca-managed homes and the rate-limit path can read provider auth state;
-- the official Windows app did not start successfully from the clean temporary profile used for qualification, while `orca serve` is a network-exposed mode rather than a loopback-only headless contract.
-
-No model call, real provider login, account switch, public service, cloud deployment, or Orca adapter was used. The P11.5 recommendation is:
-
-```text
-KEEP_AO_LIMITED
-```
-
-Orca remains reference-only until a future, separately approved evaluation can prove a clean-profile Windows runtime, a loopback-pinned headless interface, and a hard provider-account boundary. Read the full [Orca evaluation](docs/ORCA_EVALUATION.md).
-
-## Authority boundary
-
-FORGE always retains:
-
-- OWNER intake and discovery
-- requirements and acceptance criteria
-- Planner and task graph
-- dynamic staffing and provider/model routing
-- Independent QA
-- release and deployment gates
-- structured evidence and audit
-- irreversible OWNER decisions
-
-An execution substrate may provide worker/session lifecycle, isolated workspace and Git worktree mechanics, terminal or coding-harness supervision, bounded browser/process lifecycle, PR/CI/review plumbing, and execution receipts.
-
-Do not create a chain such as `FORGE Planner → substrate orchestrator → another planner`. The worker layer executes a bounded task; it does not reinterpret the project.
-
-## Verified status
-
-| Milestone | Result |
-|---|---:|
-| Production state | `FORGE_V1_PRODUCTION_ACTIVE` |
-| Production regression | 33 / 33 PASS |
-| Portable clean-room validation | 11 / 11 PASS |
-| P11 architecture | `ADOPT_AO_LIMITED` |
-| AO adapter | Optional, worker-only, native-default |
-| P11.5 Orca recommendation | `KEEP_AO_LIMITED` |
-| P12 | Not started |
-
-Production snapshot:
-
-```text
-df7400ebd6a99d825a08f6bbd6b4a5e5ae33554e223e030bcd8d3e215c57e826
-```
-
-Portable package ID:
-
-```text
-284b5ea2fc11d196864284c04d1e65918995517737232b1c1bd5de977f8ab435
-```
-
-## Troubleshooting
-
-**Bootstrap says the target is not empty.** Choose an empty folder or use the existing receipt-backed FORGE target. Bootstrap refuses to take ownership of arbitrary files.
-
-**Doctor cannot find Node or Git.** Install the missing prerequisite with an OWNER-approved native installer. Re-run doctor; do not patch system PATH only to make a test pass.
-
-**No provider is detected.** The core runtime may still be ready. Install and sign in through one provider's native flow when model-backed work is approved.
-
-**A provider works in one terminal but not FORGE.** Check that the intended `CODEX_HOME` or native provider home is selected. Do not solve this by copying credentials.
-
-**Port 3935 is busy.** Stop the earlier FORGE process, or launch with an approved alternate local port. Do not expose the service to the LAN or Internet.
-
-**A payload hash fails.** Re-extract a verified package. Do not edit the manifest or disable integrity checks.
-
-## Repository safety
-
-This public repository must never contain provider credentials, `.env` secrets, auth/session/token caches, browser cookies or profiles, private project data, production-machine paths, downloaded AO/Orca source trees, or third-party binaries.
-
-The repository contains clean source, portable payloads, contracts, tests, diagrams, and sanitized evaluation records. Machine-local state stays on the machine.
-
-## Roadmap
-
-```text
-P10   Production activation                         complete
-P11   Portable distribution + AO reuse decision    complete
-P11.5 Orca bake-off + repository addendum          complete
-P12   First portable real project                  not started
-```
-
-P12 requires a separate OWNER instruction. This repository update does not start it.
-
----
-
-<div align="center">
-
-**Goal → Work → Evidence → Verified Delivery**
-
-</div>
-
-</details>
+The public website is an independent package under [apps/website](apps/website/README.md).
+Its build, release-availability checks and Cloudflare guide do not start the
+workbench or deploy it automatically.
+
+Use isolated branches/worktrees, preserve existing authority boundaries and
+include the scope of your verification. See [AGENTS.md](AGENTS.md) for the active
+requirements and protected legacy paths. Report bugs through
+[GitHub Issues](https://github.com/siriponsri/forge-agents/issues), excluding
+credentials, private workspace data and exploit details. Security issues should
+be reported privately as described in [SECURITY.md](SECURITY.md).
+
+The README's information hierarchy was informed by the public
+[n8n](https://github.com/n8n-io/n8n), [Supabase](https://github.com/supabase/supabase)
+and [Dify](https://github.com/langgenius/dify) repositories. Their brands,
+screenshots, popularity and licensing are not FORGE claims.
+
+## License
+
+Original FORGE code and documentation are licensed under
+[Apache-2.0](LICENSE). See [NOTICE](NOTICE) and
+[third-party notices](THIRD_PARTY_NOTICES.md) for separately licensed components.
+The [archived P11 and machine-transfer README](docs/legacy/README_P11_HISTORY.md)
+preserves earlier portable-release documentation; it is not the current workbench
+acceptance status.

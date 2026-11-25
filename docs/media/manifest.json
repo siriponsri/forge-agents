@@ -515,8 +515,8 @@
   "files": [
     {
       "filename": "architecture.mmd",
-      "bytes": 876,
-      "sha256": "74461fd98a31c9c79e137c5990710d0f0f8f9b695e01447dfa22b06bf06dec60"
+      "bytes": 1267,
+      "sha256": "117bcbff07694b9f001031cc37cc74a139721b385279010183bc9b34f6ba21b0"
     },
     {
       "filename": "chat-workspace.gif",
@@ -635,8 +635,8 @@
     },
     {
       "filename": "software-delivery.mmd",
-      "bytes": 756,
-      "sha256": "f11aa14a71c20b53daa0ebaed3804bbb5a7e9d8b0c2eaccdd3b0b3275962b466"
+      "bytes": 1182,
+      "sha256": "08476a7fd2872a75ae3d7914bd929347a3f5a5af927380262330f0af9aaf016b"
     },
     {
       "filename": "software-mission.gif",
