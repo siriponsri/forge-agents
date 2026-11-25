@@ -16,7 +16,7 @@ export async function precreateResearchOutput({store,dataDir,runId,admit,clock=D
     const run=s.runs.find(r=>r.id===runId);
     const check=()=>{const value=admit(s,{run,stage:'output-bootstrap'});if(value!==true)fail('RESEARCH_NATIVE_OUTPUT_ADMISSION');};
     check();
-    const c=run.researchContext,w=s.events.find(e=>e.type==='workspace.workspace'&&e.projectId===run.projectId&&e.id===c?.workspaceId);
+    const c=run.researchContext,workspaceId=run.workspaceContext?.workspaceId??c?.workspaceId,w=s.events.find(e=>e.type==='workspace.workspace'&&e.projectId===run.projectId&&e.id===workspaceId);
     if(!w||w.taskId!==run.taskId||w.runOperationId!==run.operationId||pathKey(w.worktreePath)!==pathKey(run.workspace??run.actualWorkspace??''))fail('RESEARCH_NATIVE_OUTPUT_OWNERSHIP');
     const observed=await inspectWorkspace(w,dataDir);check();
     if(observed.head!==w.baseSha)fail('RESEARCH_NATIVE_OUTPUT_HEAD');

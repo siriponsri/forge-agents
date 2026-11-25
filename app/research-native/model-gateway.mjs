@@ -4,6 +4,28 @@ import {randomBytes,timingSafeEqual} from 'node:crypto';
 const fail=code=>{throw Object.assign(new Error(code),{code});};
 const sync=(fn,...args)=>{const v=fn(...args);if(v?.then)fail('RESEARCH_NATIVE_SYNC_REQUIRED');return v;};
 const equal=(a,b)=>typeof a==='string'&&Buffer.byteLength(a)===Buffer.byteLength(b)&&timingSafeEqual(Buffer.from(a),Buffer.from(b));
+function completionStream(){
+  const decoder=new TextDecoder('utf-8',{fatal:true});let buffer='',data=[],event='',done=false;
+  function line(value){
+    if(value===''){
+      if(data.length){
+        const payload=data.join('\n');
+        if(done||event==='error')fail('RESEARCH_NATIVE_UPSTREAM_INCOMPLETE');
+        if(payload==='[DONE]')done=true;
+        else{let chunk;try{chunk=JSON.parse(payload);}catch{fail('RESEARCH_NATIVE_UPSTREAM_INCOMPLETE');}if(!chunk||!Array.isArray(chunk.choices))fail('RESEARCH_NATIVE_UPSTREAM_INCOMPLETE');}
+      }
+      data=[];event='';return;
+    }
+    if(value.startsWith(':'))return;
+    const index=value.indexOf(':'),field=index<0?value:value.slice(0,index);let content=index<0?'':value.slice(index+1);if(content.startsWith(' '))content=content.slice(1);
+    if(field==='data')data.push(content);else if(field==='event')event=content;
+  }
+  function consume(final=false){
+    if(buffer.length>1048576)fail('RESEARCH_NATIVE_RESPONSE_LIMIT');
+    for(;;){const index=buffer.search(/[\r\n]/);if(index<0)return;if(buffer[index]==='\r'&&index===buffer.length-1&&!final)return;const width=buffer[index]==='\r'&&buffer[index+1]==='\n'?2:1;line(buffer.slice(0,index));buffer=buffer.slice(index+width);}
+  }
+  return {push(bytes){buffer+=decoder.decode(bytes,{stream:true});consume();},finish(){buffer+=decoder.decode();consume(true);if(!done||buffer||data.length)fail('RESEARCH_NATIVE_UPSTREAM_INCOMPLETE');}};
+}
 
 /** Private egress only. Native retries reuse a prepared model request and do
  * not necessarily repeat the native phase fence. Every real HTTP attempt must
@@ -49,13 +71,13 @@ export async function openResearchModelGateway({provider,withFence,authorizeRequ
       const response=await pending;
       if(!response.ok||!response.body||!response.headers.get('content-type')?.includes('text/event-stream'))fail('RESEARCH_NATIVE_UPSTREAM_FAILED');
       res.writeHead(200,{'Content-Type':'text/event-stream','Cache-Control':'no-store'});
-      let received=0,tail='',done=false;
+      let received=0;const completion=completionStream();
       for await(const chunk of response.body){
         received+=chunk.length;if(received>16777216||closed||controller.signal.aborted)fail('RESEARCH_NATIVE_RESPONSE_LIMIT');
-        tail=(tail+Buffer.from(chunk).toString('utf8')).slice(-256);if(tail.includes('data: [DONE]'))done=true;
+        completion.push(chunk);
         if(!res.write(chunk))await new Promise((resolve,reject)=>{res.once('drain',resolve);res.once('close',()=>reject(new Error('closed')));});
       }
-      if(!done)fail('RESEARCH_NATIVE_UPSTREAM_INCOMPLETE');
+      completion.finish();
       res.off('close',abort);res.end();
     }catch(error){
       if(started){failed=true;abort();try{await withFence(binding.runId,()=>sync(onFailure,{...binding,priorAttempts:attempts}));}catch{/* Monotone local denial survives Stop/rollback. */}}

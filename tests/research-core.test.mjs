@@ -6,6 +6,14 @@ import {fixture,injectedOwner} from './research-fixture.test.mjs';
 import {digest,buildResearchContext,admitResearchTrial,mergeResearchSafety,assertResearchRestoreAvailable,dispatchResearchRequest,createResearchAdapterRegistry} from '../app/research/index.mjs';
 import {decideResearchPolicy} from '../app/research/policies.mjs';
 
+test('agent preparation uses an explicitly chosen immutable longer envelope while local fixtures retain their small bound',async t=>{
+  const f=await fixture(t),limits={...f.config().limits,maxMs:300000};
+  await assert.rejects(f.create({execution:'local',limits}),{code:'RESEARCH_LIMIT'});
+  const experiment=await f.create({execution:'agent',limits});assert.equal(experiment.config.limits.maxMs,300000);
+  assert.equal(experiment.configDigest,digest(experiment.config));
+  await assert.rejects(f.create({execution:'agent',limits:{...limits,maxMs:3600001}}),{code:'RESEARCH_LIMIT'});
+});
+
 test('real SQLite repeated immutable matrix, exact replay/restart and machine export',async t=>{
   const f=await fixture(t),input=f.input({config:f.config({policies:['static','rule-adapt']})}),e=await f.service.create(input,f.owner);
   assert.deepEqual(await f.service.create(input,f.owner),e);

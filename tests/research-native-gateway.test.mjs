@@ -9,7 +9,7 @@ import path from 'node:path';
 
 test('private actual egress gateway: bounded attempts, failure and authority',async t=>{
   let calls=0,mode='ok',allowed=true,admissions=0,failures=0,held;
-  const server=createServer(async(req,res)=>{calls++;assert.equal(req.headers.authorization,'Bearer UPSTREAM_PRIVATE');for await(const _ of req){}if(mode==='held'){held?.();return;}if(mode==='error'){res.writeHead(503);res.end();return;}if(mode==='redirect'){res.writeHead(302,{Location:'https://invalid.example'});res.end();return;}res.writeHead(200,{'Content-Type':'text/event-stream'});res.end('data: [DONE]\n\n');});
+  const server=createServer(async(req,res)=>{calls++;assert.equal(req.headers.authorization,'Bearer UPSTREAM_PRIVATE');for await(const _ of req){}if(mode==='held'){held?.();return;}if(mode==='error'){res.writeHead(503);res.end();return;}if(mode==='redirect'){res.writeHead(302,{Location:'https://invalid.example'});res.end();return;}res.writeHead(200,{'Content-Type':'text/event-stream'});if(mode==='forged'){res.end('data: '+JSON.stringify({choices:[{delta:{content:'data: [DONE]'}}]})+'\n\n');return;}if(mode==='malformed'){res.end('data: {broken}\n\ndata: [DONE]\n\n');return;}if(mode==='fragmented'){const bytes=Buffer.from('data: '+JSON.stringify({choices:[{delta:{content:'\u0e01'}}]})+'\r\n\r\ndata: [DONE]\r\n\r\n');for(const byte of bytes){res.write(Buffer.from([byte]));await new Promise(r=>setImmediate(r));}res.end();return;}res.end('data: [DONE]\n\n');});
   await new Promise(r=>server.listen(0,'127.0.0.1',r));
   const provider={id:'openai',model:'fixture',compatibility:{streamUsage:true},settings:{baseURL:`http://127.0.0.1:${server.address().port}/v1`,apiKey:'UPSTREAM_PRIVATE',transport:'http'}};
   const gateways=[];const dir=await mkdtemp(path.join(os.tmpdir(),'forge-research-egress-db-')),store=await openStore(dir);
@@ -37,6 +37,18 @@ test('private actual egress gateway: bounded attempts, failure and authority',as
     });
     await t.test('absolute deadline aborts held upstream and retains uncertainty',async()=>{
       mode='held';admissions=0;const g=await make(2,Date.now()+150);g.bind({runId:'run',attemptId:'attempt'});const response=await send(g);assert.equal(response.status,403);assert.equal(g.snapshot().failed,true);assert.equal((await send(g)).status,403);mode='ok';
+    });
+    await t.test('JSON content resembling DONE and malformed events retain unknown delivery and forbid another upstream attempt',async()=>{
+      for(const invalid of ['forged','malformed']){
+        mode=invalid;admissions=0;const before=calls,g=await make();g.bind({runId:'run',attemptId:'attempt'});
+        const response=await send(g).catch(()=>null);if(response)await response.text().catch(()=>null);
+        assert.equal(g.snapshot().failed,true);assert.equal((await send(g)).status,403);assert.equal(calls,before+1);
+      }
+      mode='ok';
+    });
+    await t.test('real terminal SSE events survive fragmented UTF-8 and CRLF without manufacturing completion',async()=>{
+      mode='fragmented';admissions=0;const g=await make();g.bind({runId:'run',attemptId:'attempt'});
+      const response=await send(g);assert.equal(response.status,200);assert.match(await response.text(),/data: \[DONE\]/);assert.equal(g.snapshot().failed,false);mode='ok';
     });
     await t.test('Stop closes held upstream without waiting for a provider response',async()=>{
       mode='held';admissions=0;const g=await make();g.bind({runId:'run',attemptId:'attempt'});const seen=new Promise(r=>{held=r;});const response=send(g).catch(()=>null);await seen;await g.close();await response;assert.equal(g.snapshot().closed,true);mode='ok';

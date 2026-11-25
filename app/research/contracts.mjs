@@ -4,7 +4,7 @@ export const POLICY_VERSION='forge-research-policy/1';
 export const COMPONENTS=Object.freeze(['memory','skills','adaptation','staffing','verification']);
 export const POLICIES=Object.freeze(['static','initial-route','rule-adapt','evidence-guided']);
 export const FAULTS=Object.freeze(['none','tool-failure','stale-state','session-interruption','checkpoint-recovery']);
-export const LIMITS=Object.freeze({repetitions:8,trials:64,maxMs:30000,maxSteps:16,maxBytes:262144,maxRetries:3,maxAgents:4,maxTokens:100000,maxCost:10});
+export const LIMITS=Object.freeze({repetitions:8,trials:64,maxMs:30000,agentMaxMs:3600000,maxSteps:16,maxBytes:262144,maxRetries:3,maxAgents:4,maxTokens:100000,maxCost:10});
 export function fail(code,message,statusCode=400){throw Object.assign(new Error(message),{code,statusCode});}
 export function exact(value,keys){if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!keys.includes(k)))fail('RESEARCH_SCHEMA','Unsupported research fields');}
 export function text(value,name,max=200){if(typeof value!=='string'||!value.trim()||value.length>max)fail('RESEARCH_SCHEMA',`Invalid ${name}`);return value;}
@@ -30,7 +30,7 @@ export function normalizeConfig(raw,registry){
   if(new Set(ablations.map(a=>a.name)).size!==ablations.length)fail('RESEARCH_ABLATION','Ablation names must be unique');
   if(raw.repetitions*raw.policies.length*ablations.length>LIMITS.trials)fail('RESEARCH_LIMIT','Trial matrix exceeds 64');
   exact(raw.limits,['maxMs','maxSteps','maxBytes','maxRetries','maxAgents','maxTokens','maxCost','unknownAccounting']);
-  for(const key of ['maxMs','maxSteps','maxBytes','maxRetries','maxAgents'])integer(raw.limits[key],key,key==='maxRetries'?0:1,LIMITS[key]);
+  for(const key of ['maxMs','maxSteps','maxBytes','maxRetries','maxAgents'])integer(raw.limits[key],key,key==='maxRetries'?0:1,key==='maxMs'&&raw.execution==='agent'?LIMITS.agentMaxMs:LIMITS[key]);
   for(const key of ['maxTokens','maxCost'])if(raw.limits[key]!==null&&(!Number.isFinite(raw.limits[key])||raw.limits[key]<=0||raw.limits[key]>LIMITS[key]))fail('RESEARCH_LIMIT',`Invalid ${key}`);
   if(raw.limits.maxTokens!==null&&!Number.isSafeInteger(raw.limits.maxTokens))fail('RESEARCH_LIMIT','Token cap must be an integer');
   if(!['block','allow'].includes(raw.limits.unknownAccounting))fail('RESEARCH_LIMIT','Explicit unknown accounting policy required');

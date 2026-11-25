@@ -76,6 +76,13 @@ test('Research private native owner: canonical resource and identity fences',asy
     owner.modelRequest(s,{run:primary});owner.modelRequest(s,{run:helperRun});owner.modelRequest(s,{run:primary});assert.throws(()=>owner.modelRequest(s,{run:helperRun}),{code:'RESEARCH_NATIVE_STEP_LIMIT'});
     assert.equal(owner.resourceSnapshot(s,first).id,owner.resourceSnapshot(s,second).id);assert.equal(owner.resourceSnapshot(s,second).modelRequests,3);
     assert.equal(s.events.filter(e=>e.type==='research.native-envelope').length,1);
+    const parentFixture=f.store.read();
+    try{
+      await f.store.transaction(current=>Object.assign(current,s));
+      const helperOutput=await precreateResearchOutput({store:f.store,dataDir:f.dataDir,runId:helperRun.id,clock:()=>now,admit:(state,detail)=>owner.admit(state,detail)});
+      assert.equal(helperOutput.path,path.join(helper.worktreePath,'output.json'));assert.equal(await readFile(helperOutput.path,'utf8'),'');
+      await assert.rejects(readFile(path.join(w.worktreePath,'output.json')),{code:'ENOENT'});
+    }finally{await f.store.transaction(current=>Object.assign(current,parentFixture));}
     allocationIds[1]='foreign';assert.equal(owner.qualification(s,second),null);
   });
   await t.test('fixed output is created once in actual owned registered pristine worktree',async()=>{
