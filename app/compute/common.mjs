@@ -6,8 +6,32 @@ export function error(code,message,statusCode=400){throw Object.assign(new Error
 export function text(value,label,pattern){if(typeof value!=='string'||!value.trim()||(pattern&&!pattern.test(value)))error('COMPUTE_CONFIG',`Invalid ${label}`);return value;}
 export function keys(value,allowed){if(!value||typeof value!=='object'||Array.isArray(value))error('COMPUTE_CONFIG','Configuration must be an object');for(const k of Object.keys(value))if(!allowed.includes(k))error('COMPUTE_CONFIG',`Unsupported configuration field: ${k}`);}
 export function envRef(name,optional=false){if(name===undefined&&optional)return;return text(name,'machine environment reference',/^[A-Za-z_][A-Za-z0-9_]*$/);}
-export function secret(name){envRef(name);const value=process.env[name];if(!value)error('CREDENTIAL_REQUIRED',`Configure machine environment reference ${name}`,409);return value;}
-export function clean(value,config){let out=String(value??'');const visit=c=>{for(const [k,v]of Object.entries(c??{})){if(k.endsWith('Env')&&typeof v==='string'&&process.env[v])out=out.split(process.env[v]).join('[REDACTED]');else if(v&&typeof v==='object')visit(v);}};visit(config);return out.replace(/((?:Bearer|token|password|api[_-]?key)\s*[:= ]\s*)[^\s"'<>]+/gi,'$1[REDACTED]');}
+function environment(runtime){
+  // Presence is authoritative, including {env:undefined}, null, an empty map or inherited env.
+  // Never silently fall back from a caller's scoped environment to the host account.
+  if(runtime&&'env' in Object(runtime))return runtime.env;
+  return process.env;
+}
+function valueOf(name,runtime){
+  const env=environment(runtime);if(!env||typeof env!=='object')return undefined;
+  const descriptor=Object.getOwnPropertyDescriptor(env,name);
+  return descriptor&&typeof descriptor.value==='string'&&descriptor.value.length?descriptor.value:undefined;
+}
+export function secret(name,runtime={}){envRef(name);const value=valueOf(name,runtime);if(value===undefined)error('CREDENTIAL_REQUIRED',`Configure machine environment reference ${name}`,409);return value;}
+export function clean(value,config,runtime={}){
+  let out=String(value??'');const values=new Set(),seen=new Set();
+  const visit=c=>{if(!c||typeof c!=='object'||seen.has(c))return;seen.add(c);for(const [k,v]of Object.entries(c)){if(['authEnv','identityFileEnv','knownHostsFileEnv'].includes(k)&&typeof v==='string'){const resolved=valueOf(v,runtime);if(resolved)values.add(resolved);}else if(v&&typeof v==='object')visit(v);}};visit(config);
+  // The trusted injected map contains only this operation's resolved refs. Redact all its values
+  // even when this call is for a nested executor; never enumerate unrelated process.env secrets.
+  if(runtime&&'env' in Object(runtime)&&runtime.env&&typeof runtime.env==='object')for(const d of Object.values(Object.getOwnPropertyDescriptors(runtime.env)))if(typeof d.value==='string'&&d.value)values.add(d.value);
+  for(const resolved of [...values].sort((a,b)=>b.length-a.length))out=out.split(resolved).join('[REDACTED]');
+  return out.replace(/((?:Bearer|token|password|api[_-]?key)\s*[:= ]\s*)[^\s"'<>]+/gi,'$1[REDACTED]');
+}
+export function checkRuntimeSignal(runtime={}){
+  if(runtime.signal!==undefined&&!(runtime.signal instanceof AbortSignal))error('COMPUTE_CONFIG','signal must be an AbortSignal');
+  if(runtime.signal?.aborted)error('COMPUTE_ABORTED','Compute transport cancelled; reconcile recorded execution before retry',409);
+}
+export function transportSignal(timeoutMs,runtime={}){checkRuntimeSignal(runtime);const timeout=AbortSignal.timeout(timeoutMs);return runtime.signal?AbortSignal.any([timeout,runtime.signal]):timeout;}
 export function url(value,{cloudOrigin}={}){let u;try{u=new URL(text(value,'URL'));}catch{error('COMPUTE_CONFIG','Invalid URL');}if(u.username||u.password||u.search||u.hash)error('COMPUTE_CONFIG','URLs cannot contain credentials, query or fragment');const loop=['localhost','127.0.0.1','[::1]'].includes(u.hostname);if(u.protocol!=='https:'&&!(loop&&u.protocol==='http:'))error('COMPUTE_CONFIG','Use HTTPS or loopback HTTP');if(cloudOrigin&&!loop&&u.origin!==cloudOrigin)error('COMPUTE_CONFIG','Provider API origin does not match its documented contract');return u.href.replace(/\/$/,'');}
 export function relative(value){text(value,'relative workspace');if(value.startsWith('/')||value.includes('\\')||value.split('/').some(x=>!x||x==='.'||x==='..')||/[\x00-\x1f]/.test(value))error('COMPUTE_CONFIG','Workspace must be a confined relative POSIX path');return value;}
 export function validateConfig(raw){
@@ -32,11 +56,13 @@ export function validateConfig(raw){
   }
   if(c.environmentRevision!==undefined)text(c.environmentRevision,'environment revision');return c;
 }
-export async function request(config,route,{method='GET',body,auth='Bearer',allow404=false}={}){
-  const headers={'Accept':'application/json'};if(config.authEnv)headers.Authorization=`${auth} ${secret(config.authEnv)}`;
+export async function request(config,route,{method='GET',body,auth='Bearer',allow404=false}={},runtime={}){
+  if(runtime.beforeDispatch)await runtime.beforeDispatch();
+  const signal=transportSignal(config.timeoutMs,runtime);
+  const headers={'Accept':'application/json'};if(config.authEnv)headers.Authorization=`${auth} ${secret(config.authEnv,runtime)}`;
   if(body!==undefined)headers['Content-Type']='application/json';let response;
-  try{response=await fetch(config.baseUrl+route,{method,headers,body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(config.timeoutMs),redirect:'error'});}catch{error('COMPUTE_UNCERTAIN','Connection failed or timed out; reconcile the recorded execution before retrying',502);}
+  try{response=await fetch(config.baseUrl+route,{method,headers,body:body===undefined?undefined:JSON.stringify(body),signal,redirect:'error'});}catch{error('COMPUTE_UNCERTAIN','Connection failed, cancelled or timed out; reconcile the recorded execution before retrying',502);}
   if(allow404&&response.status===404)return null;
   if(!response.ok)error(response.status===401||response.status===403?'COMPUTE_AUTH':'COMPUTE_HTTP',`Compute HTTP ${response.status}; provider response omitted to protect credentials`,response.status===401||response.status===403?409:502);
-  if(response.status===204)return {};const bytes=await response.text();if(bytes.length>2000000)error('COMPUTE_RESPONSE','Compute response exceeded the 2 MB limit',502);try{return JSON.parse(bytes);}catch{error('COMPUTE_RESPONSE','Compute returned invalid JSON',502);}
+  if(response.status===204)return {};let bytes;try{bytes=await response.text();}catch{error('COMPUTE_UNCERTAIN','Connection failed, cancelled or timed out while reading; reconcile recorded execution before retry',502);}if(bytes.length>2000000)error('COMPUTE_RESPONSE','Compute response exceeded the 2 MB limit',502);try{return JSON.parse(bytes);}catch{error('COMPUTE_RESPONSE','Compute returned invalid JSON',502);}
 }

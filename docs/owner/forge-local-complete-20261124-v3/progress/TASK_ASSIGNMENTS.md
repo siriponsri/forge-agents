@@ -1,6 +1,37 @@
 # Task Assignments
 
-## Owner stop override
+## Active completion assignments — 2026-11-25
+
+Owner opened the full-product completion goal, authorized isolated subagents and
+the final normal main push. Lead remains integration owner. All actual workers
+use `gpt-6.1-sol` / `xhigh`; no model variant or switch is inferred.
+
+| Owner | Branch and assigned paths | Current scope |
+|---|---|---|
+| Lead | integration/forge-local-complete; shared contracts/server/App/progress | Compute vault environment integrated and checked; worker integration, final acceptance, media/docs/release pending |
+| Mission worker | t3/forge-missions-delivery-pack; app/missions, Missions.jsx/CSS, missions tests, worker note | Canonical plan/Goals delegation, reviewed outputs, actual local verification, preview and portable Delivery Pack |
+| Parallel worker | t3/parallel-workspaces; app/workspaces, ParallelWorkspace.jsx/CSS, workspace tests, worker note | Explicit capacity, safe Git worktrees, actual child tests and reviewed integration queue |
+| Proactive worker | t3/proactive-workflows; app/proactive, ProactiveWorkflows.jsx/CSS, proactive tests, worker note | Versioned approval envelopes, bounded triggers/occurrences/Inbox, fail-closed native enforcement qualification |
+
+All worker reports need lead integrated checks. Shared files/manifests/progress
+remain lead-only; no worker may push main or modify protected legacy paths.
+
+DOC-R01 accepted: lead-owned final professional English README and verified
+screenshots/step-by-step GIFs. Reference research completed; final rewrite/media
+pending stable integrated flows. See README_MEDIA_RELEASE_TASK.md and final gate.
+
+## Resumed lead task — 2026-11-25
+
+Lead only: actual-repo survey, official competitive research, proposal/task map
+and Owner decision actions CR-D01–03/CR-V01–02, now answered. Lead implements first
+live Visualization projection from the same canonical conversation state. Fresh
+read-only Impeccable finish reviewer checks screenshots/code; no prior worker is
+resumed. Preserve all old worktrees and the unapplied compute patch. Mission/
+Delivery, Parallel, Proactive and Visualization accepted scope are recorded;
+next existing backend task remains compute-runtime env wiring.
+See `docs/research/FORGE_COMPETITIVE_REVIEW_20261125.md`.
+
+## Historical Owner stop override — superseded
 
 All development/review assignments are stopped for the requested machine move.
 Completed website and secret work is included in the checkpoint. The interrupted

@@ -195,13 +195,25 @@ export function createGoalService({store,t3,authorize,clock=Date.now}) {
         if(!run||error){a.status='unknown';a.reconciled=false;if(!g.stopRequested)g.status='unknown';trace(s,g,'outcome_unknown',{error:error??'RUN_NOT_OBSERVED'});return;}
         a.runId=run.id;a.status=run.status;
         if(!terminal.has(run.status)){if(!g.stopRequested)g.status=['submitting','unknown'].includes(run.status)?'unknown':'active';trace(s,g,'run_pending');return;}
-        if(!a.reconciled){
+        // A terminal attempt can acquire trusted verification after its first
+        // observation (for example reviewed local tests in Mission Studio).
+        // Re-read that same attempt; never create or dispatch another run here.
+        const previous=a.verificationId?record(s,'verification',a.verificationId,g.projectId):null;
+        let refreshed;
+        if(a.reconciled&&!g.stopRequested&&!g.qa[a.taskId]&&g.blockers[a.taskId]?.code!=='EXPLICIT_BLOCKER'&&run.status==='completed'&&previous?.status==='FAILED'){
+          validateDefinition(s,g);
+          const inspected=await inspectAttempt(s,g,a);
+          if(inspected.status!==previous.status||inspected.fingerprint!==previous.fingerprint)refreshed=inspected;
+        }
+        if(!a.reconciled||refreshed){
           a.reconciled=true;release(s,a);
           if(!g.stopRequested){
             try{validateDefinition(s,g);}catch(e){g.status='blocked';g.blocker={code:e.code??'DEFINITION_CHANGED',at:clock()};trace(s,g,'definition_changed');return;}
-            const result=await inspectAttempt(s,g,a),v=append(s,'verification',{goalId:g.id,taskId:a.taskId,...result},g.projectId);a.verificationId=v.id;
+            const result=refreshed??await inspectAttempt(s,g,a),v=append(s,'verification',{goalId:g.id,taskId:a.taskId,...result,...(refreshed?{supersedes:previous.id}:{})},g.projectId);
+            if(refreshed)a.verificationHistory=[...(a.verificationHistory??[]),previous.id];
+            a.verificationId=v.id;
             const task=find(s,'tasks',a.taskId,g.projectId);
-            if(result.status==='PASSED'){g.verifications[a.taskId]=v.id;task.status='review';}
+            if(result.status==='PASSED'){g.verifications[a.taskId]=v.id;task.status='review';if(g.blockers[a.taskId]?.verificationId===previous?.id)delete g.blockers[a.taskId];}
             else {
               a.failureFingerprint=result.fingerprint;a.feedback=JSON.stringify(result.outcomes.map(o=>({criterionId:o.criterionId,status:o.status,reason:o.reason??o.result?.outcomes[0]?.reason}))).slice(0,4000);
               let unchanged=0;

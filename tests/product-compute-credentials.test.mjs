@@ -1,0 +1,50 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import http from 'node:http';
+import {mkdtemp} from 'node:fs/promises';
+import path from 'node:path';
+import os from 'node:os';
+import {randomUUID} from 'node:crypto';
+import {createApplication} from '../app/server/main.mjs';
+
+test('production HTTP compute uses scoped DPAPI keys through rotation/removal and never stores provider-returned key bytes',{skip:process.platform!=='win32'},async context=>{
+  const directory=await mkdtemp(path.join(os.tmpdir(),'forge-compute-vault-integrated-'));
+  const name='FORGE_INTEGRATED_COMPUTE_DUMMY',old=process.env[name];process.env[name]='global-compute-dummy-must-not-be-used';
+  context.after(()=>{if(old===undefined)delete process.env[name];else process.env[name]=old;});
+  let expected='project-a-compute-dummy',calls=0;
+  const server=http.createServer((request,response)=>{
+    calls++;assert.equal(request.headers.authorization,`Bearer ${expected}`);
+    response.writeHead(200,{'Content-Type':'application/json'});
+    response.end(JSON.stringify({id:'owned-fixture-pod',status:'RUNNING',actions:['start','stop'],image:expected,env:{PRIVATE:expected}}));
+  });
+  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+  context.after(()=>new Promise(resolve=>{server.closeAllConnections();server.close(resolve);}));
+  const app=await createApplication({dataDir:path.join(directory,'state'),machineSecretDir:path.join(directory,'vault'),port:0});context.after(()=>app.close());
+  const sessionResponse=await fetch(app.url+'/api/session'),cookie=sessionResponse.headers.get('set-cookie').split(';')[0],csrf=(await sessionResponse.json()).csrf;
+  const post=async(route,input,expectedStatus=200)=>{
+    const response=await fetch(app.url+route,{method:'POST',headers:{'Content-Type':'application/json',Cookie:cookie,'X-Forge-CSRF':csrf},body:JSON.stringify(input)});
+    const data=await response.json();assert.equal(response.status,expectedStatus,JSON.stringify(data));return data;
+  };
+  const create=async(type,projectId,data)=>(await post('/api/command',{operationId:randomUUID(),type,projectId,data})).entity;
+  const first=await create('project.create',null,{name:'Compute vault engineering fixture',workspace:path.join(directory,'first')});
+  const second=await create('project.create',null,{name:'Isolated compute fixture',workspace:path.join(directory,'second')});
+  const config={kind:'runpod',baseUrl:`http://127.0.0.1:${server.address().port}`,resourceId:'owned-fixture-pod',authEnv:name};
+  const target=await post('/api/compute/configure',{projectId:first.id,config,select:true});
+  const foreignTarget=await post('/api/compute/configure',{projectId:second.id,config,select:true});
+  const saved=await post('/api/secrets/set',{operationId:randomUUID(),projectId:first.id,purpose:'compute',name,value:expected,expectedRevision:0});
+  const health=await post('/api/compute/health',{projectId:first.id,targetId:target.id});
+  assert.equal(health.execution,false);assert.equal(health.resource.running,true);assert.equal(calls,1);
+  assert.equal(JSON.stringify(health).includes(expected),false);
+  expected='project-b-compute-dummy';
+  await post('/api/secrets/set',{operationId:randomUUID(),projectId:second.id,purpose:'compute',name,value:expected,expectedRevision:0});
+  const foreign=await post('/api/compute/health',{projectId:second.id,targetId:foreignTarget.id});
+  assert.equal(foreign.status,'observed');
+  assert.equal(calls,2,'Each project uses its own same-name vault key, not the global environment');
+  expected='project-a-rotated-compute-dummy';
+  const rotated=await post('/api/secrets/set',{operationId:randomUUID(),projectId:first.id,purpose:'compute',reference:saved.secret.reference,value:expected,expectedRevision:1});
+  assert.equal((await post('/api/compute/health',{projectId:first.id,targetId:target.id})).resource.running,true);
+  await post('/api/secrets/remove',{operationId:randomUUID(),projectId:first.id,purpose:'compute',reference:rotated.secret.reference,expectedRevision:2});
+  const before=calls,removed=await post('/api/compute/health',{projectId:first.id,targetId:target.id});
+  assert.equal(removed.execution,false);assert.equal(removed.code,'CREDENTIAL_REQUIRED');assert.equal(calls,before);
+  const snapshot=JSON.stringify(app.store.read());for(const value of ['project-a-compute-dummy','project-b-compute-dummy',expected,'global-compute-dummy-must-not-be-used'])assert.equal(snapshot.includes(value),false);
+});

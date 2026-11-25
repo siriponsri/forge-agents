@@ -1,4 +1,21 @@
-# Acceptance evidence — developer checkpoint 2026-11-24
+# Acceptance evidence — developer checkpoints
+
+## Latest scoped update — 2026-11-25
+
+This section supersedes old pending compute environment statements, not the
+full acceptance assessment. `IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN`.
+
+| Criteria | Integrated implementation and actual verification |
+|---|---|
+| A09/A10/A11 | Exact project/purpose machine-vault references now resolve into ephemeral SSH/Jupyter/cloud transport maps.17 focused tests PASS; production HTTP + actual Windows DPAPI check PASS for two-project same-name keys, rotation/removal/redaction/no global fallback. Cloud protocol is loopback fixture, live cloud/SSH NOT_RUN. |
+| A03/A04/A21/A22 | Chat→Workspace canonical live projection and guarded existing Run details mount;12 scoped graph/core/UI checks and production build PASS. Injected run observations remain explicitly separate from provider execution. |
+| New Mission/Parallel/Proactive | Accepted requirements; isolated workers implementing services/UI/tests. Lead runtime/HTTP/App integration and integrated qualification pending, not passed from worker reports. |
+
+The active goal includes all v3/addenda behavior, landing/public website and
+professional English README/screenshots/step-by-step GIFs. Final documentation,
+release verification and authorized normal main push remain pending.
+
+## Historical developer checkpoint — 2026-11-24
 
 This is a coverage map, not a completion declaration. **IMPLEMENTATION_INCOMPLETE**;
 all home checks **HOME_UAT_NOT_RUN**. Paths below are repository-relative.

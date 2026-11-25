@@ -4,13 +4,17 @@ import {createHash} from 'node:crypto';
 import {find,fail,confined,changed} from './domain.mjs';
 import {createComputeService} from '../compute/index.mjs';
 import {createColabMcpAdapter} from '../compute/colab-mcp.mjs';
+import {createComputeCredentialRuntime} from './compute-credentials.mjs';
+import {prepareComputeEnvironment} from '../compute/environment.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex');
 
 // The browser selects canonical IDs. Only this host facade moves validated
 // compute selection into the local process owner's private second argument.
-export function createComputeRouter({store,dataDir,jobs,artifacts,admit,resolveBearer,resolveEnvironment}){
+export function createComputeRouter({store,dataDir,jobs,artifacts,admit,resolveBearer,resolveEnvironment,secrets}){
   const localJobs={start:({resolvedCompute,...input})=>jobs.start(input,{resolvedCompute}),stop:id=>jobs.stop(id)};
-  const baseline=createComputeService({store,dataDir,localJobs,admit});
+  const credentials=secrets?createComputeCredentialRuntime({store,secrets}):null;
+  const prepareRuntime=credentials?.prepare??(async({projectId,config})=>prepareComputeEnvironment(config,async name=>{if(!resolveEnvironment)fail('CREDENTIAL_REQUIRED','Save the selected compute credential in Settings',409);return resolveEnvironment({projectId,name});}));
+  const baseline=createComputeService({store,dataDir,localJobs,admit,prepareRuntime});
   const colab=createColabMcpAdapter({store,dataDir,resolveBearer,resolveEnvironment,admit});
   function targetKind(input){
     const s=store.read(),p=find(s,'projects',input.projectId);
@@ -59,6 +63,7 @@ export function createComputeRouter({store,dataDir,jobs,artifacts,admit,resolveB
     },
     async downloadArtifact(input){return publish(input,await colab.downloadArtifact(input));},
     reconcileTransfer:input=>colab.reconcileTransfer(input),
-    async shutdown(){await baseline.shutdown();await colab.shutdown();},
+    invalidateCredential:input=>credentials?.invalidate(input),
+    async shutdown(){credentials?.close();await baseline.shutdown();await colab.shutdown();},
   };return api;
 }

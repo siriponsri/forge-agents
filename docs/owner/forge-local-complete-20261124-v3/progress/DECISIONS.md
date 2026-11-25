@@ -1,5 +1,42 @@
 # Decisions
 
+## Completion and release authorization — 2026-11-25
+
+Owner explicitly requested opening a goal to complete every required function
+and landing/public website, then authorized the final normal push to main and
+full subagent work. This supersedes the historical transfer stop and the earlier
+research-only authorization statement. No public deployment, purchase,
+credential migration, force push or prototype activation is authorized by it.
+All required implementations and checks remain gates; missing live accounts and
+Home UAT are reported separately. Isolated workers own only assigned new paths;
+lead owns contracts/manifests/central progress and integrated application checks.
+
+## DOC-R01 — English README with actual usage media (2026-11-25)
+
+Owner requires professional English README, research of highly starred repos,
+function screenshots and step-by-step GIFs. Research inspected official n8n,
+Supabase and Dify repositories/READMEs. Final rewrite/media remains the mandatory
+last documentation gate after the represented flows settle and pass verification.
+See `docs/requirements/README_MEDIA_RELEASE_TASK.md`; no placeholder screenshots,
+fabricated successful recordings, license change or publication implied.
+
+## CR-20261125 — Owner resume and competitive requirements
+
+Confirmed: Owner resumed work and selected **thinkwee/OpenDot** for comparison.
+The opendot.live page retrieved links a different repository; its SuperDot and
+Organisation claims are not attributed to thinkwee. Existing Owner choices remain
+binding. No new release/push or public-service authorization is inferred.
+
+Owner-confirmed user-input actions: CR-D01 all Mission/Delivery, Parallel,
+Proactive groups plus Visualization Workspace; CR-D02 software idea→plan→code→
+preview/tests; CR-D03 open local core with optional future team/remote services.
+CR-V01 graph inspection/details with existing guarded run commands, no drag-edge
+dispatch. CR-V02 previously approved recipe/scope/budget permits bounded proactive
+execution; exceptions enter Inbox. Telegram new-work same-channel approval stays.
+Exact scope: `docs/requirements/FORGE_MISSIONS_AND_VISUALIZATION.md`.
+Other competitive ideas remain proposals unless separately accepted. Task map:
+`docs/research/FORGE_COMPETITIVE_REVIEW_20261125.md`.
+
 2026-11-24 Owner DH addendum: retain FORGE's canonical authority and default T3
 execution; extend native services incrementally. Pinned DSH source
 4b399c39a6d1479cd84ca591b4d7c88e24d38a96 is MIT/developer preview and declares a

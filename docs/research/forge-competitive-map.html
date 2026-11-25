@@ -1,0 +1,109 @@
+<style>
+  #forge-competitive-map { color: var(--foreground); font-family: var(--font-sans); display: grid; gap: 16px; }
+  #forge-competitive-map .products { display: flex; flex-wrap: wrap; gap: 8px; }
+  #forge-competitive-map .products button { font: inherit; color: var(--foreground); background: var(--secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; }
+  #forge-competitive-map .products button[aria-pressed="true"] { color: var(--primary-foreground); background: var(--primary); }
+  #forge-competitive-map .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  #forge-competitive-map .lane { display: grid; align-content: start; gap: 12px; min-width: 0; }
+  #forge-competitive-map .lane h3 { font-weight: 500; margin: 0; }
+  #forge-competitive-map .label { color: var(--muted-foreground); margin: 0; }
+  #forge-competitive-map p { margin: 0; overflow-wrap: anywhere; }
+  #forge-competitive-map .mark { display: inline-block; width: 10px; height: 10px; background: var(--chart-1); margin-inline-end: 8px; }
+  #forge-competitive-map .proposal-mark { background: var(--chart-2); }
+  #forge-competitive-map .path { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  #forge-competitive-map .step { border-top: 3px solid var(--chart-2); padding-top: 8px; min-width: 0; }
+  #forge-competitive-map .source { display: flex; flex-wrap: wrap; gap: 8px; }
+  @media (max-width: 520px) {
+    #forge-competitive-map .comparison { grid-template-columns: 1fr; }
+    #forge-competitive-map .path { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+<section id="forge-competitive-map" aria-label="เปรียบเทียบแนวทางคู่แข่งกับโอกาสของ FORGE">
+  <div class="products" role="group" aria-label="เลือกคู่เทียบ">
+    <button type="button" class="btn" data-product="orca" aria-pressed="true">Orca</button>
+    <button type="button" class="btn" data-product="t3" aria-pressed="false">T3 Code</button>
+    <button type="button" class="btn" data-product="paseo" aria-pressed="false">Paseo</button>
+    <button type="button" class="btn" data-product="opendot" aria-pressed="false">thinkwee/OpenDot</button>
+  </div>
+  <div class="comparison" aria-live="polite" aria-atomic="true">
+    <div class="lane">
+      <h3 id="competitor-name">Orca · จากเอกสารทางการ</h3>
+      <p><span class="mark" aria-hidden="true"></span><span id="competitor-strength">Coding agents หลายตัว แยก worktree พร้อม review และ bots รับงานจากภายนอก</span></p>
+      <p class="label">มาตรฐานที่ FORGE ต้องตามให้ทัน</p>
+      <p id="competitor-baseline">แยกงานขนานและรวมผลได้อย่างเข้าใจง่าย</p>
+      <div class="source"><a id="competitor-source" href="https://github.com/stablyai/orca" target="_blank" rel="noopener noreferrer">อ่านแหล่งทางการ ↗</a></div>
+    </div>
+    <div class="lane">
+      <h3>FORGE · พบในโค้ด / ข้อเสนอ</h3>
+      <p id="forge-base">Canonical tasks, Goals, T3, Office, Reports และ artifact evidence รวมอยู่แล้ว</p>
+      <p class="label">ช่องว่างที่ตรวจพบ</p>
+      <p id="forge-gap">Overlapping workspaces ยังทำงานแบบ serial; isolated parallel execution ยังขาด</p>
+      <p><span class="mark proposal-mark" aria-hidden="true"></span><span id="forge-opportunity">Mission → ผลงานหลายชนิด พร้อมหลักฐานและคิวตรวจรับเดียว</span></p>
+    </div>
+  </div>
+  <hr>
+  <div class="path" role="list" aria-label="ลำดับงานที่เสนอ ยังรอ Owner ตัดสินใจ">
+    <div class="step" role="listitem">1 · Core + Visualization</div>
+    <div class="step" role="listitem">2 · Mission + Delivery</div>
+    <div class="step" role="listitem">3 · Parallel Workspace</div>
+    <div class="step" role="listitem">4 · Proactive Workflows</div>
+  </div>
+  <p class="label text-small">ตรวจ 25 พ.ย. 2026 · เอกสารคู่แข่ง ≠ ผล benchmark · Owner รับทั้ง 4 กลุ่มแล้ว · FORGE ยัง IMPLEMENTATION_INCOMPLETE</p>
+  <figure style="margin:0"><a href="C:/Users/siripon.sri/Desktop/my_project/forge-agents/.impeccable/review/agent-workspace/desktop.png"><img src="C:/Users/siripon.sri/Desktop/my_project/forge-agents/.impeccable/review/agent-workspace/desktop.png" alt="FORGE built App: actual Node–Edge rendering with labelled injected run observations and a real uploaded artifact" style="display:block;width:100%;height:auto"/></a><figcaption class="label text-small">หน้าที่ build แล้ว · HTTP/SQLite และไฟล์จริง · run/tool observations เป็น engineering fixture · ไม่มี model turn</figcaption></figure>
+</section>
+<script>
+(() => {
+  const root = document.getElementById('forge-competitive-map');
+  const products = {
+    orca: {
+      name: 'Orca',
+      strength: 'Coding agents หลายตัว แยก worktree พร้อม review และ bots รับงานจากภายนอก',
+      baseline: 'แยกงานขนานและรวมผลได้อย่างเข้าใจง่าย',
+      base: 'Canonical tasks, Goals, T3, Office, Reports และ artifact evidence รวมอยู่แล้ว',
+      gap: 'Overlapping workspaces ยังทำงานแบบ serial; isolated parallel execution ยังขาด',
+      opportunity: 'Mission → ผลงานหลายชนิด พร้อมหลักฐานและคิวตรวจรับเดียว',
+      source: 'https://github.com/stablyai/orca'
+    },
+    t3: {
+      name: 'T3 Code',
+      strength: 'Multi-harness, threads ต่อเนื่องข้าม desktop/web/phone พร้อม Git และ PR workflow',
+      baseline: 'เปลี่ยน provider และกลับมาทำงานเดิมได้ลื่นไหล โดยข้อมูลยังตรงกัน',
+      base: 'FORGE ใช้ T3 เป็น execution owner พร้อม exact catalog และ bounded role selection',
+      gap: 'Latest credential/setup changes ยังรอ integrated recheck; A21/A22 มี upstream contract gap',
+      opportunity: 'เพิ่มเกณฑ์สำเร็จและผลส่งมอบที่ผู้ใช้ no-code ตรวจรับได้เอง',
+      source: 'https://github.com/pingdotgg/t3code'
+    },
+    paseo: {
+      name: 'Paseo',
+      strength: 'Native mobile, parallel worktrees, plugins, voice และ opt-in E2EE relay ตามเอกสาร',
+      baseline: 'Mobile เป็นพื้นที่ทำงานที่ตรวจผลงานและควบคุมงานได้จริง',
+      base: 'FORGE มี Telegram Inbox, same-channel approval และ report outbox ผ่าน Hermes/OpenClaw',
+      gap: 'Live gateway/mobile roundtrip ยัง NOT_RUN; rich client และ paired remote transport ยังขาด',
+      opportunity: 'แจ้งเฉพาะเรื่องที่ต้องตัดสินใจ พร้อมหลักฐาน/preview และ recovery action',
+      source: 'https://paseo.sh/docs/security'
+    },
+    opendot: {
+      name: 'thinkwee/OpenDot',
+      strength: 'Persistent agents, Inbox/Plan, per-agent computers, Gatekeeper, watches และ durable effects',
+      baseline: 'ผู้ใช้รู้ว่าต้องตอบอะไร งานใดเดินต่อได้ และ agent ได้รับสิทธิ์อะไร',
+      base: 'FORGE มี scoped governance, private Owner Memory grants, bounded Goals และ actual artifact hashes',
+      gap: 'ยังไม่มี unified Decision/Recovery desk และ no-code routine setup ครบวงจร',
+      opportunity: 'ผูก Owner decisions กับ requirement revision และหลักฐานของทุก deliverable',
+      source: 'https://github.com/thinkwee/OpenDot/blob/13b15c2378a3dcef1cdc63464f3e92eb347bf8d2/docs/DESIGN.md'
+    }
+  };
+  root.querySelectorAll('[data-product]').forEach(button => {
+    button.addEventListener('click', () => {
+      const data = products[button.dataset.product];
+      root.querySelectorAll('[data-product]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      root.querySelector('#competitor-name').textContent = data.name + ' · จากเอกสารทางการ';
+      root.querySelector('#competitor-strength').textContent = data.strength;
+      root.querySelector('#competitor-baseline').textContent = data.baseline;
+      root.querySelector('#forge-base').textContent = data.base;
+      root.querySelector('#forge-gap').textContent = data.gap;
+      root.querySelector('#forge-opportunity').textContent = data.opportunity;
+      root.querySelector('#competitor-source').href = data.source;
+    });
+  });
+})();
+</script>

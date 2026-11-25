@@ -1,6 +1,78 @@
 # Current Status — Complete Local FORGE
 
-## Owner stop / transfer instruction — latest
+## Active completion goal — 2026-11-25
+
+Owner explicitly requested an active goal for all functions and landing/public
+website, authorized isolated subagents, and authorized the final normal push to
+`origin/main` after completion. The machine-transfer stop below is historical.
+Lead checkout: `integration/forge-local-complete`, based on `4e8ebd3`.
+Actual execution model: `gpt-6.1-sol`, reasoningEffort `xhigh`, serviceTier
+`default`. Overall **IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN**.
+
+Compute environment patch is now applied and integrated. Baseline SSH/Jupyter/
+Vast/Runpod operations receive an ephemeral exact-name environment resolved by
+project and purpose from the machine vault. Rotation/removal and connection
+changes fence dispatch; invalidation closes the affected transport without
+claiming remote cancellation. No global environment mutation or secret bytes
+are persisted. The preserved gzip patch remains historical source evidence.
+
+Developer verification: 17 focused environment/credential/compute/context tests
+PASS; separate production HTTP + native Windows DPAPI test PASS (31.55s), including
+two projects with the same selected name, rotation, removal, redaction and no
+global-key fallback. Loopback Runpod protocol responses are labelled fixtures;
+no live remote/cloud/SSH/account was accessed. Full integrated suite is pending.
+
+Active isolated worktrees: `t3/forge-missions-delivery-pack`,
+`t3/parallel-workspaces`, `t3/proactive-workflows`. Worker-reported passing suites
+remain scoped until lead mounts and checks the integrated application. Lead owns
+T3 admission/replay/dispatch contexts, shared HTTP/session/CSRF, App and restore.
+Native Proactive scope enforcement must be qualified by actual runtime controls;
+prompt restrictions or an MCP-only policy do not establish a native sandbox.
+
+Next executable task: integrate completed worker commits with unconditional
+controller admission, actual isolated-checkout routing, Owner GUI and production
+HTTP checks. Then close the remaining acceptance gaps, review public website,
+run integrated build/start/core/persistence/recovery checks, create professional
+English README with real screenshots/step-by-step GIFs and synchronize release
+documentation as the final step before authorized main push. Nothing here
+declares full implementation, live qualification or Home UAT complete.
+
+## Owner resume / competitive requirements review — 2026-11-25
+
+Owner resumed work, beginning with inspection of FORGE and comparison with Orca,
+T3 Code, Paseo and the explicitly confirmed **thinkwee/OpenDot**. Main remains at
+machine-transfer checkpoint `4e8ebd3`; the working tree was clean before research.
+The prior stop remains historical. Product status is still
+**IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN**.
+
+Research and tasks/acceptance criteria are in
+`docs/research/FORGE_COMPETITIVE_REVIEW_20261125.md`. Owner answered CR-D01–03 and
+CR-V01–02: accept Mission/Delivery, Parallel, Proactive and live Chat→Node–Edge
+Visualization, software→preview/tests first, open local core/optional services.
+Graph uses existing guarded commands; proactive runs stay inside a previously
+approved recipe/scope/budget, with exceptions in Inbox. Exact requirements:
+`docs/requirements/FORGE_MISSIONS_AND_VISUALIZATION.md`.
+Public competitor material is not a hands-on benchmark; the
+same-name opendot.live site links a different repository and was kept separate.
+
+First Visualization slice now mounts from Chat Group: canonical room/agent/run/
+tool/artifact projection, details via existing Run controls, fit/zoom/list,
+TH/EN/themes and unknown-result distinctions. No execution on view changes.
+Production build PASS; 11 scoped projection/core tests PASS; built-App HTTP/
+SQLite browser test PASS with injected run observations, not provider execution.
+Independent UI/source review found four issues; bounded re-check verified three
+and found one remaining active-edge pattern collision. Lead fixed that collision
+and added real rendered-style coverage; final scoped12 checks PASS and build PASS.
+No independent SHIP verdict after that last CSS fix is claimed. No dependency, protected legacy path,
+worker checkout or credential changed; no commit or push. Next: close graph
+review qualification, then inspect/integrate the preserved compute-runtime environment patch
+and latest credential/recovery checks before expanding accepted capabilities.
+
+DOC-R01 added: final professional English README informed by highly starred
+repos, real function screenshots and step-by-step GIFs. Reference research done;
+final rewrite/media pending stable verified flows per the release documentation gate.
+
+## Historical Owner stop / transfer instruction — superseded by resume
 
 Development is stopped at the Owner's request. Push the preserved checkpoint to
 main for moving machines; this overrides the earlier instruction to continue

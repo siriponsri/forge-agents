@@ -47,6 +47,26 @@ test('retries continue until actual evidence passes and keep stable owner/contex
   g=await f.finish(g);assert.equal(g.progress.passed,1);assert.equal(f.starts,2);
 });
 
+test('late trusted evidence rechecks the same terminal attempt and retains failed verification history without redispatch',async t=>{
+  const f=await fixture(t),verifier={id:'late-reviewed-tests',version:'1'};
+  let g=await f.start({criteria:[{id:'tests',taskId:f.tasks[0].id,description:'Reviewed local tests',kind:'verifierReceipt',verifier}],policy:{...allow,maxAttemptsPerTask:1}});
+  g=await f.finish(g,{evidence:false});
+  const oldId=g.attempts[0].verificationId,runId=g.attempts[0].runId;
+  assert.equal(g.blockers[f.tasks[0].id].code,'TASK_ATTEMPT_LIMIT');
+  g=await f.call('reconcile',g);
+  assert.equal(g.attempts[0].verificationId,oldId,'Unchanged missing evidence does not create verification records');
+  await f.store.transaction(s=>s.events.push(entity({type:'verification.result',runId,status:'PASSED',verifier,checkedAt:new Date().toISOString(),checks:[{status:'PASSED'}]},f.p.id)));
+  const input=f.input({goalId:g.id,expectedRevision:g.revision});
+  g=await f.service.reconcile(input);
+  assert.equal(g.progress.passed,1);assert.equal(f.starts,1);assert.equal(g.attempts.length,1);
+  assert.deepEqual(g.attempts[0].verificationHistory,[oldId]);assert.equal(g.blockers[f.tasks[0].id],undefined);
+  const current=f.store.read().events.find(e=>e.id===g.attempts[0].verificationId);
+  assert.equal(current.supersedes,oldId);assert.equal(f.store.read().events.find(e=>e.id===oldId).status,'FAILED');
+  await f.service.reconcile(input);assert.equal(f.starts,1);
+  g=await f.call('qa',g,{taskId:f.tasks[0].id},f.owner);g=await f.call('review',g,{},f.owner);
+  assert.equal(g.status,'completed');
+});
+
 test('unchanged failures stop the affected task, independent ready work proceeds',async t=>{
   const f=await fixture(t);let g=await f.start({taskIds:f.tasks.slice(0,2).map(x=>x.id)});
   g=await f.finish(g,{evidence:false});g=await f.call('advance',g);g=await f.finish(g,{evidence:false});

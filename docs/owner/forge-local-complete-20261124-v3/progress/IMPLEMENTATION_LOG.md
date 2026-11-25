@@ -1,5 +1,56 @@
 # Implementation Log
 
+## Compute environment integration — 2026-11-25
+
+Final related checkpoint command: 24 PASS (compute/environment/credential/context,
+graph and boundary tests); production build PASS, 28.10s. Existing dependency
+module-directive and large-chunk warnings remain. Goals late-evidence fix: 32
+related checks PASS, including a completed run reconciled before its reviewed
+verifier receipt arrives. Recheck retains failed verification history, qualifies
+the exact same attempt and never dispatches another run or bypasses QA/Owner.
+
+Applied the preserved six-path compute environment delta after checking patch
+contexts. Added host-only scoped vault runtime and authoritative injected maps
+through baseline cloud/SSH/Jupyter health/start/stop/status/lifecycle; added
+last-moment connection/credential revision checks and rotation/removal transport
+invalidation. Local compute never opens a vault. Runtime/response redaction
+prevents selected values from entering canonical records or public health.
+No credentials/account/resource were accessed; dummy keys and local fixtures only.
+
+17 focused tests PASS. Separate production application HTTP/session/CSRF test
+with actual native Windows DPAPI: 1 PASS, 0 skips, 31.55s. Demonstrates isolated
+same-name keys in two projects, rotation/removal, no environment fallback and no
+key bytes in canonical state; the cloud endpoint is a labelled loopback fixture.
+Prepared isolated Mission/Parallel/Proactive worker contracts; lead shared
+integration and full-product verification remain in progress. Owner explicitly
+authorized final main push after completion; no push/deployment in this checkpoint.
+
+## Resume research checkpoint — 2026-11-25
+
+Inspected actual main `4e8ebd3`, clean state, existing worktrees, requirements,
+machine-transfer handoff, App/backend mounts, workspace admission, baseline
+compute credential helper and Monitor. Retrieved official competitor material;
+Owner confirmed thinkwee/OpenDot. Recorded dated source revisions, qualitative
+comparison, implementation gaps, proposed tasks/acceptance and pending decisions
+in `docs/research/FORGE_COMPETITIVE_REVIEW_20261125.md`.
+
+Owner confirmed CR-D01–03/CR-V01–02. Added a first Visualization projection in
+AgentWorkspace.jsx, agent-graph.mjs, agent-workspace.css and Chat/App integration.
+Shows exact scoped room/run identities and observed tools/linked outputs, with
+guarded existing Run inspection/controls and no effects from view switching.
+Scope/unknown-result/determinism tests plus related domain/boundary checks:11 PASS.
+Built-App HTTP/SQLite browser flow PASS with injected observations (zero model
+turns), screenshots desktop/tablet/mobile under .impeccable/review/agent-workspace.
+Build PASS; design detector changed targets []. Independent review fixes:
+run-keyed inspector state, artifact/delegation relations, readable min zoom and
+collapsed room form; re-check verified three and identified active dash override.
+Lead fixed the last override and added active delegated-child/solid-edge style
+checks. Final scoped command12 PASS, final build11.57s; no final independent SHIP
+verdict or full-product qualification claimed. DOC-R01 English README/screens/GIF
+task accepted and high-star reference research completed; final media pending.
+No dependency, account operation, commit, push or deployment. Earlier product
+checks retain their own evidence scope; no new full-suite/home qualification.
+
 ## Lead integration checkpoint — 2026-11-24
 
 Integrated native full catalogs, real setup Effect-RPC, governed MCP/OAuth,

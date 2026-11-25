@@ -73,7 +73,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
   const goals=createGoalService({store,t3,authorize:authority.goalAuthorize});
   const relay=createRelayService({store,t3,resolveSecret:async reference=>{const binding=store.read().relay?.bindings.find(b=>b.secretRef===reference);if(!binding||!secrets)fail('RELAY_SECRET_UNAVAILABLE','Save a machine-only relay signing key in Settings',409);return secrets.resolveRef({projectId:binding.projectId,reference,purpose:'relay'});}});await relay.recover();
   const artifacts=createArtifactService({store,dataDir}),control=createControlService({store,connections});
-  compute=createComputeRouter({store,dataDir,jobs,artifacts,admit:admitCompute,resolveBearer:({vaultRef,projectId})=>secrets.resolveRef({projectId,reference:vaultRef,purpose:'compute'}),resolveEnvironment:({projectId,name})=>secrets.resolveEnv({projectId,name,purpose:'compute'})});
+  compute=createComputeRouter({store,dataDir,jobs,artifacts,admit:admitCompute,secrets,resolveBearer:({vaultRef,projectId})=>secrets.resolveRef({projectId,reference:vaultRef,purpose:'compute'}),resolveEnvironment:({projectId,name})=>secrets.resolveEnv({projectId,name,purpose:'compute'})});
   const catalog=createCatalogService({load:()=>t3.catalog()});
   const gitStorage=createGitStorageService({store});
   const downloads=createDownloadService({sourceRoot:root,dataDir});
@@ -187,6 +187,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
           const method=p.slice('/api/secrets/'.length);
           if(['set','remove'].includes(method)&&input.purpose==='provider'&&store.read().runs.some(r=>r.projectId===input.projectId&&!['completed','failed','cancelled','interrupted','rolled_back','stopped'].includes(r.status)))fail('PROVIDER_BUSY','Stop and reconcile provider runs before changing their key',409);
           value=await dispatchSecretRequest(secrets,method,input);
+          if(['set','remove'].includes(method)&&!value.replayed&&input.purpose==='compute')compute.invalidateCredential({projectId:input.projectId,name:value.secret.envName});
           if(['set','remove'].includes(method)&&!value.replayed){await providers.mcp.invalidateCredential?.({projectId:input.projectId,name:value.secret.envName});await store.transaction(s=>{for(const c of s.connections.filter(c=>c.projectId===input.projectId&&c.kind==='provider'&&(c.config?.envRefs??[]).includes(value.secret.envName))){c.config.generation=(c.config.generation??0)+1;c.catalogError={code:'CREDENTIAL_CHANGED',message:'Check the provider and refresh its catalog after reviewing the saved key'};c.revision++;}});}
         }
         else if(p.startsWith('/api/memory/')){

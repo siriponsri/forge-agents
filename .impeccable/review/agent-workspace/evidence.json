@@ -1,0 +1,12 @@
+{
+  "qualification": "PRODUCTION_APP_REAL_SQLITE_INJECTED_RUN_OBSERVATIONS",
+  "directory": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-agent-workspace-UwVdbn",
+  "captures": [
+    "desktop",
+    "tablet",
+    "mobile"
+  ],
+  "errors": [],
+  "noExecutionOnViewChange": true,
+  "providerCalls": 0
+}

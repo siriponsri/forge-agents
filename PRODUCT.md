@@ -30,6 +30,13 @@ compute, storage, model serving and desktop targets retain explicit scope.
 ## Capabilities and Constraints
 
 Preserve all Complete Local v3 requirements and subsequent Owner additions.
+Owner confirmed2026-11-25: Mission + Delivery Pack, isolated Parallel Workspace,
+Proactive Workflows and a Chat Group ↔ live Node–Edge Visualization Workspace.
+Graph inspection uses existing guarded run actions; approved proactive recipes
+may run within their scope/budget, with exceptions going to Inbox. Software
+idea→plan→code→preview/tests is the first acceptance journey. Local core is open
+source; optional future team/remote services do not authorize publication or a
+license change. See docs/requirements/FORGE_MISSIONS_AND_VISUALIZATION.md.
 Assistance Strategy considers connected models, balances quality/cost, starts a
 suitable Executor, and uses a larger Asst only for difficult or stalled work.
 Mobile work enters Inbox and is approved by the Owner in its originating channel.

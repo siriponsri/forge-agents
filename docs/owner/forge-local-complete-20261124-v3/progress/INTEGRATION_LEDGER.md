@@ -1,5 +1,31 @@
 # Integration Ledger
 
+## Active completion integration — 2026-11-25
+
+Compute environment patch has been applied. `app/server/compute-credentials.mjs`
+binds exact project/purpose/revision/generation to an ephemeral transport map;
+`app/server/compute.mjs` and the baseline adapters carry that map through health,
+execution, reconciliation, Stop and resource lifecycle. Production DPAPI/HTTP
+qualification passed with loopback cloud protocol fixtures; live targets NOT_RUN.
+17 related checks passed separately; no new aggregate full-suite result claimed.
+Mission, isolated Parallel Workspace and Proactive services are in separate
+active worktrees. Their reports do not establish production HTTP/T3 integration.
+Owner authorized final main push after complete verification/docs. Native tool
+scope enforcement for proactive dispatch must be proven before qualification.
+
+## Resume evidence boundary — 2026-11-25
+
+Main `4e8ebd3` inspected. First Visualization view mounts in Chat using the same
+state/SSE refresh and existing guarded Run controls; no new execution owner,
+backend route or database. Scoped projection/core11 checks and built-App browser
+flow pass with injected run observations. Independent UI/source findings were
+corrected; final dash-style fix is covered by lead rendered tests, not a new
+independent SHIP verdict. Final scoped12 checks/build PASS.
+Other competitive extensions are accepted/proposed as identified in
+`docs/research/FORGE_COMPETITIVE_REVIEW_20261125.md`, not implemented from a plan.
+Overall product/live/home qualifications retain the machine-transfer limits.
+Pending compute env patch remains unapplied. No competitor runtime was installed.
+
 ## Current integration update — 2026-11-24
 
 Provider install/setup/catalog/selection, scoped supervised MCP, OAuth, Plugins,

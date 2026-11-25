@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Play, Square, ExternalLink } from "lucide-react";
+import { Play, Square, ExternalLink, MessagesSquare, Network } from "lucide-react";
+import AgentWorkspace from './AgentWorkspace.jsx';
 import { date, operationId, request, runEvents, scoped } from "./api.mjs";
 import {
   Badge,
@@ -118,12 +119,13 @@ export function Team({ t, state, projectId, mutate, busy }) {
   );
 }
 
-export function Chat({ t, state, projectId, mutate, busy,run }) {
+export function Chat({ t, state, projectId, mutate, busy,run, connected }) {
   const rooms = scoped(state, "conversations", projectId),
     bots = scoped(state, "bots", projectId);
   const [selected, setSelected] = useState(""),
     [draft, setDraft] = useState(""),[replyBot,setReplyBot]=useState(''),
     [providerReply,setProviderReply]=useState(!!state.projects.find(p=>p.id===projectId)?.profile?.provider?.connectionId);
+  const [view,setView]=useState('chat');
   const pendingMessage=useRef(null);
   const room = rooms.find((r) => r.id === selected) || rooms[0];
   return (
@@ -152,6 +154,7 @@ export function Chat({ t, state, projectId, mutate, busy,run }) {
             }
             subtitle={(r) => r.kind}
           />
+          <details open={view==='chat'} className="conversation-create"><summary>{t('เปิดห้องใหม่','New conversation')}</summary>
           <form
             onSubmit={async (e) => {
               e.preventDefault();
@@ -182,9 +185,13 @@ export function Chat({ t, state, projectId, mutate, busy,run }) {
             </Field>
             <Submit busy={busy}>{t("สร้างห้อง", "Create room")}</Submit>
           </form>
+          </details>
         </section>
         <section className="panel conversation">
           <h2>{room?.name || t("เลือกห้องสนทนา", "Choose a conversation")}</h2>
+          {room&&<div className="conversation-view-switch" role="group" aria-label={t('รูปแบบห้องสนทนา','Conversation view')}><button type="button" aria-pressed={view==='chat'} onClick={()=>setView('chat')}><MessagesSquare size={15}/>{t('แชต','Chat')}</button><button type="button" aria-pressed={view==='workspace'} onClick={()=>setView('workspace')}><Network size={15}/>{t('Workspace','Workspace')}</button></div>}
+          {room&&view==='workspace'&&<AgentWorkspace key={`${projectId}:${room.id}`} {...{state,projectId,room,t,connected}} renderRun={record=><Run key={record.id} runRecord={record} {...{t,run,busy}}/>}/>}
+          <div hidden={view!=='chat'}>
           <div className="messages" aria-live="polite">
             {room?.messages?.map((m, i) => (
               <article
@@ -238,6 +245,7 @@ export function Chat({ t, state, projectId, mutate, busy,run }) {
             </form>
           )}
           {room&&scoped(state,'runs',projectId).filter(r=>r.kind==='conversation'&&r.conversationId===room.id).slice(-5).reverse().map(r=><Run key={r.id} runRecord={r} {...{t,run,busy}}/>)}
+          </div>
         </section>
       </div>
     </>

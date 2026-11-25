@@ -8,6 +8,13 @@ after integrated developer verification and release preparation.
 The gate does not itself authorize a push or public deployment. The existing
 release guide and active authorization still govern those actions.
 
+Owner extension, 25 November 2026: the root README must be professional English,
+informed by highly starred repositories, with actual function screenshots and
+step-by-step usage GIFs. Reference research and the media/acceptance task are in
+`docs/requirements/README_MEDIA_RELEASE_TASK.md`. All illustrated functions must
+match verified delivered behavior; real recordings and asset provenance are
+required. This remains the last documentation task before a complete release push.
+
 Before marking this gate passed:
 
 - Reconcile the acceptance matrix, current status, integration ledger, release

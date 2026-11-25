@@ -145,6 +145,7 @@ export default function App() {
     setNotice,
     themeKind:getTheme(theme).kind,
     themeId:theme,
+    connected,
   };
   const nav = [
     ['overview',LayoutDashboard,'ภาพรวม','Overview'],

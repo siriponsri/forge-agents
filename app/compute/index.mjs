@@ -26,8 +26,9 @@ function notebook(n){
   const cells=n.cells?.length&&codeOf({cells:n.cells})===codeOf(n)?structuredClone(n.cells):[{cell_type:'code',metadata:{},source:codeOf(n).split(/(?<=\n)/),outputs:[],execution_count:null}];
   return {nbformat:4,nbformat_minor:5,metadata:{kernelspec:{name:'python3',display_name:'Python 3',language:'python'}},cells:cells.map(c=>({...c,metadata:c.metadata??{},...(c.cell_type==='code'?{execution_count:null,outputs:[]}:{} )}))};
 }
-export function createComputeService({dataDir,store,localJobs,admit}){
+export function createComputeService({dataDir,store,localJobs,admit,prepareRuntime}){
   const inflight=new Map(),deadlines=new Map();let closing=false;
+  const runtimeFor=({projectId,config,targetId})=>prepareRuntime?prepareRuntime({projectId,config,targetId}):{};
   function armDeadline(j){
     const c=j.configSnapshot?.executor??j.configSnapshot;
     if(closing||c?.kind!=='jupyter'||terminal.has(j.status)||j.stopRequested||deadlines.has(j.id)||!j.deadlineAt)return;
@@ -35,22 +36,22 @@ export function createComputeService({dataDir,store,localJobs,admit}){
   }
   const update=async(id,patch)=>store.transaction(s=>{const j=find(s,'jobs',id);Object.assign(j,patch);changed(j);return publicJob(j);});
   const snapshot=async(j)=>{const dir=path.join(dataDir,'compute',j.id);await mkdir(dir,{recursive:true});await writeFile(path.join(dir,'source.ipynb'),JSON.stringify(j.sourceNotebook),{flag:'wx'});await writeFile(path.join(dir,'manifest.json'),JSON.stringify({jobId:j.id,projectId:j.projectId,operationId:j.operationId,source:j.source,config:j.configSnapshot,environment:j.environment,checkpoint:j.checkpoint??null,sourceNotebookSha256:hash(j.sourceNotebook)},null,2),{flag:'wx'});};
-  async function observed(c){
+  async function observed(c,runtime={}){
     if(c.kind==='local')return {verified:!!localJobs,execution:!!localJobs,owner:'localJobs',resume:false};
-    if(c.kind==='owner-ssh')return sshHealth(c);
-    if(c.kind==='jupyter')return jupyterHealth(c);
+    if(c.kind==='owner-ssh')return sshHealth(c,runtime);
+    if(c.kind==='jupyter')return jupyterHealth(c,runtime);
     if(c.kind==='colab-browser')return {verified:false,execution:false,interactive:true,status:'owner-setup-required',setup:colabSetup()};
-    const r=await resource(c);let executor=null;
-    if(c.executor&&r.running){if(r.executorMatchesResource===false)error('RESOURCE_IDENTITY_MISMATCH','SSH target does not match the selected cloud resource',409);executor=await observed(c.executor);}
+    const r=await resource(c,runtime);let executor=null;
+    if(c.executor&&r.running){if(r.executorMatchesResource===false)error('RESOURCE_IDENTITY_MISMATCH','SSH target does not match the selected cloud resource',409);executor=await observed(c.executor,runtime);}
     return {verified:true,execution:r.running&&!!executor?.execution,resource:r,executor,executorBinding:c.executor?.kind==='jupyter'?'owner-configured; provider does not attest Jupyter URL':'provider-verified'};
   }
   async function refresh(j){
     if(j.computeAttempt.kind==='local')return publicJob(j);
     if(terminal.has(j.status)||j.computeAttempt.kind==='colab-browser')return publicJob(j);
-    const c=j.configSnapshot.executor??j.configSnapshot;let r;armDeadline(j);
-    try{r=c.kind==='owner-ssh'?await ssh(c,'status',j):await jupyterStatus(c,j);}catch(e){return update(j.id,{status:'unknown',lastError:clean(e.message,j.configSnapshot),lastObservationAt:stamp()});}
+    const c=j.configSnapshot.executor??j.configSnapshot;let r,runtime;armDeadline(j);
+    try{runtime=await runtimeFor({projectId:j.projectId,config:j.configSnapshot,targetId:j.computeAttempt.targetId});r=c.kind==='owner-ssh'?await ssh(c,'status',j,runtime):await jupyterStatus(c,j,runtime);}catch(e){return update(j.id,{status:'unknown',lastError:clean(e.message,j.configSnapshot,runtime??{env:{}}),lastObservationAt:stamp()});}finally{runtime?.dispose?.();}
     const permitted=new Set([...active,...terminal]);if(!permitted.has(r.status))r={status:'unknown',reason:'Unrecognized execution state'};
-    return update(j.id,{status:r.status,logs:clean(r.logs??j.logs,j.configSnapshot).slice(-200000),lastObservationAt:stamp(),remoteObservation:{status:r.status,pid:r.pid??null,exitCode:r.exitCode??null,timedOut:r.timedOut??false},...(r.error||r.reason?{lastError:clean(r.error??r.reason,j.configSnapshot)}:{}),...(terminal.has(r.status)?{finishedAt:stamp()}:{} )});
+    return update(j.id,{status:r.status,logs:clean(r.logs??j.logs,j.configSnapshot,runtime??{env:{}}).slice(-200000),lastObservationAt:stamp(),remoteObservation:{status:r.status,pid:r.pid??null,exitCode:r.exitCode??null,timedOut:r.timedOut??false},...(r.error||r.reason?{lastError:clean(r.error??r.reason,j.configSnapshot,runtime??{env:{}})}:{}),...(terminal.has(r.status)?{finishedAt:stamp()}:{} )});
   }
   const service={
     async configure(input){
@@ -64,8 +65,8 @@ export function createComputeService({dataDir,store,localJobs,admit}){
       });
     },
     async health(input){
-      const {target,config}=selected(store.read(),input);let result;
-      try{result={status:'observed',...(await observed(config)),checkedAt:stamp()};}catch(e){result={status:'error',verified:false,execution:false,code:e.code??'COMPUTE_HEALTH',message:clean(e.message,config),checkedAt:stamp()};}
+      const {target,config}=selected(store.read(),input);let result,runtime;
+      try{runtime=await runtimeFor({projectId:input.projectId,config,targetId:target?.id});result={status:'observed',...(await observed(config,runtime)),checkedAt:stamp()};}catch(e){result={status:'error',verified:false,execution:false,code:e.code??'COMPUTE_HEALTH',message:clean(e.message,config,runtime??{env:{}}),checkedAt:stamp()};}finally{runtime?.dispose?.();}
       if(target)await store.transaction(s=>{const t=find(s,'connections',target.id,input.projectId);if(t.revision===target.revision){t.health=result;changed(t);}});
       return result;
     },
@@ -108,21 +109,22 @@ export function createComputeService({dataDir,store,localJobs,admit}){
           const job=entity({kind:'compute-notebook',computeFingerprint:fingerprint,operationId:input.operationId,notebookId:n.id,phaseId:input.phaseId??null,computeAttempt:{kind:c.kind,targetId:target?.id??null,targetRevision:target?.revision??null},sourceRevision:n.revision,source:{notebookId:n.id,revision:n.revision,sha256:hash(sourceCode)},sourceNotebook:notebook(n),code:sourceCode,configSnapshot:c,configRevision:hash(c),environment:{revision:c.environmentRevision??null,qualification:'not-yet-observed'},workspace:p.workspace,profileRevision:p.revision,ownerToken:randomUUID(),status:'submitting',logs:'',remote:null,mode:input.mode??'restart',previousJobId:input.previousJobId??null,checkpoint,checkpointRefs:checkpoint?[checkpoint.artifactId]:[],artifactRefs:[],limitSeconds,startedAt:stamp(),deadlineAt:new Date(Date.now()+limitSeconds*1000).toISOString()},p.id);s.jobs.push(job);return job;
         });
         if(j.replayed)return publicJob(j);
-        let dispatchStarted=false;
+        let dispatchStarted=false,runtime;
         try{
           await snapshot(j);
           if(c.kind==='colab-browser')return update(j.id,{status:'awaiting-owner',setup:colabSetup(),evidenceScope:'owner-interactive; execution has not been observed'});
-          const health=await observed(c);await update(j.id,{environment:{...j.environment,observation:health,observedAt:stamp()}});
+          runtime=await runtimeFor({projectId:p.id,config:c,targetId:target?.id});
+          const health=await observed(c,runtime);await update(j.id,{environment:{...j.environment,observation:health,credentialReferences:runtime.references??[],observedAt:stamp()}});
           const stopped=()=>!!find(store.read(),'jobs',j.id).stopRequested;
           if(stopped())return update(j.id,{status:'stopped',finishedAt:stamp()});
           if(!health.execution)error('COMPUTE_NOT_READY','Selected target is not execution-ready; inspect health and configure its identity/executor',409);
           const exec=c.executor??c;let r;
           admit?.(store.read(),input,{jobId:j.id});
           dispatchStarted=true;
-          if(exec.kind==='owner-ssh')r=await ssh(exec,'start',j);
-          else r=await jupyterStart(exec,j,remote=>update(j.id,{remote}),stopped);
-          const result=await update(j.id,{status:r.status,logs:clean(r.logs,c),submittedAt:stamp(),remote:{...store.read().jobs.find(x=>x.id===j.id).remote,...r.remote},lastObservationAt:stamp()});armDeadline(find(store.read(),'jobs',j.id));return result;
-        }catch(e){await update(j.id,{status:e.code==='COMPUTE_CANCELLED'?'stopped':dispatchStarted?'unknown':'failed',lastError:clean(e.message,c),errorCode:e.code??'COMPUTE_ERROR'});return publicJob(find(store.read(),'jobs',j.id));}
+          if(exec.kind==='owner-ssh')r=await ssh(exec,'start',j,runtime);
+          else r=await jupyterStart(exec,j,remote=>update(j.id,{remote}),stopped,runtime);
+          const result=await update(j.id,{status:r.status,logs:clean(r.logs,c,runtime),submittedAt:stamp(),remote:{...store.read().jobs.find(x=>x.id===j.id).remote,...r.remote},lastObservationAt:stamp()});armDeadline(find(store.read(),'jobs',j.id));return result;
+        }catch(e){await update(j.id,{status:e.code==='COMPUTE_CANCELLED'?'stopped':dispatchStarted?'unknown':'failed',lastError:clean(e.message,c,runtime??{env:{}}),errorCode:e.code??'COMPUTE_ERROR'});return publicJob(find(store.read(),'jobs',j.id));}finally{runtime?.dispose?.();}
       };
       const promise=Promise.resolve().then(execute);inflight.set(input.operationId,{fingerprint,promise,projectId:input.projectId});try{return await promise;}finally{inflight.delete(input.operationId);}
     },
@@ -132,9 +134,9 @@ export function createComputeService({dataDir,store,localJobs,admit}){
       const j=owned(store.read(),input);if(terminal.has(j.status))return publicJob(j);
       if(j.computeAttempt.kind==='local'){if(!localJobs)error('COMPUTE_SETUP','Local job owner is not connected',409);await localJobs.stop(j.id);return publicJob(find(store.read(),'jobs',j.id));}
       if(j.computeAttempt.kind==='colab-browser')return update(j.id,{stopRequested:true,status:'unknown',lastError:'Stop execution in the owner Colab notebook. FORGE cannot acknowledge browser kernel cancellation.'});
-      await update(j.id,{stopRequested:true,status:'stopping'});const c=j.configSnapshot.executor??j.configSnapshot;
-      try{const r=c.kind==='owner-ssh'?await ssh(c,'stop',j):await jupyterStop(c,j);return update(j.id,{status:r.status,lastObservationAt:stamp()});}
-      catch(e){return update(j.id,{status:'unknown',lastError:clean(e.message,j.configSnapshot)});}
+      await update(j.id,{stopRequested:true,status:'stopping'});const c=j.configSnapshot.executor??j.configSnapshot;let runtime;
+      try{runtime=await runtimeFor({projectId:j.projectId,config:j.configSnapshot,targetId:j.computeAttempt.targetId});const r=c.kind==='owner-ssh'?await ssh(c,'stop',j,runtime):await jupyterStop(c,j,runtime);return update(j.id,{status:r.status,lastObservationAt:stamp()});}
+      catch(e){return update(j.id,{status:'unknown',lastError:clean(e.message,j.configSnapshot,runtime??{env:{}})});}finally{runtime?.dispose?.();}
     },
     async reconcile(input={}){
       if(input.projectId)find(store.read(),'projects',input.projectId);
@@ -142,7 +144,7 @@ export function createComputeService({dataDir,store,localJobs,admit}){
       const jobs=store.read().jobs.filter(j=>j.computeAttempt&&j.computeAttempt.kind!=='colab-mcp'&&(!input.projectId||j.projectId===input.projectId)&&active.has(j.status));
       const results=[];for(const j of jobs)results.push(await refresh(j));
       for(const r of store.read().receipts.filter(r=>r.kind==='compute-lifecycle'&&(!input.projectId||r.projectId===input.projectId)&&['submitting','requested','unknown'].includes(r.status))){
-        let patch;try{const observation=await resource(r.configSnapshot);const reached=r.action==='start'?observation.running:['stopped','EXITED'].includes(observation.state);patch={status:reached?'completed':'unknown',observation,lastObservationAt:stamp()};}catch(e){patch={status:'unknown',message:clean(e.message,r.configSnapshot),lastObservationAt:stamp()};}
+        let patch,runtime;try{runtime=await runtimeFor({projectId:r.projectId,config:r.configSnapshot,targetId:r.targetId});const observation=await resource(r.configSnapshot,runtime);const reached=r.action==='start'?observation.running:['stopped','EXITED'].includes(observation.state);patch={status:reached?'completed':'unknown',observation,lastObservationAt:stamp()};}catch(e){patch={status:'unknown',message:clean(e.message,r.configSnapshot,runtime??{env:{}}),lastObservationAt:stamp()};}finally{runtime?.dispose?.();}
         results.push(await store.transaction(s=>{const current=s.receipts.find(x=>x.operationId===r.operationId);Object.assign(current,patch);return current;}));
       }
       return results;
@@ -153,9 +155,9 @@ export function createComputeService({dataDir,store,localJobs,admit}){
       if(!['start','stop'].includes(input.action))error('COMPUTE_POLICY','No provisioning, deletion, resize or purchase operation is supported');
       const fingerprint=hash({projectId:input.projectId,targetId:input.targetId,config:hash(c),action:input.action});
       if(store.read().jobs.some(j=>j.operationId===input.operationId))error('OPERATION_REUSE','Operation ID already belongs to a notebook execution',409);
-      const receipt=await store.transaction(s=>{const prev=s.receipts.find(r=>r.operationId===input.operationId);if(prev){if(prev.fingerprint!==fingerprint)error('OPERATION_REUSE','Lifecycle operation ID conflict',409);return {...prev,replayed:true};}if(s.jobs.some(j=>j.computeAttempt?.targetId===target.id&&active.has(j.status)))error('COMPUTE_BUSY','Stop/reconcile owned notebook executions before resource lifecycle',409);const r={operationId:input.operationId,projectId:input.projectId,kind:'compute-lifecycle',fingerprint,status:'submitting',action:input.action,resourceId:c.resourceId,configSnapshot:c,createdAt:stamp()};s.receipts.push(r);return r;});
+      const receipt=await store.transaction(s=>{const prev=s.receipts.find(r=>r.operationId===input.operationId);if(prev){if(prev.fingerprint!==fingerprint)error('OPERATION_REUSE','Lifecycle operation ID conflict',409);return {...prev,replayed:true};}if(s.jobs.some(j=>j.computeAttempt?.targetId===target.id&&active.has(j.status)))error('COMPUTE_BUSY','Stop/reconcile owned notebook executions before resource lifecycle',409);const r={operationId:input.operationId,projectId:input.projectId,targetId:target.id,kind:'compute-lifecycle',fingerprint,status:'submitting',action:input.action,resourceId:c.resourceId,configSnapshot:c,createdAt:stamp()};s.receipts.push(r);return r;});
       if(receipt.replayed)return receipt;
-      let result;try{result=await transition(c,input.action);}catch(e){result={status:e.code==='COMPUTE_UNCERTAIN'?'unknown':'failed',code:e.code,message:clean(e.message,c)};}
+      let result,runtime;try{runtime=await runtimeFor({projectId:input.projectId,config:c,targetId:target.id});result=await transition(c,input.action,runtime);}catch(e){result={status:e.code==='COMPUTE_UNCERTAIN'?'unknown':'failed',code:e.code,message:clean(e.message,c,runtime??{env:{}})};}finally{runtime?.dispose?.();}
       return store.transaction(s=>{const r=s.receipts.find(r=>r.operationId===input.operationId);Object.assign(r,result,{observedAt:stamp()});return r;});
     },
     async exportNotebook(input){
