@@ -1,0 +1,138 @@
+{
+  "verifiedAt": "2026-11-25",
+  "method": "Primary GitHub pinned raw files and versioned arXiv abs pages; read-only no code/data redistribution",
+  "receipts": [
+    {
+      "url": "https://raw.githubusercontent.com/Zhudongsheng75/ToolMaze/f8620d841b67a72ac921caee9df87af6ab9befbb/README.md",
+      "repo": "Zhudongsheng75/ToolMaze",
+      "revision": "f8620d841b67a72ac921caee9df87af6ab9befbb",
+      "path": "README.md",
+      "status": "AVAILABLE",
+      "sha256": "ccf89b46ba5ab6073bb64d40b297afbfa37eed1eacc010e76d9642e0ce729016",
+      "bytes": 6178
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Zhudongsheng75/ToolMaze/f8620d841b67a72ac921caee9df87af6ab9befbb/evaluation/core/judge.py",
+      "repo": "Zhudongsheng75/ToolMaze",
+      "revision": "f8620d841b67a72ac921caee9df87af6ab9befbb",
+      "path": "evaluation/core/judge.py",
+      "status": "AVAILABLE",
+      "sha256": "f891dddfc494e519abc4f9ae1c8c6a5484c5ff0a9b5fd53a3215dbb990d988ca",
+      "bytes": 62003
+    },
+    {
+      "url": "https://raw.githubusercontent.com/benchflow-ai/skillsbench/2adce5ab404c0820cb791486f27c44f09df4cfde/README.md",
+      "repo": "benchflow-ai/skillsbench",
+      "revision": "2adce5ab404c0820cb791486f27c44f09df4cfde",
+      "path": "README.md",
+      "status": "AVAILABLE",
+      "sha256": "da52e1ecd8c992e9125ec46b6237bd14d4c4b6a5ca7be896e2a06c97be1d79eb",
+      "bytes": 4331
+    },
+    {
+      "url": "https://raw.githubusercontent.com/benchflow-ai/skillsbench/2adce5ab404c0820cb791486f27c44f09df4cfde/LICENSE",
+      "repo": "benchflow-ai/skillsbench",
+      "revision": "2adce5ab404c0820cb791486f27c44f09df4cfde",
+      "path": "LICENSE",
+      "status": "AVAILABLE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "bytes": 11357
+    },
+    {
+      "url": "https://raw.githubusercontent.com/benchflow-ai/skillsbench/2adce5ab404c0820cb791486f27c44f09df4cfde/experiments/sanity-tasks/hello-world/task.md",
+      "repo": "benchflow-ai/skillsbench",
+      "revision": "2adce5ab404c0820cb791486f27c44f09df4cfde",
+      "path": "experiments/sanity-tasks/hello-world/task.md",
+      "status": "AVAILABLE",
+      "sha256": "d99e2159939191e601010b37590fac38b119f4c15a622cc10a2de25ae310e257",
+      "bytes": 379
+    },
+    {
+      "url": "https://raw.githubusercontent.com/benchflow-ai/skillsbench/2adce5ab404c0820cb791486f27c44f09df4cfde/experiments/sanity-tasks/hello-world/verifier/test.sh",
+      "repo": "benchflow-ai/skillsbench",
+      "revision": "2adce5ab404c0820cb791486f27c44f09df4cfde",
+      "path": "experiments/sanity-tasks/hello-world/verifier/test.sh",
+      "status": "AVAILABLE",
+      "sha256": "eb2730da8b9c6c2c70189a3d0787224dd6cfe86f4e71f6d4cc8a09f7a4f5be97",
+      "bytes": 353
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openai/mle-bench/507f92e1138bb6e40dac5c6ee7a6758e6424bf97/README.md",
+      "repo": "openai/mle-bench",
+      "revision": "507f92e1138bb6e40dac5c6ee7a6758e6424bf97",
+      "path": "README.md",
+      "status": "AVAILABLE",
+      "sha256": "586bbc19cb2a3e11be61021866ef6436cf4b4d935bb1db088984b567b76595bb",
+      "bytes": 20988
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openai/mle-bench/507f92e1138bb6e40dac5c6ee7a6758e6424bf97/LICENSE",
+      "repo": "openai/mle-bench",
+      "revision": "507f92e1138bb6e40dac5c6ee7a6758e6424bf97",
+      "path": "LICENSE",
+      "status": "AVAILABLE",
+      "sha256": "8a44e3d54b33babc0c79b9c86cf9069e4c132fcd9ddf6f7e3b0f552ccc52c198",
+      "bytes": 1212
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openai/mle-bench/507f92e1138bb6e40dac5c6ee7a6758e6424bf97/mlebench/grade.py",
+      "repo": "openai/mle-bench",
+      "revision": "507f92e1138bb6e40dac5c6ee7a6758e6424bf97",
+      "path": "mlebench/grade.py",
+      "status": "AVAILABLE",
+      "sha256": "cd4634bb08c78f13582405c30456cc69b9ac1a95c301e893ca37bc5c1fae988d",
+      "bytes": 6385
+    },
+    {
+      "url": "https://raw.githubusercontent.com/xiaowu0162/LongMemEval/9e0b455f4ef0e2ab8f2e582289761153549043fc/README.md",
+      "repo": "xiaowu0162/LongMemEval",
+      "revision": "9e0b455f4ef0e2ab8f2e582289761153549043fc",
+      "path": "README.md",
+      "status": "AVAILABLE",
+      "sha256": "c4ff45676683d9e2f7cf7d9099d26426f14635ec110dbb1da818d1019a142573",
+      "bytes": 15970
+    },
+    {
+      "url": "https://raw.githubusercontent.com/xiaowu0162/LongMemEval/9e0b455f4ef0e2ab8f2e582289761153549043fc/LICENSE",
+      "repo": "xiaowu0162/LongMemEval",
+      "revision": "9e0b455f4ef0e2ab8f2e582289761153549043fc",
+      "path": "LICENSE",
+      "status": "AVAILABLE",
+      "sha256": "d3c4b9aa54759df6ded337978a6f3b55b75615e5e4525c3b82d7e2627d4b9732",
+      "bytes": 1062
+    },
+    {
+      "url": "https://raw.githubusercontent.com/xiaowu0162/LongMemEval/9e0b455f4ef0e2ab8f2e582289761153549043fc/src/evaluation/evaluate_qa.py",
+      "repo": "xiaowu0162/LongMemEval",
+      "revision": "9e0b455f4ef0e2ab8f2e582289761153549043fc",
+      "path": "src/evaluation/evaluate_qa.py",
+      "status": "AVAILABLE",
+      "sha256": "ecce9c4c79dc89d99534ac17b383a5cbb5b9f0c69ee98adaf0684742e3d95251",
+      "bytes": 7436
+    },
+    {
+      "url": "https://arxiv.org/abs/2605.27922v2",
+      "revision": "2605.27922v2",
+      "status": "AVAILABLE",
+      "sha256": "02b8f0cde98c71ad6b2aacb1be7800f3e5c136af01d85f2ec79645db58d22867",
+      "bytes": 44391,
+      "note": "HTML transport receipt; paper content pinned by arXiv version"
+    },
+    {
+      "url": "https://arxiv.org/abs/2609.20804v1",
+      "revision": "2609.20804v1",
+      "status": "AVAILABLE",
+      "sha256": "4f8afe2a0c7c83cd7a7d12ae3932a47e51535225aa3e66f2d065db37c3169229",
+      "bytes": 43814,
+      "note": "HTML transport receipt; paper content pinned by arXiv version"
+    },
+    {
+      "url": "https://arxiv.org/abs/2609.32213v1",
+      "revision": "2609.32213v1",
+      "status": "AVAILABLE",
+      "sha256": "a8c133d5ba8ecbe59682af6228c69b2a501643bffa58b670315cf31e77f49db0",
+      "bytes": 42403,
+      "note": "HTML transport receipt; paper content pinned by arXiv version"
+    }
+  ]
+}
