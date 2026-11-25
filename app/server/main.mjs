@@ -145,7 +145,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
         finishAdmission=admitPost();
         const result=await relay.bridge({body:Buffer.concat(chunks).toString('utf8'),signature:req.headers['x-forge-relay-signature']});json(res,result);dispatchApprovedMobile();return;
       }
-      if(officeMcpHandler&&p==='/mcp/office'){finishAdmission=admitPost();if(await officeMcpHandler(req,res))return;}
+      if(officeMcpHandler&&p==='/mcp/office'){finishAdmission=admitPost();if(await officeMcpHandler(req,res))return;finishAdmission();finishAdmission=undefined;}
       if(method==='OPTIONS')return json(res,{error:{code:'ORIGIN',message:'CORS is disabled'}},403);
       if(method==='GET'&&p==='/api/session'){const session=browserSession(req,res,{create:true});return json(res,{csrf:session.csrf});}
       if(method==='GET'&&p==='/api/workspaces/state'){
@@ -163,6 +163,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
       }
       if(method==='GET'&&p==='/api/mcp/oauth/status')return json(res,await oauth.status(Object.fromEntries(url.searchParams)));
       if(method==='GET'&&p==='/api/mcp/oauth/callback'){
+        finishAdmission=admitPost();
         const session=browserSession(req,res);if(!session)fail('OAUTH_SESSION','Return to the same FORGE browser session and begin sign-in again',403);
         await oauth.callback({callbackUrl:app.url+req.url,sessionId:session.id});
         res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Referrer-Policy':'no-referrer'});return res.end('<!doctype html><html lang="th"><meta charset="utf-8"><title>FORGE MCP</title><p>เชื่อมต่อแล้ว กลับไปที่ FORGE และตรวจสถานะก่อนเรียกเครื่องมือ</p><script>history.replaceState(null,"",location.pathname)</script></html>');
@@ -192,6 +193,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
       if(method==='GET'&&p==='/api/reports/health')return json(res,reports?await reports.health():{status:'implementation_pending'});
       if(method==='GET'&&p==='/api/serving/health')return json(res,await serving.health(url.searchParams.get('projectId')));
       if(method==='GET'&&p==='/api/storage/drive/auth/callback'){
+        finishAdmission=admitPost();
         const connected=await storage.finishDriveAuth({state:url.searchParams.get('state'),code:url.searchParams.get('code')});
         const payload=JSON.stringify({type:'forge.drive.connected',secretRef:connected.secretRef});
         res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Referrer-Policy':'no-referrer'});

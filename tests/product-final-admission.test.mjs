@@ -99,3 +99,32 @@ test('restore drains previously admitted work and rejects later mutations until 
   try{await restoreSeen;const denied=await post('/api/command',{operationId:crypto.randomUUID(),type:'project.create',data:{name:'must not mutate'}});assert.equal(denied.status,409);assert.equal(projectionRecovered,false);}finally{release();}
   assert.equal((await admitted).status,200);assert.equal((await restoring).status,200);assert.equal(projectionRecovered,true);
 });
+
+test('OAuth credential callbacks cannot mutate bindings during restore',{timeout:20000},async t=>{
+  const dir=await mkdtemp(path.join(os.tmpdir(),'forge-http-oauth-restore-')),app=await createApplication({dataDir:dir});t.after(()=>app.close());
+  const session=await fetch(app.url+'/api/session'),{csrf}=await session.json(),cookie=session.headers.get('set-cookie').split(';')[0],backup=await createArtifactService({store:app.store,dataDir:dir}).backup();let calls=0,release,entered;
+  app.storage.finishDriveAuth=async()=>{calls++;return {secretRef:'fixture-only'};};
+  const held=new Promise(r=>{release=r;}),inside=new Promise(r=>{entered=r;}),original=app.memory.afterRestore;app.memory.afterRestore=async()=>{entered();await held;return original();};
+  const restoring=fetch(app.url+'/api/storage/restore',{method:'POST',headers:{'Content-Type':'application/json',Cookie:cookie,'X-Forge-CSRF':csrf},body:JSON.stringify({id:backup.id,expectedRevision:app.store.read().revision})});
+  try{await inside;for(const callback of ['/api/storage/drive/auth/callback','/api/mcp/oauth/callback']){const response=await fetch(app.url+callback+'?state=fixture&code=fixture',{headers:{Cookie:cookie}});assert.equal(response.status,409);assert.equal((await response.json()).error.code,'APPLICATION_BUSY');}assert.equal(calls,0);}finally{release();await restoring;}
+});
+
+test('a declined normalized Office path releases admission and cannot wedge later restore',{timeout:20000},async t=>{
+  const dir=await mkdtemp(path.join(os.tmpdir(),'forge-http-office-admission-')),app=await createApplication({dataDir:dir});t.after(()=>app.close());
+  const response=await new Promise((resolve,reject)=>{const target=new URL(app.url),req=http.request({hostname:target.hostname,port:target.port,path:'/mcp/./office',method:'POST',headers:{'Content-Type':'application/json'}},res=>{res.resume();res.on('end',()=>resolve(res.statusCode));});req.on('error',reject);req.end('{}');});assert.equal(response,404);
+  const session=await fetch(app.url+'/api/session'),{csrf}=await session.json(),cookie=session.headers.get('set-cookie').split(';')[0],backup=await createArtifactService({store:app.store,dataDir:dir}).backup();
+  const restored=await fetch(app.url+'/api/storage/restore',{method:'POST',headers:{'Content-Type':'application/json',Cookie:cookie,'X-Forge-CSRF':csrf},body:JSON.stringify({id:backup.id,expectedRevision:app.store.read().revision}),signal:AbortSignal.timeout(5000)});assert.equal(restored.status,200);
+});
+
+test('restore waits for an already admitted credential callback',{timeout:20000},async t=>{
+  const dir=await mkdtemp(path.join(os.tmpdir(),'forge-http-oauth-drain-')),app=await createApplication({dataDir:dir});t.after(()=>app.close());
+  const session=await fetch(app.url+'/api/session'),{csrf}=await session.json(),cookie=session.headers.get('set-cookie').split(';')[0],backup=await createArtifactService({store:app.store,dataDir:dir}).backup();
+  let release,entered,recovered=false,calls=0;const held=new Promise(r=>{release=r;}),inside=new Promise(r=>{entered=r;});
+  app.storage.finishDriveAuth=async()=>{calls++;entered();await held;return {secretRef:'fixture-no-credential'};};
+  const original=app.memory.afterRestore;app.memory.afterRestore=async()=>{recovered=true;return original();};
+  const callback=fetch(app.url+'/api/storage/drive/auth/callback?state=fixture&code=fixture');await inside;
+  let restoreEntered;const restoreSeen=new Promise(r=>{restoreEntered=r;});app.server.on('request',req=>{if(req.url==='/api/storage/restore')setImmediate(restoreEntered);});
+  const restoring=fetch(app.url+'/api/storage/restore',{method:'POST',headers:{'Content-Type':'application/json',Cookie:cookie,'X-Forge-CSRF':csrf},body:JSON.stringify({id:backup.id,expectedRevision:app.store.read().revision})});
+  try{await restoreSeen;const late=await fetch(app.url+'/api/storage/drive/auth/callback?state=fixture&code=fixture');assert.equal(late.status,409);assert.equal(recovered,false);assert.equal(calls,1);}finally{release();}
+  assert.equal((await callback).status,200);assert.equal((await restoring).status,200);assert.equal(recovered,true);
+});

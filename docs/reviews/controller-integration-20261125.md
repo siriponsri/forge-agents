@@ -33,6 +33,16 @@ Validation:
 - Graph browser captures now go into their disposable fixture directory; the
   test no longer modifies versioned review assets during routine verification.
 
-Fresh independent re-review of the corrections is pending. Native all-action
+Fresh independent re-review of14a8424 confirmed the focused14 checks and found
+two remaining HTTP-barrier defects: mutating OAuth GET callbacks were outside
+admission, and a normalized Office path could leak its first admission token
+when the raw-path handler declined it. Lead added both credential callbacks to
+the same lifecycle/drain barrier and releases a declined handler's token before
+fallback routing. Actual new/previously admitted callback, normalized raw path,
+restore and shutdown regression subset: **18 PASS**, no failures/skips. Review
+did not find another concrete defect in the other four original corrections;
+the final two corrections are lead-tested, not a new independent release pass.
+
+Native all-action
 automation qualification, authoritative billing ingestion, live provider/mobile
 checks and **HOME_UAT_NOT_RUN** remain separate from these corrected defects.

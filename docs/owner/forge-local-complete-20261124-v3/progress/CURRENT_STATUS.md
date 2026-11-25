@@ -16,8 +16,13 @@ run started at71fd27e reported565 entries:554 PASS,2 FAIL,9 SKIP (573.8s). Its t
 browser-fixture failures were corrected and passed in the116 subset; this does
 not claim a new all-green full merged run. See
 `docs/reviews/controller-integration-20261125.md` for exact corrections/limits.
-Current fixes await fresh independent re-review. Research worker delivered
-02fae1b and is ready for lead integration; Guarded native build work continues.
+Fresh independent re-review of14a8424 found two additional HTTP-barrier holes:
+mutating OAuth GET callbacks and a leaked token on declined normalized Office
+paths. Both are corrected; latest callback/path/drain/shutdown subset18 PASS.
+It found no further concrete defect in the other four original fixes; final
+barrier additions are lead-tested, not a full independent release approval.
+Research worker02fae1b is merged as4187912, shared integration remains active;
+Guarded native build/actual CLI negative tests continue without product proof.
 Overall remains **IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN**.
 
 ## Integrated completion checkpoint — 2026-11-25
