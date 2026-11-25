@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "scope": "actual compiled native engineering protocol only; no external provider/account/model quality or product activation",
+  "actualCompiledCli": "PASS",
+  "binarySha256": "edde02f4107862e229cbe5436fde8b3a28d94195dd6fba85e9f716acaf6cf934",
+  "requests": 15,
+  "negative": [
+    "account",
+    "provider",
+    "model",
+    "options",
+    "binary",
+    "policy",
+    "manifest",
+    "context",
+    "expired",
+    "stopped",
+    "revoked",
+    "file-context",
+    "foreign-session"
+  ],
+  "advertisedTools": [
+    "forge_guarded_edit_text",
+    "forge_guarded_propose_change",
+    "forge_guarded_read_text"
+  ],
+  "nativeGateNegatives": 17,
+  "untrustedExecutorEffects": 0,
+  "proof": null
+}

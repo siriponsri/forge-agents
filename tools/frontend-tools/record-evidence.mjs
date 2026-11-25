@@ -1,0 +1,16 @@
+import { readFile, writeFile, readdir } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { frontendArtifactInventory } from './pipeline.mjs';
+const [generation, cliFile, moduleFile, stopFile] = process.argv.slice(2);
+const directory = fileURLToPath(new URL('./', import.meta.url)), repo = fileURLToPath(new URL('../../', import.meta.url));
+const inventory = await frontendArtifactInventory(generation);
+const cli = JSON.parse(await readFile(cliFile, 'utf8')), module = JSON.parse(await readFile(moduleFile, 'utf8')), stop = JSON.parse(await readFile(stopFile, 'utf8'));
+if (cli.cliBinarySha256 !== inventory.opencode.sha256 || stop.cliBinarySha256 !== inventory.opencode.sha256 || cli.proof !== null || module.proof !== null || stop.proof !== null) throw Error('EVIDENCE_ARTIFACT_MISMATCH');
+for (const [name, value] of [['cli-evidence', cli], ['native-evidence', module], ['guarded-stop-evidence', stop]]) await writeFile(path.join(directory, name + '.json'), JSON.stringify(value, null, 2) + '\n');
+const sources = [];
+for (const subdir of ['app/frontend-tools', 'tools/frontend-tools']) for (const file of await readdir(path.join(repo, subdir))) if (/\.(mjs|ts)$/.test(file)) sources.push({ file: subdir + '/' + file, sha256: createHash('sha256').update(await readFile(path.join(repo, subdir, file))).digest('hex') });
+const sanitized = { version: 1, scope: 'engineering artifact/source inventory; no activation authority', cliBinarySha256: inventory.opencode.sha256, t3AllMjsWithRootNodeSha256: inventory.t3.sha256, rootNodeSha256: inventory.t3.files.find(x => x.name === 'node.exe').sha256, t3Files: inventory.t3.files.map(({ name, sha256 }) => ({ name, sha256 })), equalExisting3494a3: inventory.t3.sha256 === '3494a3e4bce00e971a999fe51f5334d471e8d7a220db43e90f50f535314b0bf9', sources, patches: JSON.parse(await readFile(path.join(generation, 'frontend-patches.json'), 'utf8')), proof: null };
+await writeFile(path.join(directory, 'source-provenance.json'), JSON.stringify(sanitized, null, 2) + '\n');
+console.log(JSON.stringify({ cliBinarySha256: sanitized.cliBinarySha256, t3AllMjsWithRootNodeSha256: sanitized.t3AllMjsWithRootNodeSha256, equalExisting3494a3: sanitized.equalExisting3494a3, sourceFiles: sources.length }));

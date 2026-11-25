@@ -1,0 +1,312 @@
+{
+  "version": 1,
+  "scope": "engineering artifact/source inventory; no activation authority",
+  "cliBinarySha256": "edde02f4107862e229cbe5436fde8b3a28d94195dd6fba85e9f716acaf6cf934",
+  "t3AllMjsWithRootNodeSha256": "715c5c8657db3f2910b031e740f9391f04649914569a8c2a0da155d5f73179a5",
+  "rootNodeSha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+  "t3Files": [
+    {
+      "name": "AcpMcpStdioBridge-DyJIQpZi.mjs",
+      "sha256": "72f0786e593967eee22081c8b39f11a144be9a7a9152ef1bb688136a425a5a9f"
+    },
+    {
+      "name": "AcpMcpStdioBridge-Pbhx3C4O.mjs",
+      "sha256": "c101c42d13268e17b508ad6a03f25dec83b3e9b1ed8089c39658f2bde663cb2d"
+    },
+    {
+      "name": "CodexManagedTokenProtocol-CqrJZnS8.mjs",
+      "sha256": "5ae6ca2feb51595f8fd322800d2ffb6ad77ebcf348853d69cd2bcd59ef79d3bc"
+    },
+    {
+      "name": "HostProcess-CTeQUVtM.mjs",
+      "sha256": "26d54ea791246dc2c1a412d6d420d60fea9e20f899d0afa68c1f9c1068187ce1"
+    },
+    {
+      "name": "Latch-C8iLQEjk.mjs",
+      "sha256": "41f6cf5e677e8097d90899e04bf516aa5179cc653926c38dcea05a5448ce07ca"
+    },
+    {
+      "name": "ManagedEndpointRuntime-BbxeMuOn.mjs",
+      "sha256": "b319d5c16287d181f4d2dde0fda3ce6b3303f9af8b655a254059601a20294381"
+    },
+    {
+      "name": "NodeCrypto-CtD4ufGN.mjs",
+      "sha256": "7277ae811fdfee654eb1566ae0a27abba00722009344023e6073ea8b80b52a2e"
+    },
+    {
+      "name": "NodeServices-DqvgFbyn.mjs",
+      "sha256": "702503f04180d1a2c692c0bea8375f817c4026c622a145fbfae2d6152eec376a"
+    },
+    {
+      "name": "RuntimePolicy-Wv2bxQCs.mjs",
+      "sha256": "31a236c95afe49838d5179dc4db2f79119d74071bf14c9869e55e98584ea3a88"
+    },
+    {
+      "name": "Schema-UsozyQoc.mjs",
+      "sha256": "ed29d76f554f53c2430882ca0368337f657285e286ddb6de37827f315c2d6d25"
+    },
+    {
+      "name": "Socket-BJIOErrH.mjs",
+      "sha256": "c5f895853dea5e96c020a5ce9b5c8d2aff3f2bc3f5a16cc9df2c7589706d92fc"
+    },
+    {
+      "name": "Stream-OiyKPUwA.mjs",
+      "sha256": "f26d18f2a51b4c94ef7df6f9c1713f69180f2a408dc8bcee7252b831448d6f8e"
+    },
+    {
+      "name": "Undici-5qHq_ODn.mjs",
+      "sha256": "29f0b75b5dbf57dd84eadf1c6c73e4ceb49b64a54baccd3d9d4fcea516645ade"
+    },
+    {
+      "name": "adapter-CKJMPjsA.mjs",
+      "sha256": "c0addd54f22a77c7514d0ef06b5067c8a5ef3600d57d35e1cfc4c5469e3f7237"
+    },
+    {
+      "name": "bin.mjs",
+      "sha256": "cb261274f5411489f4b8cfe3a5ecda86ba3aeb5dbc9313f29a3c18bdcbfdee72"
+    },
+    {
+      "name": "binCli-CmkQslX1.mjs",
+      "sha256": "ea1bee989c4165d64540d96f3a4bc6a631b991318e9029443b8db68d30470593"
+    },
+    {
+      "name": "binMain-DtHWAEae.mjs",
+      "sha256": "2c2186a586ea87d1be6b6717c8f138f0dd837b02f1ec57e86547e2bac3d591a1"
+    },
+    {
+      "name": "character-entities-Dhh02MUY.mjs",
+      "sha256": "021547a061e7b53283344df30340f5658207f83640064ceda73bfe5ddfb1b2a1"
+    },
+    {
+      "name": "claude-history-worker.mjs",
+      "sha256": "31c05fc0828c01590603ca6ca4d5c720e00d277636122ab5f8ee395788ee1a15"
+    },
+    {
+      "name": "claudeHistoryWorker-BhPTRSDn.mjs",
+      "sha256": "501e9e6d0378ab0ccddd9b2a5b10a9c711eacd6c1c2bae4a16171006809420c5"
+    },
+    {
+      "name": "claudeHistoryWorker-DWJR_9rQ.mjs",
+      "sha256": "dd8e6ff5d50dd5b257f04be5b2dbac4a7793bfcfa945c578774dffaf08a5d4d8"
+    },
+    {
+      "name": "consoleStdin-BOYsgYPv.mjs",
+      "sha256": "c9e741482e0dd8a32d96058d9b1641eeea8910b59779733543488876385b3b32"
+    },
+    {
+      "name": "consoleStdin-BYE9c3c3.mjs",
+      "sha256": "26e84f5a7050b4be050cf4c6556ae1f05f64c0016eff9c2efb9f7381c193eb52"
+    },
+    {
+      "name": "documentTextWorker-CZ8-t-QB.mjs",
+      "sha256": "79d44421c3491704232b896bedfd50c82229b678b7008b14006833628ae0128e"
+    },
+    {
+      "name": "forge-guarded-host.mjs",
+      "sha256": "11c1cc000c9d42e864b28d16c9da67290e4aef6362bc864a5500959764f593e9"
+    },
+    {
+      "name": "managedChatGptToken-BybgOGkI.mjs",
+      "sha256": "8b09085a48d3100d2996905d2259a6a8d7fbe2bd5db7916d1690104a627b208a"
+    },
+    {
+      "name": "mcpResponsePayloads-C3-UlCPn.mjs",
+      "sha256": "42ea91e1cf09f865cafa9dcb0e6856438e295e9ff07249b05a6c6da66a448c9b"
+    },
+    {
+      "name": "native-C_-xbgAx.mjs",
+      "sha256": "b0fbc77904a87ff7c9c366e43302cb33bb202abd1d8515d541929eedeaa22d9a"
+    },
+    {
+      "name": "native-IwHky4jN.mjs",
+      "sha256": "a8870ac9e9d38865ba6dd5edd3b45393759cc875b8450786a5da636235638b9d"
+    },
+    {
+      "name": "noCopyOnWrite-CiUe--I6.mjs",
+      "sha256": "029b9a41854ad729453398e305aee96d5a956c8a783fdc4ede66912a76c5663c"
+    },
+    {
+      "name": "outboundHttp-BsOM_gO4.mjs",
+      "sha256": "f7dde68b43fd9655f98897a0058b5f5e9e99caf19f780eb59b1fd7fc96a0d1b0"
+    },
+    {
+      "name": "outboundHttp-licDtJv9.mjs",
+      "sha256": "6191ae8ad44580ef78bd151141160130d3a7c68992acac3d6c89516a04537b41"
+    },
+    {
+      "name": "promise-B3tgs-aD.mjs",
+      "sha256": "1eba7cde05e8a47853d34c04768ce4d27a45c961e60fd36ab6b79f2d6c9e983c"
+    },
+    {
+      "name": "relayTracing-WywqbPqO.mjs",
+      "sha256": "f067aa19124970c56d75fed3ca116b5e025b1b85e23740df418a017a2f5248ae"
+    },
+    {
+      "name": "runtimeLayer-BPtHJNm9.mjs",
+      "sha256": "4a7bf29d23998d9c97f4f989df0febbd236c72359e4efae88b117f6a1eb2cd20"
+    },
+    {
+      "name": "runtimeLayer-BiVpuhpq.mjs",
+      "sha256": "eaa847dcd9477971ffbc84382f7d8cf41e9908645cb4da3d8b3620812d350d4b"
+    },
+    {
+      "name": "sdk-b72oGJiu.mjs",
+      "sha256": "f325ad146a32fb6465125b9a97dbf5d039e1729bdcc206b741c1c3b83b88aa1a"
+    },
+    {
+      "name": "server-nd3T4kcY.mjs",
+      "sha256": "1cd6a35a1a005558c1c97c7b970971d473b29e3e3c8d39a39b8c796ef584ff4d"
+    },
+    {
+      "name": "service-probe-frbwqjmf-ThT6rp-U.mjs",
+      "sha256": "41e9fc7a80d78c467b5f53163cf3f7b621899312ea8d6ce307cee280c8e291ba"
+    },
+    {
+      "name": "serviceLauncher-B3U0fwNX.mjs",
+      "sha256": "19025067368821713366696beb211ee0da8aa02bc00423711479feb5ed48dd3c"
+    },
+    {
+      "name": "serviceLauncher-Bc_Z7WLi.mjs",
+      "sha256": "1e2efa6fdba7bec5c7e63864165689662170d4ce3411faf60f49fe93e9596908"
+    },
+    {
+      "name": "serviceLauncher-DdNin5_8.mjs",
+      "sha256": "9c1be9d559f4380f0aedbded95594c84a92e0e1568d6a28d4a67f4c983715746"
+    },
+    {
+      "name": "upgrade-B2fNv_Qg.mjs",
+      "sha256": "6712183212fee9505afb846a8e0c06875ca7d1151960ccfb8e5ac7b2b47ca387"
+    },
+    {
+      "name": "upgrade-mKz5UlgC.mjs",
+      "sha256": "a03ed646e86319a5f86508dd38a1017bbaccc8c1de147fae455f7d032f8b7e08"
+    },
+    {
+      "name": "yauzl-D4Jqygaq.mjs",
+      "sha256": "33c2cc3507829f187fc5298ad874598a9bc23378975c284689d1b64878980fa5"
+    },
+    {
+      "name": "node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    }
+  ],
+  "equalExisting3494a3": false,
+  "sources": [
+    {
+      "file": "app/frontend-tools/broker.mjs",
+      "sha256": "2a11b14111ab6dbefcb7e8245c038bc2c304df62da31d4a56a10c4912413b0d3"
+    },
+    {
+      "file": "app/frontend-tools/contract.mjs",
+      "sha256": "e68232d09dd9579ca42878887d8d63515741863177225b2aa8646c2ea551b058"
+    },
+    {
+      "file": "app/frontend-tools/http.mjs",
+      "sha256": "98908b733ef0a250b8b4f01f0b3785f3d80cb701cdf618db921912a00246ffb1"
+    },
+    {
+      "file": "app/frontend-tools/native-gateway.mjs",
+      "sha256": "5fc83070200d7ab7e68304b93d8f353b2549afd95799fd00e277d2657427e135"
+    },
+    {
+      "file": "app/frontend-tools/native-tool.mjs",
+      "sha256": "0717e41a45ee89e8e83739aaf947220877308738d226cf0e47e3a6853e22f2e3"
+    },
+    {
+      "file": "app/frontend-tools/opencode-cli-runtime.ts",
+      "sha256": "ece9bc3c93e15e77adeb202479e869370acedc8b0a00d959f3ac6ba5996f43ad"
+    },
+    {
+      "file": "app/frontend-tools/opencode-supervised-hook.ts",
+      "sha256": "94910e49e75b27a695f3654acc862bb58583000fd9b887720cd2f836b4c8fd7c"
+    },
+    {
+      "file": "app/frontend-tools/root-host-tools.mjs",
+      "sha256": "d9a440cef04fff128a193a68bfe5cd755058a747802346046ae5b0d85efc19e7"
+    },
+    {
+      "file": "app/frontend-tools/t3-host.mjs",
+      "sha256": "c63aaba936eed40558df42f1e01136b8fc0e97a900684d1f9252edfae653ceaf"
+    },
+    {
+      "file": "tools/frontend-tools/build-generation.mjs",
+      "sha256": "6a10d764dd5ad0ff23140a1b7a7d003c3f6ffd9da703b7e0c111bdd28a1fcd46"
+    },
+    {
+      "file": "tools/frontend-tools/cli-fixture.mjs",
+      "sha256": "3c470ac07cc6c96073b17e9e1c915b439deb6e6de312a430289460d29ae2a7f1"
+    },
+    {
+      "file": "tools/frontend-tools/clone-generation.mjs",
+      "sha256": "64401eac115a59b805b05117d27135c3be8e68a18019c69b9e50755f5cf98406"
+    },
+    {
+      "file": "tools/frontend-tools/link-t3-dependencies.mjs",
+      "sha256": "ce390fbf4e7953e6c4d3c4506df8b3bf7d88774c6e845e60f69bfc41f0e92f20"
+    },
+    {
+      "file": "tools/frontend-tools/native-fixture.mjs",
+      "sha256": "362bb8ae64a3e7ad17623695d9bfb8d19e0dca5728d5d2c2e3cbc947c9ae690c"
+    },
+    {
+      "file": "tools/frontend-tools/patch-generation.mjs",
+      "sha256": "73e8921cca5667f4caa9632666f1a62b75a5f86b2e499cc6703cee0ac1e681f4"
+    },
+    {
+      "file": "tools/frontend-tools/pipeline.mjs",
+      "sha256": "d514864a46a5c1d1be749ecf03ef71e0b895d6f9d40275fd08b2b98ad896cb09"
+    },
+    {
+      "file": "tools/frontend-tools/record-evidence.mjs",
+      "sha256": "15576a1c9d6a9dedcd5ac8d8551f625027dbf91407a976c229df5ac2721c5fd2"
+    },
+    {
+      "file": "tools/frontend-tools/run-guarded-regression.mjs",
+      "sha256": "79dd04ece048bf865d831ff594b46b2edf74899fe0bbc4cf49bbdf06aca03406"
+    },
+    {
+      "file": "tools/frontend-tools/run-native.mjs",
+      "sha256": "6a5a04f2a37ccca1677207d51702a608335361b4425d4387c23d273501c68d70"
+    },
+    {
+      "file": "tools/frontend-tools/t3-cli-driver.ts",
+      "sha256": "8d78887ce8767b756df1369c23bcf4599b1ea6707dcd3eb5ed1fa40949bc2aaf"
+    }
+  ],
+  "patches": {
+    "version": 1,
+    "changes": [
+      {
+        "tree": "opencode",
+        "file": "packages/core/src/forge-bootstrap.ts",
+        "before": "733c714e30cf6dd5389ec3085639ec6d08123330c09a56c99a86227cc650f1a3",
+        "after": "24fd02434326d22dfc19d5a702b4a60abb6bb2317fe0d467293c88c9466c94b6"
+      },
+      {
+        "tree": "opencode",
+        "file": "packages/core/src/forge-guard.ts",
+        "before": "a1f6992ea6c0c17d15e430732da265b31579322f1b3810fa4fcc7952d7c9f470",
+        "after": "fa0db34bcd1f9ceb7997d6a71002683f9818ffce5ba6030517b8444d5b2e8cf1"
+      },
+      {
+        "tree": "t3",
+        "file": "packages/provider-core/src/server/forgeGuard.ts",
+        "before": "b08a98fb2865752d31d2a4d85cc4ce0a98d397f1286222544b9894771fd52bd4",
+        "after": "3088595700fe14f29a3343bd7b2ad2417cc78775d5cdccd4ca3d7ce11d7bbdb6"
+      },
+      {
+        "tree": "t3",
+        "file": "packages/provider-opencode/src/server/v2/adapter.ts",
+        "before": "e36db2899354711abeebbb9dc52b324d2fd3b27d2490d07a4e16b32900f68e2e",
+        "after": "2f6babd32bce9b7ae9a50cf734efaa3964c99b2304d986cde9c1a6d6151fa82b"
+      }
+    ],
+    "nativeSourcesAdded": [
+      "forge-frontend-runtime.ts",
+      "forge-frontend/contract.mjs",
+      "forge-frontend/native-tool.mjs"
+    ],
+    "proof": null
+  },
+  "proof": null
+}

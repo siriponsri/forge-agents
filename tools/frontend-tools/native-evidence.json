@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "observedAt": "2026-11-25T07:23:44.812Z",
+  "scope": "actual pinned native Tool.Service/raw/hooks/central executor -> actual SDK HTTP -> canonical pending -> authenticated Owner service -> original native executor result; deterministic module fixture only",
+  "runtime": {
+    "node": "v24.19.0",
+    "bun": "1.4.4"
+  },
+  "nativeModule": "PASS",
+  "registeredTool": "forge_frontend_selection_read",
+  "realContextCallId": "call_native_fixture",
+  "nativeHooksBefore": 1,
+  "nativeHooksAfter": 1,
+  "originalExecutePromiseReturned": true,
+  "staleDispatchDenied": true,
+  "cliQualification": null,
+  "providerTurns": 0,
+  "externalRequests": 0,
+  "readOnlyNativeSourcesUnchanged": true,
+  "nativeSourceSha256": {
+    "packages/core/src/tool.ts": "40f02e5ba6c6423e25e9c4508108ed2e7545f61041a265f2d313a86cf7a0b8f8",
+    "packages/core/src/tool/runtime.ts": "c51486d115905ed7a445e653be92e0e4168246ae7fe485f668b3d57a75a0b4b6",
+    "packages/core/src/forge-guard.ts": "a1f6992ea6c0c17d15e430732da265b31579322f1b3810fa4fcc7952d7c9f470",
+    "packages/schema/src/tool.ts": "da8545b3472bebd0db615ab1646da1bbc2e687685c66c53c1b8a02dcb3eb815d"
+  },
+  "fixtureSha256": "362bb8ae64a3e7ad17623695d9bfb8d19e0dca5728d5d2c2e3cbc947c9ae690c",
+  "brokerSha256": "2a11b14111ab6dbefcb7e8245c038bc2c304df62da31d4a56a10c4912413b0d3",
+  "hookSourceSha256": "94910e49e75b27a695f3654acc862bb58583000fd9b887720cd2f836b4c8fd7c",
+  "hookStaging": "three import-specifier relocations only; no executable code rewritten",
+  "sdkVersion": "1.32.2",
+  "ownerReceiptReplay": true,
+  "canonicalResultReceipts": 1,
+  "proof": null,
+  "liveT3Attachment": "NOT_RUN",
+  "homeUat": "NOT_RUN"
+}

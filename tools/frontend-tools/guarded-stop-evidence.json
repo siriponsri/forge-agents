@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "scope": "actual NEW compiled CLI/default Guarded profile + matching T3 private adapter Stop during held deterministic model request",
+  "cliBinarySha256": "edde02f4107862e229cbe5436fde8b3a28d94195dd6fba85e9f716acaf6cf934",
+  "actualT3Stop": "PASS",
+  "actualTerminal": "interrupted",
+  "modelRequests": 1,
+  "advertisedTools": [
+    "forge_guarded_edit_text",
+    "forge_guarded_propose_change",
+    "forge_guarded_read_text"
+  ],
+  "frontendGrants": 0,
+  "nativeThreadRef": {
+    "driver": "opencode",
+    "nativeId": "ses_dee64b893ffej74MqqzHrSLfqZ",
+    "strength": "strong"
+  },
+  "nativeTurnRef": {
+    "driver": "opencode",
+    "nativeId": "msg_t3_turn_ses_dee64b893ffej74MqqzHrSLfqZ:attempt",
+    "strength": "weak"
+  },
+  "proof": null,
+  "externalRequests": 0
+}

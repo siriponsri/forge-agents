@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "observedAt": "2026-11-25T07:28:49.666Z",
+  "scope": "actual NEW compiled CLI and matching compiled T3 private adapter, deterministic loopback model; no external account",
+  "node": "v24.19.0",
+  "cliBinarySha256": "edde02f4107862e229cbe5436fde8b3a28d94195dd6fba85e9f716acaf6cf934",
+  "t3BundleSha256": "eb04cc2e12e938659cd7e97af14df98f77fb15bcf02e3343c4192d3bb835bf48",
+  "actualCompiledCli": "PASS",
+  "actualT3Attachment": "PASS",
+  "modelProtocolRequests": 9,
+  "advertisedTools": [
+    "forge_frontend_selection_read"
+  ],
+  "modelObservedToolRoleResult": true,
+  "actualNativeCallId": "native_protocol_call_7",
+  "nativeThreadRef": {
+    "driver": "opencode",
+    "nativeId": "ses_dee64945affe9xcLq4wpJGS0Wn",
+    "strength": "strong"
+  },
+  "nativeTurnRef": {
+    "driver": "opencode",
+    "nativeId": "msg_t3_turn_ses_dee64945affe9xcLq4wpJGS0Wn:attempt",
+    "strength": "weak"
+  },
+  "nativeProviderThreadId": "provider-thread:provider:opencode:native-thread:ses_dee64945affe9xcLq4wpJGS0Wn",
+  "nativeProviderTurnId": "provider-turn:provider:opencode:native-turn:ses_dee64945affe9xcLq4wpJGS0Wn%3Aattempt%3Aattempt",
+  "inventedProviderRunId": false,
+  "nativeResultObservation": true,
+  "ownerResultReceipts": 1,
+  "nativeTerminal": "completed",
+  "deniedTools": [
+    "shell",
+    "unknown_future",
+    "execute",
+    "task",
+    "forge_frontend_selection_read_alias",
+    "alternate_selection_read",
+    "forge_guarded_read_text"
+  ],
+  "externalRequests": 0,
+  "proof": null,
+  "homeUat": "NOT_RUN"
+}
