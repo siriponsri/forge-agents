@@ -26,6 +26,13 @@ const actions={
   'reconcile-installed-files':['การตั้งค่าครั้งก่อนหยุดก่อนยืนยันผล เริ่มการตั้งค่าใหม่ได้เมื่อพร้อม','The previous setup stopped before its result was confirmed. Start a new setup when ready.'],
   'reinstall-private-artifacts':['ไฟล์ติดตั้งเปลี่ยนไป ติดตั้ง Guarded ใหม่ก่อนตรวจเส้นทาง','Installed files changed. Reinstall Guarded before checking the route.'],
 };
+const routeIssues={
+  GUARDED_PROVIDER_REQUIRED:['เลือกบัญชีและโมเดลที่เชื่อมต่อไว้ในแท็บโมเดลและบัญชี แล้วตรวจเส้นทางอีกครั้ง','Select a connected account and model in Providers & models, then check the route again.'],
+  GUARDED_ROUTE_UNSUPPORTED:['เส้นทางเริ่มต้นรองรับบัญชี Chat Completions API ที่ตั้งค่าแล้ว เลือกเส้นทางที่รองรับในแท็บโมเดลและบัญชี','This initial route supports configured Chat Completions API accounts. Select a compatible route in Providers & models.'],
+  GUARDED_TRANSPORT_UNSUPPORTED:['เลือกโมเดล Chat Completions ที่ระบุไว้ชัดเจนในบัญชีของ FORGE แล้วตรวจเส้นทางอีกครั้ง','Choose an explicitly configured Chat Completions model in the FORGE account, then check the route again.'],
+  GUARDED_ARTIFACT_RESTART_REQUIRED:['ไฟล์รุ่นที่ติดตั้งเปลี่ยนแล้ว หยุด FORGE และเปิด launcher ใหม่ก่อนตรวจเส้นทาง','The installed generation changed. Stop FORGE and reopen its launcher before checking the route.'],
+  GUARDED_BUSY:['หยุดและตรวจผล run ที่ใช้ Guarded ก่อนเปลี่ยนไฟล์ติดตั้ง','Stop and reconcile Guarded runs before changing installed files.'],
+};
 
 export default function GuardedSetup(props) {
   return <GuardedProject key={props.projectId??'no-project'} {...props}/>;
@@ -56,7 +63,7 @@ function GuardedProject({t, state, projectId, run, busy}) {
     const body={projectId,...(action==='install'||action==='check'?{operationId:operationId()}:action==='cancel'?{operationId:installation.operationId}:{})};
     return run(async()=>{
       try {const result=await request(`/api/guarded/${action}`,body);apply(result);return result;}
-      catch {if(alive.current)setError(t('คำขอไม่สำเร็จ กดรีเฟรชสถานะเพื่อตรวจผลก่อนลองอีกครั้ง','The request did not finish. Refresh status to inspect its result before trying again.'));}
+      catch(error) {if(alive.current)setError(routeIssues[error.code]?t(...routeIssues[error.code]):t('คำขอไม่สำเร็จ กดรีเฟรชสถานะเพื่อตรวจผลก่อนลองอีกครั้ง','The request did not finish. Refresh status to inspect its result before trying again.'));}
       finally {working.current=false;if(alive.current)setPending('');}
     });
   };

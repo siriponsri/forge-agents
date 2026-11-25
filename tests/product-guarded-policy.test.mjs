@@ -5,11 +5,16 @@ import {fixture as budgetFixture} from './budgets-fixture.test.mjs';
 import {mergeGuardedSafety} from '../app/server/guarded-recovery.mjs';
 import {emptyState} from '../app/server/store.mjs';
 
-test('scheduler retains its private in-flight pre-reservation claim while enforcing the original deadline',async t=>{
+test('scheduler retains its private in-flight pre-reservation claim without inventing an uncertain outcome',async t=>{
   const f=await fixture(t);let release,entered;const ready=new Promise(r=>{entered=r;});f.control.before=()=>{entered();return new Promise(r=>{release=r;});};
   const recipe=await f.enable({trigger:eventTrigger}),start=f.event(recipe,'pending-setup');await ready;
   await f.service.tick();let o=f.state().occurrences[0];assert.equal(o.status,'dispatching');assert.equal(o.held,true);assert.equal(f.store.read().runs.length,0);
   release();await start;assert.equal(f.store.read().runs.length,1);assert.equal(f.starts,1);
+});
+test('a pending private setup cannot reserve after the unchanged accepted deadline',async t=>{
+  const f=await fixture(t);let release,entered;const ready=new Promise(r=>{entered=r;});f.control.before=()=>{entered();return new Promise(r=>{release=r;});};
+  const recipe=await f.enable({trigger:eventTrigger,budget:{maxRuns:1,maxRunMs:1000,maxTokens:null,maxCost:null,currency:null}}),start=f.event(recipe,'expired-pending-setup');await ready;
+  f.advance(1001);await f.service.tick();assert.equal(f.state().occurrences[0].stopRequested,'RUN_DEADLINE');release();await start;assert.equal(f.store.read().runs.length,0);assert.equal(f.starts,1);
 });
 test('older metadata retains Guarded dispatch identity, AG-UI and actual effect receipts without recreating authority',()=>{
   const current=emptyState(),restored=emptyState(),run={id:'canonical-run',operationId:'accepted-once',status:'completed',guardedContext:{version:1},protocolReceipts:{observed:{eventId:'native-event'}}};current.runs.push(run);
