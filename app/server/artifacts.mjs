@@ -8,6 +8,7 @@ import {mergeOwnerMemorySafety} from '../memory/owner.mjs';
 import {assertWorkspaceRestoreAvailable,mergeWorkspaceSafety} from '../workspaces/recovery.mjs';
 import {mergeBudgetSafety,assertBudgetLedger} from '../budgets/index.mjs';
 import {mergeProactiveSafety} from '../proactive/recovery.mjs';
+import {assertResearchRestoreAvailable,mergeResearchSafety} from '../research/context.mjs';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 export function createArtifactService({store,dataDir}){
   return {
@@ -55,12 +56,21 @@ export function createArtifactService({store,dataDir}){
     },
     async restore({id,expectedRevision}){
       assertWorkspaceRestoreAvailable(store.read());
+      assertResearchRestoreAvailable(store.read());
       if(!/^[0-9a-f-]{36}$/.test(id))fail('VALIDATION','Choose a local backup ID');
       const file=path.join(dataDir,'backups',`${id}.json`),bytes=await readFile(file);if(hash(bytes)!==(await readFile(`${file}.sha256`,'utf8')).trim())fail('INTEGRITY','Backup checksum mismatch',409);
       const restored=validateState(JSON.parse(bytes));const safety=await this.backup();
       // Memory deletion and explicit Owner sharing are current authority, not
       // configuration that an older backup can silently reinstate.
-      return store.transaction(s=>{if(s.revision!==expectedRevision)fail('REVISION_CONFLICT','Data changed before restore. Reload and retry.',409);assertWorkspaceRestoreAvailable(s);const revision=s.revision;mergeMemoryTombstones(restored,s);mergeOwnerMemorySafety(restored,s);mergeWorkspaceSafety(restored,s);mergeBudgetSafety(restored,s);mergeProactiveSafety(restored,s);assertBudgetLedger(restored);restored.relay=structuredClone(s.relay);Object.assign(s,restored,{revision});for(const r of s.runs)if(['running','submitting'].includes(r.status))r.status='unknown';for(const j of s.jobs)if(['queued','running','rendering','preparing','validating'].includes(j.status))j.status='interrupted';return {status:'restored',safetyBackup:safety,scope:'Metadata only; verify all external bindings and artifact locations. Current mobile approval/delivery history, workspace/budget/proactive effect identities and Owner memory authority are preserved.'};});
+      return store.transaction(s=>{
+        if(s.revision!==expectedRevision)fail('REVISION_CONFLICT','Data changed before restore. Reload and retry.',409);
+        assertWorkspaceRestoreAvailable(s);assertResearchRestoreAvailable(s);const revision=s.revision;
+        mergeMemoryTombstones(restored,s);mergeOwnerMemorySafety(restored,s);mergeWorkspaceSafety(restored,s);mergeBudgetSafety(restored,s);mergeProactiveSafety(restored,s);Object.assign(restored,mergeResearchSafety(restored,s));assertBudgetLedger(restored);
+        restored.relay=structuredClone(s.relay);Object.assign(s,restored,{revision});
+        for(const r of s.runs)if(['running','submitting'].includes(r.status))r.status='unknown';
+        for(const j of s.jobs)if(['queued','running','rendering','preparing','validating'].includes(j.status))j.status='interrupted';
+        return {status:'restored',safetyBackup:safety,scope:'Metadata only; verify all external bindings and artifact locations. Current mobile approval/delivery history, workspace/budget/proactive/research effect identities and Owner memory authority are preserved.'};
+      });
     },
   };
 }

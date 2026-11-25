@@ -1,5 +1,28 @@
 # Current Status — Complete Local FORGE
 
+## Research local integration — 2026-11-25
+
+Worker02fae1b merged as4187912. Research Lab now mounts in the production App with
+Owner session/CSRF and strict HTTP allowlist. Actual fixed local CPU/file trials,
+independent rechecks, comparisons, JSON exports, immutable replay and metadata
+restore retention passed through the real production API. Native agent mode
+remains disabled in production pending the canonical execution bridge and real
+component/action/resource qualification; unknown tokens/cost remain null.
+
+Lead added host-only Workspace third-argument context, unconditional T3 research
+admission at reservation/final launch, exact replay identity, pre-Context prompt
+preparation hooks and a separate researchReceipt retaining the original Context
+receipt. Real Git/SQLite/Context plus injected native wire verified those hooks;
+it does not qualify a production agent executor or native enforcement.
+
+Checks:33 related backend PASS; production Research2 PASS (local API and native
+wire/Context composition); merged build23.95s PASS; built-App plus production
+Workspace subset4 PASS. Built App covers six surfaces at desktop1440/Thai375,
+12 captures, no page errors/overflow. Counts overlap. Guarded Route, Research
+bridge and website publication corrections are active isolated tasks. Final
+README/media, independent combined review/full suite/release/main push pending.
+**IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN**.
+
 ## Independent review corrections — 2026-11-25
 
 Read-only independent review of71fd27e found five concrete final-admission/

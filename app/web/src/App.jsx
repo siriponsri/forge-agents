@@ -43,6 +43,7 @@ import ProactiveWorkflows from './ProactiveWorkflows.jsx';
 import ParallelWorkspace from './ParallelWorkspace.jsx';
 import BudgetStudio from './BudgetStudio.jsx';
 import WorkflowPresets from './WorkflowPresets.jsx';
+import ResearchLab from './ResearchLab.jsx';
 
 export default function App() {
   const [theme,setTheme]=useState(()=>getTheme(localStorage.getItem('forge.theme')||DEFAULT_THEME).id);
@@ -174,6 +175,7 @@ export default function App() {
     ['desktop',Code2,'Desktop และ browser','Desktop & browser'],
     ["monitor", Activity, "ติดตามการทำงาน", "Monitor"],
     ['budgets',Activity,'การใช้งานและงบ','Usage & budgets'],
+    ['research',Activity,'ห้องวิจัยและประเมินผล','Research Lab'],
     ["settings", Settings, "ตั้งค่าโครงการ", "Settings"],
   ];
   const startT3 = () =>
@@ -347,6 +349,7 @@ export default function App() {
               {page==='parallel'&&<ParallelWorkspace key={projectId} {...props}/>}
               {page==='budgets'&&<BudgetStudio key={projectId} {...props}/>}
               {page==='workflows'&&<WorkflowPresets key={projectId} {...props}/>}
+              {page==='research'&&<ResearchLab key={projectId} {...props}/>}
               {page === "team" && <Team key={projectId} {...props} />}{" "}
               {page === "chat" && <Chat key={projectId} {...props} />}{" "}
               {page==='strategies'&&<Strategies key={projectId} {...props}/>}

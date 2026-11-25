@@ -47,6 +47,7 @@ import {createProactiveService,dispatchProactiveRequest} from '../proactive/inde
 import {createWorkspaceService,dispatchWorkspaceRequest,assertWorkspaceRestoreAvailable} from '../workspaces/index.mjs';
 import {createBudgetService,dispatchBudgetRequest} from '../budgets/index.mjs';
 import {createPlaybookService,dispatchPlaybookRequest} from '../playbooks/index.mjs';
+import {createResearchService,dispatchResearchRequest,assertResearchRestoreAvailable} from '../research/index.mjs';
 export {defaultDataDir};
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const manifest=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
@@ -76,7 +77,10 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
     memoryResolveRefs:async(input,caller)=>{const local=await memory.resolveRefs({...input,refs:input.refs.filter(r=>!r.id.startsWith(OWNER_GRANT_PREFIX))},caller);const refs=input.refs.filter(r=>r.id.startsWith(OWNER_GRANT_PREFIX));if(!refs.length||input.scope.kind!=='project')return local;const central=await ownerMemory.resolveProjectRefs({projectId:input.projectId,refs},caller);return {...local,items:[...local.items,...central.items],missing:[...(local.missing??[]),...(central.missing??[])]};},
     capabilities:async()=>({contextOwner:'native',acceptsForgePrefix:true,compactForgePrefix:true,source:{kind:'native-launch-contract',reference:'app/server/t3.mjs: T3 0.1.11 supervised message prefix; native history remains T3-owned',observedAt:new Date().toISOString()}})});
   prepareContext=createT3ContextSeam({service:context,callerContextForRun:run=>authority.forRun(run),allowNativePassthrough:true,
-    memoryForRun:run=>[{kind:'project',id:run.projectId},...(run.botId?[{kind:'agent',id:run.botId}]:[]),...(run.conversationId?[{kind:'session',id:run.conversationId}]:[]),{kind:'task',id:run.taskId}].map(scope=>({projectId:run.projectId,scope:{projectId:run.projectId,...scope},query:find(store.read(),'tasks',run.taskId,run.projectId).title,limit:5,maxCharacters:8000}))});
+    memoryForRun:run=>{
+      if(run.researchContext){const trial=find(store.read(),'events',run.researchContext.trialId,run.projectId);if(trial.type!=='research.trial')fail('RESEARCH_CONTEXT','Canonical research trial required',409);if(trial.manifest.components.memory===false)return;}
+      return [{kind:'project',id:run.projectId},...(run.botId?[{kind:'agent',id:run.botId}]:[]),...(run.conversationId?[{kind:'session',id:run.conversationId}]:[]),{kind:'task',id:run.taskId}].map(scope=>({projectId:run.projectId,scope:{projectId:run.projectId,...scope},query:find(store.read(),'tasks',run.taskId,run.projectId).title,limit:5,maxCharacters:8000}));
+    }});
   const goals=createGoalService({store,t3,authorize:authority.goalAuthorize});
   const relay=createRelayService({store,t3,resolveSecret:async reference=>{const binding=store.read().relay?.bindings.find(b=>b.secretRef===reference);if(!binding||!secrets)fail('RELAY_SECRET_UNAVAILABLE','Save a machine-only relay signing key in Settings',409);return secrets.resolveRef({projectId:binding.projectId,reference,purpose:'relay'});}});await relay.recover();
   const artifacts=createArtifactService({store,dataDir}),control=createControlService({store,connections});
@@ -84,6 +88,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
   const playbooks=createPlaybookService({store,missions,memory,adaptive,authorize:authority.goalAuthorize});
   const proactive=createProactiveService({store,t3,authorize:authority.goalAuthorize});await proactive.start();
   const workspaces=createWorkspaceService({store,dataDir,t3,authorize:authority.authorize});await workspaces.recover();
+  const research=createResearchService({store,dataDir,authorizeOwner:authority.goalAuthorize});await research.recover();
   compute=createComputeRouter({store,dataDir,jobs,artifacts,admit:admitCompute,secrets,resolveBearer:({vaultRef,projectId})=>secrets.resolveRef({projectId,reference:vaultRef,purpose:'compute'}),resolveEnvironment:({projectId,name})=>secrets.resolveEnv({projectId,name,purpose:'compute'})});
   const catalog=createCatalogService({load:()=>t3.catalog()});
   const gitStorage=createGitStorageService({store});
@@ -110,7 +115,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
     return session;
   }
   function humanSession(req,res){const s=browserSession(req,res);if(!s||req.headers['x-forge-csrf']!==s.csrf)fail('BROWSER_SESSION_REQUIRED','Refresh the FORGE page and perform this Owner action in the GUI',403);return s;}
-  const app={store,t3,jobs,compute,connections,providers,governance,adaptive,assistance,memory,ownerMemory,context,goals,missions,playbooks,proactive,workspaces,budgets,relay,secrets,plugins:capabilities.service,reports,serving,storage,desktop,officeAgent,server:null,url:null,async close(){
+  const app={store,t3,jobs,compute,connections,providers,governance,adaptive,assistance,memory,ownerMemory,context,goals,missions,playbooks,proactive,workspaces,research,budgets,relay,secrets,plugins:capabilities.service,reports,serving,storage,desktop,officeAgent,server:null,url:null,async close(){
     if(closingPromise)return closingPromise;closed=true;
     closingPromise=(async()=>{
     offProjection();await projectionPromise;
@@ -119,7 +124,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
     const stopped=new Promise(resolve=>app.server.close(resolve));
     for(const client of clients)client.end();
     app.server.closeAllConnections();
-    await proactive.close();await playbooks.close();await missions.close();await workspaces.close();adaptive.shutdown();await assistance.close();await goals.close();await Promise.allSettled([...relayWork]);relay.close();await oauth?.close();await providers.close();
+    await research.close();await proactive.close();await playbooks.close();await missions.close();await workspaces.close();adaptive.shutdown();await assistance.close();await goals.close();await Promise.allSettled([...relayWork]);relay.close();await oauth?.close();await providers.close();
     await officeMcpHandler?.close();await desktop.shutdown();await storage.shutdown();await compute.shutdown();await jobs.shutdown();await t3.shutdown();await serving.shutdown();await connections.close();await reports?.shutdown?.();
     const pluginClose=await capabilities.service.close();if(pluginClose.status==='draining')throw new Error('Native plugin operations remain active; retain the store for reconciliation');
     await memory.close();await ownerMemory.close();await stopped;await store.close();
@@ -214,9 +219,10 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
         if(closed||restoring)fail('APPLICATION_BUSY','Application is shutting down or restoring metadata; retry after readiness',409);
         if(p!=='/api/storage/restore')finishAdmission=admitPost();
         let owner;
-        if(/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|plugins|memory|owner-memory|context|goals|compute|relay|secrets|missions|proactive|workspaces|budgets|playbooks)\//.test(p))owner=humanSession(req,res);
+        if(/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|plugins|memory|owner-memory|context|goals|compute|relay|secrets|missions|proactive|workspaces|budgets|playbooks|research)\//.test(p))owner=humanSession(req,res);
         if(p==='/api/command'){value=await command(store,input);if(input.type==='project.create')await capabilities.defaults(value.entity.id);}
         else if(p.startsWith('/api/plugins/'))value=await dispatchPluginRequest(capabilities.service,p.slice('/api/plugins/'.length),input);
+        else if(p.startsWith('/api/research/'))value=await dispatchResearchRequest(research,p.slice('/api/research/'.length),input,authority.owner(owner));
         else if(p.startsWith('/api/secrets/')){
           const method=p.slice('/api/secrets/'.length);
           if(['set','remove'].includes(method)&&input.purpose==='provider'&&store.read().runs.some(r=>r.projectId===input.projectId&&!['completed','failed','cancelled','interrupted','rolled_back','stopped'].includes(r.status)))fail('PROVIDER_BUSY','Stop and reconcile provider runs before changing their key',409);
@@ -283,15 +289,16 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
         else if(p==='/api/storage/backup')value=await artifacts.backup();
         else if(p==='/api/storage/restore'){
           assertWorkspaceRestoreAvailable(store.read());
+          assertResearchRestoreAvailable(store.read());
           if(store.read().runs.some(r=>!['completed','failed','cancelled','interrupted','rolled_back','stopped'].includes(r.status))||store.read().jobs.some(j=>['submitting','queued','running','starting','stopping','unknown','preparing','rendering','validating','publishing'].includes(j.status)))fail('RESTORE_BUSY','Stop and reconcile active runs/jobs before restoring metadata',409);
           restoring=true;
           try{
-            await proactive.suspendForRestore();await playbooks.suspendForRestore();await missions.suspendForRestore();await goals.suspendForRestore();
+            await research.suspendForRestore();await proactive.suspendForRestore();await playbooks.suspendForRestore();await missions.suspendForRestore();await goals.suspendForRestore();
             await Promise.allSettled([...admittedPosts,...relayWork]);
-            assertWorkspaceRestoreAvailable(store.read());
+            assertWorkspaceRestoreAvailable(store.read());assertResearchRestoreAvailable(store.read());
             if(store.read().runs.some(r=>!['completed','failed','cancelled','interrupted','rolled_back','stopped'].includes(r.status))||store.read().jobs.some(j=>['submitting','queued','running','starting','stopping','unknown','preparing','rendering','validating','publishing'].includes(j.status)))fail('RESTORE_BUSY','Previously admitted work became active; reconcile it before restoring',409);
-            value=await artifacts.restore(input);await memory.afterRestore();await ownerMemory.afterRestore();await goals.afterRestore();await missions.afterRestore();await playbooks.afterRestore();await proactive.afterRestore();await governance.recover({invalidateUnconsumed:true});await officeAgent.recover();await providers.mcp.recover();await providers.conversations.recover();
-          }finally{goals.cancelRestore();missions.cancelRestore();playbooks.cancelRestore();proactive.cancelRestore();restoring=false;}
+            value=await artifacts.restore(input);await memory.afterRestore();await ownerMemory.afterRestore();await goals.afterRestore();await missions.afterRestore();await playbooks.afterRestore();await proactive.afterRestore();await research.afterRestore();await governance.recover({invalidateUnconsumed:true});await officeAgent.recover();await providers.mcp.recover();await providers.conversations.recover();
+          }finally{goals.cancelRestore();missions.cancelRestore();playbooks.cancelRestore();proactive.cancelRestore();research.cancelRestore();restoring=false;}
         }
         else if(p==='/api/storage/configure')value=await storage.configure(input);
         else if(p==='/api/storage/health')value=await storage.health(input);

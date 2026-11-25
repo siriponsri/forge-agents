@@ -62,7 +62,9 @@ export function createWorkspaceService({store,dataDir,t3,authorize}){
       try{await addWorktree(w,dataDir);return store.transaction(s=>{const r=get(s,{...i,workspaceId:w.id});r.status='ready';changed(r);return r;});}
       catch(e){await store.transaction(s=>{const r=get(s,{...i,workspaceId:w.id});r.status='creation-unknown';r.error=e.message;changed(r);});throw e;}
     });},
-    start(input,caller){return operation('start',input,caller,async i=>{
+    start(input,caller,{researchContext}={}){
+      if(input.researchContext!==undefined)fail('RESEARCH_CONTEXT','Research context is host-only, not a Workspace body field',403);
+      return operation('start',{...input,...(researchContext?{researchContext:structuredClone(researchContext)}:{})},caller,async i=>{
       if(!executionSupported())fail('WORKSPACE_INTEGRATION_REQUIRED','T3 must retain and resolve the authoritative workspace context before dispatch',409);
       const before=get(store.read(),i);revision(before,i.expectedRevision);const files=await observed(before);
       if(files.head!==before.baseSha||files.dirty)fail('WORKSPACE_CHANGED','A new execution requires its unchanged reserved checkout',409);
@@ -72,7 +74,7 @@ export function createWorkspaceService({store,dataDir,t3,authorize}){
         assertIsolatedWorkspaceAvailable(s,i.projectId,{projectId:i.projectId,taskId:w.taskId,operationId:w.runOperationId,workspaceContext:contextFor(w)});changed(w);return w;
       });
       let response;
-      try{response=await t3.startRun({projectId:w.projectId,taskId:w.taskId,operationId:w.runOperationId,workspaceContext:contextFor(w)});}
+      try{response=await t3.startRun({projectId:w.projectId,taskId:w.taskId,operationId:w.runOperationId,workspaceContext:contextFor(w),...(i.researchContext?{researchContext:i.researchContext}:{})});}
       catch(e){await store.transaction(s=>{const w=get(s,i);w.status='unknown';w.error=e.message;changed(w);});return get(store.read(),i);}
       return store.transaction(s=>{const w=get(s,i);let run;try{run=ownedRun(s,w);}catch(e){w.status='unknown';w.error=e.message;changed(w);return w;}if(!run||response?.id!==run.id){w.status='unknown';w.error='T3 did not retain a matching authoritative run';}else{w.runId=run.id;w.attemptId=run.attemptId;w.status=terminal.has(run.status)?(w.stopRequested?'stopped':run.status==='completed'?'review':'failed'):run.status==='unknown'?'unknown':'running';}changed(w);return w;});
     });},

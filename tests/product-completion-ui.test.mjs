@@ -52,19 +52,19 @@ test('built App Mission journey uses real Owner forms, local tests, preview, QA 
   const bytes=await readFile(await download.path());assert.equal(verifyDeliveryPack(bytes).manifest.outputs[0].runId,runId);assert.equal(starts,1);
   const captureDir=path.join(directory,'captures');await mkdir(captureDir);await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:path.join(captureDir,'missions-desktop.png'),fullPage:true});
   await page.getByRole('button',{name:'Stop preview',exact:true}).click();
-  for(const [navigation,title,file] of [['Parallel workspaces','Parallel workspaces','parallel'],['Proactive workflows','Proactive workflows','proactive'],['Usage & budgets','Budgets & usage','budgets'],['Workflow presets','Workflow presets','workflows']]){
+  for(const [navigation,title,file] of [['Parallel workspaces','Parallel workspaces','parallel'],['Proactive workflows','Proactive workflows','proactive'],['Usage & budgets','Budgets & usage','budgets'],['Workflow presets','Workflow presets','workflows'],['Research Lab','Research Lab','research']]){
     await page.getByRole('button',{name:navigation,exact:true}).click();await page.getByRole('heading',{name:title,exact:true}).waitFor();
     if(navigation==='Parallel workspaces'){await page.getByLabel('Maximum parallel attempts').fill('2');await page.getByRole('button',{name:'Save limits',exact:true}).click();}
     await page.screenshot({path:path.join(captureDir,file+'-desktop.png'),fullPage:true});
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   }
   await page.getByLabel('Language',{exact:true}).selectOption('th');await page.setViewportSize({width:375,height:900});
-  for(const [label,title,file] of [['ภารกิจและการส่งมอบ','ภารกิจและชุดส่งมอบ','missions'],['พื้นที่งานแยก','พื้นที่ทำงานคู่ขนาน','parallel'],['เวิร์กโฟลว์อัตโนมัติ','งานเชิงรุก','proactive'],['การใช้งานและงบ','งบประมาณและการใช้งาน','budgets'],['รูปแบบการทำงาน','รูปแบบการทำงาน','workflows']]){
+  for(const [label,title,file] of [['ภารกิจและการส่งมอบ','ภารกิจและชุดส่งมอบ','missions'],['พื้นที่งานแยก','พื้นที่ทำงานคู่ขนาน','parallel'],['เวิร์กโฟลว์อัตโนมัติ','งานเชิงรุก','proactive'],['การใช้งานและงบ','งบประมาณและการใช้งาน','budgets'],['รูปแบบการทำงาน','รูปแบบการทำงาน','workflows'],['ห้องวิจัยและประเมินผล','ห้องวิจัยและประเมินผล','research']]){
     await page.getByRole('button',{name:'Menu',exact:true}).click();await page.getByRole('button',{name:label,exact:true}).click();await page.getByRole('heading',{name:title,exact:true}).waitFor();
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,file+' overflow');
     await page.screenshot({path:path.join(captureDir,file+'-mobile.png'),fullPage:true});
   }
   assert.deepEqual(errors,[]);
-  await writeFile(path.join(directory,'evidence.json'),JSON.stringify({qualification:'PRODUCTION_APP_SQLITE_LOCAL_TESTS_PREVIEW_ZIP_INJECTED_PROVIDER_OBSERVATIONS',providerTurns:0,starts,errors,captures:10,platform:process.platform},null,2));
+  await writeFile(path.join(directory,'evidence.json'),JSON.stringify({qualification:'PRODUCTION_APP_SQLITE_LOCAL_TESTS_PREVIEW_ZIP_INJECTED_PROVIDER_OBSERVATIONS',providerTurns:0,starts,errors,captures:12,platform:process.platform},null,2));
   console.log('FORGE completion UI evidence:',directory);
 });

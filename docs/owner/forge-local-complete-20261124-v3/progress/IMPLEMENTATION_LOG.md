@@ -1,5 +1,24 @@
 # Implementation Log
 
+## Review corrections and Research local integration — 2026-11-25
+
+71fd27e committed shared controllers and28 explicit source/test/doc paths.
+Independent review found five concrete admission/restore defects;14a8424 fixed
+them with scoped regressions. Fresh review found two further HTTP-barrier edges;
+2e0b1b5 includes credential callbacks and releases declined MCP handler admission.
+Latest callback/path/drain/shutdown18 PASS; related116 PASS, overlapping sets.
+Broad historical run:565 entries/554 PASS/2 fixture failures/9 SKIP; both fixture
+failures corrected and passed in related checks, not a fresh full-suite pass.
+
+4187912 merged Research module02fae1b. Lead wired local Lab/App/Owner HTTP,
+restore safety and Workspace/T3/Context receipt hooks. Production Research2 PASS,
+related33 PASS, merged build23.95s PASS and built-App/Workspace4 PASS. Twelve
+desktop/Thai mobile captures have no page errors/overflow. Native wire and
+provider observations are explicitly injected. Production agent mode stays
+unavailable until actual owner component/action/resource receipts qualify it.
+Guarded native build/protocol tests, Research execution bridge and website
+publication corrections continue in isolated assigned worktrees.
+
 ## Mission/Parallel/Proactive/Budget/Playbook integration — 2026-11-25
 
 Merged scoped worker commits as be2831f (Mission),35803d4 (Proactive),940e0b5
