@@ -82,4 +82,7 @@ Portable final report and six actual website review captures:
 `evidence/publication-20261125/`. They are review evidence, not new core-product
 screenshots or GIFs. The final root README/media task remains lead-owned.
 Implementation gaps (all-action native enforcement, billing receipts and Research
-shared integration) remain separate from live-provider/account checks and Home UAT.
+agent/native execution bridging and qualification) remain separate from live-provider/
+account checks and Home UAT. A subsequent lead update confirmed the local Research
+CPU/file/recheck/compare/export flow is mounted and developer verified; its row and
+matching changelog qualification were updated without claiming model trials.

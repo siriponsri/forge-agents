@@ -60,7 +60,7 @@ try {
   }
   checks.push('All 10 localized inner routes × both themes × 375/1440; 40 axe AA audits; missing release has source guide action and zero executable links');
   await page.setViewportSize({width:1440,height:1000});await page.goto(app.url+'/en/');
-  await page.getByRole('button',{name:'Developer verified',exact:true}).click();assert.equal(await page.locator('.capability').count(),7);
+  await page.getByRole('button',{name:'Developer verified',exact:true}).click();assert.equal(await page.locator('.capability').count(),8);
   await page.getByRole('button',{name:'Planned',exact:true}).click();assert.equal(await page.locator('.capability').count(),1);
   await page.getByRole('button',{name:'All capabilities',exact:true}).click();assert.equal(await page.locator('.capability').count(),16);
   await page.getByRole('link',{name:'Open full-resolution workbench screenshot'}).click();await page.waitForURL('**/forge-workbench.png');assert.equal(await page.locator('img').evaluate(e=>e.naturalWidth),1440);await page.goBack();

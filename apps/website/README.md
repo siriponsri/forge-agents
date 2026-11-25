@@ -74,7 +74,9 @@ anonymous check of those recorded revisions without changing build data.
 
 The capability inventory and changelog separately describe developer verification
 with labelled injected provider/native observations, native automatic-execution
-qualification and billing implementation gaps, and pending Research integration.
+qualification and billing implementation gaps, and pending Research agent/native
+execution bridging and qualification. The local CPU/file Research flow is mounted
+and developer verified.
 They claim no live model quality improvement, benchmark score or Home UAT result.
 Update claims, evidence and source availability together only after the lead
 actually publishes an authorized revision.

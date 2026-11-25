@@ -25,7 +25,8 @@ for(const lang of ['th','en']){
   assert.ok(changes.includes('NOT_QUALIFIED'),'Native all-action execution gap remains explicit');
 }
 assert.ok(html.includes('Developer verified')&&html.includes('labelled injected provider/native observations'),'Developer evidence qualifier');
-assert.ok(html.includes('shared app integration is pending'),'Research module is not presented as integrated');
+assert.ok(html.includes('Local CPU/file trials, recheck, comparison and export are mounted and developer verified.'),'Local Research qualification');
+assert.ok(html.includes('Agent/native execution bridging and qualification remain pending; no model trials or benchmark scores.'),'Research native/model gap remains explicit');
 const image=await readFile('public/forge-workbench.png');
 assert.equal(createHash('sha256').update(image).digest('hex'),'053c352b7c1a0235d8e9e866ed2b5b2a5f58dd4125312062faffa7f1da0bf705','Authentic screenshot remains unchanged');
 const script=html.match(/<script>([^]*?)<\/script>/)[1];
