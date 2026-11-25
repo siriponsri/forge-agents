@@ -1,0 +1,14 @@
+.parallel-workspace .parallel-layout{display:grid;grid-template-columns:minmax(250px,1fr) minmax(0,2fr);gap:1.2rem;align-items:start}
+.parallel-workspace .parallel-policy{margin-bottom:1.2rem}
+.parallel-workspace .parallel-list{list-style:none;padding:0;margin:1.5rem 0 0;display:grid;gap:.55rem}
+.parallel-workspace .parallel-list button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:.7rem;text-align:start;padding:.9rem}
+.parallel-workspace .parallel-list button.selected{outline:2px solid var(--accent,currentColor);outline-offset:2px}
+.parallel-workspace .parallel-list button span{overflow-wrap:anywhere}
+.parallel-workspace .parallel-detail{min-width:0}
+.parallel-workspace dl{display:grid;grid-template-columns:minmax(110px,.8fr) minmax(0,2fr);gap:.5rem 1rem;font-size:.88rem;margin:1.2rem 0}
+.parallel-workspace dt{opacity:.8}.parallel-workspace dd{margin:0;overflow-wrap:anywhere}
+.parallel-workspace pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:26rem;overflow:auto;font-size:.8rem}
+.parallel-workspace .actions{display:flex;flex-wrap:wrap;gap:.55rem;margin:1rem 0}
+.parallel-workspace .parallel-integration{border-top:1px solid var(--line,currentColor);margin-top:1.6rem;padding-top:1rem}
+@media(max-width:900px){.parallel-workspace .parallel-layout{grid-template-columns:1fr}}
+@media(max-width:480px){.parallel-workspace dl{grid-template-columns:1fr;gap:.2rem}.parallel-workspace dd{margin-bottom:.6rem}.parallel-workspace .actions button{width:100%}}
