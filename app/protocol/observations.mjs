@@ -42,6 +42,7 @@ function toolArguments(item){
   }
   if(item.type==='command_execution'&&typeof item.input==='string'&&item.input)return {name:'command_execution',args:JSON.stringify({command:item.input})};
 }
+function argumentsComplete(item,args){return args.args!=='{}'||TERMINAL.has(item.status);}
 function observeTool(state,run,item){
   if(item.type==='file_change'){
     // This is the native provider's file-change observation, not a tool-role
@@ -59,7 +60,7 @@ function observeTool(state,run,item){
   }
   // The native stream can first publish an empty placeholder, then the actual
   // input. Do not seal that placeholder as completed arguments.
-  const complete=args.args!=='{}'||TERMINAL.has(item.status);
+  const complete=argumentsComplete(item,args);
   const argumentHash=digest(args.args);
   if(complete&&!prior?.argumentsComplete){
     emit(state,run,{type:'TOOL_CALL_ARGS',toolCallId:id,delta:args.args},`tool:${id}:args`);
@@ -87,7 +88,7 @@ function messageView(items){
     if(['user_message','assistant_message'].includes(item.type))messages.push({id:item.messageId??item.id??item.itemId,role:item.type==='user_message'?'user':'assistant',content:item.text??''});
     else{
       const args=toolArguments(item);if(!args)continue;
-      messages.push({id:`tool-call:${item.id}`,role:'assistant',content:'',toolCalls:[{id:item.id,type:'function',function:{name:args.name,arguments:args.args}}]});
+      messages.push({id:`tool-call:${item.id}`,role:'assistant',content:'',toolCalls:[{id:item.id,type:'function',function:{name:args.name,arguments:argumentsComplete(item,args)?args.args:''}}]});
       if(TERMINAL.has(item.status)&&Object.hasOwn(item,'output')&&!item.outputOmitted)messages.push({id:`tool-result:${item.id}`,role:'tool',toolCallId:item.id,content:typeof item.output==='string'?item.output:JSON.stringify(item.output)});
     }
   }

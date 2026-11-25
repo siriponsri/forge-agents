@@ -9,6 +9,16 @@ let text=(await readFile(source,'utf8')).replaceAll('\r\n','\n');
 const change=(a,b)=>{if(text.split(a).length!==2)throw Error('FIXTURE_PREIMAGE '+a.slice(0,60));text=text.replace(a,b)};
 text=text.replace(/from (['"])(\.[^'"]+)\1/g,(_m,q,p)=>'from '+q+new URL(p,sourceUrl).href+q);
 text=text.replace(/new URL\('([^']+)',import.meta.url\)/g,(_m,p)=>'new URL('+JSON.stringify(new URL(p,sourceUrl).href)+')');
+// Resolve the engineering driver's pinned dependencies without copying it into
+// the immutable build cache. Only this unique disposable fixture root is written.
+const driver=String.raw`const file=path.join(root,'t3-native-fixture.ts');
+    let driverText=await readFile(fileURLToPath(new URL(DRIVER_URL_PLACEHOLDER)),'utf8');
+    driverText=driverText.replaceAll('\r\n','\n').replace(/^import \* as [^\n]+\n/gm,'');
+    driverText=driverText.replace('const {Adapter,Client,Server,resolveProfile}', 'const {Adapter,Client,Server,resolveProfile,Effect,Layer,Stream,Deferred,NodeServices,NodeHttpClient,NodeCrypto,IdAllocator,McpProviderSessions:Sessions,ProviderHost}');
+    driverText=driverText.replace('const program=Effect.gen(function*(){', 'const denied=()=>Effect.fail(Error("ENGINEERING_HOST_OPERATION_DENIED"));\nconst nativeHost=ProviderHost.ProviderHost.of({paths:{cwd:boot.cwd,baseDir:boot.cwd,stateDir:boot.cwd,providerStatusCacheDir:boot.cwd,attachmentsDir:boot.cwd},settings:{get:denied(),withSnapshot:denied,changes:Stream.empty,subscribe:Effect.succeed(Stream.empty)},shouldRunBackgroundWork:()=>Effect.succeed(false),resolveAttachmentPath:()=>null,credentials:denied,compatibility:()=>Effect.succeed(undefined)});\nconst program=Effect.gen(function*(){');
+    driverText=driverText.replace('Host.layer({cwd:boot.cwd})','Layer.succeed(ProviderHost.ProviderHost,nativeHost)');
+    await writeFile(file,driverText,{flag:'wx'});`;
+change("const file=path.join(cache,'t3/packages/provider-opencode/forge-native-fixture.ts');await copyFile(fileURLToPath(new URL("+JSON.stringify(new URL('./t3-native-fixture.ts',sourceUrl).href)+")),file);",driver.replace('DRIVER_URL_PLACEHOLDER',JSON.stringify(new URL('./t3-native-fixture.ts',sourceUrl).href)));
 change("const cache=path.resolve(process.argv[2])","const mode=process.env.FORGE_TRANSPORT_FIXTURE_MODE??'delay';\nconst ownerReceipts=[],actionRequests=[],dropped=[];let bridgeProxy;\nconst cache=path.resolve(process.argv[2])");
 change('withFence,authorize:()=>true});',"withFence,authorize:input=>!(mode==='policy'&&input.tool==='read_text'&&input.path==='allowed/a.txt'),recordReceipt:r=>{ownerReceipts.push(r);if(mode==='owner-lost'&&r.effect)throw Object.assign(Error('GUARDED_AUTHORITY_REVOKED'),{code:'GUARDED_AUTHORITY_REVOKED'});}});");
 const proxy=String.raw`

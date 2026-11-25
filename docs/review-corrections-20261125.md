@@ -21,3 +21,9 @@ node "$env:TEMP/forge-ack-review-unique/transport-fixture.mjs" "$env:TEMP/forge-
 Choose a new absolute output directory; staging refuses to replace an existing script. Reports are written there, and the binary cache is read-only. The same fixture supports `delay`, `drop`, `timeout` and `policy` modes. Its evidence is an engineering check, not runtime proof or external model-quality qualification.
 
 The earlier serial full-suite run was stopped after these additional findings, before changing source. It is not reported as passed. A fresh independent correction review, complete merged-suite run, final media refresh and release checks remain required. Home UAT remains `NOT_RUN`.
+
+## Snapshot interoperability follow-up
+
+The fresh532353f review verified UNKNOWN/file-change behavior and found one remaining argument ordering defect: a preliminary snapshot containing `{}` was followed by an appending delta before END. The producer now projects incomplete placeholder arguments as the empty string, so a standard snapshot-plus-append consumer parses the actual JSON at END. Both the SQLite protocol test and actual production activation fold the complete event stream and assert parsing before any later repair snapshot. The production check passed in160.5 seconds (4 loopback requests,3 observations/receipts,1 edit,1 run); no external model was called. The bilingual graph browser check also passed after correcting the Thai file-change label.
+
+The review also found the original transport staging command copied a byte-identical engineering driver into the cache. The helper now writes its driver only in its unique disposable fixture directory and uses the same compiled T3 graph's exported Effect/services with a deny-only private ProviderHost. The standalone actual native callback-loss reproduction passed, with no source/dependency installation or cache driver write. Earlier evidence is not reclassified as cache-read-only.

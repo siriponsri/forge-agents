@@ -57,7 +57,7 @@
   "sourceSha256": {
     "app/guarded-runtime/broker.mjs": "e05ea19de45b37c12e2e2f8eb451fc000585ec50f640afab83836694fec1383d",
     "app/guarded-runtime/local-gateway.mjs": "a941a0cc6ebe48cb475750853ec5b0ff533c69730899284c9e353f2d77c9fd4c",
-    "tools/guarded-runtime/stage-transport-fixture.mjs": "d3b5a740e7cf67d326d2745228fbd2006f8c53e5ed11f0d77ffd5bcd683cddac"
+    "tools/guarded-runtime/stage-transport-fixture.mjs": "4f0de77c6186d54747860dcacfce63bb7bc3d695e6904e798305c07935f51251"
   },
-  "qualification": "DEVELOPER_ACTUAL_NATIVE_LOOPBACK; injected postcommit owner callback failure; no external provider/account"
+  "qualification": "DEVELOPER_ACTUAL_NATIVE_LOOPBACK; injected postcommit owner callback failure; standalone compiled T3 exports; no cache driver write; no external provider/account"
 }

@@ -53,6 +53,7 @@ test('FIXTURE empty native placeholders wait for actual arguments; later correct
   const f=await fixture(t),tool=item('dynamic_tool','streamed',{toolName:'forge_guarded_propose_change',input:{}});
   await f.apply(native('running',[tool]));
   assert.equal(find(f.store.read(),'runs',f.run.id).toolObservations.streamed.argumentsComplete,false);
+  assert.equal(find(f.store.read(),'runs',f.run.id).protocolMessages[0].toolCalls[0].function.arguments,'');
   assert.deepEqual(protocolEvents(f.store.read(),f.run.id).filter(e=>e.type.startsWith('TOOL_')).map(e=>e.type),['TOOL_CALL_START']);
   const input={path:'allowed/a.txt',expectedRevision:'a'.repeat(64),text:'after'};
   await f.apply(native('running',[{...tool,input}]));
@@ -61,6 +62,17 @@ test('FIXTURE empty native placeholders wait for actual arguments; later correct
   assert.equal(events.filter(e=>e.type==='TOOL_CALL_ARGS').length,1);
   assert.deepEqual(JSON.parse(events.find(e=>e.type==='TOOL_CALL_ARGS').delta),input);
   assert.equal(events.filter(e=>e.type==='TOOL_CALL_END').length,1);
+  // Standard AG-UI consumers replace on snapshots, append argument deltas and
+  // parse at END. A following replacement snapshot must not repair invalid JSON
+  // only after that end callback has already consumed it.
+  const current=new Map(),ended=[];
+  for(const event of events){
+    if(event.type==='MESSAGES_SNAPSHOT'){current.clear();for(const message of event.messages)for(const call of message.toolCalls??[])current.set(call.id,call.function.arguments);}
+    if(event.type==='TOOL_CALL_START'&&!current.has(event.toolCallId))current.set(event.toolCallId,'');
+    if(event.type==='TOOL_CALL_ARGS')current.set(event.toolCallId,(current.get(event.toolCallId)??'')+event.delta);
+    if(event.type==='TOOL_CALL_END')ended.push(JSON.parse(current.get(event.toolCallId)));
+  }
+  assert.deepEqual(ended,[input]);
   const corrected={...input,text:'corrected'};
   await f.apply(native('running',[{...tool,input:corrected}]));
   events=protocolEvents(f.store.read(),f.run.id);

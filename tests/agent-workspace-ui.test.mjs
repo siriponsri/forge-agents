@@ -100,6 +100,8 @@ test('built Chat transforms into a scoped graph and reuses guarded run controls 
   await page.emulateMedia({reducedMotion: 'reduce'});
   await page.getByLabel('Language').selectOption('th');
   await page.getByRole('button', {name: 'ดูรายการ', exact: true}).click();
+  await page.getByRole('button', {name: /ไฟล์ที่เปลี่ยน: allowed\/a.txt/}).click();
+  await page.locator('.agent-inspector').getByText('ไฟล์ที่เปลี่ยน: allowed/a.txt',{exact:true}).first().waitFor();
   await page.getByRole('button', {name: /สมาชิกที่ถูกเรียก · Executor/}).focus();
   await page.keyboard.press('Enter');
   await page.getByRole('button', {name: 'ขอหยุด', exact: true}).waitFor();

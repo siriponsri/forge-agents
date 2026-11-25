@@ -56,6 +56,14 @@ test('production Guarded setup drives one approved recipe through actual native 
   assert.equal(events.some(e=>e.type==='TOOL_CALL_RESULT'&&e.toolCallId===change.id),false,'a file change is not an invented tool-role result');
   const argumentEvents=events.filter(e=>e.type==='TOOL_CALL_ARGS');assert.equal(argumentEvents.length,2);
   for(const event of argumentEvents)assert.equal(JSON.parse(event.delta).path,'allowed/a.txt','actual native arguments replace preliminary empty inputs');
+  const currentArguments=new Map();let argumentEnds=0;
+  for(const event of events){
+    if(event.type==='MESSAGES_SNAPSHOT'){currentArguments.clear();for(const message of event.messages)for(const call of message.toolCalls??[])currentArguments.set(call.id,call.function.arguments);}
+    if(event.type==='TOOL_CALL_START'&&!currentArguments.has(event.toolCallId))currentArguments.set(event.toolCallId,'');
+    if(event.type==='TOOL_CALL_ARGS')currentArguments.set(event.toolCallId,(currentArguments.get(event.toolCallId)??'')+event.delta);
+    if(event.type==='TOOL_CALL_END'){assert.equal(JSON.parse(currentArguments.get(event.toolCallId)).path,'allowed/a.txt','snapshot + append arguments must parse at END, before later snapshots');argumentEnds++;}
+  }
+  assert.equal(argumentEnds,2);
   assert.equal(run.nativeTurnRef.strength,'weak');assert.equal(run.providerRunId,undefined);assert.equal(state.tasks.find(t=>t.id===task.id).status,'review');assert.ok(run.contextReceipt);assert.ok(run.guardedReceipt);assert.equal(JSON.stringify(state).includes('FIXTURE_NOT_A_REAL_ACCOUNT'),false);
   const replay=await app.t3.startRun({projectId:p.id,taskId:task.id,conversationId:null,operationId:run.operationId,proactiveContext:run.proactiveContext});assert.equal(replay.id,run.id);assert.equal(requests,4);
   t.diagnostic(JSON.stringify({directory:dir,nativeProtocolRequests:requests,externalProviderRequests:0,aguiTools:Object.keys(run.toolObservations??{}).length}));
