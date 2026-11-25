@@ -163,8 +163,15 @@ export function applyGuardedObservation(state,run,projection){
   const status=terminal?.status??turn.status;
   if(!TERMINAL.has(run.status)&&status==='running'){
     if(run.status!=='running'){
-      run.status='running';const task=find(state,'tasks',run.taskId,run.projectId);task.status='running';task.threadId=run.threadId;changed(task);run.guardedTaskSnapshot=digest(task);
-      appendProtocol(state,run,{type:'RUN_STARTED',threadId:run.threadId,runId:run.id},'guarded:started');
+      const task=find(state,'tasks',run.taskId,run.projectId);
+      if(!run.guardedReservedTaskSnapshot||digest(task)!==run.guardedReservedTaskSnapshot){
+        run.status='unknown';run.stopRequest??={status:'required',source:'guarded-revision-revoked'};
+        const occurrence=state.events.find(e=>e.id===run.proactiveContext?.occurrenceId);if(occurrence){occurrence.stopRequested='APPROVED_TASK_CHANGED';changed(occurrence);}
+        appendProtocol(state,run,{type:'CUSTOM',name:'forge.guarded.admission-revoked',value:{reason:'APPROVED_TASK_CHANGED'}},'guarded:task-revoked');
+      }else{
+        run.status='running';task.status='running';task.threadId=run.threadId;changed(task);run.guardedTaskSnapshot=digest(task);
+        appendProtocol(state,run,{type:'RUN_STARTED',threadId:run.threadId,runId:run.id},'guarded:started');
+      }
     }
   }
   if(terminal&&TERMINAL.has(status))run.status=status;
@@ -175,7 +182,7 @@ export function applyGuardedObservation(state,run,projection){
   run.activities=items.filter(i=>!['reasoning','user_message','assistant_message'].includes(i.type)).map(i=>({itemId:i.id,type:i.type,status:i.status,title:i.title??null}));
   if(terminal&&!run.terminalEvent){
     appendProtocol(state,run,['failed','rolled_back'].includes(status)?{type:'RUN_ERROR',message:`T3 run ${status}`,code:`T3_${status.toUpperCase()}`}:{type:'RUN_FINISHED',threadId:run.threadId,runId:run.id,outcome:{type:status==='completed'?'success':'cancelled'}},'guarded:terminal');
-    run.terminalEvent=true;const task=find(state,'tasks',run.taskId,run.projectId);task.status=status==='completed'?'review':'blocked';changed(task);
+    run.terminalEvent=true;const task=find(state,'tasks',run.taskId,run.projectId);if(digest(task)===(run.guardedTaskSnapshot??run.guardedReservedTaskSnapshot)){task.status=status==='completed'?'review':'blocked';changed(task);}
   }
   publishState(state,run);changed(run);
 }

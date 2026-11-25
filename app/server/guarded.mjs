@@ -237,12 +237,15 @@ export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeO
     reconcile(runId){const r=findRun(store.read(),runId);return {runId:r.id,status:r.status,attemptId:r.attemptId,projection:clone(r.guardedProjection??null),receipt:clone(r.guardedReceipt??null),dispatch:clone(r.guardedDispatch??null),live:!!entries.get(runId)&&!entries.get(runId).revoked};},
     async stop(runId){
       const e=entries.get(runId);if(e)e.revoked=true; // immediate, before queued Tx
+      if(e?.stopPromise)return e.stopPromise;
+      const stopping=(async()=>{
       await store.transaction(s=>{const r=findRun(s,runId);r.stopRequest??={requestedAt:new Date(clock()).toISOString(),source:'guarded-owner'};});
       if(e?.session&&e.providerTurnId&&!e.terminal){
         try{await e.native.run(e.session.interruptTurn({providerThread:e.providerThread,providerTurnId:e.providerTurnId,requestRuntimeRestart:true}));await Promise.race([e.terminalPromise,new Promise(resolve=>{const timer=setTimeout(resolve,5000);timer.unref?.();})]);}catch{/* Absence of a real terminal remains unknown. */}
       }
       await store.transaction(s=>{const r=findRun(s,runId);if(!r.guardedProjection?.terminal&&!terminal.has(r.status)){r.status='unknown';r.guardedDispatch={status:'unknown',reason:'stop-without-native-terminal'};}});
       if(e)await cleanup(e,'stop');return api.reconcile(runId);
+      })();if(e)e.stopPromise=stopping;return stopping;
     },
     async invalidateCredentials(predicate=()=>true){const affected=[...entries.values()].filter(e=>sync(predicate,{projectId:e.input.projectId,credentialRef:e.credentialRef,accountGeneration:e.selected.route.accountGeneration})===true);for(const e of affected)e.revoked=true;await Promise.allSettled(affected.map(e=>api.stop(e.runId)));},
     async recover(){return store.transaction(s=>{const recovered=[];for(const r of s.runs.filter(r=>r.guardedContext&&!entries.has(r.id)&&['submitting','running'].includes(r.status))){r.status='unknown';r.guardedDispatch={status:'unknown',reason:'process-lease-lost-no-redispatch'};recovered.push(r.id);}return recovered;});},
