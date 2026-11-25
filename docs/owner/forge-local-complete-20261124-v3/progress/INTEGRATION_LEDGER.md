@@ -1,5 +1,16 @@
 # Integration Ledger
 
+## Research execution owner and website corrections — 2026-11-25
+
+Research module, production local Lab and canonical bridge are now merged
+through e55e690; root hooks preserve ordinary controller admissions and the
+original Context receipt. Native component/action/resource proof remains absent
+and agent execution remains unavailable. Completed observations cannot be
+retroactively cancelled by an expired watchdog. Website corrections are merged
+through f8dbd0d. These updates supersede the older active-worker statements below.
+Guarded native runtime and genuine README media are the remaining active
+isolated assignments; final release verification/main push has not occurred.
+
 ## Latest controller integration — 2026-11-25
 
 Mission, isolated Parallel, Proactive, Budget and SuperUser have production

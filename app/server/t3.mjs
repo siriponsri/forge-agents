@@ -161,6 +161,7 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
     proactiveContextVersion:1,
     proactiveEnforcementVersion:1,
     workspaceContextVersion:1,
+    researchContextVersion:typeof prepareResearch==='function'&&typeof validatePreparedResearch==='function'?1:0,
     // Pinned T3 exposes supervision, not a FORGE all-action path sandbox.
     // Never manufacture route qualification from Owner approval or a prompt.
     qualifyProactive(){return null;},

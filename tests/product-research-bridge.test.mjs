@@ -17,6 +17,12 @@ async function output(h,{correct=true}={}){
   await h.f.store.transaction(s=>{s.runs.find(r=>r.id===h.currentRun().id).status='completed';});
 }
 
+test('a completed run observed after its deadline is not retroactively cancelled by the watchdog',async t=>{
+  const h=await fixture(t);await h.start();await output(h);await h.bridge.close();
+  const later=createResearchExecutionBridge({store:h.f.store,dataDir:h.f.dataDir,workspaces:h.f.service,t3:h.f.t3,authorizeOwner:(_r,c)=>c===h.owner?{kind:'human',role:'owner'}:null,clock:()=>h.currentTrial().deadlineAt+1});
+  try{const result=await later.executionOwner.reconcile(h.scopeInput(),h.owner);assert.equal(result.status,'completed');assert.equal(h.currentTrial().stopRequested,false);assert.equal(h.f.w(h.w).stopRequested,undefined);assert.equal(h.f.store.read().events.filter(e=>e.type==='research.bridge-stop').length,0);assert.equal(h.f.stops,0);}finally{await later.close();}
+});
+
 test('sole Workspace dispatch, opaque authority, actual Context consumption, bounded input and independent exact-byte evidence',async t=>{
   const h=await fixture(t,{config:{split:'test'}});await h.start();assert.equal(h.observed.starts.length,1);assert.equal(h.f.starts,1);
   const start=h.observed.starts[0];assert.equal(start.caller,h.owner);assert.deepEqual(start.internal,{researchContext:h.dispatchInput().researchContext});assert.equal(start.input.workspaceId,h.w.id);

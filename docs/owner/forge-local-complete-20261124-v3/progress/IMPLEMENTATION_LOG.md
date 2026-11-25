@@ -1,5 +1,19 @@
 # Implementation Log
 
+## Research execution bridge — 2026-11-25
+
+Merged scoped worker2e3bcbe as e55e690. Root connected the canonical execution
+owner, pre-Context input preparation, current Memory gate, exact separate
+Research receipt and shutdown drain. No qualification producer is installed;
+capability metadata distinguishes a connected bridge from a qualified agent
+route. Fixed a completed-run deadline reconciliation bug and verified its
+regression. Production Research/final-admission19 PASS and deadline1 PASS;
+native execution/proof remains injected in those engineering tests.
+
+Website ordered publication corrections are merged as441796f,52693c0,f8dbd0d.
+Current scoped evidence is not a new all-green full-product suite or release
+approval. Guarded runtime and README media work continue in isolated worktrees.
+
 ## Review corrections and Research local integration — 2026-11-25
 
 71fd27e committed shared controllers and28 explicit source/test/doc paths.

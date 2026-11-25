@@ -102,10 +102,12 @@ export function createResearchExecutionBridge({store,dataDir,workspaces,t3,autho
     const claim=await store.transaction(s=>{
       const x=snapshot(s,projectId,trialId),existing=records(s,'bridge-stop',projectId).find(e=>e.trialId===trialId);
       if(existing)return {replay:true,event:existing};
+      if(reason!=='owner'&&!x.trial.stopRequested&&x.run&&terminal.has(x.run.status))return {settled:true,runId:x.run.id,status:x.run.status};
       x.trial.stopRequested=true;x.trial.status='stopping';x.trial.revision++;
       const event=append(s,'bridge-stop',{trialId,workspaceId:x.w.id,runOperationId:x.trial.runOperationId,runId:x.run?.id??null,attemptId:x.run?.attemptId??null,workspaceStopOperationId:operationId,reason,status:'pending',deadlineAt:x.trial.deadlineAt},projectId,clock);return {event};
     });
     if(claim.replay)return structuredClone(claim.event);
+    if(claim.settled)return claim;
     try{
       const x=snapshot(store.read(),projectId,trialId);
       const result=await workspaces.stop({projectId,workspaceId:x.w.id,operationId,expectedRevision:x.w.revision},caller);
@@ -145,7 +147,7 @@ export function createResearchExecutionBridge({store,dataDir,workspaces,t3,autho
     return {researchContextDigest:digest(run.researchContext),workspaceId:x.w.id,contextPolicyDigest:x.trial.manifest.contextPolicyDigest,forgeContextId:run.contextId,forgeReceiptDigest:digest(run.contextReceipt)};
   }
   const api={
-    executionOwner:{version:1,
+    executionOwner:{version:1,nativeQualificationAvailable:typeof qualification==='function',
       dispatch(input,caller){return track((async()=>{
         exact(input,['projectId','trialId','experimentId','taskId','workspaceId','runOperationId','researchContext','policy']);await identity('dispatch',input,caller);
         let s=store.read(),x=snapshot(s,input.projectId,input.trialId);inputScope(input,x);

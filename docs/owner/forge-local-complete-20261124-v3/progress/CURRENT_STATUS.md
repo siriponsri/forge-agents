@@ -1,5 +1,30 @@
 # Current Status — Complete Local FORGE
 
+## Research execution bridge and website integration — 2026-11-25
+
+Scoped bridge2e3bcbe is merged as e55e690 and connected to the production
+Workspace/T3/Context lifecycle. Actual Context receipts remain unchanged; a
+separate Research receipt binds prepared input, trial, workspace and context
+policy. Memory input is suppressed when the canonical trial disables it. The
+production bridge has no native qualifier: agent trials remain unavailable,
+while fixed local CPU/file trials continue to work. A late watchdog/reconcile
+now preserves a run already completed before it was observed after the deadline.
+
+Developer checks:19 production Research/final-admission tests PASS, plus the
+deadline regression1 PASS; these overlap earlier scopes and use explicitly
+injected native execution where stated. The bridge worker separately verified
+16 tests with real Git/SQLite/Context/Memory/Budgets/files. No live model trial,
+native resource-limit qualification or model-quality result is claimed.
+
+Website publication corrections are merged through f8dbd0d: accurate public
+baseline versus unpublished integration status and vertical architecture keyboard
+controls. Its independent package build/typecheck and56 browser accessibility
+audits passed in the scoped worker; final merged publication/media review is
+still pending. Active isolated work is Guarded native runtime and genuine README
+screenshots/GIFs. Professional English README, final combined checks and the
+authorized ordinary main push remain pending. **IMPLEMENTATION_INCOMPLETE /
+HOME_UAT_NOT_RUN**.
+
 ## Local job recovery — 2026-11-25
 
 Explicit Compute reconciliation now reads source-bound `forge-local-cleanup/1`

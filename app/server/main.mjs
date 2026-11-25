@@ -48,6 +48,7 @@ import {createWorkspaceService,dispatchWorkspaceRequest,assertWorkspaceRestoreAv
 import {createBudgetService,dispatchBudgetRequest} from '../budgets/index.mjs';
 import {createPlaybookService,dispatchPlaybookRequest} from '../playbooks/index.mjs';
 import {createResearchService,dispatchResearchRequest,assertResearchRestoreAvailable} from '../research/index.mjs';
+import {createResearchExecutionBridge} from './research.mjs';
 export {defaultDataDir};
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const manifest=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
@@ -56,7 +57,7 @@ async function body(req){let size=0;const parts=[];for await(const b of req){siz
 function json(res,data,status=200){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(data));}
 export async function createApplication({dataDir=defaultDataDir(),port=0,machineSecretDir}={}){
   await mkdir(dataDir,{recursive:true});const store=await openStore(dataDir);
-  let providers,oauth,capabilities,compute,prepareContext,secrets,budgets;
+  let providers,oauth,capabilities,compute,prepareContext,secrets,budgets,researchBridge;
   const authority=createLocalAuthority();
   secrets=await createSecretService({store,dataDir,...(machineSecretDir?{machineDir:machineSecretDir}:{})});
   const resolveProviderEnvironment=async c=>{const names=[...new Set([...(c.config?.envRefs??[]),...(c.config?.apiKeyEnv?[c.config.apiKeyEnv]:[])])],values={};for(const name of names)values[name]=await secrets.resolveEnv({projectId:c.projectId,name,purpose:'provider'});return values;};
@@ -66,7 +67,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
   const prepareCapabilities=projectId=>capabilities?.defaults(projectId);
   const admitCompute=(s,input,{jobId}={})=>{assertWorkspaceAvailable(s,input.projectId,{jobId});checkCapabilities(s,input,['environment']);};
   const onNotDispatched=input=>budgets?.confirmNotDispatched(input);
-  const jobs=createJobService({store,dataDir,admit:admitCompute}),t3=createT3Service({store,dataDir,resolveProviderEnvironment,onNotDispatched,validateProviderSelection:async input=>{const c=find(store.read(),'connections',input.connectionId,input.projectId);await t3.providers.assertEnvironment(c);return providers.validateSelection(input);},checkCapabilities,prepareCapabilities,prepareContext:input=>prepareContext(input)}),connections=createConnectionService({store});
+  const jobs=createJobService({store,dataDir,admit:admitCompute}),t3=createT3Service({store,dataDir,resolveProviderEnvironment,onNotDispatched,validateProviderSelection:async input=>{const c=find(store.read(),'connections',input.connectionId,input.projectId);await t3.providers.assertEnvironment(c);return providers.validateSelection(input);},checkCapabilities,prepareCapabilities,prepareContext:input=>prepareContext(input),prepareResearch:input=>researchBridge.prepare(input),validatePreparedResearch:(s,r)=>researchBridge.validatePrepared(s,r)}),connections=createConnectionService({store});
   budgets=createBudgetService({store,t3,authorize:authority.goalAuthorize});
   providers=createProviderService({store,dataDir,t3,onNotDispatched,authorizeTool:input=>governance.authorizeTool(input),validateAdmission:input=>governance.validateAdmission(input),mcpTransportOptions:c=>oauth?.transportOptions(c)??{},resolveEnv:(name,c)=>secrets.resolveEnv({projectId:c.projectId,name,purpose:c.kind==='mcp'?'mcp':'provider'}),mcpCredentialVersion,checkCapabilities,prepareCapabilities});
   const adaptive=createAdaptiveService({store,t3,connections}),assistance=createAssistanceService({store,providers,t3});
@@ -78,7 +79,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
     capabilities:async()=>({contextOwner:'native',acceptsForgePrefix:true,compactForgePrefix:true,source:{kind:'native-launch-contract',reference:'app/server/t3.mjs: T3 0.1.11 supervised message prefix; native history remains T3-owned',observedAt:new Date().toISOString()}})});
   prepareContext=createT3ContextSeam({service:context,callerContextForRun:run=>authority.forRun(run),allowNativePassthrough:true,
     memoryForRun:run=>{
-      if(run.researchContext){const trial=find(store.read(),'events',run.researchContext.trialId,run.projectId);if(trial.type!=='research.trial')fail('RESEARCH_CONTEXT','Canonical research trial required',409);if(trial.manifest.components.memory===false)return;}
+      if(run.researchContext&&!researchBridge.memoryEnabled(run))return;
       return [{kind:'project',id:run.projectId},...(run.botId?[{kind:'agent',id:run.botId}]:[]),...(run.conversationId?[{kind:'session',id:run.conversationId}]:[]),{kind:'task',id:run.taskId}].map(scope=>({projectId:run.projectId,scope:{projectId:run.projectId,...scope},query:find(store.read(),'tasks',run.taskId,run.projectId).title,limit:5,maxCharacters:8000}));
     }});
   const goals=createGoalService({store,t3,authorize:authority.goalAuthorize});
@@ -88,7 +89,8 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
   const playbooks=createPlaybookService({store,missions,memory,adaptive,authorize:authority.goalAuthorize});
   const proactive=createProactiveService({store,t3,authorize:authority.goalAuthorize});await proactive.start();
   const workspaces=createWorkspaceService({store,dataDir,t3,authorize:authority.authorize});await workspaces.recover();
-  const research=createResearchService({store,dataDir,authorizeOwner:authority.goalAuthorize});await research.recover();
+  researchBridge=createResearchExecutionBridge({store,dataDir,workspaces,t3,authorizeOwner:authority.goalAuthorize});
+  const research=createResearchService({store,dataDir,executionOwner:researchBridge.executionOwner,authorizeOwner:authority.goalAuthorize});await research.recover();
   compute=createComputeRouter({store,dataDir,jobs,artifacts,admit:admitCompute,secrets,resolveBearer:({vaultRef,projectId})=>secrets.resolveRef({projectId,reference:vaultRef,purpose:'compute'}),resolveEnvironment:({projectId,name})=>secrets.resolveEnv({projectId,name,purpose:'compute'})});
   const catalog=createCatalogService({load:()=>t3.catalog()});
   const gitStorage=createGitStorageService({store});
@@ -124,7 +126,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
     const stopped=new Promise(resolve=>app.server.close(resolve));
     for(const client of clients)client.end();
     app.server.closeAllConnections();
-    await research.close();await proactive.close();await playbooks.close();await missions.close();await workspaces.close();adaptive.shutdown();await assistance.close();await goals.close();await Promise.allSettled([...relayWork]);relay.close();await oauth?.close();await providers.close();
+    await research.close();await researchBridge.close();await proactive.close();await playbooks.close();await missions.close();await workspaces.close();adaptive.shutdown();await assistance.close();await goals.close();await Promise.allSettled([...relayWork]);relay.close();await oauth?.close();await providers.close();
     await officeMcpHandler?.close();await desktop.shutdown();await storage.shutdown();await compute.shutdown();await jobs.shutdown();await t3.shutdown();await serving.shutdown();await connections.close();await reports?.shutdown?.();
     const pluginClose=await capabilities.service.close();if(pluginClose.status==='draining')throw new Error('Native plugin operations remain active; retain the store for reconciliation');
     await memory.close();await ownerMemory.close();await stopped;await store.close();
