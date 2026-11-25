@@ -9,6 +9,7 @@ import {assertWorkspaceRestoreAvailable,mergeWorkspaceSafety} from '../workspace
 import {mergeBudgetSafety,assertBudgetLedger} from '../budgets/index.mjs';
 import {mergeProactiveSafety} from '../proactive/recovery.mjs';
 import {assertResearchRestoreAvailable,mergeResearchSafety} from '../research/context.mjs';
+import {mergeMemoryMcpSafety} from './memory-mcp.mjs';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 export function createArtifactService({store,dataDir}){
   return {
@@ -65,7 +66,7 @@ export function createArtifactService({store,dataDir}){
       return store.transaction(s=>{
         if(s.revision!==expectedRevision)fail('REVISION_CONFLICT','Data changed before restore. Reload and retry.',409);
         assertWorkspaceRestoreAvailable(s);assertResearchRestoreAvailable(s);const revision=s.revision;
-        mergeMemoryTombstones(restored,s);mergeOwnerMemorySafety(restored,s);mergeWorkspaceSafety(restored,s);mergeBudgetSafety(restored,s);mergeProactiveSafety(restored,s);Object.assign(restored,mergeResearchSafety(restored,s));assertBudgetLedger(restored);
+        mergeMemoryTombstones(restored,s);mergeOwnerMemorySafety(restored,s);mergeMemoryMcpSafety(restored,s);mergeWorkspaceSafety(restored,s);mergeBudgetSafety(restored,s);mergeProactiveSafety(restored,s);Object.assign(restored,mergeResearchSafety(restored,s));assertBudgetLedger(restored);
         restored.relay=structuredClone(s.relay);Object.assign(s,restored,{revision});
         for(const r of s.runs)if(['running','submitting'].includes(r.status))r.status='unknown';
         for(const j of s.jobs)if(['queued','running','rendering','preparing','validating'].includes(j.status))j.status='interrupted';

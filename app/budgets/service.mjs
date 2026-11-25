@@ -1,5 +1,6 @@
 import {append,records,find,fail,changed,exact,text,integer,digest,money,compare,binding,owned,policy,terminal,reservation,accounting} from './contracts.mjs';
 import {exposure,reserveBudget,validateBudgetAdmission} from './admission.mjs';
+import {NATIVE_USAGE_SOURCE,assertNativeUsageObservation} from './native-usage.mjs';
 export {reserveBudget,validateBudgetAdmission,exposure};
 
 export const BUDGET_HTTP_METHODS=Object.freeze(['state','configure']);
@@ -65,6 +66,8 @@ export function createBudgetService({store,t3,authorize}){
       exact(input,['projectId','botId']);await owner('read',input,caller);const s=store.read();scoped(s,input);
       const rs=records(s,'reservation',input.projectId).filter(r=>!input.botId||r.binding.botId===input.botId);
       const attempts=rs.map(r=>{const a=accounting(s,r);return {...r,...a,latestReceipt:a.latest?.sourceReceiptId??null};});
+      const nativeByRun=new Map();for(const receipt of s.receipts.filter(r=>r.type==='budget.native-usage'&&r.projectId===input.projectId&&(!input.botId||r.snapshot?.identity.binding.botId===input.botId))){if(!nativeByRun.has(receipt.runId)||nativeByRun.get(receipt.runId).sequence<receipt.sequence)nativeByRun.set(receipt.runId,receipt);}
+      const nativeUsage=[...nativeByRun.values()].map(r=>{const snapshot=r.snapshot;try{assertNativeUsageObservation(s,{...snapshot.identity.binding,source:NATIVE_USAGE_SOURCE,sourceReceiptId:r.sourceReceiptId,sequence:r.sequence,cost:null,usage:snapshot.usage,final:false,occurredAt:null});return {runId:r.runId,sourceReceiptId:r.sourceReceiptId,scope:snapshot.scope,mainAgent:snapshot.mainAgent,usage:snapshot.usage,cost:null,billingFinal:false};}catch{return {runId:r.runId,status:'unavailable',mainAgent:null,usage:null,cost:null,billingFinal:false};}});
       // Include legacy/unintegrated runs as visibly unknown; never quietly omit
       // them from a report or use their floats as canonical billed amounts.
       const untrackedRuns=s.runs.filter(r=>r.projectId===input.projectId&&(!input.botId||r.botId===input.botId)&&!rs.some(x=>x.binding.runId===r.id)).map(r=>({runId:r.id,botId:r.botId??null,status:r.status,pricingStatus:'unknown',cost:null,reportedUsage:r.reportedUsage??null,legacyObservation:true}));
@@ -72,7 +75,7 @@ export function createBudgetService({store,t3,authorize}){
       const policies=scopes.map(botId=>{
         const p=policy(s,input.projectId,botId);return p?{...p,exposure:exposure(s,p),untrackedCount:untrackedRuns.filter(r=>botId===null||r.botId===botId).length}:{projectId:input.projectId,botId,policyRevision:0,enabled:false,unknown:null,period:null,limit:null,reserve:null,exposure:null};
       });
-      return {projectId:input.projectId,stateRevision:s.revision,policies,attempts,untrackedRuns,observations:records(s,'observation',input.projectId).filter(o=>!input.botId||o.binding.botId===input.botId),stops:records(s,'stop',input.projectId).filter(o=>!input.botId||o.binding.botId===input.botId),pricingStatus:untrackedRuns.length||attempts.some(a=>a.pricingStatus==='unknown')?'unknown':'reported',defaultAdmission:'supervised',readOnly:true};
+      return {projectId:input.projectId,stateRevision:s.revision,policies,attempts,untrackedRuns,nativeUsage,observations:records(s,'observation',input.projectId).filter(o=>!input.botId||o.binding.botId===input.botId),stops:records(s,'stop',input.projectId).filter(o=>!input.botId||o.binding.botId===input.botId),pricingStatus:untrackedRuns.length||attempts.some(a=>a.pricingStatus==='unknown')?'unknown':'reported',defaultAdmission:'supervised',readOnly:true};
     },
     async configure(input,caller){
       exact(input,['operationId','projectId','botId','expectedRevision','enabled','unknown','period','limit','reserve']);
@@ -96,6 +99,7 @@ export function createBudgetService({store,t3,authorize}){
       const occurredAt=input.occurredAt??null;if(occurredAt!==null)integer(occurredAt,'occurredAt');
       const data={binding:b,source,sourceReceiptId,sequence,cost,usage,final:input.final,occurredAt},fingerprint=digest(data);
       const result=await store.transaction(s=>{
+        if(source===NATIVE_USAGE_SOURCE)assertNativeUsageObservation(s,input);
         const run=owned(s,b);let r=reservation(s,b.runId);
         // Retrospective native accounting must not be refused merely because
         // historical/unintegrated work already exceeds a newly configured cap.

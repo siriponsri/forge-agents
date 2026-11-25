@@ -1,11 +1,12 @@
 import { find, fail, changed, now } from '../server/domain.mjs';
 import { appendProtocol, digest } from '../server/agui.mjs';
 import { applyObservation, markDisconnected, publishState, projectState, identity, TERMINAL, rejectFrontendToolResult, T3_PROTOCOL_CAPABILITIES } from './observations.mjs';
+import {collectNativeUsage,NATIVE_USAGE_SOURCE} from '../budgets/native-usage.mjs';
 
 // Observation owner only: no planner, provider turn, domain command dispatcher,
 // frontend effect executor, or automatic reconnect/retry loop lives here.
-export function createProtocolController({store,call,openFeed,sendApproval}){
-  const watches=new Map(),queues=new Map();let feed,opening,closing=false,recovered;
+export function createProtocolController({store,call,openFeed,sendApproval,onNativeUsage}){
+  const watches=new Map(),queues=new Map(),postQueue=new Set();let feed,opening,closing=false,recovered;
   const scoped=id=>find(store.read(),'runs',id);
   function priorReceipt(operationId,fingerprint){
     const prior=store.read().receipts.find(x=>x.operationId===operationId);
@@ -53,7 +54,18 @@ export function createProtocolController({store,call,openFeed,sendApproval}){
     const run=scoped(id);if(!run.threadId)return run;
     try{
       const observation=source==='mcp'?await mcpObservation(run):await nativeObservation(run);
-      await store.transaction(s=>applyObservation(s,find(s,'runs',id),observation,{snapshot,source}));
+      await store.transaction(s=>{
+        const current=find(s,'runs',id);applyObservation(s,current,observation,{snapshot,source});
+        if(source==='native'){
+          const clearOwnUsage=()=>{if(current.reportedUsage?.source?.startsWith(NATIVE_USAGE_SOURCE))current.reportedUsage=null;};
+          try{const result=collectNativeUsage(s,{runId:id,projection:observation}),receipt=result.receipt;
+            const historical=receipt&&s.receipts.some(r=>r.type==='budget.native-usage'&&r.runId===id&&r.sequence>receipt.sequence);
+            if(historical)current.nativeUsage={...current.nativeUsage,lastRead:'historical-snapshot'};
+            else{clearOwnUsage();current.nativeUsage=receipt?{status:receipt.snapshot.status,sourceReceiptId:receipt.sourceReceiptId,scope:receipt.snapshot.scope,mainAgent:receipt.snapshot.mainAgent,usage:receipt.snapshot.usage,cost:null,billingFinal:false,limitations:receipt.snapshot.limitations}:{status:'unavailable',reason:result.reason??'NATIVE_USAGE_UNAVAILABLE',cost:null,billingFinal:false};
+              if(receipt?.snapshot.usage&&TERMINAL.has(current.status)&&!current.reportedUsage)current.reportedUsage={...receipt.snapshot.usage,source:receipt.sourceReceiptId};}
+          }catch(error){clearOwnUsage();current.nativeUsage={status:'unavailable',reason:typeof error.code==='string'?error.code:'NATIVE_USAGE_UNAVAILABLE',cost:null,billingFinal:false};}
+        }
+      });
     }catch(error){
       await store.transaction(s=>markDisconnected(s,find(s,'runs',id),error.code??'read-failed'));
       throw error;
@@ -72,7 +84,15 @@ export function createProtocolController({store,call,openFeed,sendApproval}){
         for(const receipt of s.receipts)if(['t3.input-response','t3.permission-response'].includes(receipt.type)&&receipt.status==='submitting')receipt.status='unknown';
       });return recovered;
     },
-    reconcile(id,options){return serialize(id,()=>reconcileUnlocked(id,options));},
+    reconcile(id,options){
+      // Budget observation can request Stop and reconcile this same run. Feed
+      // only after releasing its native observation queue; keep lifecycle truth
+      // even when accounting is unavailable or its source conflicts.
+      const task=serialize(id,()=>reconcileUnlocked(id,options)).then(async()=>{
+        try{await onNativeUsage?.({runId:id});}catch(error){await store.transaction(s=>{const run=find(s,'runs',id);run.nativeUsage={...run.nativeUsage,feedStatus:'unavailable',feedReason:typeof error.code==='string'?error.code:'NATIVE_USAGE_FEED_FAILED'};});}
+        return scoped(id);
+      });postQueue.add(task);task.then(()=>postQueue.delete(task),()=>postQueue.delete(task));return task;
+    },
     async observe(id){
       await api.reconcile(id,{snapshot:true});
       if(watches.has(id))return scoped(id);
@@ -163,7 +183,7 @@ export function createProtocolController({store,call,openFeed,sendApproval}){
       }catch(error){await store.transaction(s=>{s.receipts.find(x=>x.operationId===operationId).status='unknown';});throw error;}
       return store.read().receipts.find(x=>x.operationId===operationId);
     },
-    async close(){closing=true;for(const off of watches.values())off();watches.clear();feed?.close();feed=undefined;await Promise.allSettled([...queues.values()]);},
+    async close(){closing=true;for(const off of watches.values())off();watches.clear();feed?.close();feed=undefined;await Promise.allSettled([...queues.values()]);await Promise.allSettled([...postQueue]);},
   };
   return api;
 }

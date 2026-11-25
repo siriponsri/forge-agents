@@ -1,5 +1,17 @@
 # Integration Ledger
 
+## Current native usage/Memory transport and UI — 2026-11-25
+
+Scoped native usagecc5c832 and Memory MCPd3ff337 are root-mounted with actual
+protocol/ledger/session/CSRF/restore/shutdown seams. Verified scoped counters are
+distinct from absent monetary invoices and billing finality. Memory access uses
+private revocable per-run grants and cannot widen Guarded/Proactive/Research
+manifests; ordinary automatic T3 attachment remains NOT_CONFIGURED. Grouped
+navigation0ff6713 keeps23 guarded routes, with actual built browser verification.
+README/media47fba99 preparation and Apache-2.0aa95319 are integrated; final
+capture/review/release gate remains pending. See CURRENT_STATUS for exact scoped
+test results and their fixture/native/live boundaries.
+
 ## Research execution owner and website corrections — 2026-11-25
 
 Research module, production local Lab and canonical bridge are now merged

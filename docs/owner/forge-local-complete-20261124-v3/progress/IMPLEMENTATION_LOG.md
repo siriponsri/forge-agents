@@ -1,5 +1,20 @@
 # Implementation Log
 
+## Run Memory transport and native observations — 2026-11-25
+
+Merged native token bridgecc5c832 and Memory MCP gatewayd3ff337; root connected
+actual protocol collection/post-queue Budget feed, commit-time source identity,
+qualified reportedUsage scope, production raw handler/Owner+CSRF, private grants,
+restore union/invalidation, shutdown drain and Memory/Budget UI. Native source
+prices/finality remain unknown. Actual SDK/queue integration2 PASS; related69,
+Budget/protocol/context25 and protocol/native15 PASS (overlapping). Built App
+Memory/navigation2 PASS and build12.02s PASS. No real provider/paid turn occurred.
+
+Navigation0ff6713 preserves23 guarded routes with bilingual grouped discovery.
+Media worker merged as47fba99; English README rewrite is prepared and P11 history
+archived. Final media refresh/editorial/release gate remains pending. Apache-2.0
+Owner decision committedaa95319 with unchanged third-party/legacy payloads.
+
 ## Research execution bridge — 2026-11-25
 
 Merged scoped worker2e3bcbe as e55e690. Root connected the canonical execution

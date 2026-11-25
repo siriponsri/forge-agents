@@ -1,5 +1,39 @@
 # Current Status — Complete Local FORGE
 
+## Scoped Memory MCP, native usage and navigation — 2026-11-25
+
+Root merged Memory gatewayef9f89a asd3ff337 and native token bridge69a8677 as
+cc5c832. The production raw Memory MCP endpoint now uses Owner/session/CSRF
+grant controls, exact live run scopes, five-minute private credentials, in-Tx
+revocation and restore receipt preservation. Its UI copies configuration only
+after an explicit Owner click; secrets never enter browser persistence or state.
+The real SDK exercised scoped access/revocation through the production server.
+Automatic native T3 attachment remains explicitly NOT_CONFIGURED; Guarded,
+Proactive and Research cannot use this path to broaden their tool manifests.
+
+Actual native projections now collect immutable counter receipts in the same
+canonical observation transaction. Budget ingestion runs after the protocol
+queue is released and rechecks source identity in the ledger commit. Measured
+main-agent counters retain their scope; complete qualified terminal run totals
+can supply reportedUsage, while incomplete/regressed sources clear that native
+claim. Historical snapshots cannot lower a newer total. Cost stays null and
+billing finality false; no per-attempt invoice exists in this pinned contract.
+Budget UI displays measured counts separately from unknown monetary accounting.
+
+Checks: related backend69 PASS, production SDK/Owner and queue integration2
+PASS, existing Budget/protocol/context25 PASS, scoped protocol/native15 PASS;
+counts overlap. Merged build12.02s PASS and production Memory/navigation UI2
+PASS, including real clipboard/revoke, scoped counter display, Thai375px and all
+23 grouped routes. Navigation worker55dae7a merged as0ff6713;15-theme contrast
+checks passed in its scoped fixture. Final independent combined review remains.
+
+Owner chose Apache-2.0 (aa95319). The English README, genuine21 screenshots,
+four GIFs and styled Mermaid diagrams are prepared; captures remain fromf8dbd0d
+and require a final merged refresh. Documentation gate is not passed yet. Matching
+Guarded native runtime remains the active isolated implementation; lead owns its
+canonical execution/projection/qualification integration and final verification.
+**IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN**. No push in this checkpoint.
+
 ## Fresh lifecycle review corrections — 2026-11-25
 
 Independent review of5a94b52 found shutdown could return before an admitted OAuth

@@ -9,11 +9,13 @@ longer own shared paths. Actual execution for all: `gpt-6.1-sol` / `xhigh`.
 | Active worker | Assigned new paths | Deliverable |
 |---|---|---|
 | t3 guarded route build | app/guarded-runtime, tools/guarded-runtime, guarded-runtime tests, worker note | Matching pinned native mediation/build + bounded authenticated broker + actual deny/allow tests; qualifier remains null until proven |
-| t3 genuine README media | docs/media, tools/readme-media, scoped media tests, worker note | Actual production browser screenshots and short step-by-step GIFs, reproducible provenance and privacy checks; final merged refresh required |
+| Lead: final media refresh | docs/media, tools/readme-media, README, release evidence | Genuine prepared media merged; refresh after runtime integration, verify privacy/links/diagrams and final English editorial |
 
-Research infrastructure and execution bridge workers have delivered and are
-merged. Website publication corrections are also merged. Root owns their final
-shared integration checks; no finished scoped review is a full-release approval.
+Research, website, native usage, Memory MCP and grouped-navigation workers have
+delivered and are merged. Guarded native runtime is the active isolated worker.
+Root owns shared integration/final checks; finished scoped reviews do not imply
+a full-release approval. Native usage cost/finality remain unknown; Memory MCP
+automatic native attachment is not configured.
 
 Owner explicitly confirmed both SuperUser product/team adaptation and P01 first
 Guarded Route. New RES01–10 preserves prior product scope and no-spend/no-prototype

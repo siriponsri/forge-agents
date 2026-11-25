@@ -26,7 +26,7 @@ import {admitResearchTrial,buildResearchContext,digest as researchDigest} from '
 const launcher=fileURLToPath(new URL('../vendor/t3/bin/t3.mjs',import.meta.url));
 // app/server -> repo root is two parent directories.
 export async function availablePort(){return new Promise((resolve,reject)=>{const s=net.createServer();s.once('error',reject);s.listen(0,'127.0.0.1',()=>{const p=s.address().port;s.close(()=>resolve(p));});});}
-export function createT3Service({dataDir,store,validateProviderSelection,prepareCapabilities,checkCapabilities,prepareContext,prepareResearch,validatePreparedResearch,resolveProviderEnvironment,onNotDispatched,nativeTransport}){
+export function createT3Service({dataDir,store,validateProviderSelection,prepareCapabilities,checkCapabilities,prepareContext,prepareResearch,validatePreparedResearch,resolveProviderEnvironment,onNotDispatched,onNativeUsage,nativeTransport}){
   function researchReceipt(state,run){
     if(typeof validatePreparedResearch!=='function')fail('RESEARCH_OWNER_INTEGRATION','Research receipt verification is not integrated',409);
     const receipt=validatePreparedResearch(state,run),c=run.researchContext;
@@ -135,7 +135,7 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
       channel=await openT3ProviderChannel({url,ticket:(await ticket.json()).ticket});return await channel.request(tag,payload);
     }finally{channel?.close();if(sessionId)await cli(['auth','session','revoke',sessionId,'--base-dir',home]).catch(()=>{});}
   }
-  const protocol=createProtocolController({store,call,sendApproval:openApprovalChannel,openFeed:async onDisconnect=>{
+  const protocol=createProtocolController({store,call,sendApproval:openApprovalChannel,onNativeUsage,openFeed:async onDisconnect=>{
     if(nativeTransport)return nativeTransport.openFeed(onDisconnect);
     await start();
     const label=`FORGE read-only protocol feed ${crypto.randomUUID()}`;

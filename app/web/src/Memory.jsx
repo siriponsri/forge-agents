@@ -1,6 +1,7 @@
 import React,{useEffect,useRef,useState} from 'react';
 import {request,operationId,scoped,date} from './api.mjs';
 import {Field,Heading,Badge,Json,Empty} from './ui.jsx';
+import MemoryConnection from './MemoryConnection.jsx';
 
 const types=['working','episodic','semantic','procedural','collective','owner'];
 const kinds=['project','owner','team','agent','session','task'];
@@ -148,5 +149,6 @@ export default function Memory({t=(th,en)=>en,state={},projectId,run=fn=>fn(),bu
       {selected&&<button onClick={()=>setSelected('')}>{t('บันทึกความจำใหม่','New memory')}</button>}
       <section className="panel"><div className="actions"><button disabled={busy} onClick={()=>act('export',{})}>{t('ส่งออก JSON','Export JSON')}</button><button disabled={busy} onClick={()=>act('retention',{})}>{t('ลบรายการหมดอายุตาม retention','Delete expired memories')}</button></div>{kind==='project'&&<BackendForm key={projectId+':'+status.backendRevision} {...{t,status,busy,act}}/>}<details><summary>{t('ค่าที่วัดได้และข้อจำกัด','Measurements & qualifications')}</summary><Json value={data?.metrics??status.metrics}/><p>{t('ยังไม่วัดคุณภาพโมเดล จำนวน token และค่าใช้จ่ายที่ไม่ทราบจะแสดง unknown','Model quality is not evaluated. Unknown token usage and cost are reported as unknown.')}</p></details></section>
     </>}
+    <MemoryConnection key={projectId} {...{t,state,projectId,run,busy}}/>
   </div>;
 }
