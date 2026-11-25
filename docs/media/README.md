@@ -1,6 +1,6 @@
 # Prepared FORGE documentation media
 
-Prepared from `f8dbd0d4334ddcaf71c9ca2abe3e466c3db7fe2e`; **not final release verification**.
+Prepared from `758af5866ee8cb5ea79a57fe12e38c6739348d0c`; **not final release verification**.
 
 Disposable engineering data. No Owner project, provider turn, live account, or product pilot. **HOME_UAT_NOT_RUN**. The production App, SQLite, HTTP session/CSRF, local Node tests, registered-file preview, verified Delivery Pack, native Office saves and native reports are real.
 

@@ -1,6 +1,6 @@
 {
   "result": "PASSED",
-  "preparedRevision": "f8dbd0d4334ddcaf71c9ca2abe3e466c3db7fe2e",
+  "preparedRevision": "758af5866ee8cb5ea79a57fe12e38c6739348d0c",
   "checks": [
     "all public media SHA-256 and sizes",
     "all PNG/GIF frames decoded",
@@ -18,14 +18,14 @@
       "filename": "chat-workspace.gif",
       "width": 1008,
       "height": 700,
-      "frames": 43,
+      "frames": 41,
       "decoded": true
     },
     {
       "filename": "office-report.gif",
       "width": 1008,
       "height": 700,
-      "frames": 75,
+      "frames": 68,
       "decoded": true
     },
     {
@@ -179,7 +179,7 @@
       "filename": "software-mission.gif",
       "width": 1008,
       "height": 700,
-      "frames": 49,
+      "frames": 40,
       "decoded": true
     },
     {
