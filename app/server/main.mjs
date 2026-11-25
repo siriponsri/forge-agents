@@ -51,15 +51,19 @@ import {createResearchService,dispatchResearchRequest,assertResearchRestoreAvail
 import {createResearchExecutionBridge} from './research.mjs';
 import {createNativeUsageBridge} from '../budgets/native-usage.mjs';
 import {createRunMemoryMcpGateway} from './memory-mcp.mjs';
+import {createGuardedArtifactService} from '../guarded-runtime/install.mjs';
+import {createGuardedExecutionBridge} from './guarded.mjs';
+import {createGuardedPolicy,assertGuardedOwner} from './guarded-policy.mjs';
+import {applyGuardedObservation} from '../protocol/observations.mjs';
 export {defaultDataDir};
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const manifest=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2','.png':'image/png'};
 async function body(req){let size=0;const parts=[];for await(const b of req){size+=b.length;if(size>24*1024*1024)fail('SIZE','Request exceeds 24 MB',413);parts.push(b);}try{return JSON.parse(Buffer.concat(parts).toString()||'{}');}catch{fail('JSON','Invalid JSON request');}}
 function json(res,data,status=200){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(data));}
-export async function createApplication({dataDir=defaultDataDir(),port=0,machineSecretDir}={}){
+export async function createApplication({dataDir=defaultDataDir(),port=0,machineSecretDir,guardedArtifactOptions}={}){
   await mkdir(dataDir,{recursive:true});const store=await openStore(dataDir);
-  let providers,oauth,capabilities,compute,prepareContext,secrets,budgets,researchBridge,nativeUsage,memoryMcp;
+  let providers,oauth,capabilities,compute,prepareContext,secrets,budgets,researchBridge,nativeUsage,memoryMcp,guarded,guardedArtifacts,guardedArtifactsPromise,guardedPolicy;
   const authority=createLocalAuthority();
   secrets=await createSecretService({store,dataDir,...(machineSecretDir?{machineDir:machineSecretDir}:{})});
   const resolveProviderEnvironment=async c=>{const names=[...new Set([...(c.config?.envRefs??[]),...(c.config?.apiKeyEnv?[c.config.apiKeyEnv]:[])])],values={};for(const name of names)values[name]=await secrets.resolveEnv({projectId:c.projectId,name,purpose:'provider'});return values;};
@@ -69,10 +73,18 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
   const prepareCapabilities=projectId=>capabilities?.defaults(projectId);
   const admitCompute=(s,input,{jobId}={})=>{assertWorkspaceAvailable(s,input.projectId,{jobId});checkCapabilities(s,input,['environment']);};
   const onNotDispatched=input=>budgets?.confirmNotDispatched(input);
-  const jobs=createJobService({store,dataDir,admit:admitCompute}),t3=createT3Service({store,dataDir,resolveProviderEnvironment,onNotDispatched,onNativeUsage:input=>nativeUsage?.feed(input),validateProviderSelection:async input=>{const c=find(store.read(),'connections',input.connectionId,input.projectId);await t3.providers.assertEnvironment(c);return providers.validateSelection(input);},checkCapabilities,prepareCapabilities,prepareContext:input=>prepareContext(input),prepareResearch:input=>researchBridge.prepare(input),validatePreparedResearch:(s,r)=>researchBridge.validatePrepared(s,r)}),connections=createConnectionService({store});
+  const jobs=createJobService({store,dataDir,admit:admitCompute}),t3=createT3Service({store,dataDir,resolveProviderEnvironment,onNotDispatched,onNativeUsage:input=>nativeUsage?.feed(input),getGuarded:()=>guarded,validateProviderSelection:async input=>{const c=find(store.read(),'connections',input.connectionId,input.projectId);if(!input.guarded)await t3.providers.assertEnvironment(c);return providers.validateSelection(input);},checkCapabilities,prepareCapabilities,prepareContext:input=>prepareContext(input),prepareResearch:input=>researchBridge.prepare(input),validatePreparedResearch:(s,r)=>researchBridge.validatePrepared(s,r)}),connections=createConnectionService({store});
   budgets=createBudgetService({store,t3,authorize:authority.goalAuthorize});
   nativeUsage=createNativeUsageBridge({store,budgets});
   providers=createProviderService({store,dataDir,t3,onNotDispatched,authorizeTool:input=>governance.authorizeTool(input),validateAdmission:input=>governance.validateAdmission(input),mcpTransportOptions:c=>oauth?.transportOptions(c)??{},resolveEnv:(name,c)=>secrets.resolveEnv({projectId:c.projectId,name,purpose:c.kind==='mcp'?'mcp':'provider'}),mcpCredentialVersion,checkCapabilities,prepareCapabilities});
+  async function artifactService(){
+    // Host-only test/build options are never read from HTTP or canonical state.
+    guardedArtifactsPromise??=createGuardedArtifactService({dataDir,workspaceRoots:store.read().projects.map(p=>p.workspace).filter(Boolean),...guardedArtifactOptions}).then(value=>(guardedArtifacts=value)).catch(e=>{guardedArtifactsPromise=null;throw e;});
+    return guardedArtifactsPromise;
+  }
+  const getArtifacts=async()=>{const service=await artifactService();return service.artifacts();};
+  guardedPolicy=createGuardedPolicy({store,dataDir,secrets,providers,artifacts:getArtifacts});
+  function ensureGuarded(){return guarded??=createGuardedExecutionBridge({store,dataDir,artifacts:getArtifacts,authorizeOwner:(s,detail)=>assertGuardedOwner(s,detail),resolveProvider:(input,options)=>guardedPolicy.resolve(input,options),observeSelectedRoute:(s,input)=>guardedPolicy.observe(s,input),validateAdmission:(s,detail)=>t3.validateGuardedAdmission(s,detail),onEvent:(s,{run,projection})=>applyGuardedObservation(s,run,projection)});}
   const adaptive=createAdaptiveService({store,t3,connections}),assistance=createAssistanceService({store,providers,t3});
   const memory=await createMemoryService({store,dataDir,authorize:authority.authorize,adaptive});
   const ownerMemory=await createOwnerMemoryService({store,dataDir,authorize:authority.authorize});
@@ -135,7 +147,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
     // finally releases admission. Restore drains ordinary writes, but shutdown
     // must also wait for the restore operation itself.
     await Promise.allSettled([...admittedPosts,...admittedRestores,memoryMcp?.close()]);
-    await research.close();await researchBridge.close();await proactive.close();await playbooks.close();await missions.close();await workspaces.close();adaptive.shutdown();await assistance.close();await goals.close();await Promise.allSettled([...relayWork]);relay.close();await oauth?.close();await providers.close();
+    await guarded?.close();await guardedArtifacts?.close();await research.close();await researchBridge.close();await proactive.close();await playbooks.close();await missions.close();await workspaces.close();adaptive.shutdown();await assistance.close();await goals.close();await Promise.allSettled([...relayWork]);relay.close();await oauth?.close();await providers.close();
     await officeMcpHandler?.close();await desktop.shutdown();await storage.shutdown();await compute.shutdown();await jobs.shutdown();await t3.shutdown();await serving.shutdown();await connections.close();await reports?.shutdown?.();
     const pluginClose=await capabilities.service.close();if(pluginClose.status==='draining')throw new Error('Native plugin operations remain active; retain the store for reconciliation');
     await memory.close();await ownerMemory.close();await stopped;await store.close();
@@ -232,13 +244,27 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
         if(closed||restoring)fail('APPLICATION_BUSY','Application is shutting down or restoring metadata; retry after readiness',409);
         finishAdmission=admitPost({restore:p==='/api/storage/restore'});
         let owner;
-        if(/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|plugins|memory|owner-memory|memory-mcp|context|goals|compute|relay|secrets|missions|proactive|workspaces|budgets|playbooks|research)\//.test(p))owner=humanSession(req,res);
+        if(/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|plugins|memory|owner-memory|memory-mcp|context|goals|compute|relay|secrets|missions|proactive|workspaces|budgets|playbooks|research|guarded)\//.test(p))owner=humanSession(req,res);
         if(p==='/api/command'){value=await command(store,input);if(input.type==='project.create')await capabilities.defaults(value.entity.id);}
+        else if(p.startsWith('/api/guarded/')){
+          const method=p.slice('/api/guarded/'.length),keys=method==='state'?['projectId']:['projectId','operationId'];
+          if(!['state','install','cancel','check'].includes(method))fail('NOT_FOUND','Guarded setup operation not found',404);
+          if(!input||Object.keys(input).some(k=>!keys.includes(k)))fail('GUARDED_INPUT','Use only the displayed setup action fields',400);
+          find(store.read(),'projects',input.projectId);
+          if(method!=='state'&&(typeof input.operationId!=='string'||!/^[a-f0-9-]{36}$/i.test(input.operationId)))fail('GUARDED_INPUT','Use an explicit operation ID',400);
+          if(method==='install'&&store.read().runs.some(r=>r.guardedContext&&!['completed','failed','cancelled','interrupted','rolled_back'].includes(r.status)))fail('GUARDED_BUSY','Stop and reconcile bounded runs before changing installed artifacts',409);
+          const installer=await artifactService();
+          if(method==='install')await installer.install({operationId:input.operationId});
+          if(method==='cancel')await installer.cancel({operationId:input.operationId});
+          if(method==='check'){await guardedPolicy.refresh(input);await ensureGuarded().check({projectId:input.projectId});}
+          value={installation:await installer.state(),readiness:guarded?.readiness({projectId:input.projectId})??null};
+        }
         else if(p.startsWith('/api/memory-mcp/')){const method=p.slice('/api/memory-mcp/'.length);if(!['issue','state','revoke'].includes(method))fail('NOT_FOUND','Memory MCP Owner operation not found',404);value=await memoryMcp[method](input,authority.owner(owner));}
         else if(p.startsWith('/api/plugins/'))value=await dispatchPluginRequest(capabilities.service,p.slice('/api/plugins/'.length),input);
         else if(p.startsWith('/api/research/'))value=await dispatchResearchRequest(research,p.slice('/api/research/'.length),input,authority.owner(owner));
         else if(p.startsWith('/api/secrets/')){
           const method=p.slice('/api/secrets/'.length);
+          if(['set','remove'].includes(method)){const invalidating=guarded?.invalidateCredentials(binding=>binding.projectId===input.projectId);guardedPolicy.invalidate(input.projectId);await invalidating;}
           if(['set','remove'].includes(method)&&input.purpose==='provider'&&store.read().runs.some(r=>r.projectId===input.projectId&&!['completed','failed','cancelled','interrupted','rolled_back','stopped'].includes(r.status)))fail('PROVIDER_BUSY','Stop and reconcile provider runs before changing their key',409);
           value=await dispatchSecretRequest(secrets,method,input);
           if(['set','remove'].includes(method)&&!value.replayed&&input.purpose==='compute')compute.invalidateCredential({projectId:input.projectId,name:value.secret.envName});
@@ -306,6 +332,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
           assertResearchRestoreAvailable(store.read());
           if(store.read().runs.some(r=>!['completed','failed','cancelled','interrupted','rolled_back','stopped'].includes(r.status))||store.read().jobs.some(j=>['submitting','queued','running','starting','stopping','unknown','preparing','rendering','validating','publishing'].includes(j.status)))fail('RESTORE_BUSY','Stop and reconcile active runs/jobs before restoring metadata',409);
           restoring=true;
+          guardedPolicy.invalidate();
           memoryMcp.invalidateForRestore();
           try{
             await research.suspendForRestore();await proactive.suspendForRestore();await playbooks.suspendForRestore();await missions.suspendForRestore();await goals.suspendForRestore();

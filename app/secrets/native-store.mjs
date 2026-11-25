@@ -2,7 +2,8 @@ import { spawn } from 'node:child_process';
 import { mkdir, open, lstat, realpath, readFile, rename, unlink, chmod } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
+import { lstatSync, readFileSync, existsSync } from 'node:fs';
 
 export function secretError(code, message, statusCode = 409) {
   return Object.assign(new Error(message), { code, statusCode });
@@ -90,6 +91,21 @@ export function createNativeSecretStore({ directory = defaultMachineDir(), platf
   }
   return {
     supported, backend: supported ? 'windows-dpapi-current-user' : 'unsupported',
+    // Host-only synchronous fence for an already resolved private credential.
+    // Hash encrypted bytes, never plaintext. A concurrent writer closes admission.
+    bindingStamp() {
+      if (!supported) throw unavailable();
+      try {
+        for (let p=directory;;p=path.dirname(p)) {
+          if (existsSync(p)&&lstatSync(p).isSymbolicLink()) throw storageError();
+          if (path.dirname(p)===p) break;
+        }
+        if (existsSync(lockFile)) throw secretError('SECRET_BUSY','Credential state is changing. Recheck the selected route.');
+        if (!existsSync(file)) return 'empty';
+        const st=lstatSync(file);if(!st.isFile()||st.isSymbolicLink()||st.nlink!==1||st.size>MAX_FILE)throw storageError();
+        return createHash('sha256').update(readFileSync(file)).digest('hex');
+      } catch(e) {if(e.code?.startsWith('SECRET_'))throw e;throw storageError();}
+    },
     async status() {
       if (!supported) return { supported: false, backend: 'unsupported', status: 'unsupported', message: unavailable().message };
       try { return { supported: true, backend: 'windows-dpapi-current-user', status: await inspect() ? 'ready' : 'empty' }; }

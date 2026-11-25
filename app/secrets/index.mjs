@@ -79,6 +79,8 @@ export async function createSecretService({ store, machineDir = defaultMachineDi
     });
   }
   const service = {
+    // Internal only; intentionally absent from SECRET_HTTP_METHODS.
+    bindingStamp(){if(typeof vault.bindingStamp!=='function')fail('SECRET_FENCE_UNAVAILABLE','Credential state cannot be fenced synchronously.');return vault.bindingStamp();},
     async status(input) {
       exact(input, ['projectId']); project(input.projectId);
       return { ...await vault.status(), purposes: [...SECRET_PURPOSES], machineOnly: true, portable: false };

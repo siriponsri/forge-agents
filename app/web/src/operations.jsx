@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SecretManager from './SecretManager.jsx';
+import GuardedSetup from './GuardedSetup.jsx';
 import { Play, Square, Download } from "lucide-react";
 import {
   command,
@@ -469,6 +470,7 @@ export function SettingsPage({
           ['mcp','เครื่องมือ MCP','MCP tools'],
           ['plugins','ส่วนเสริม','Plugins'],
           ['keys','กุญแจของเครื่อง','Machine keys'],
+          ['guarded','ขอบเขตการทำงานอัตโนมัติ','Bounded automation'],
           ["connections", "การเชื่อมต่อ", "Connections"],
           ["recovery", "สำรองและสถานะระบบ", "Recovery & health"],
         ].map(([id, th, en]) => (
@@ -484,6 +486,7 @@ export function SettingsPage({
       {tab==='providers'&&<ProviderSetup key={projectId} {...{t,state,projectId,run,busy}}/>}
       {tab==='mcp'&&<McpConnections key={projectId} {...{t,state,projectId,run,busy}}/>}
       {tab==='plugins'&&<Plugins key={projectId} {...{t,state,projectId,run,busy}}/>}
+      {tab==='guarded'&&<GuardedSetup key={projectId} {...{t,state,projectId,run,busy}}/>}
       {tab==='keys'&&<><SecretManager key={projectId} {...{t,state,projectId,run,busy}}/><p className="help">{t('ถ้าเปลี่ยนกุญแจ provider หลัง T3 เริ่มแล้ว ให้หยุด FORGE และเปิด launcher ใหม่ก่อนใช้งานกุญแจนั้น จากนั้นตรวจ provider และเลือกโมเดลอีกครั้ง','If a provider key changes after T3 has started, stop FORGE and reopen its launcher before using that key. Then check the provider and select its model again.')}</p></>}
       {tab === "project" && (
         <>

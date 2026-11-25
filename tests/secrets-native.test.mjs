@@ -27,10 +27,13 @@ test('actual DPAPI CurrentUser encrypts on disk, restarts in a new process, uses
   const service = await createSecretService({ machineDir: directory, nativeStore });
   assert.deepEqual(await readdir(root), []); // Factory/status do not create vault.
   assert.equal((await service.status({ projectId })).status, 'empty'); assert.equal(calls.length, 0);
+  assert.equal(service.bindingStamp(),'empty');assert.equal(calls.length,0);
   const value = `disposable-dpapi-${randomUUID()}`, operationId = randomUUID();
   const input = { projectId, purpose: 'provider', name: 'FORGE_FIXTURE_DPAPI', value, expectedRevision: 0, operationId };
   const saved = await service.set(input);
   const disk = await readFile(path.join(directory, 'connections.dpapi'));
+  const stamp=service.bindingStamp(),beforeStampCalls=calls.length;assert.match(stamp,/^[a-f0-9]{64}$/);assert.equal(service.bindingStamp(),stamp);assert.equal(calls.length,beforeStampCalls,'the phase fence reads only encrypted bytes, never decrypts or spawns');
+  await writeFile(path.join(directory,'write.lock'),'fixture-writer');assert.throws(()=>service.bindingStamp(),{code:'SECRET_BUSY'});await rm(path.join(directory,'write.lock'));
   assert.ok(!disk.includes(Buffer.from(value))); assert.ok(!disk.includes(Buffer.from(projectId))); assert.ok(!disk.includes(Buffer.from('FORGE_FIXTURE_DPAPI')));
   assert.equal(await service.resolveEnv({ projectId, purpose: 'provider', name: saved.secret.envName }), value);
   assert.ok(calls.every(c => path.isAbsolute(c.exe) && c.shell === false));
@@ -44,6 +47,7 @@ test('actual DPAPI CurrentUser encrypts on disk, restarts in a new process, uses
   for (const entry of acl.entries) { assert.equal(entry.protected, true); assert.ok(entry.rules.length >= 1); for (const r of entry.rules) { assert.ok([acl.sid, 'S-1-5-18'].includes(r.sid)); assert.equal(r.inherited, false); assert.equal(r.type, 'Allow'); } }
   const removed = await service.remove({ projectId, purpose: 'provider', reference: saved.secret.reference, expectedRevision: 1, operationId: randomUUID() });
   assert.equal(removed.removed, true); assert.ok(!JSON.stringify(removed).includes(value));
+  assert.notEqual(service.bindingStamp(),stamp,'rotation/deletion changes the encrypted-state fence');
   const restarted = await createSecretService({ machineDir: directory });
   await assert.rejects(restarted.resolveRef({ projectId, reference: saved.secret.reference }), { code: 'SECRET_SETUP_REQUIRED' });
   assert.deepEqual(await readdir(directory), ['connections.dpapi']);

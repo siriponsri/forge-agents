@@ -152,3 +152,30 @@ export function markDisconnected(state,run,reason='read-feed-closed'){
   emit(state,run,{type:'CUSTOM',name:'forge.observation.disconnected',value:{...identity(run),lastKnownStatus:run.lastKnownStatus,reconnectRequired:true}},`disconnect:${run.protocolSequence??0}`);
   publishState(state,run);changed(run);
 }
+
+// The matching private T3 adapter owns this turn. It has no ordinary installed
+// orchestration run ID; retain its actual attempt/node/thread/turn references.
+export function applyGuardedObservation(state,run,projection){
+  const thread=projection.providerThread,turn=projection.providerTurn,terminal=projection.terminal;
+  if(!thread||!turn)return;
+  if(thread.appThreadId!==run.threadId||turn.providerThreadId!==thread.id||turn.runAttemptId!==run.attemptId||turn.nodeId!==run.rootNodeId)fail('T3_IDENTITY','Guarded observation belongs to another canonical attempt',409);
+  run.nativeProviderThreadId=thread.id;run.nativeProviderTurnId=turn.id;run.nativeTurnRef=turn.nativeTurnRef??null;run.nativeThreadRef=thread.nativeThreadRef??null;
+  const status=terminal?.status??turn.status;
+  if(!TERMINAL.has(run.status)&&status==='running'){
+    if(run.status!=='running'){
+      run.status='running';const task=find(state,'tasks',run.taskId,run.projectId);task.status='running';task.threadId=run.threadId;changed(task);run.guardedTaskSnapshot=digest(task);
+      appendProtocol(state,run,{type:'RUN_STARTED',threadId:run.threadId,runId:run.id},'guarded:started');
+    }
+  }
+  if(terminal&&TERMINAL.has(status))run.status=status;
+  run.connection={status:'connected',source:'guarded-native-adapter',observedAt:now()};run.executedModel=turn.model??run.selection.model;
+  const items=projection.turnItems.filter(i=>i.runId===run.id&&i.threadId===run.threadId).sort((a,b)=>(a.ordinal??0)-(b.ordinal??0));
+  run.toolObservations??={};for(const item of items)observeTool(state,run,item);reconcileMessages(state,run,items);
+  run.messages=items.filter(i=>['user_message','assistant_message'].includes(i.type)).map(i=>({itemId:i.id,messageId:i.messageId,type:i.type,text:i.text??'',status:i.status,runId:run.id}));
+  run.activities=items.filter(i=>!['reasoning','user_message','assistant_message'].includes(i.type)).map(i=>({itemId:i.id,type:i.type,status:i.status,title:i.title??null}));
+  if(terminal&&!run.terminalEvent){
+    appendProtocol(state,run,['failed','rolled_back'].includes(status)?{type:'RUN_ERROR',message:`T3 run ${status}`,code:`T3_${status.toUpperCase()}`}:{type:'RUN_FINISHED',threadId:run.threadId,runId:run.id,outcome:{type:status==='completed'?'success':'cancelled'}},'guarded:terminal');
+    run.terminalEvent=true;const task=find(state,'tasks',run.taskId,run.projectId);task.status=status==='completed'?'review':'blocked';changed(task);
+  }
+  publishState(state,run);changed(run);
+}

@@ -20,7 +20,7 @@ export async function dispatchProactiveRequest(service,method,input,caller){
  * No HTTP listener or network credential handling is created by this module.
  */
 export function createProactiveService({store,t3,authorize,authenticateEvent,clock=Date.now}){
-  let closed=false,suspended=false,timer=null,ticking=null,started=false,starting=null,closing=null;const pending=new Set();
+  let closed=false,suspended=false,timer=null,ticking=null,started=false,starting=null,closing=null;const pending=new Set(),inFlightDispatch=new Set();
   const get=(i,s=store.read())=>record(s,'recipe',i.recipeId,i.projectId);
   const trace=(s,r,action,data={})=>{changed(r);append(s,'transition',{recipeId:r.id,versionId:r.versionId,action,at:clock(),...data},r.projectId);};
   function inbox(s,r,code,o=null){
@@ -86,6 +86,10 @@ export function createProactiveService({store,t3,authorize,authenticateEvent,clo
     return store.transaction(s=>{
       const o=record(s,'occurrence',id,projectId),r=get({recipeId:o.recipeId,projectId},s);
       let run;try{run=ownedRun(s,o);}catch(e){error=e.code??'RUN_OWNERSHIP';}
+      // Awaited private setup can precede the first authoritative reservation.
+      // Keep the durable dispatch claim while THIS process still owns that call.
+      // Deadlines/revocation above still close admission; restart has no such set.
+      if(!run&&!error&&inFlightDispatch.has(id))return o;
       if(!run||error){o.status='unknown';o.held=true;inbox(s,r,error??'SUBMISSION_UNKNOWN',o);changed(o);return o;}
       o.runId=run.id;o.observedStatus=run.status;
       if(terminal.has(run.status)||run.status==='stopped'){
@@ -123,7 +127,8 @@ export function createProactiveService({store,t3,authorize,authenticateEvent,clo
       return {projectId,taskId:o.taskId,conversationId:null,operationId:o.operationId,proactiveContext:structuredClone(o.context)};
     });
     if(!input)return;
-    try{await t3.startRun(input);}catch(e){await store.transaction(s=>{const o=record(s,'occurrence',id,projectId);o.error=e.code??'SUBMISSION_UNKNOWN';inbox(s,get({recipeId:o.recipeId,projectId},s),o.error,o);});}
+    inFlightDispatch.add(id);
+    try{await t3.startRun(input);}catch(e){await store.transaction(s=>{const o=record(s,'occurrence',id,projectId);o.error=e.code??'SUBMISSION_UNKNOWN';inbox(s,get({recipeId:o.recipeId,projectId},s),o.error,o);});}finally{inFlightDispatch.delete(id);}
     // Never trust the response's run ID. The canonical durable run is evidence.
     await reconcileOccurrence(id,projectId,{poll:false});
     await stopOwned(id,projectId);

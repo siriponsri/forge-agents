@@ -1,5 +1,25 @@
 # Current Status — Complete Local FORGE
 
+## Bounded native route integration — 2026-11-25
+
+Native bridge 385e25b and installer a8225c3 are merged as dce62e5 and 38710ea.
+Root Settings/Owner HTTP/CSRF, private vault resolution and encrypted-state phase
+fence, canonical T3 reservation, actual Context output, native event/AG-UI and
+Stop/recovery are connected. The initial route is restricted to accepted Proactive
+recipes on configured OpenAI-compatible chat models and existing bounded text.
+Non-null token/cost caps, mixed controllers and arbitrary tools fail closed.
+
+The production application integration test passed with actual compiled native
+execution: 4 loopback protocol requests, 3 acknowledged file broker receipts,
+real changed bytes, one run, real Context/attestation and AG-UI terminal. Model
+responses and schedule due time alone are injected. Current image check passed
+in 83.4s after removing redundant nested image hashing in the pure root callback;
+bridge/runtime live image and route checks remain mandatory before effects.
+Policy/restore/no-dispatch plus actual DPAPI tests 5 PASS; final-admission/shutdown
+subset 23 PASS, with overlap. Native transport acknowledgment hardening, fresh
+independent review, UI capture and full release verification remain open.
+**IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN**. No push yet.
+
 ## Current accounting qualification correction — 2026-11-25
 
 Independent review of `10e536b` reproduced stale counter presentation after a
