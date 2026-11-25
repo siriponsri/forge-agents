@@ -1,5 +1,24 @@
 # Integrated controller review and corrections
 
+## Research/lifecycle re-review of5a94b52
+
+A new independent reviewer reproduced two P2 defects: shutdown returned before
+an admitted Drive token exchange finished its vault write, and Research did not
+settle native cancelled/rolled_back outcomes, retaining an unnecessary restore
+fence. Lead now drains both ordinary admitted mutations and a separately tracked
+restore lease before shutting down services/store; restore excludes its own lease
+from its drain. Research uses the existing canonical terminal set for both normal
+and stop reconciliation while preserving completed-to-validation behavior.
+
+Actual regressions: production final-admission/shutdown20 PASS, including a real
+Drive auth module with a gated, injected token response and counter-only vault,
+and an admitted held metadata restore. Cancelled/rolled-back Git/SQLite/Context
+bridge regressions2 PASS; actual deadline-during-setup1 PASS. Native execution
+and qualification remain explicitly injected; no provider/account call occurred.
+The latter test now has a realistic admission window, bounded timeout and an
+early-dispatch failure race so a slow Git check cannot leave an unreached gate
+waiting forever. These are lead corrections; independent recheck is pending.
+
 Independent read-only review of `71fd27e`, 25 November2026. Reviewer actual runtime
 `gpt-6.1-sol`, `xhigh`; disposable SQLite/HTTP/native-wire reproductions, no real
 provider turn or account access. Review found five defects; it did not approve

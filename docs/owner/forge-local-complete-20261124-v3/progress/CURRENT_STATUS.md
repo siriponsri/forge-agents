@@ -1,5 +1,17 @@
 # Current Status — Complete Local FORGE
 
+## Fresh lifecycle review corrections — 2026-11-25
+
+Independent review of5a94b52 found shutdown could return before an admitted OAuth
+credential write completed, and Research could retain running/stopping for native
+cancelled/rolled_back outcomes. Both are corrected. Shutdown now drains accepted
+mutations plus a separate restore lease before closing services/store. Research
+uses the canonical terminal status set and retains completed-to-validation flow.
+Production final-admission/shutdown20 PASS; Research terminal regressions2 PASS;
+deadline-during-setup1 PASS. The earlier combined bridge/production Research
+run19 PASS. Counts overlap; no new all-green full-suite claim. Fresh independent
+fix recheck and native implementation work remain active.
+
 ## Research execution bridge and website integration — 2026-11-25
 
 Scoped bridge2e3bcbe is merged as e55e690 and connected to the production

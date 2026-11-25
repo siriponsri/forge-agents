@@ -8,6 +8,7 @@ import {gitText} from '../app/workspaces/git.mjs';
 import {createBudgetService} from '../app/budgets/index.mjs';
 import {openStore} from '../app/server/store.mjs';
 import {createResearchExecutionBridge} from '../app/server/research.mjs';
+import {assertResearchRestoreAvailable} from '../app/research/index.mjs';
 
 async function output(h,{correct=true}={}){
   const dir=path.join(h.f.dataDir,'research','trials',h.trial.id),input=JSON.parse(await readFile(path.join(dir,'input.json'),'utf8')),sums={};
@@ -21,6 +22,15 @@ test('a completed run observed after its deadline is not retroactively cancelled
   const h=await fixture(t);await h.start();await output(h);await h.bridge.close();
   const later=createResearchExecutionBridge({store:h.f.store,dataDir:h.f.dataDir,workspaces:h.f.service,t3:h.f.t3,authorizeOwner:(_r,c)=>c===h.owner?{kind:'human',role:'owner'}:null,clock:()=>h.currentTrial().deadlineAt+1});
   try{const result=await later.executionOwner.reconcile(h.scopeInput(),h.owner);assert.equal(result.status,'completed');assert.equal(h.currentTrial().stopRequested,false);assert.equal(h.f.w(h.w).stopRequested,undefined);assert.equal(h.f.store.read().events.filter(e=>e.type==='research.bridge-stop').length,0);assert.equal(h.f.stops,0);}finally{await later.close();}
+});
+
+for(const status of ['cancelled','rolled_back'])test(`Research settles ${status} native outcomes and subsequent Stop without holding restore`,async t=>{
+  const h=await fixture(t);await h.start();
+  await h.f.store.transaction(s=>{s.runs.find(r=>r.id===h.currentRun().id).status=status;});
+  const input=()=>({projectId:h.f.p.id,trialId:h.trial.id,operationId:crypto.randomUUID(),expectedRevision:h.currentTrial().revision});
+  const reconciled=await h.research.reconcile(input(),h.owner);assert.equal(reconciled.status,'FAILED');assert.doesNotThrow(()=>assertResearchRestoreAvailable(h.f.store.read()));
+  const stopped=await h.research.stop(input(),h.owner);assert.equal(stopped.status,'stopped');
+  assert.equal((await h.research.reconcile(input(),h.owner)).status,'stopped');assert.equal(h.f.starts,1);assert.equal(h.f.stops,0);assert.doesNotThrow(()=>assertResearchRestoreAvailable(h.f.store.read()));
 });
 
 test('sole Workspace dispatch, opaque authority, actual Context consumption, bounded input and independent exact-byte evidence',async t=>{
@@ -96,11 +106,18 @@ test('dispatch replay and lost Workspace acceptance acknowledgement never launch
   const before=h.f.starts;await h.bridge.executionOwner.dispatch(h.dispatchInput(),h.owner);await h.reopenBridge();await h.bridge.executionOwner.dispatch(h.dispatchInput(),h.owner);assert.equal(h.f.starts,before);
 });
 
-test('deadline during awaited Workspace setup reaches canonical Stop once and retains unknown outcome',async t=>{
-  let release,entered;const gate=new Promise(r=>release=r),ready=new Promise(r=>entered=r),h=await fixture(t,{config:{limits:{maxMs:1500,maxSteps:8,maxBytes:65536,maxRetries:0,maxAgents:1,maxTokens:null,maxCost:null,unknownAccounting:'block'}},workspacesPatch:{async start(input,caller){entered();await gate;return h.f.service.start(input,caller);}}});
-  const running=h.start().catch(e=>e);await ready;
-  await new Promise(resolve=>{const timer=setInterval(()=>{if(h.f.store.read().events.some(e=>e.type==='research.bridge-stop')){clearInterval(timer);resolve();}},20);setTimeout(()=>{clearInterval(timer);resolve();},3000);});
-  const stop=h.f.store.read().events.find(e=>e.type==='research.bridge-stop');assert.ok(stop);assert.equal(stop.reason,'deadline');release();assert.equal((await running).code,'REVISION_CONFLICT');
+test('deadline during awaited Workspace setup reaches canonical Stop once and retains unknown outcome',{timeout:40000},async t=>{
+  let release,entered;const gate=new Promise(r=>release=r),ready=new Promise(r=>entered=r),h=await fixture(t,{config:{limits:{maxMs:15000,maxSteps:8,maxBytes:65536,maxRetries:0,maxAgents:1,maxTokens:null,maxCost:null,unknownAccounting:'block'}},workspacesPatch:{async start(input,caller){entered();await gate;return h.f.service.start(input,caller);}}});
+  const running=h.start().catch(e=>e);let timer,off=()=>{};
+  try{
+    // Git admission can take longer under a combined suite. Fail on an early
+    // dispatch rejection instead of waiting forever for an unreached gate.
+    await Promise.race([ready,running.then(result=>{throw result instanceof Error?result:new Error('Workspace setup bypassed its gate');})]);
+    const stopped=new Promise(resolve=>{off=h.f.store.subscribe(()=>{if(h.f.store.read().events.some(e=>e.type==='research.bridge-stop'))resolve();});});
+    await Promise.race([stopped,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Deadline Stop was not observed')),18000);})]);
+    const stop=h.f.store.read().events.find(e=>e.type==='research.bridge-stop');assert.ok(stop);assert.equal(stop.reason,'deadline');
+  }finally{clearTimeout(timer);off();release();}
+  assert.equal((await running).code,'REVISION_CONFLICT');
   assert.equal(h.currentTrial().stopRequested,true);assert.equal(h.observed.messages.length,0);assert.equal(h.f.store.read().events.filter(e=>e.type==='research.bridge-stop').length,1);assert.ok(h.f.w(h.w).stopRequested);
 });
 

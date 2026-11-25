@@ -126,17 +126,23 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
     const stopped=new Promise(resolve=>app.server.close(resolve));
     for(const client of clients)client.end();
     app.server.closeAllConnections();
+    // A disconnected HTTP socket does not cancel an awaited credential/domain
+    // effect. Keep its services and canonical store alive until the handler's
+    // finally releases admission. Restore drains ordinary writes, but shutdown
+    // must also wait for the restore operation itself.
+    await Promise.allSettled([...admittedPosts,...admittedRestores]);
     await research.close();await researchBridge.close();await proactive.close();await playbooks.close();await missions.close();await workspaces.close();adaptive.shutdown();await assistance.close();await goals.close();await Promise.allSettled([...relayWork]);relay.close();await oauth?.close();await providers.close();
     await officeMcpHandler?.close();await desktop.shutdown();await storage.shutdown();await compute.shutdown();await jobs.shutdown();await t3.shutdown();await serving.shutdown();await connections.close();await reports?.shutdown?.();
     const pluginClose=await capabilities.service.close();if(pluginClose.status==='draining')throw new Error('Native plugin operations remain active; retain the store for reconciliation');
     await memory.close();await ownerMemory.close();await stopped;await store.close();
     })();return closingPromise;
   }};
-  const admittedPosts=new Set();
-  function admitPost(){
+  const admittedPosts=new Set(),admittedRestores=new Set();
+  function admitPost({restore=false}={}){
     if(closed||restoring)fail('APPLICATION_BUSY','Application is shutting down or restoring metadata; retry after readiness',409);
-    let complete;const pending=new Promise(resolve=>{complete=resolve;});admittedPosts.add(pending);
-    return ()=>{admittedPosts.delete(pending);complete();};
+    const admitted=restore?admittedRestores:admittedPosts;
+    let complete;const pending=new Promise(resolve=>{complete=resolve;});admitted.add(pending);
+    return ()=>{admitted.delete(pending);complete();};
   }
   const server=http.createServer(async(req,res)=>{
     let finishAdmission;
@@ -219,7 +225,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
         if(closed||restoring)fail('APPLICATION_BUSY','Application is shutting down or restoring metadata; retry after readiness',409);
         if(!req.headers['content-type']?.startsWith('application/json'))fail('CONTENT_TYPE','Use application/json',415);const input=await body(req);let value;
         if(closed||restoring)fail('APPLICATION_BUSY','Application is shutting down or restoring metadata; retry after readiness',409);
-        if(p!=='/api/storage/restore')finishAdmission=admitPost();
+        finishAdmission=admitPost({restore:p==='/api/storage/restore'});
         let owner;
         if(/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|plugins|memory|owner-memory|context|goals|compute|relay|secrets|missions|proactive|workspaces|budgets|playbooks|research)\//.test(p))owner=humanSession(req,res);
         if(p==='/api/command'){value=await command(store,input);if(input.type==='project.create')await capabilities.defaults(value.entity.id);}
