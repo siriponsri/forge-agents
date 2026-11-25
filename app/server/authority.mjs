@@ -6,9 +6,10 @@ export function createLocalAuthority(){
     if(!session||session.expiresAt<Date.now())return null;
     let handle=owners.get(session);if(!handle){handle=Object.freeze({});owners.set(session,handle);handles.set(handle,{kind:'owner',session,subject:'local-owner'});}return handle;
   }
-  function forRun(run,{allowWrite=false}={}){
-    const key=`${run.id}:${run.attemptId}:${allowWrite}`,known=runs.get(key);if(known)return known;
-    const handle=Object.freeze({});handles.set(handle,{kind:'run',projectId:run.projectId,runId:run.id,attemptId:run.attemptId,allowWrite});runs.set(key,handle);return handle;
+  function forRun(run,{allowWrite=false,active}={}){
+    if(active!==undefined&&typeof active!=='function')throw new TypeError('Run lease activation must be a private synchronous callback');
+    const key=`${run.id}:${run.attemptId}:${allowWrite}`,known=active?undefined:runs.get(key);if(known)return known;
+    const handle=Object.freeze({});handles.set(handle,{kind:'run',projectId:run.projectId,runId:run.id,attemptId:run.attemptId,allowWrite,active});if(!active)runs.set(key,handle);return handle;
   }
   function validScope(scope,state){
     if(!scope||!state.projects.some(p=>p.id===scope.projectId))return false;
@@ -23,6 +24,7 @@ export function createLocalAuthority(){
     if(action.startsWith('owner.'))return identity.kind==='owner'&&identity.session.expiresAt>Date.now()&&scope?.kind==='owner'&&scope.id==='local-owner'&&scope.projectId===undefined;
     if(!validScope(scope,state))return false;
     if(identity.kind==='owner')return identity.session.expiresAt>Date.now();
+    try{if(identity.active&&identity.active(state)!==true)return false;}catch{return false;}
     const run=state.runs.find(r=>r.id===identity.runId&&r.projectId===identity.projectId&&r.attemptId===identity.attemptId);
     if(!run||run.projectId!==scope.projectId||run.stopRequest||['failed','cancelled','interrupted','rolled_back','stopped'].includes(run.status))return false;
     const ids={project:run.projectId,team:run.projectId,agent:run.botId,session:run.conversationId,task:run.taskId};
