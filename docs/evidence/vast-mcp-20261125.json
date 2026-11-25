@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "repository": "https://github.com/siriponsri/vast-mcp-test",
+  "revision": "ef116f4700a4a880dd4651210b9923f8e6a4201f",
+  "qualification": "ACTUAL_PRODUCTION_HTTP_SDK_STDIO_WITH_EXTERNAL_SYNTHETIC_SERVER",
+  "tools": [
+    "health",
+    "search_gpu_offers",
+    "estimate_run_cost"
+  ],
+  "health": {
+    "version": "0.1.1",
+    "transport": "stdio",
+    "mode": "mock",
+    "search_readiness": "LOCAL_MOCK",
+    "live_search": "BLOCKED_UNVERIFIED_VAST_SEARCH_SCOPE",
+    "console": "https://cloud.vast.ai/"
+  },
+  "firstOffer": {
+    "offer_id": "mock-101",
+    "gpu_name": "RTX 3090",
+    "vram_mib_per_gpu": 24576,
+    "gpu_count": 1,
+    "country_code": "US",
+    "reliability": "0.99",
+    "verified": true,
+    "rentable": true,
+    "disk_gb": 40,
+    "host_disk_capacity_gb": 250,
+    "hourly_including_disk_usd": "0.244000",
+    "upload_to_host_usd_per_gb": "0.020000",
+    "download_from_host_usd_per_gb": "0.040000"
+  },
+  "estimate": {
+    "source": "synthetic",
+    "snapshot_utc": "2026-11-25T07:20:45+00:00",
+    "offer_id": "mock-101",
+    "currency": "USD",
+    "hours": "2",
+    "disk_gb": 40,
+    "upload_to_host_gb": "1",
+    "download_from_host_gb": "2",
+    "hourly_including_disk_usd": "0.244000",
+    "compute_usd": "0.480000",
+    "allocated_disk_usd": "0.008000",
+    "upload_to_host_usd": "0.020000",
+    "download_from_host_usd": "0.080000",
+    "known_subtotal_usd": "0.588000",
+    "estimated_total_usd": "0.588000",
+    "unknown_charges": [],
+    "billing_note": "Synthetic estimate. Planned hours do not cap spend or stop billing."
+  },
+  "unauthenticatedSetupDenied": true,
+  "exactCallReplay": true,
+  "liveAccountCalls": 0,
+  "rentals": 0,
+  "clientRegistrationChanges": 0,
+  "homeUat": "NOT_RUN"
+}

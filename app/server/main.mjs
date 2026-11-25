@@ -244,7 +244,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
         if(closed||restoring)fail('APPLICATION_BUSY','Application is shutting down or restoring metadata; retry after readiness',409);
         finishAdmission=admitPost({restore:p==='/api/storage/restore'});
         let owner;
-        if(/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|plugins|memory|owner-memory|memory-mcp|context|goals|compute|relay|secrets|missions|proactive|workspaces|budgets|playbooks|research|guarded)\//.test(p))owner=humanSession(req,res);
+        if(/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/mcp\/(configure|enable|discover|call|stop)$|^\/api\/mcp\/[^/]+\/(discover|call)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|plugins|memory|owner-memory|memory-mcp|context|goals|compute|relay|secrets|missions|proactive|workspaces|budgets|playbooks|research|guarded)\//.test(p))owner=humanSession(req,res);
         if(p==='/api/command'){value=await command(store,input);if(input.type==='project.create')await capabilities.defaults(value.entity.id);}
         else if(p.startsWith('/api/guarded/')){
           const method=p.slice('/api/guarded/'.length),keys=method==='state'?['projectId']:['projectId','operationId'];

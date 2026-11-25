@@ -56,7 +56,7 @@ export function createMcpService({store,authorizeTool,validateAdmission,transpor
         for(let page=0;page<100;page++){const value=await client.listTools(cursor?{cursor}:{},{timeout:timeoutMs});tools.push(...value.tools);cursor=value.nextCursor;if(!cursor)break;if(seen.has(cursor))fail('MCP_PAGING','Tool pagination did not advance',502);seen.add(cursor);if(page===99)fail('MCP_PAGING','Tool list exceeds supported limit',502);}
         const stamp=await credentialStamp(scoped(input));if(clients.get(c.id)?.stamp!==stamp)fail('CREDENTIAL_CHANGED','Saved key changed during discovery; refresh again',409);
         result={status:'ready',credentialStamp:stamp,checkedAt:new Date().toISOString(),capabilities:tools.map(t=>({name:t.name,description:t.description,inputSchema:t.inputSchema,annotations:t.annotations})),server:client.getServerVersion(),authentication:'transport accepted; operation qualification separate'};
-      }catch(error){await closeClient(c.id);result={status:'error',checkedAt:new Date().toISOString(),error:safeError(error)};}
+      }catch(error){await closeClient(c.id);const classified=safeError(error);result={status:'error',checkedAt:new Date().toISOString(),error:classified.code==='PROVIDER_ERROR'?{code:'MCP_START_FAILED',message:'MCP startup failed. Check the executable, checkout folder and installed dependencies, then discover tools again. No tool call was sent.'}:classified};}
       await store.transaction(s=>{const current=scoped(input,s);if(signature(current)!==key)return;current.lastCheck=result;current.discoveryStale=result.status!=='ready';changed(current);});return result;
     },
     async call(input){

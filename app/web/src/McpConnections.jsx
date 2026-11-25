@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { request, operationId, scoped, date, ApiError } from './api.mjs';
 import { Field, Badge, Empty, Json } from './ui.jsx';
 import { environmentNames, argumentRows, authorizationLink } from './ProviderSetup.jsx';
+import {VAST_MCP,vastMcpConfiguration} from '../../providers/vast-preset.mjs';
 
 const modes = ['allowed', 'ask', 'off'];
 const query = scope => new URLSearchParams(scope).toString();
@@ -38,6 +39,7 @@ function McpForm({ t, projectId, run, busy, onCreated }) {
   const [route, setRoute] = useState('http'), [name, setName] = useState(''), [url, setURL] = useState('');
   const [command, setCommand] = useState(''), [args, setArgs] = useState(''), [refs, setRefs] = useState(''), [auth, setAuth] = useState('none'), [authEnv, setAuthEnv] = useState(''), [error, setError] = useState('');
   const pending = useRef(false);
+  const [vastDirectory,setVastDirectory]=useState('');
   return <details className="panel"><summary>{t('เพิ่ม MCP server', 'Add MCP server')}</summary>
     <form onSubmit={e => {
       e.preventDefault(); if (pending.current) return; pending.current = true; setError('');
@@ -55,6 +57,7 @@ function McpForm({ t, projectId, run, busy, onCreated }) {
         } catch (e) { setError(e.message); throw e; } finally { pending.current = false; }
       });
     }}>
+      <fieldset><legend>Vast MCP</legend><p className="help">{t('ใช้ checkout ที่เตรียมไว้และ uv เพื่อค้นหา GPU และคำนวณราคาจากข้อมูลสังเคราะห์ รุ่นนี้บล็อก live search และไม่มีการเช่าเครื่อง ไม่ต้องใส่ API key','Use a prepared checkout and uv for synthetic GPU search and cost estimates. This version blocks live search and cannot rent an instance. No API key is needed.')}</p><a href={`${VAST_MCP.repository}/tree/${VAST_MCP.revision}`} target="_blank" rel="noreferrer">{t('Source และวิธีเตรียม Vast MCP','Vast MCP source and setup')}</a><Field label={t('โฟลเดอร์ Vast MCP ที่เตรียมไว้','Prepared Vast MCP folder')}><input value={vastDirectory} onChange={e=>setVastDirectory(e.target.value)}/></Field><button type="button" disabled={busy||!vastDirectory.trim()} onClick={()=>{try{const preset=vastMcpConfiguration({directory:vastDirectory,projectId,operationId:operationId()});setName(preset.name);setRoute(preset.route);setCommand(preset.command);setArgs(preset.args.join('\n'));setRefs('');setAuthEnv('');setAuth('none');setError('');}catch(e){setError(e.message);}}}>{t('ใช้ preset Vast MCP','Use Vast MCP preset')}</button></fieldset>
       <Field label={t('ชื่อการเชื่อมต่อ MCP', 'MCP connection label')}><input required value={name} onChange={e => setName(e.target.value)} /></Field>
       <Field label={t('ช่องทาง MCP', 'MCP transport')}><select value={route} onChange={e => setRoute(e.target.value)}><option value="http">Streamable HTTP</option><option value="stdio">{t('โปรแกรม stdio ในเครื่อง', 'Local stdio executable')}</option></select></Field>
       {route === 'http' ? <>
