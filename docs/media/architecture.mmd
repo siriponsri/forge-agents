@@ -1,0 +1,13 @@
+flowchart LR
+  Owner[Owner in localhost GUI] --> Forge[FORGE canonical services<br/>Projects ยท Plans ยท Tasks ยท Approvals ยท Evidence]
+  Forge --> T3[T3 provider threads<br/>Single execution owner]
+  T3 --> Projection[AG-UI state and events]
+  Projection --> Views[Chat and Nodeโ€“Edge Workspace<br/>Two views of canonical records]
+  Views --> Forge
+  Forge --> Office[Univer native Docs and Sheets<br/>Revisioned save and reopen]
+  Office --> Reports[Saved ReportSpec and source revisions<br/>WordCraft / PdfCraft]
+  Reports --> Artifacts[Verified local artifacts and provenance]
+  T3 --> Artifacts
+  Artifacts --> Review[QA evidence and Owner acceptance]
+  Forge -.-> Guard[Native guarded automation<br/>NOT_QUALIFIED<br/>Native supervisor unqualified]
+  Forge -.-> Assist[Executor and Asst roles<br/>Existing execution authority; no second planner]

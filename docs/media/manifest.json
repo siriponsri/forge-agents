@@ -1,0 +1,762 @@
+{
+  "status": "PREPARED_MEDIA_NOT_FINAL_RELEASE_VERIFICATION",
+  "preparedRevision": "f8dbd0d4334ddcaf71c9ca2abe3e466c3db7fe2e",
+  "capturedAt": "2026-11-25T04:35:35.771Z",
+  "sourceDirty": false,
+  "documentationChangesPresent": true,
+  "platform": "win32",
+  "architecture": "x64",
+  "node": "v24.19.0",
+  "browser": {
+    "name": "Chromium",
+    "version": "159.0.8154.6"
+  },
+  "theme": "Dark Modern",
+  "fonts": [
+    "Manrope",
+    "IBM Plex Sans Thai"
+  ],
+  "model": {
+    "id": "gpt-6.1-sol",
+    "effort": "xhigh",
+    "source": "inherited T3 Codex harness runtime_info; no model switching or product model invocation"
+  },
+  "tools": [
+    "existing lockfile Playwright 1.65.1",
+    "production Vite build",
+    "real SQLite/HTTP/browser session/CSRF",
+    "existing ffmpeg",
+    "existing Pillow"
+  ],
+  "command": "npm.cmd run build && node tools/readme-media/capture.mjs && python tools/readme-media/render.py && python tools/readme-media/verify.py",
+  "providerCalls": 0,
+  "homeUat": "HOME_UAT_NOT_RUN",
+  "liveAccounts": "NOT_RUN",
+  "nativeGuardedAutomation": "NOT_QUALIFIED; actual native supervisor not qualified",
+  "limitations": [
+    "Engineering fixture; not Owner product data or a pilot.",
+    "Provider/agent/run/tool observations injected only where labelled. Mission source files are predetermined engineering input, not model-authored code.",
+    "No fake usage, latency, cost, or model success is displayed. Unknown remains unknown.",
+    "Capture annotations add numbered instructions and qualification only; original App UI/state is otherwise unchanged.",
+    "Engine configuration uses local authenticated HTTP; private executable paths never enter video.",
+    "Start clip covers ready App/project creation, not Windows launcher or clean installation.",
+    "Browser fixture interactions do not qualify macOS, mobile relay, live providers, remote compute or Owner home UAT."
+  ],
+  "screenshots": [
+    {
+      "filename": "screenshots/overview.png",
+      "source": "sources/overview-full.png",
+      "alt": "FORGE workspace overview after actual local project creation. Disposable engineering records; no provider run.",
+      "caption": "FORGE workspace overview after actual local project creation. Disposable engineering records; no provider run.",
+      "qualification": "Built production App · actual localhost readiness and project creation · launcher/clean install not recorded",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/team.png",
+      "source": "sources/team-full.png",
+      "alt": "Resident Executor and Reviewer identities saved through production HTTP in the engineering project; no model execution.",
+      "caption": "Resident Executor and Reviewer identities saved through production HTTP in the engineering project; no model execution.",
+      "qualification": "Actual local bot records; no provider calls",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/mission-plan.png",
+      "source": "sources/mission-plan-full.png",
+      "alt": "Mission and canonical plan awaiting Owner approval. Provider completion will be injected; deterministic file and local verification are real.",
+      "caption": "Mission and canonical plan awaiting Owner approval. Provider completion will be injected; deterministic file and local verification are real.",
+      "qualification": "INJECTED provider observations · no model call · real local files/tests/preview/ZIP · usage unknown",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/mission-preview.png",
+      "source": "sources/mission-preview-full.png",
+      "alt": "Registered engineering HTML rendered in the real local preview after an actual passing Node test. Provider run is injected; no model call or usage metric.",
+      "caption": "Registered engineering HTML rendered in the real local preview after an actual passing Node test. Provider run is injected; no model call or usage metric.",
+      "qualification": "INJECTED provider observations · no model call · real local files/tests/preview/ZIP · usage unknown",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/delivery.png",
+      "source": "sources/delivery-full.png",
+      "alt": "Actual accepted Delivery Pack download with checksums after local tests and QA. Provider execution observation is injected; source is a deterministic engineering file.",
+      "caption": "Actual accepted Delivery Pack download with checksums after local tests and QA. Provider execution observation is injected; source is a deterministic engineering file.",
+      "qualification": "INJECTED provider observations · no model call · real local files/tests/preview/ZIP · usage unknown",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/plan.png",
+      "source": "sources/plan-full.png",
+      "alt": "Canonical Plan view for the actual engineering Mission task. Provider observation is injected; no live model run.",
+      "caption": "Canonical Plan view for the actual engineering Mission task. Provider observation is injected; no live model run.",
+      "qualification": "INJECTED provider observations · no model call · real local files/tests/preview/ZIP · usage unknown",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/dependencies.png",
+      "source": "sources/dependencies-full.png",
+      "alt": "Actual persisted canonical task dependency graph. Both engineering tasks remain in backlog; no execution or provider call is claimed.",
+      "caption": "Actual persisted canonical task dependency graph. Both engineering tasks remain in backlog; no execution or provider call is claimed.",
+      "qualification": "Real local task/dependency records; not executed",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/compute.png",
+      "source": "sources/compute-full.png",
+      "alt": "Compute view after actual local CPU notebook execution; observed Python output is 2 + 3 = 5. No cloud resources or provider calls.",
+      "caption": "Compute view after actual local CPU notebook execution; observed Python output is 2 + 3 = 5. No cloud resources or provider calls.",
+      "qualification": "Real local Python compute only; remote/cloud targets NOT_RUN",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/chat.png",
+      "source": "sources/chat-full.png",
+      "alt": "Group Chat with an unsent engineering draft. Run/tool observations injected for the following graph; no provider message sent.",
+      "caption": "Group Chat with an unsent engineering draft. Run/tool observations injected for the following graph; no provider message sent.",
+      "qualification": "INJECTED agent/run/tool observations · no model call · tool outcome unconfirmed · actual canonical IDs",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/workspace.png",
+      "source": "sources/workspace-full.png",
+      "alt": "Node–Edge Workspace and selected Executor details, using actual canonical fixture run/bot/attempt IDs. Agent and tool observations injected, no live model call; tool result unconfirmed.",
+      "caption": "Node–Edge Workspace and selected Executor details, using actual canonical fixture run/bot/attempt IDs. Agent and tool observations injected, no live model call; tool result unconfirmed.",
+      "qualification": "INJECTED agent/run/tool observations · no model call · tool outcome unconfirmed · actual canonical IDs",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/run-evidence.png",
+      "source": "sources/run-evidence-full.png",
+      "alt": "Selected Executor evidence and existing run controls with actual canonical run/attempt identity. Provider/agent observations are injected; no model called and no Stop or approval action is claimed.",
+      "caption": "Selected Executor evidence and existing run controls with actual canonical run/attempt identity. Provider/agent observations are injected; no model called and no Stop or approval action is claimed.",
+      "qualification": "INJECTED agent/run/tool observations · no model call · tool outcome unconfirmed · actual canonical IDs",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/recovery.png",
+      "source": "sources/recovery-full.png",
+      "alt": "Actual read-only recovery snapshot for the injected canonical fixture run. No provider called and no effects replayed.",
+      "caption": "Actual read-only recovery snapshot for the injected canonical fixture run. No provider called and no effects replayed.",
+      "qualification": "INJECTED agent/run/tool observations · no model call · tool outcome unconfirmed · actual canonical IDs",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/tool-evidence.png",
+      "source": "sources/tool-evidence-full.png",
+      "alt": "Selected fixture tool identity with outcome unconfirmed. Agent/run/tool observations are injected; no provider call or successful tool result is claimed.",
+      "caption": "Selected fixture tool identity with outcome unconfirmed. Agent/run/tool observations are injected; no provider call or successful tool result is claimed.",
+      "qualification": "INJECTED agent/run/tool observations · no model call · tool outcome unconfirmed · actual canonical IDs",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/workspace-mobile.png",
+      "source": "sources/workspace-mobile-full.png",
+      "alt": "390px mobile Workspace linear inspection list, the accessible alternative to the graph, using the same canonical engineering records. All provider/agent/tool observations injected; no live model call.",
+      "caption": "390px mobile Workspace linear inspection list, the accessible alternative to the graph, using the same canonical engineering records. All provider/agent/tool observations injected; no live model call.",
+      "qualification": "INJECTED agent/run/tool observations · no model call · tool outcome unconfirmed · actual canonical IDs",
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/sheets.png",
+      "source": "sources/sheets-full.png",
+      "alt": "Actual mounted Univer sheet with readable engineering content after bounded Facade edit, durable save, and reopen. The edit was manually requested; no model called.",
+      "caption": "Actual mounted Univer sheet with readable engineering content after bounded Facade edit, durable save, and reopen. The edit was manually requested; no model called.",
+      "qualification": "Actual Univer edit/save/reopen + native report engines · manually requested bounded edits · no model call",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/docs.png",
+      "source": "sources/docs-full.png",
+      "alt": "Actual mounted Univer doc with readable engineering content after bounded Facade edit, durable save, and reopen. The edit was manually requested; no model called.",
+      "caption": "Actual mounted Univer doc with readable engineering content after bounded Facade edit, durable save, and reopen. The edit was manually requested; no model called.",
+      "qualification": "Actual Univer edit/save/reopen + native report engines · manually requested bounded edits · no model call",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/report-studio.png",
+      "source": "sources/report-studio-full.png",
+      "alt": "Actual native WordCraft DOCX/PDF report generation from saved ReportSpec and imported Univer sheet revision. No external account or provider call.",
+      "caption": "Actual native WordCraft DOCX/PDF report generation from saved ReportSpec and imported Univer sheet revision. No external account or provider call.",
+      "qualification": "Actual Univer edit/save/reopen + native report engines · manually requested bounded edits · no model call",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/report-preview.png",
+      "source": "sources/report-preview-full.png",
+      "alt": "Decoded native PDF page preview of the actual locally generated report, with the saved Sheets table. No provider call.",
+      "caption": "Decoded native PDF page preview of the actual locally generated report, with the saved Sheets table. No provider call.",
+      "qualification": "Actual Univer edit/save/reopen + native report engines · manually requested bounded edits · no model call",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/owner-memory.png",
+      "source": "sources/owner-memory-full.png",
+      "alt": "Central Owner source memory after actual private save and explicit grant to the named engineering project. No automatic cross-project read and no model call.",
+      "caption": "Central Owner source memory after actual private save and explicit grant to the named engineering project. No automatic cross-project read and no model call.",
+      "qualification": "Actual local central memory + explicit named-project grant; disposable engineering content",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/artifacts.png",
+      "source": "sources/artifacts-full.png",
+      "alt": "Actual artifact catalog containing uploaded engineering notes and real native report outputs. No cloud storage or model execution.",
+      "caption": "Actual artifact catalog containing uploaded engineering notes and real native report outputs. No cloud storage or model execution.",
+      "qualification": "Actual local artifacts and verified download hashes; external storage NOT_RUN",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fullPage": false
+    },
+    {
+      "filename": "screenshots/overview-mobile.png",
+      "source": "sources/overview-mobile-full.png",
+      "alt": "390px mobile workspace overview of actual saved engineering project records. Run observations injected; no model call or usage metrics.",
+      "caption": "390px mobile workspace overview of actual saved engineering project records. Run observations injected; no model call or usage metrics.",
+      "qualification": "INJECTED provider observations · no model call · real local files/tests/preview/ZIP · usage unknown",
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "fullPage": false
+    }
+  ],
+  "walkthroughs": [
+    {
+      "name": "start-forge",
+      "startSeconds": 0.35207349999999993,
+      "qualification": "Built production App · actual localhost readiness and project creation · launcher/clean install not recorded",
+      "steps": [
+        "Open the ready local app and create a project",
+        "Select the saved project and open its workspace"
+      ],
+      "endSeconds": 6.305697199999999,
+      "source": "sources/walkthroughs.webm",
+      "filename": "start-forge.gif",
+      "alt": "Open the ready local app and create a project → Select the saved project and open its workspace. Built production App · actual localhost readiness and project creation · launcher/clean install not recorded",
+      "editing": "Real Chromium recording; selected contiguous interval, 2x speed, 5 fps, 1008px width. No frame interpolation. Gaps between walkthrough intervals omitted.",
+      "sourceDurationSeconds": 5.354,
+      "encodedEndSeconds": 5.7056971999999995,
+      "tailExcludedSeconds": 0.6
+    },
+    {
+      "name": "software-mission",
+      "startSeconds": 9.7730193,
+      "qualification": "INJECTED provider observations · no model call · real local files/tests/preview/ZIP · usage unknown",
+      "steps": [
+        "Describe the output and measurable acceptance",
+        "Review and approve the canonical plan",
+        "Inspect the injected run, then register the actual file",
+        "Run the reviewed local Node test and open the real preview",
+        "Review QA evidence, accept delivery, and build the ZIP"
+      ],
+      "endSeconds": 30.0238482,
+      "source": "sources/walkthroughs.webm",
+      "filename": "software-mission.gif",
+      "alt": "Describe the output and measurable acceptance → Review and approve the canonical plan → Inspect the injected run, then register the actual file → Run the reviewed local Node test and open the real preview → Review QA evidence, accept delivery, and build the ZIP. INJECTED provider observations · no model call · real local files/tests/preview/ZIP · usage unknown",
+      "editing": "Real Chromium recording; selected contiguous interval, 2x speed, 5 fps, 1008px width. No frame interpolation. Gaps between walkthrough intervals omitted.",
+      "sourceDurationSeconds": 19.651,
+      "encodedEndSeconds": 29.4238482,
+      "tailExcludedSeconds": 0.6
+    },
+    {
+      "name": "chat-workspace",
+      "startSeconds": 41.1359044,
+      "qualification": "INJECTED agent/run/tool observations · no model call · tool outcome unconfirmed · actual canonical IDs",
+      "steps": [
+        "Select a team room and keep a local draft",
+        "Switch to Workspace and inspect the selected Executor run",
+        "Read the persisted recovery snapshot without replaying execution",
+        "Inspect the tool whose result remains unconfirmed",
+        "Return to Chat with the draft preserved"
+      ],
+      "endSeconds": 58.867361599999995,
+      "source": "sources/walkthroughs.webm",
+      "filename": "chat-workspace.gif",
+      "alt": "Select a team room and keep a local draft → Switch to Workspace and inspect the selected Executor run → Read the persisted recovery snapshot without replaying execution → Inspect the tool whose result remains unconfirmed → Return to Chat with the draft preserved. INJECTED agent/run/tool observations · no model call · tool outcome unconfirmed · actual canonical IDs",
+      "editing": "Real Chromium recording; selected contiguous interval, 2x speed, 5 fps, 1008px width. No frame interpolation. Gaps between walkthrough intervals omitted.",
+      "sourceDurationSeconds": 17.131,
+      "encodedEndSeconds": 58.267361599999994,
+      "tailExcludedSeconds": 0.6
+    },
+    {
+      "name": "office-report",
+      "startSeconds": 62.2452762,
+      "qualification": "Actual Univer edit/save/reopen + native report engines · manually requested bounded edits · no model call",
+      "steps": [
+        "Create a workbook and enter a bounded native edit",
+        "Reopen the saved workbook revision",
+        "Create a document and enter a bounded native edit",
+        "Reopen the saved document revision",
+        "Save a ReportSpec from the actual saved Sheets range",
+        "Generate real DOCX and PDF with the qualified native engines",
+        "Preview the rendered PDF and verify both downloadable files"
+      ],
+      "endSeconds": 92.8474442,
+      "source": "sources/walkthroughs.webm",
+      "filename": "office-report.gif",
+      "alt": "Create a workbook and enter a bounded native edit → Reopen the saved workbook revision → Create a document and enter a bounded native edit → Reopen the saved document revision → Save a ReportSpec from the actual saved Sheets range → Generate real DOCX and PDF with the qualified native engines → Preview the rendered PDF and verify both downloadable files. Actual Univer edit/save/reopen + native report engines · manually requested bounded edits · no model call",
+      "editing": "Real Chromium recording; selected contiguous interval, 2x speed, 5 fps, 1008px width. No frame interpolation. Gaps between walkthrough intervals omitted.",
+      "sourceDurationSeconds": 30.002,
+      "encodedEndSeconds": 92.2474442,
+      "tailExcludedSeconds": 0.6
+    }
+  ],
+  "receipts": {
+    "health": "ready",
+    "missionRun": {
+      "id": "76b42ef3-76e1-419e-9448-d444d40fa380",
+      "taskId": "c7725922-74fa-4de0-9ce5-8af2d6e9e199",
+      "attemptId": "85e78d52-ab76-4546-a1a0-5537391ab583",
+      "qualification": "INJECTED_PROVIDER_OBSERVATION"
+    },
+    "delivery": {
+      "sha256": "0a830e062f473d7c4b391ac75dbf4108de320c22e398015d4b8903f60b766b76",
+      "bytes": 3430,
+      "verified": true,
+      "outputRunId": "76b42ef3-76e1-419e-9448-d444d40fa380"
+    },
+    "tests": [
+      {
+        "id": "6b55056e-fff0-4d8f-a6ed-2b12987e5e8d",
+        "status": "PASSED",
+        "outputId": "54baf209-eba9-4850-bea1-26e4deb30e62",
+        "treeCleaned": true,
+        "logSha256": "99aa825f7ac667222bfd9b2b8198adcf6e7a76324e5cbf88a564bee55f8094f9",
+        "log": "✔ registered engineering page has acceptance text (2.3179ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 256.8201\n",
+        "command": {
+          "executable": "node",
+          "args": [
+            "--test",
+            "--test-concurrency=1",
+            "--",
+            "output.test.mjs"
+          ],
+          "maxMs": 30000
+        },
+        "sourceFiles": [
+          {
+            "path": "index.html",
+            "sha256": "aff70e52860fbffba91b90cb2c015e43d7002edd3240b8f804bc3db86f054f20",
+            "bytes": 420
+          },
+          {
+            "path": "output.test.mjs",
+            "sha256": "5c37aebec096fe11bc62420873fd1015b48d52407c18e98568404239441d4521",
+            "bytes": 249
+          }
+        ]
+      }
+    ],
+    "dependencies": {
+      "planId": "b8ffae18-7216-413e-a1b5-8a5e9a6416a2",
+      "prerequisiteTaskId": "61770d72-2c77-4c93-97c6-5662a5b5e62e",
+      "dependentTaskId": "062228fb-601e-4bdc-9bff-14a1e4ca83a2",
+      "executed": false
+    },
+    "compute": {
+      "jobId": "1c364650-b014-40ae-93e4-3af2abf5e4d6",
+      "status": "completed",
+      "outputVerified": true
+    },
+    "recovery": {
+      "runId": "a0657a0c-f09a-4851-83a6-e16ee61fbe67",
+      "readOnlySnapshotObserved": true
+    },
+    "graph": {
+      "runId": "a0657a0c-f09a-4851-83a6-e16ee61fbe67",
+      "attemptId": "c0f88b97-ea6b-4621-83fd-d48847d468c4",
+      "botId": "dbfd263a-60f3-4960-bfce-e2438553799e",
+      "toolId": "fixture-read-source",
+      "toolResultObserved": false,
+      "draftPreserved": true
+    },
+    "sheet": {
+      "documentId": "6544e6e9-0454-4b9b-ba1e-f4d6aa3732a6",
+      "revision": 2,
+      "snapshotSha256": "84201fa9db7bac2a7dbaeb4bd8f66470547af9e100f22ad6cd6d0e3a8ff000e4",
+      "savedTextVerified": true,
+      "reopened": true
+    },
+    "doc": {
+      "documentId": "ffbe952a-9bae-4d0d-a314-620807d0bc9e",
+      "revision": 2,
+      "snapshotSha256": "22787ce04e77b588ccd93eb9cb6e9e9c888f0114c8905ca720085fdce5084c4b",
+      "savedTextVerified": true,
+      "reopened": true
+    },
+    "report": {
+      "jobId": "6643193f-60e3-45a3-9574-a4a3965e8ae6",
+      "status": "ready",
+      "outputs": [
+        {
+          "kind": "docx",
+          "bytes": 6955,
+          "sha256": "a51921e0d402942d6890941cda8d770a65c3bd3db598246d4810134cd46bab61"
+        },
+        {
+          "kind": "pdf",
+          "bytes": 32162,
+          "sha256": "3f99742031118935a3ef27f89792799aa20eaa8fb063e1b324f3375539b37b36"
+        },
+        {
+          "kind": "png",
+          "bytes": 41304,
+          "sha256": "7f4dbf9100d8fa05a146c4f6e67185e185e521c7e62c8bcca9a044dd09ba8696"
+        }
+      ]
+    },
+    "memory": {
+      "privateBeforeGrant": true,
+      "explicitGrantEvent": "2baa643d-f233-4679-af8d-d624410e2b7d"
+    },
+    "provider": {
+      "calls": 0,
+      "injectedStartObservations": 1,
+      "usage": "UNKNOWN"
+    },
+    "restart": {
+      "actualServiceCloseReopen": true,
+      "savedOfficeRevisionsVerified": true
+    },
+    "cleanup": {
+      "browserClosed": true,
+      "applicationServerClosed": true,
+      "exactDisposableWorkspaceRemoved": true,
+      "privateStateVaultVideoTempRemoved": true,
+      "previewStopped": true
+    }
+  },
+  "browserErrors": [],
+  "build": {
+    "mode": "production",
+    "command": "npm.cmd run build",
+    "package": "1.1.0-alpha.3",
+    "vite": "7.3.8",
+    "lockfileSha256": "0c38ef85bc5d79add8b0c662c5aaaab7cf067488be8cd3eada71a35fe3befe8d",
+    "indexHtmlSha256": "365ef0157765d371969891c76a30cfb2d7ce139edcf218281844f1a654caae3b"
+  },
+  "encoder": "ffmpeg version 9.0.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+  "files": [
+    {
+      "filename": "architecture.mmd",
+      "bytes": 876,
+      "sha256": "74461fd98a31c9c79e137c5990710d0f0f8f9b695e01447dfa22b06bf06dec60"
+    },
+    {
+      "filename": "chat-workspace.gif",
+      "bytes": 2396302,
+      "sha256": "898aebe11113eee16aae321cf4637688ea34457b22fed748970177c27b06036a"
+    },
+    {
+      "filename": "office-report.gif",
+      "bytes": 4350925,
+      "sha256": "7b771383cf3fd623116695e0aa56703b8c266c3f427d33b9b436f7f0e178c00a"
+    },
+    {
+      "filename": "screenshots/artifacts.png",
+      "bytes": 141199,
+      "sha256": "f1aa0cbfb56ce52e96cff14f2a3bb75a16a0ed8fbc9da33979d4113ce81fc35f"
+    },
+    {
+      "filename": "screenshots/chat.png",
+      "bytes": 117058,
+      "sha256": "ca9c13e36386f5b442c57ba085224c6fcff5f28b291bd9c11621c14a50db05f3"
+    },
+    {
+      "filename": "screenshots/compute.png",
+      "bytes": 147433,
+      "sha256": "115a814b9a59f6b4efdc374dc8af369899ebe1d53f0ffb56e72cd847f8a74879"
+    },
+    {
+      "filename": "screenshots/delivery.png",
+      "bytes": 128566,
+      "sha256": "43a837f1f4ee9e26f9ed3c03280c4258d75f39a5526f5d52a1194cc47b571168"
+    },
+    {
+      "filename": "screenshots/dependencies.png",
+      "bytes": 108351,
+      "sha256": "4b0b2ab589ecde01f602a706a9c7e48f1c4f721f94f801525c0bc36692814fc6"
+    },
+    {
+      "filename": "screenshots/docs.png",
+      "bytes": 106363,
+      "sha256": "409b25351f6996a6ed2869d961c199e8145fb220e9a5d4884e16e09cf583b938"
+    },
+    {
+      "filename": "screenshots/mission-plan.png",
+      "bytes": 114571,
+      "sha256": "2c08e4b38691d99d8188686278d6d19f0ba0c49f4ecc8ecf92aa4304f73beb8d"
+    },
+    {
+      "filename": "screenshots/mission-preview.png",
+      "bytes": 121043,
+      "sha256": "829879317e45b680f6d68c5fe304551ecae7b772737086007bf639c7019ed498"
+    },
+    {
+      "filename": "screenshots/overview-mobile.png",
+      "bytes": 59826,
+      "sha256": "5810dd4cffb567510c3416f051d0a26ea46e07ee68a0e135329e726b2d5c55b2"
+    },
+    {
+      "filename": "screenshots/overview.png",
+      "bytes": 133274,
+      "sha256": "8e3f31da4de94f84e448569342c1327166733c5bb65d3be83a4e9c8736750701"
+    },
+    {
+      "filename": "screenshots/owner-memory.png",
+      "bytes": 119186,
+      "sha256": "f2512466f7e8226d475c72a05659996bfcf5aa1a7c98442a04dbefc26e4826fd"
+    },
+    {
+      "filename": "screenshots/plan.png",
+      "bytes": 101555,
+      "sha256": "86227e5a061bb24057a60ad7b2552abfb6d800d559766d889381673c48d39feb"
+    },
+    {
+      "filename": "screenshots/recovery.png",
+      "bytes": 129633,
+      "sha256": "b165890661351c5ac00971e6ef700fa06361537cc0d566e21fba57d01e2203da"
+    },
+    {
+      "filename": "screenshots/report-preview.png",
+      "bytes": 107129,
+      "sha256": "4d866e70550cebc2a9be4417d814c999b28f95487749b2d2e86153f6e37af73d"
+    },
+    {
+      "filename": "screenshots/report-studio.png",
+      "bytes": 123522,
+      "sha256": "de71d88daae860a7cff8648f6f8d88c3afa2db86375a00515bcfa6a039e0a75e"
+    },
+    {
+      "filename": "screenshots/run-evidence.png",
+      "bytes": 115323,
+      "sha256": "ad6ffdbcd2a4b2630b0ef202a242726e2c4ef2f35518293387becc736713cd61"
+    },
+    {
+      "filename": "screenshots/sheets.png",
+      "bytes": 113930,
+      "sha256": "4bbddc9f32277db4774e6b006538caf72575720e6dcbb413da8a735a4e7e0b9c"
+    },
+    {
+      "filename": "screenshots/team.png",
+      "bytes": 92097,
+      "sha256": "1f13403f01b9a25c66aea6da5703f83b2cb9e9897b618f16d1916f63f1706ee3"
+    },
+    {
+      "filename": "screenshots/tool-evidence.png",
+      "bytes": 128963,
+      "sha256": "6aa515180cde590d0fe661bbefcf03e8ee6133ddef9c9d6d2d13c1c321987a0d"
+    },
+    {
+      "filename": "screenshots/workspace-mobile.png",
+      "bytes": 49393,
+      "sha256": "a3456c6ee3ce6d026a98b195d6504a6f8fb1626c1253bd9a2a8accf150a74fc0"
+    },
+    {
+      "filename": "screenshots/workspace.png",
+      "bytes": 126398,
+      "sha256": "06ee0a9b3f1cd3135a69cee17902d662e3ccbfea6e33a5e111d1205112656d16"
+    },
+    {
+      "filename": "software-delivery.mmd",
+      "bytes": 756,
+      "sha256": "f11aa14a71c20b53daa0ebaed3804bbb5a7e9d8b0c2eaccdd3b0b3275962b466"
+    },
+    {
+      "filename": "software-mission.gif",
+      "bytes": 3461125,
+      "sha256": "e4125cb71f52844d04863a0ce077bb38da4d91164d1f58c9d1d4c211d41cad67"
+    },
+    {
+      "filename": "sources/artifacts-full.png",
+      "bytes": 179274,
+      "sha256": "b6320da03a4ef3403e5801044728bc10f04f22f44026bc6f180800118bd848ee"
+    },
+    {
+      "filename": "sources/chat-full.png",
+      "bytes": 129900,
+      "sha256": "b975176637310b4d17c86e859631f1dcaf067fb232105e1097b422c1be808911"
+    },
+    {
+      "filename": "sources/compute-full.png",
+      "bytes": 160185,
+      "sha256": "903320877cc751c1cbbe77eda22a99d84cb4f4e02cad0a5204281fa36e43a9c4"
+    },
+    {
+      "filename": "sources/delivery-full.png",
+      "bytes": 279495,
+      "sha256": "c9801ad37e61e8bed257bccc3b164f915a85c9a758bf5a06cb570c10bfe1160d"
+    },
+    {
+      "filename": "sources/dependencies-full.png",
+      "bytes": 108351,
+      "sha256": "4b0b2ab589ecde01f602a706a9c7e48f1c4f721f94f801525c0bc36692814fc6"
+    },
+    {
+      "filename": "sources/docs-full.png",
+      "bytes": 107570,
+      "sha256": "e3fd9a46909c0c6e85f23fab8a9bf980dbf1c5318ceba06fd00578556c8f2ba0"
+    },
+    {
+      "filename": "sources/mission-plan-full.png",
+      "bytes": 114571,
+      "sha256": "2c08e4b38691d99d8188686278d6d19f0ba0c49f4ecc8ecf92aa4304f73beb8d"
+    },
+    {
+      "filename": "sources/mission-preview-full.png",
+      "bytes": 261408,
+      "sha256": "0bb71691960aab914cf44fb09d727b7357f19e34bf6e8c298fe9dc58ed4c553a"
+    },
+    {
+      "filename": "sources/overview-full.png",
+      "bytes": 133274,
+      "sha256": "8e3f31da4de94f84e448569342c1327166733c5bb65d3be83a4e9c8736750701"
+    },
+    {
+      "filename": "sources/overview-mobile-full.png",
+      "bytes": 90372,
+      "sha256": "714cb1f09d3f98f3ce82b9618b335d81271126330e25db2bb9ec9be790fc54be"
+    },
+    {
+      "filename": "sources/owner-memory-full.png",
+      "bytes": 155402,
+      "sha256": "f177a8b32222d1339aaafcbd209d53e2953c9cd7780e4561119dc9f534696f8a"
+    },
+    {
+      "filename": "sources/plan-full.png",
+      "bytes": 101555,
+      "sha256": "86227e5a061bb24057a60ad7b2552abfb6d800d559766d889381673c48d39feb"
+    },
+    {
+      "filename": "sources/recovery-full.png",
+      "bytes": 191191,
+      "sha256": "0b5b3e4e657a05aedf6c1b9d954ae273b05d5321965c4d2866d15edbe1df8bf1"
+    },
+    {
+      "filename": "sources/report-preview-full.png",
+      "bytes": 181139,
+      "sha256": "b796fa68dc9439a00a1082ef8481392dff4f1560677aa397d3c29d1b2a793d9a"
+    },
+    {
+      "filename": "sources/report-studio-full.png",
+      "bytes": 196807,
+      "sha256": "c13e636c33b03dcd17a07cce6a4f0723c689cc7e167c21da1cff5af6f059ad5f"
+    },
+    {
+      "filename": "sources/run-evidence-full.png",
+      "bytes": 150221,
+      "sha256": "e053e087810d357f0261a87af881d9b9847e05ae80e9231b3072e4d30903f180"
+    },
+    {
+      "filename": "sources/sheets-full.png",
+      "bytes": 114917,
+      "sha256": "0b4f3a74ce031eb01769bab796046d042d3bd181c6470fa0bc5b8ee1df1992a8"
+    },
+    {
+      "filename": "sources/team-full.png",
+      "bytes": 92097,
+      "sha256": "1f13403f01b9a25c66aea6da5703f83b2cb9e9897b618f16d1916f63f1706ee3"
+    },
+    {
+      "filename": "sources/tool-evidence-full.png",
+      "bytes": 191572,
+      "sha256": "ae5c508f2149d92de9cb5e6ee357d85cccfd205ec8e29873254e1d521296ac55"
+    },
+    {
+      "filename": "sources/walkthroughs.webm",
+      "bytes": 17289198,
+      "sha256": "fc955af5bad200cb3d1fb4c4d0478ec1da428f23addee285088a5da29bd6e423"
+    },
+    {
+      "filename": "sources/workspace-full.png",
+      "bytes": 160218,
+      "sha256": "945d73082b9a114576f817b18941d3ea859efd51a05e83c6d3ab8847a51a2a04"
+    },
+    {
+      "filename": "sources/workspace-mobile-full.png",
+      "bytes": 60918,
+      "sha256": "0267ce27787e5140196a284789dad1f6de62468a6c306e332cf0264d01078c2e"
+    },
+    {
+      "filename": "start-forge.gif",
+      "bytes": 1001261,
+      "sha256": "85fd8ffc89989d29f08c159f2711022203e31c931a8e7a87241a999a604f0725"
+    }
+  ]
+}

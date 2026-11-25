@@ -1,0 +1,345 @@
+{
+  "result": "PASSED",
+  "preparedRevision": "f8dbd0d4334ddcaf71c9ca2abe3e466c3db7fe2e",
+  "checks": [
+    "all public media SHA-256 and sizes",
+    "all PNG/GIF frames decoded",
+    "source WebM full decode",
+    "GIF <=8 MiB",
+    "visible fixture qualifications + alt/caption records",
+    "real local effect receipts and restart",
+    "owned service/browser/fixture cleanup",
+    "public text privacy scan",
+    "all local media/tool/handoff Markdown links"
+  ],
+  "visualReview": "Separate required human/agent visual review; binary scans cannot audit raster text.",
+  "media": [
+    {
+      "filename": "chat-workspace.gif",
+      "width": 1008,
+      "height": 700,
+      "frames": 43,
+      "decoded": true
+    },
+    {
+      "filename": "office-report.gif",
+      "width": 1008,
+      "height": 700,
+      "frames": 75,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/artifacts.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/chat.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/compute.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/delivery.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/dependencies.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/docs.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/mission-plan.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/mission-preview.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/overview-mobile.png",
+      "width": 390,
+      "height": 900,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/overview.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/owner-memory.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/plan.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/recovery.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/report-preview.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/report-studio.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/run-evidence.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/sheets.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/team.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/tool-evidence.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/workspace-mobile.png",
+      "width": 390,
+      "height": 900,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "screenshots/workspace.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "software-mission.gif",
+      "width": 1008,
+      "height": 700,
+      "frames": 49,
+      "decoded": true
+    },
+    {
+      "filename": "sources/artifacts-full.png",
+      "width": 1440,
+      "height": 1333,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/chat-full.png",
+      "width": 1440,
+      "height": 1303,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/compute-full.png",
+      "width": 1440,
+      "height": 1347,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/delivery-full.png",
+      "width": 1440,
+      "height": 2916,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/dependencies-full.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/docs-full.png",
+      "width": 1440,
+      "height": 1088,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/mission-plan-full.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/mission-preview-full.png",
+      "width": 1440,
+      "height": 2815,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/overview-full.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/overview-mobile-full.png",
+      "width": 390,
+      "height": 1473,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/owner-memory-full.png",
+      "width": 1440,
+      "height": 1584,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/plan-full.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/recovery-full.png",
+      "width": 1440,
+      "height": 2007,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/report-preview-full.png",
+      "width": 1440,
+      "height": 2456,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/report-studio-full.png",
+      "width": 1440,
+      "height": 2456,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/run-evidence-full.png",
+      "width": 1440,
+      "height": 1549,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/sheets-full.png",
+      "width": 1440,
+      "height": 1088,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/team-full.png",
+      "width": 1440,
+      "height": 1000,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/tool-evidence-full.png",
+      "width": 1440,
+      "height": 2007,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/walkthroughs.webm",
+      "decoded": true
+    },
+    {
+      "filename": "sources/workspace-full.png",
+      "width": 1440,
+      "height": 1549,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "sources/workspace-mobile-full.png",
+      "width": 390,
+      "height": 1287,
+      "frames": 1,
+      "decoded": true
+    },
+    {
+      "filename": "start-forge.gif",
+      "width": 1008,
+      "height": 700,
+      "frames": 13,
+      "decoded": true
+    }
+  ],
+  "homeUat": "HOME_UAT_NOT_RUN"
+}
