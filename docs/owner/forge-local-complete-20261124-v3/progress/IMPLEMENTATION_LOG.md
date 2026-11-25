@@ -1,5 +1,34 @@
 # Implementation Log
 
+## Mission/Parallel/Proactive/Budget/Playbook integration — 2026-11-25
+
+Merged scoped worker commits as be2831f (Mission),35803d4 (Proactive),940e0b5
+(Parallel),5533a41 (native enforcement source audit),86c9c27 (Budget) and b2ed6fd
+(Playbook). Lead added real App/Owner HTTP/CSRF/download/lifecycle/restore mounts,
+unconditional T3 context guards/replay, actual isolated-checkout T3 registration,
+capacity/ordinary-writer fences and task/conversation budget admission.
+Host-only native transport fixture allows dispatch-owner verification without
+model/account calls; createApplication never accepts it from HTTP/configuration.
+
+Latest checks: related34 PASS; production dispatch/HTTP/budget6 PASS; latest
+Mission/Proactive/Budget/Playbook Owner HTTP4 PASS; Playbook/related15 PASS.
+Earlier actual built App completion browser1 PASS (forms, real Node tests,
+preview, QA/Owner, ZIP, desktop/Thai mobile); provider execution observations
+explicitly injected. Build28.36s PASS before latest Playbook App import; rerun
+after the new surface. Command sets overlap; no aggregate total claimed.
+
+Proactive idle heartbeats originally caused metadata CAS revision churn; fixed
+by writing only when a due/active/invalid envelope needs work. Production restore
+regression passes. Source audit does not qualify native enforcement; P01 Guarded
+Route implementation and native negative qualification remain required.
+Budget native receipt/finality ingestion is still distinct from module/hooks.
+
+Lead read supplied SuperUser ZIP directly without installing/running it, recorded
+archive checksum and selective adaptation. Owner chose both app and team usage.
+Research RES01–10 addendum recorded in requirements/architecture/acceptance; worker
+verifies references and implements small reproducible paths. No benchmark API
+spend, account migration, public deployment, prototype or main push.
+
 ## Compute environment integration — 2026-11-25
 
 Final related checkpoint command: 24 PASS (compute/environment/credential/context,

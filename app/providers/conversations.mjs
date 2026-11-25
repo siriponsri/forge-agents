@@ -1,8 +1,9 @@
 import { randomUUID } from 'node:crypto';
 import { busy, changed, digest, entity, fail, find, required, safeError, terminal } from './common.mjs';
 import {assertWorkspaceAvailable} from '../server/admission.mjs';
+import {reserveBudget,validateBudgetAdmission} from '../budgets/index.mjs';
 
-export function createConversationService({store,t3,providers,checkCapabilities,prepareCapabilities}){
+export function createConversationService({store,t3,providers,checkCapabilities,prepareCapabilities,onNotDispatched}){
   const pending=new Set();let closing=false;
   function scope(input,s=store.read()){
     const project=find(s,'projects',required(input.projectId,'projectId'));
@@ -82,7 +83,7 @@ export function createConversationService({store,t3,providers,checkCapabilities,
         assertWorkspaceAvailable(s,project.id);
         const harnessSelection=checkCapabilities?.(s,{projectId:project.id,conversationId:c.id,botId:bot.id},['provider']);
         const r=entity({kind:'conversation',fingerprint,operationId:input.operationId,attemptId:randomUUID(),botId:bot.id,helperTaskId:bot.kind==='helper'?bot.taskId:null,conversationId:c.id,...(harnessSelection?{harnessSelection}:{}),status:'submitting',providerInstanceId:selection.instanceId,selection,profileRevision:project.revision,profile:structuredClone(project.profile),inputText:input.text,messages:[],protocolEvents:[],clientRequestId:`forge-chat-${digest(input.operationId)}`,...(binding?{threadId:binding.threadId,t3ProjectId:binding.t3ProjectId}:{})},project.id);
-        const user=entity({role:'user',text:input.text,botId:bot.id,conversationId:c.id,runId:r.id,attemptId:r.attemptId,operationId:r.operationId,status:'submitting'},project.id);r.userMessageId=user.id;c.messages.push(user);s.runs.push(r);changed(c);return r;
+        const user=entity({role:'user',text:input.text,botId:bot.id,conversationId:c.id,runId:r.id,attemptId:r.attemptId,operationId:r.operationId,status:'submitting'},project.id);r.userMessageId=user.id;c.messages.push(user);s.runs.push(r);reserveBudget(s,{run:r,input});changed(c);return r;
       });if(replay)return run;
       let dispatched=false;
       try{
@@ -94,12 +95,12 @@ export function createConversationService({store,t3,providers,checkCapabilities,
         if(binding)await validateThread({...run,t3ProjectId});
         const currentHarness=checkCapabilities?.(store.read(),{projectId:project.id,conversationId:conversation.id,botId:bot.id},['provider']);
         if(run.harnessSelection&&digest(currentHarness?.plugins)!==digest(run.harnessSelection.plugins))fail('CONNECTION_CHANGED','Scoped capabilities changed before dispatch',409);
-        const text=prompt(run,project,conversation,bot,binding);if(text.length>120000)fail('MESSAGE_LIMIT','Bot instructions and visible context exceed the T3 prompt limit');dispatched=true;
+        const text=prompt(run,project,conversation,bot,binding);if(text.length>120000)fail('MESSAGE_LIMIT','Bot instructions and visible context exceed the T3 prompt limit');validateBudgetAdmission(store.read(),{run:find(store.read(),'runs',run.id),input});dispatched=true;
         const response=await t3.providers.call(binding?'t3_thread_send':'t3_thread_launch',binding?{threadId:binding.threadId,message:text,mode:'auto',clientRequestId:run.clientRequestId}:{projectId:t3ProjectId,clientRequestId:run.clientRequestId,title:`FORGE ${bot.name} chat ${run.id}`,message:text,runtimeMode:'approval-required',interactionMode:'default',modelSelection:{instanceId:selection.instanceId,model:selection.model,options:selection.options},workspaceStrategy:{type:'root'}});
         if(!response.threadId||!response.runId||binding&&response.threadId!==binding.threadId||response.projectId&&response.projectId!==t3ProjectId)fail('T3_IDENTITY','T3 returned incomplete or mismatched execution identity',502);
         await store.transaction(s=>{const r=find(s,'runs',run.id),c=find(s,'conversations',r.conversationId,r.projectId);r.threadId=response.threadId;r.providerRunId=response.runId;r.status=response.status??'unknown';changed(r);
           c.bindings??={};c.bindings[bot.id]={threadId:r.threadId,t3ProjectId,botId:bot.id,lastMessageId:r.userMessageId,selection:{instanceId:selection.instanceId,model:selection.model,options:selection.options}};const m=c.messages.find(m=>m.id===r.userMessageId);m.status='accepted';m.threadId=r.threadId;m.providerRunId=r.providerRunId;changed(c);});
-      }catch(error){await store.transaction(s=>{const r=find(s,'runs',run.id);r.status=dispatched?'unknown':'failed';r.error=safeError(error);changed(r);});}
+      }catch(error){await store.transaction(s=>{const r=find(s,'runs',run.id);r.status=dispatched?'unknown':'failed';r.error=safeError(error);changed(r);});if(!dispatched&&!run.threadId)await onNotDispatched?.({projectId:run.projectId,runId:run.id,attemptId:run.attemptId,sourceReceiptId:`forge-chat:not-dispatched:${run.id}`});}
       const r=find(store.read(),'runs',run.id);
       if(r.threadId&&r.providerRunId){try{if(t3.observe)await t3.observe(r.id);else await api.reconcile({projectId:r.projectId,runId:r.id});await projectRun(r.id);}catch{/* Persisted identity stays recoverable; no automatic turn retry. */}}
       return find(store.read(),'runs',run.id);

@@ -42,6 +42,11 @@ import {assertWorkspaceAvailable} from './admission.mjs';
 import {createRelayService} from '../relay/index.mjs';
 import {redact} from '../context/contracts.mjs';
 import {createSecretService,dispatchSecretRequest} from '../secrets/index.mjs';
+import {createMissionService,dispatchMissionRequest} from '../missions/index.mjs';
+import {createProactiveService,dispatchProactiveRequest} from '../proactive/index.mjs';
+import {createWorkspaceService,dispatchWorkspaceRequest,assertWorkspaceRestoreAvailable} from '../workspaces/index.mjs';
+import {createBudgetService,dispatchBudgetRequest} from '../budgets/index.mjs';
+import {createPlaybookService,dispatchPlaybookRequest} from '../playbooks/index.mjs';
 export {defaultDataDir};
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const manifest=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
@@ -50,7 +55,7 @@ async function body(req){let size=0;const parts=[];for await(const b of req){siz
 function json(res,data,status=200){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(data));}
 export async function createApplication({dataDir=defaultDataDir(),port=0,machineSecretDir}={}){
   await mkdir(dataDir,{recursive:true});const store=await openStore(dataDir);
-  let providers,oauth,capabilities,compute,prepareContext,secrets;
+  let providers,oauth,capabilities,compute,prepareContext,secrets,budgets;
   const authority=createLocalAuthority();
   secrets=await createSecretService({store,dataDir,...(machineSecretDir?{machineDir:machineSecretDir}:{})});
   const resolveProviderEnvironment=async c=>{const names=[...new Set([...(c.config?.envRefs??[]),...(c.config?.apiKeyEnv?[c.config.apiKeyEnv]:[])])],values={};for(const name of names)values[name]=await secrets.resolveEnv({projectId:c.projectId,name,purpose:'provider'});return values;};
@@ -59,8 +64,10 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
   const checkCapabilities=(s,input,required)=>capabilities?.check(s,input,required);
   const prepareCapabilities=projectId=>capabilities?.defaults(projectId);
   const admitCompute=(s,input,{jobId}={})=>{assertWorkspaceAvailable(s,input.projectId,{jobId});checkCapabilities(s,input,['environment']);};
-  const jobs=createJobService({store,dataDir,admit:admitCompute}),t3=createT3Service({store,dataDir,resolveProviderEnvironment,validateProviderSelection:async input=>{const c=find(store.read(),'connections',input.connectionId,input.projectId);await t3.providers.assertEnvironment(c);return providers.validateSelection(input);},checkCapabilities,prepareCapabilities,prepareContext:input=>prepareContext(input)}),connections=createConnectionService({store});
-  providers=createProviderService({store,dataDir,t3,authorizeTool:input=>governance.authorizeTool(input),validateAdmission:input=>governance.validateAdmission(input),mcpTransportOptions:c=>oauth?.transportOptions(c)??{},resolveEnv:(name,c)=>secrets.resolveEnv({projectId:c.projectId,name,purpose:c.kind==='mcp'?'mcp':'provider'}),mcpCredentialVersion,checkCapabilities,prepareCapabilities});
+  const onNotDispatched=input=>budgets?.confirmNotDispatched(input);
+  const jobs=createJobService({store,dataDir,admit:admitCompute}),t3=createT3Service({store,dataDir,resolveProviderEnvironment,onNotDispatched,validateProviderSelection:async input=>{const c=find(store.read(),'connections',input.connectionId,input.projectId);await t3.providers.assertEnvironment(c);return providers.validateSelection(input);},checkCapabilities,prepareCapabilities,prepareContext:input=>prepareContext(input)}),connections=createConnectionService({store});
+  budgets=createBudgetService({store,t3,authorize:authority.goalAuthorize});
+  providers=createProviderService({store,dataDir,t3,onNotDispatched,authorizeTool:input=>governance.authorizeTool(input),validateAdmission:input=>governance.validateAdmission(input),mcpTransportOptions:c=>oauth?.transportOptions(c)??{},resolveEnv:(name,c)=>secrets.resolveEnv({projectId:c.projectId,name,purpose:c.kind==='mcp'?'mcp':'provider'}),mcpCredentialVersion,checkCapabilities,prepareCapabilities});
   const adaptive=createAdaptiveService({store,t3,connections}),assistance=createAssistanceService({store,providers,t3});
   const memory=await createMemoryService({store,dataDir,authorize:authority.authorize,adaptive});
   const ownerMemory=await createOwnerMemoryService({store,dataDir,authorize:authority.authorize});
@@ -73,6 +80,10 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
   const goals=createGoalService({store,t3,authorize:authority.goalAuthorize});
   const relay=createRelayService({store,t3,resolveSecret:async reference=>{const binding=store.read().relay?.bindings.find(b=>b.secretRef===reference);if(!binding||!secrets)fail('RELAY_SECRET_UNAVAILABLE','Save a machine-only relay signing key in Settings',409);return secrets.resolveRef({projectId:binding.projectId,reference,purpose:'relay'});}});await relay.recover();
   const artifacts=createArtifactService({store,dataDir}),control=createControlService({store,connections});
+  const missions=createMissionService({store,goals,t3,artifacts,authorize:authority.goalAuthorize});await missions.recover();
+  const playbooks=createPlaybookService({store,missions,memory,adaptive,authorize:authority.goalAuthorize});
+  const proactive=createProactiveService({store,t3,authorize:authority.goalAuthorize});await proactive.start();
+  const workspaces=createWorkspaceService({store,dataDir,t3,authorize:authority.authorize});await workspaces.recover();
   compute=createComputeRouter({store,dataDir,jobs,artifacts,admit:admitCompute,secrets,resolveBearer:({vaultRef,projectId})=>secrets.resolveRef({projectId,reference:vaultRef,purpose:'compute'}),resolveEnvironment:({projectId,name})=>secrets.resolveEnv({projectId,name,purpose:'compute'})});
   const catalog=createCatalogService({load:()=>t3.catalog()});
   const gitStorage=createGitStorageService({store});
@@ -85,6 +96,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
   capabilities=createCapabilities({store,t3,providers,adaptive,desktop,getCompute:()=>compute});await capabilities.service.recover();
   for(const project of store.read().projects)await capabilities.defaults(project.id);
   await t3.recover();
+  await budgets.reconcile();
   await providers.conversations.recover();await providers.mcp.recover();await assistance.recover();
   await jobs.recover();
   let reports;try{const mod=await import('../reports/service.mjs');reports=await mod.createReportService({store,dataDir});}catch(e){if(e.code!=='ERR_MODULE_NOT_FOUND')throw e;}
@@ -98,7 +110,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
     return session;
   }
   function humanSession(req,res){const s=browserSession(req,res);if(!s||req.headers['x-forge-csrf']!==s.csrf)fail('BROWSER_SESSION_REQUIRED','Refresh the FORGE page and perform this Owner action in the GUI',403);return s;}
-  const app={store,t3,jobs,compute,connections,providers,governance,adaptive,assistance,memory,ownerMemory,context,goals,relay,secrets,plugins:capabilities.service,reports,serving,storage,desktop,officeAgent,server:null,url:null,async close(){
+  const app={store,t3,jobs,compute,connections,providers,governance,adaptive,assistance,memory,ownerMemory,context,goals,missions,playbooks,proactive,workspaces,budgets,relay,secrets,plugins:capabilities.service,reports,serving,storage,desktop,officeAgent,server:null,url:null,async close(){
     if(closingPromise)return closingPromise;closed=true;
     closingPromise=(async()=>{
     offProjection();await projectionPromise;
@@ -107,7 +119,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
     const stopped=new Promise(resolve=>app.server.close(resolve));
     for(const client of clients)client.end();
     app.server.closeAllConnections();
-    adaptive.shutdown();await assistance.close();await goals.close();await Promise.allSettled([...relayWork]);relay.close();await oauth?.close();await providers.close();
+    await proactive.close();await playbooks.close();await missions.close();await workspaces.close();adaptive.shutdown();await assistance.close();await goals.close();await Promise.allSettled([...relayWork]);relay.close();await oauth?.close();await providers.close();
     await officeMcpHandler?.close();await desktop.shutdown();await storage.shutdown();await compute.shutdown();await jobs.shutdown();await t3.shutdown();await serving.shutdown();await connections.close();await reports?.shutdown?.();
     const pluginClose=await capabilities.service.close();if(pluginClose.status==='draining')throw new Error('Native plugin operations remain active; retain the store for reconciliation');
     await memory.close();await ownerMemory.close();await stopped;await store.close();
@@ -127,6 +139,15 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
       if(officeMcpHandler&&await officeMcpHandler(req,res))return;
       if(method==='OPTIONS')return json(res,{error:{code:'ORIGIN',message:'CORS is disabled'}},403);
       if(method==='GET'&&p==='/api/session'){const session=browserSession(req,res,{create:true});return json(res,{csrf:session.csrf});}
+      if(method==='GET'&&p==='/api/workspaces/state'){
+        const session=browserSession(req,res);if(!session)fail('BROWSER_SESSION_REQUIRED','Open FORGE in this browser before reading isolated workspaces',403);
+        return json(res,await dispatchWorkspaceRequest(workspaces,'state',Object.fromEntries(url.searchParams),authority.owner(session),{httpMethod:method}));
+      }
+      if(method==='GET'&&/^\/api\/missions\/[^/]+\/download$/.test(p)){
+        const session=browserSession(req,res);if(!session)fail('BROWSER_SESSION_REQUIRED','Open FORGE in this browser before downloading a Delivery Pack',403);
+        const result=await missions.download({projectId:url.searchParams.get('projectId'),packId:p.split('/')[3]},authority.owner(session));
+        res.writeHead(200,{'Content-Type':result.contentType,'Content-Disposition':`attachment; filename*=UTF-8''${encodeURIComponent(result.filename)}`,'Content-Length':result.bytes.length,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});return res.end(result.bytes);
+      }
       if(method==='GET'&&p==='/api/providers/routes')return json(res,providers.routes());
       if(method==='GET'&&p.startsWith('/api/governance/')){
         const methods={policy:'policy',organization:'organization',task:'taskContext',inbox:'reviewInbox'},name=methods[p.slice('/api/governance/'.length)];if(!name)fail('NOT_FOUND','Governance read not found',404);return json(res,governance[name](Object.fromEntries(url.searchParams)));
@@ -180,7 +201,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
         if(closed||restoring)fail('APPLICATION_BUSY','Application is shutting down or restoring metadata; retry after readiness',409);
         if(!req.headers['content-type']?.startsWith('application/json'))fail('CONTENT_TYPE','Use application/json',415);const input=await body(req);let value;
         let owner;
-        if(/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|plugins|memory|owner-memory|context|goals|compute|relay|secrets)\//.test(p))owner=humanSession(req,res);
+        if(/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|plugins|memory|owner-memory|context|goals|compute|relay|secrets|missions|proactive|workspaces|budgets|playbooks)\//.test(p))owner=humanSession(req,res);
         if(p==='/api/command'){value=await command(store,input);if(input.type==='project.create')await capabilities.defaults(value.entity.id);}
         else if(p.startsWith('/api/plugins/'))value=await dispatchPluginRequest(capabilities.service,p.slice('/api/plugins/'.length),input);
         else if(p.startsWith('/api/secrets/')){
@@ -198,6 +219,11 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
         }
         else if(p.startsWith('/api/context/'))value=await dispatchContextRequest(context,p.slice('/api/context/'.length),input,authority.owner(owner));
         else if(p.startsWith('/api/goals/'))value=await dispatchGoalRequest(goals,p.slice('/api/goals/'.length),input,authority.owner(owner));
+        else if(p.startsWith('/api/missions/'))value=await dispatchMissionRequest(missions,p.slice('/api/missions/'.length),input,authority.owner(owner));
+        else if(p.startsWith('/api/proactive/'))value=await dispatchProactiveRequest(proactive,p.slice('/api/proactive/'.length),input,authority.owner(owner));
+        else if(p.startsWith('/api/workspaces/'))value=await dispatchWorkspaceRequest(workspaces,p.slice('/api/workspaces/'.length),input,authority.owner(owner),{httpMethod:method});
+        else if(p.startsWith('/api/budgets/'))value=await dispatchBudgetRequest(budgets,p.slice('/api/budgets/'.length),input,authority.owner(owner));
+        else if(p.startsWith('/api/playbooks/'))value=await dispatchPlaybookRequest(playbooks,p.slice('/api/playbooks/'.length),input,authority.owner(owner));
         else if(p.startsWith('/api/relay/')){
           const method={state:'state',readiness:'readiness',configure:'configure','link-task':'linkTask',dispatch:'dispatch',reconcile:'reconcile'}[p.slice('/api/relay/'.length)];if(!method)fail('NOT_FOUND','Owner relay operation not found',404);value=await relay[method](input);
         }
@@ -243,8 +269,10 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
         else if(p==='/api/artifacts/upload')value=await artifacts.upload(input);
         else if(p==='/api/storage/backup')value=await artifacts.backup();
         else if(p==='/api/storage/restore'){
+          assertWorkspaceRestoreAvailable(store.read());
           if(store.read().runs.some(r=>!['completed','failed','cancelled','interrupted','rolled_back','stopped'].includes(r.status))||store.read().jobs.some(j=>['submitting','queued','running','starting','stopping','unknown','preparing','rendering','validating','publishing'].includes(j.status)))fail('RESTORE_BUSY','Stop and reconcile active runs/jobs before restoring metadata',409);
-          restoring=true;await goals.suspendForRestore();try{value=await artifacts.restore(input);await memory.afterRestore();await ownerMemory.afterRestore();await goals.afterRestore();await governance.recover({invalidateUnconsumed:true});await officeAgent.recover();await providers.mcp.recover();await providers.conversations.recover();}finally{goals.cancelRestore();restoring=false;}
+          restoring=true;
+          try{await proactive.suspendForRestore();await playbooks.suspendForRestore();await missions.suspendForRestore();await goals.suspendForRestore();value=await artifacts.restore(input);await memory.afterRestore();await ownerMemory.afterRestore();await goals.afterRestore();await missions.afterRestore();await playbooks.afterRestore();await proactive.afterRestore();await governance.recover({invalidateUnconsumed:true});await officeAgent.recover();await providers.mcp.recover();await providers.conversations.recover();}finally{goals.cancelRestore();missions.cancelRestore();playbooks.cancelRestore();proactive.cancelRestore();restoring=false;}
         }
         else if(p==='/api/storage/configure')value=await storage.configure(input);
         else if(p==='/api/storage/health')value=await storage.health(input);

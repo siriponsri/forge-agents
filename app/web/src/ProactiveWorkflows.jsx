@@ -22,7 +22,7 @@ function WorkflowPage({t,state,projectId,run,busy}){
   const save=()=>ui.act(editing?'revise':'create',{...draft,...(editing?{recipeId:editing.id,expectedRevision:editing.revision}:{})},r=>{setSelected(r.id);setEditing(null);setDraft(blank());});
   const occurrences=data?.occurrences?.filter(o=>o.recipeId===selected)??[],inbox=data?.inbox?.filter(i=>i.recipeId===selected)??[];
   return <div className="proactive-workflows">
-    <Heading title={t('งานเชิงรุก','Proactive workflows')} subtitle={t('อนุมัติสูตร ขอบเขต และงบก่อน แล้วให้ระบบเริ่มงานตามเงื่อนไขที่ยอมรับไว้','Approve a recipe, scope and budget, then run accepted triggers automatically.')}/>
+    <Heading title={t('งานเชิงรุก','Proactive workflows')} description={t('อนุมัติสูตร ขอบเขต และงบก่อน แล้วให้ระบบเริ่มงานตามเงื่อนไขที่ยอมรับไว้','Approve a recipe, scope and budget, then run accepted triggers automatically.')}/>
     <StrategyStatus ui={ui} t={t}/>
     <p className="help">{t('ใช้แผนและงานเดิมผ่าน T3 งานจาก Telegram ยังต้องอนุมัติในช่องทางต้นทาง การพัก ปิด หรือเริ่มระบบใหม่ทำให้สิทธิ์เดิมใช้ต่อไม่ได้','Uses existing plans and tasks through T3. Telegram work still needs originating-channel approval. Pause, close and restart invalidate prior grants.')}</p>
     <button type="button" disabled={ui.loading} onClick={()=>void ui.refresh()}>{t('รีเฟรชสถานะ','Refresh status')}</button>

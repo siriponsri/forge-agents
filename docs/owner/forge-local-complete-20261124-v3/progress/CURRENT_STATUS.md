@@ -1,5 +1,60 @@
 # Current Status — Complete Local FORGE
 
+## Integrated completion checkpoint — 2026-11-25
+
+Overall **IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN**. Owner's active goal and
+authorization for the final normal main push remain in force; no push in this
+checkpoint. Shared integration is on `integration/forge-local-complete`.
+
+- Mission services, Owner HTTP/CSRF, verified-byte ZIP download, preview and
+  restore lifecycle are mounted. Built App journey passed real form → canonical
+  plan → injected provider observation → actual Node tests/preview → QA/Owner →
+  verified ZIP. Usage was left unknown; acceptance did not fabricate free usage.
+- Isolated workspaces route production T3 reservations to the exact verified Git
+  checkout and T3 project, retain context/replay, repeat admission after awaited
+  setup and fence ordinary writers including the pre-run reservation gap.
+  Production T3 dispatch was checked with real Git/SQLite and injected native
+  wire; two exact checkout/model/options bindings passed. Live parallel turns
+  remain NOT_RUN. Current mixed-controller limits remain explicit.
+- Proactive recipe/Owner UI, scheduler, Inbox and unconditional reservation/
+  dispatch context checks are mounted. Idle ticks no longer mutate canonical
+  revisions. Restore invalidates grants. Native all-action qualification is
+  still absent: selected unqualified routes go Inbox with zero start.
+- PC-04 budget module/UI and task/conversation reservation/final-admission hooks
+  are mounted. Host-proven failed-before-dispatch attempts release only their
+  own holds. Monetary observations require actual immutable cumulative native
+  receipts/finality; pinned native billing ingestion remains incomplete, never
+  inferred from token context, completion or subscription.
+- SuperUser Owner decision applies to both app and team practice. Lead inspected
+  main plus the attached archive (40 skills/4 roles); original FORGE presets,
+  briefs, Mission draft linkage, evidence review and draft lessons are merged
+  and mounted. Production Owner HTTP materialization/replay/restore check passed
+  with no approval or execution from preset selection.
+
+Actual checks: combined related34 PASS; production T3/workspace/budget/HTTP6 PASS;
+latest production Mission/Proactive/Budget/Playbook4 PASS; Playbook+related15 PASS.
+These overlap and are not a deduplicated suite total. Latest merged production
+build PASS (1m26s). The expanded built-App completion check PASS covers Mission
+delivery and all five new surfaces at desktop1440/Thai375, ten actual captures,
+no page errors and no document overflow. Production backend combined7 PASS.
+Provider/native observations are injected; these checks do not establish live
+model execution, billing finality or the full product suite. Sanitized scope:
+`docs/evidence/completion-integrated.json`.
+
+Owner confirmed P01: implement bounded FORGE Guarded Route on T3/OpenCode first.
+Its worker must build and test actual native denial/allowed actions before any
+proof can enable automation. Owner also added RES-01–10 Research/Evaluation
+infrastructure; primary source/protocol verification and implementation worker
+are active. Exact scopes: `docs/requirements/SUPERUSER_ADOPTION.md` and
+`docs/requirements/RESEARCH_EVALUATION_ADDENDUM.md`.
+
+Next executable tasks: finish integrated Playbook/Budget UI and native usage
+contracts; integrate Guarded Route and Research Lab when ready; independent
+integrated review, remaining v3 gap audit, landing/public website review, final
+build/start/core/persistence/package checks. Professional English README with
+real screenshots/step-by-step GIFs and current release docs remain the final
+work item before authorized main push. No live/Home UAT completion claimed.
+
 ## Active completion goal — 2026-11-25
 
 Owner explicitly requested an active goal for all functions and landing/public

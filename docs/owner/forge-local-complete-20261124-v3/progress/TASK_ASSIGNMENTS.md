@@ -1,5 +1,20 @@
 # Task Assignments
 
+## Latest isolated assignments — 2026-11-25
+
+Lead owns current shared integration and production checks. Mission, Parallel,
+Proactive, Budget and SuperUser workers have delivered scoped commits; they no
+longer own shared paths. Actual execution for all: `gpt-6.1-sol` / `xhigh`.
+
+| Active worker | Assigned new paths | Deliverable |
+|---|---|---|
+| t3 guarded route build | app/guarded-runtime, tools/guarded-runtime, guarded-runtime tests, worker note | Matching pinned native mediation/build + bounded authenticated broker + actual deny/allow tests; qualifier remains null until proven |
+| t3 research infrastructure | app/research, ResearchLab.jsx/CSS, research tests, worker note | Source/license/protocol audit, immutable experiments/trials, policies/ablations/validators/telemetry/faults/headless/export and GUI |
+
+Owner explicitly confirmed both SuperUser product/team adaptation and P01 first
+Guarded Route. New RES01–10 preserves prior product scope and no-spend/no-prototype
+limits. Final README/media/docs and main push remain lead-owned pending acceptance.
+
 ## Active completion assignments — 2026-11-25
 
 Owner opened the full-product completion goal, authorized isolated subagents and

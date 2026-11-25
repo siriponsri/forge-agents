@@ -18,11 +18,17 @@ import {assertWorkspaceAvailable} from './admission.mjs';
 import {validateRelayAdmission} from '../relay/admission.mjs';
 import {validateGoalContext,goalPrompt} from '../goals/context.mjs';
 import {createNativeProviderCatalog} from '../providers/native-catalog.mjs';
+import {validateProactiveContext,proactivePrompt,proactiveEnforcementRequest,validateProactiveEnforcement} from '../proactive/index.mjs';
+import {validateWorkspaceContext,resolveWorkspaceForRun,workspacePrompt,assertIsolatedWorkspaceAvailable} from '../workspaces/index.mjs';
+import {reserveBudget,validateBudgetAdmission} from '../budgets/index.mjs';
 
 const launcher=fileURLToPath(new URL('../vendor/t3/bin/t3.mjs',import.meta.url));
 // app/server -> repo root is two parent directories.
 export async function availablePort(){return new Promise((resolve,reject)=>{const s=net.createServer();s.once('error',reject);s.listen(0,'127.0.0.1',()=>{const p=s.address().port;s.close(()=>resolve(p));});});}
-export function createT3Service({dataDir,store,validateProviderSelection,prepareCapabilities,checkCapabilities,prepareContext,resolveProviderEnvironment}){
+export function createT3Service({dataDir,store,validateProviderSelection,prepareCapabilities,checkCapabilities,prepareContext,resolveProviderEnvironment,onNotDispatched,nativeTransport}){
+  // Host-only dependency seam for deterministic pinned-contract qualification.
+  // createApplication never accepts it from HTTP, configuration or persisted state.
+  if(nativeTransport&&['call','cli','openFeed'].some(key=>typeof nativeTransport[key]!=='function'))throw new TypeError('Native transport requires call, cli and openFeed');
   const home=path.join(dataDir,'t3');let child,client,startPromise,url,issueSession,shuttingDown=false;let status='not_started',error,readToken,readSession;
   const pendingRuns=new Set(),credentialEnv=new Map();
   const nativeCatalog=createNativeProviderCatalog({rpc:providerRpc,capabilities:()=>call('orchestrator_capabilities',{})});
@@ -30,13 +36,13 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
   const env=Object.fromEntries(Object.entries(process.env).filter(([key])=>osEnv.has(key)));
   const isolatedHome=path.join(home,'runtime-home');env.HOME=isolatedHome;env.USERPROFILE=isolatedHome;env.XDG_CONFIG_HOME=path.join(isolatedHome,'.config');env.XDG_DATA_HOME=path.join(isolatedHome,'.local','share');env.XDG_CACHE_HOME=path.join(isolatedHome,'.cache');env.CODEX_HOME=path.join(isolatedHome,'.codex');
   env.T3CODE_HOME=home;env.T3CODE_NO_BROWSER='true';
-  function cli(args,{timeout=30000}={}){return new Promise((resolve,reject)=>{
+  function cli(args,{timeout=30000}={}){if(nativeTransport)return nativeTransport.cli(args);return new Promise((resolve,reject)=>{
     const p=spawn(process.execPath,[launcher,...args],{env,windowsHide:true,shell:false,stdio:['ignore','pipe','pipe']});let out='',err='';
     const timer=setTimeout(()=>{p.kill();reject(new Error('T3 command timeout; reconcile before repeating a mutating command'));},timeout);
     p.stdout.on('data',b=>out+=b);p.stderr.on('data',b=>err+=b);
     p.once('error',e=>{clearTimeout(timer);reject(e);});p.once('exit',code=>{clearTimeout(timer);code===0?resolve(out.trim()):reject(new Error(`T3 ${args.slice(0,2).join(" ")} exited ${code}: ${err.slice(-1500)}`));});
   });}
-  async function call(name,args){await start();if(shuttingDown)fail('SHUTTING_DOWN','T3 is shutting down',409);const result=await client.callTool({name,arguments:args},undefined,{timeout:30000});if(result.isError)fail('T3_OPERATION',result.content?.find(c=>c.type==='text')?.text??'T3 operation failed',502);return result.structuredContent??JSON.parse(result.content.find(c=>c.type==='text').text);}
+  async function call(name,args){await start();if(shuttingDown)fail('SHUTTING_DOWN','T3 is shutting down',409);if(nativeTransport)return nativeTransport.call(name,args);const result=await client.callTool({name,arguments:args},undefined,{timeout:30000});if(result.isError)fail('T3_OPERATION',result.content?.find(c=>c.type==='text')?.text??'T3 operation failed',502);return result.structuredContent??JSON.parse(result.content.find(c=>c.type==='text').text);}
   async function assertEnvironment(connection){
     if(!resolveProviderEnvironment)return;
     const values=await resolveProviderEnvironment(connection);await start();
@@ -45,6 +51,7 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
   async function start(){
     if(shuttingDown)fail('SHUTTING_DOWN','T3 is shutting down',409);
     await protocol.recover();
+    if(nativeTransport){status='ready';url=nativeTransport.url??null;return {status,url,version:'0.1.11',qualification:'INJECTED_NATIVE_TRANSPORT'};}
     if(client)return {status,url,version:'0.1.11'};if(startPromise)return startPromise;
     startPromise=(async()=>{
       status='starting';await mkdir(isolatedHome,{recursive:true});const port=await availablePort();url=`http://127.0.0.1:${port}`;
@@ -98,12 +105,13 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
       return await channel.respondApproval(input);
     }finally{channel?.close();if(sessionId)await cli(['auth','session','revoke',sessionId,'--base-dir',home]).catch(()=>{});}
   }
-  async function ensureProject(projectId){
+  async function ensureProject(projectId,{workspace:isolatedWorkspace}={}){
     const p=find(store.read(),'projects',projectId);await start();
+    const workspace=isolatedWorkspace??p.workspace;
     let listed=await call('t3_project_list',{limit:100});
-    const matches=x=>path.resolve(x.workspaceRoot).toLowerCase()===path.resolve(p.workspace).toLowerCase();
+    const matches=x=>path.resolve(x.workspaceRoot).toLowerCase()===path.resolve(workspace).toLowerCase();
     let project=listed.projects.find(matches);
-    if(!project){await cli(['project','add',p.workspace,'--base-dir',home,'--title',p.name]);listed=await call('t3_project_list',{limit:100});project=listed.projects.find(matches);}
+    if(!project){await cli(['project','add',workspace,'--base-dir',home,'--title',p.name]);listed=await call('t3_project_list',{limit:100});project=listed.projects.find(matches);}
     if(!project)fail('T3_PROJECT','T3 project registration was not observed',502);return project;
   }
   async function providerRpc(tag,payload){
@@ -121,6 +129,7 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
     }finally{channel?.close();if(sessionId)await cli(['auth','session','revoke',sessionId,'--base-dir',home]).catch(()=>{});}
   }
   const protocol=createProtocolController({store,call,sendApproval:openApprovalChannel,openFeed:async onDisconnect=>{
+    if(nativeTransport)return nativeTransport.openFeed(onDisconnect);
     await start();
     const label=`FORGE read-only protocol feed ${crypto.randomUUID()}`;
     if(!readToken){
@@ -142,6 +151,12 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
     assistanceContextVersion:1,
     relayContextVersion:1,
     goalContextVersion:1,
+    proactiveContextVersion:1,
+    proactiveEnforcementVersion:1,
+    workspaceContextVersion:1,
+    // Pinned T3 exposes supervision, not a FORGE all-action path sandbox.
+    // Never manufacture route qualification from Owner approval or a prompt.
+    qualifyProactive(){return null;},
     providers:{rpc:providerRpc,ensureProject,assertEnvironment,catalog:input=>nativeCatalog.read(input),call(name,args){if(!['orchestrator_capabilities','t3_thread_launch','t3_thread_send','t3_thread_read','t3_thread_interrupt','t3_thread_list'].includes(name))fail('T3_METHOD','Unsupported provider owner operation',403);return call(name,args);}},
     start,
     health(){return {status,url,version:'0.1.11',sourceRevision:'59651c1761f6c63e9b6056839067066968e6a406',error};},
@@ -153,34 +168,46 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
       let replay=false;
       const run=await store.transaction(s=>{
         if(!input.operationId)fail('VALIDATION','operationId required');
-        const prior=s.runs.find(r=>r.operationId===input.operationId);if(prior){if(prior.projectId!==input.projectId||prior.taskId!==input.taskId||contextDigest(prior.adaptiveContext??null)!==contextDigest(input.adaptiveContext??null)||contextDigest(prior.assistanceContext??null)!==contextDigest(input.assistanceContext??null)||contextDigest(prior.relayContext??null)!==contextDigest(input.relayContext??null)||contextDigest(prior.goalContext??null)!==contextDigest(input.goalContext??null)||(prior.conversationId??null)!==(input.conversationId??null))fail('OPERATION_REUSE','Run operation ID belongs to different work or context',409);replay=true;return prior;}
+        const prior=s.runs.find(r=>r.operationId===input.operationId);if(prior){if(prior.projectId!==input.projectId||prior.taskId!==input.taskId||['adaptiveContext','assistanceContext','relayContext','goalContext','proactiveContext','workspaceContext'].some(key=>contextDigest(prior[key]??null)!==contextDigest(input[key]??null))||(prior.conversationId??null)!==(input.conversationId??null))fail('OPERATION_REUSE','Run operation ID belongs to different work or context',409);replay=true;return prior;}
         const p=find(s,'projects',input.projectId),task=find(s,'tasks',input.taskId,p.id);
         const adaptiveContext=validateAdaptiveContext(s,input);
         const assistanceContext=validateAssistanceContext(s,input);
         const relayContext=validateRelayAdmission(s,input);
         const goalContext=validateGoalContext(s,input);
+        const proactiveContext=validateProactiveContext(s,input);
+        if(proactiveContext)validateProactiveEnforcement(s,input,api.qualifyProactive(s,proactiveEnforcementRequest(s,input)));
+        const workspaceContext=validateWorkspaceContext(s,input);
         if(input.conversationId)find(s,'conversations',input.conversationId,p.id);
         if(!task.planId || !find(s,'plans',task.planId,p.id).approved)fail('PLAN_REQUIRED','Review and approve the concrete plan before starting',409);
-        assertWorkspaceAvailable(s,p.id,{adaptiveLoopId:adaptiveContext?.loopId,assistanceLoopId:assistanceContext?.loopId,goalClaimId:goalContext?.claimId});
+        if(workspaceContext)assertIsolatedWorkspaceAvailable(s,p.id,input);
+        else assertWorkspaceAvailable(s,p.id,{adaptiveLoopId:adaptiveContext?.loopId,assistanceLoopId:assistanceContext?.loopId,goalClaimId:goalContext?.claimId,proactiveOccurrenceId:proactiveContext?.occurrenceId});
         for(const dep of task.dependsOn??[])if(find(s,'tasks',dep,p.id).status!=='done')fail('DEPENDENCY','Task has unfinished dependencies',409);
         const selection=structuredClone(assistanceContext?.selection??p.profile?.provider??null);
+        if(!selection?.instanceId||!selection?.model)fail('MODEL_REQUIRED','Connect a provider and select an observed model before starting',409);
         const harnessSelection=checkCapabilities?.(s,{...input,botId:task.botId},['provider',...(adaptiveContext?['skills']:[])]);
-        const r=entity({operationId:input.operationId,taskId:task.id,botId:task.botId,conversationId:input.conversationId,...(adaptiveContext?{adaptiveContext}:{}),...(assistanceContext?{assistanceContext}:{}),...(relayContext?{relayContext}:{}),...(goalContext?{goalContext}:{}),...(harnessSelection?{harnessSelection}:{}),approvalSnapshot:{taskRevision:task.revision,planRevision:find(s,'plans',task.planId,p.id).revision,botRevision:task.botId?find(s,'bots',task.botId,p.id).revision:null},selection,providerInstanceId:selection?.instanceId,status:'submitting',attemptId:crypto.randomUUID(),profileRevision:p.revision,profile:structuredClone(p.profile),protocolEvents:[],messages:[]},p.id);s.runs.push(r);task.runIds.push(r.id);changed(task);return r;
+        const r=entity({operationId:input.operationId,taskId:task.id,botId:task.botId,conversationId:input.conversationId,...(adaptiveContext?{adaptiveContext}:{}),...(assistanceContext?{assistanceContext}:{}),...(relayContext?{relayContext}:{}),...(goalContext?{goalContext}:{}),...(proactiveContext?{proactiveContext}:{}),...(workspaceContext?{workspaceContext}:{}),...(harnessSelection?{harnessSelection}:{}),approvalSnapshot:{taskRevision:task.revision,planRevision:find(s,'plans',task.planId,p.id).revision,botRevision:task.botId?find(s,'bots',task.botId,p.id).revision:null},selection,providerInstanceId:selection?.instanceId,status:'submitting',attemptId:crypto.randomUUID(),profileRevision:p.revision,profile:structuredClone(p.profile),protocolEvents:[],messages:[]},p.id);s.runs.push(r);reserveBudget(s,{run:r,input});task.runIds.push(r.id);changed(task);return r;
       });if(replay)return run;
       let launchRequested=false;
       try{
         const s=store.read(),p=find(s,'projects',run.projectId),task=find(s,'tasks',run.taskId,p.id);
         await start();
-        const project=await ensureProject(p.id);
+        const resolved=await resolveWorkspaceForRun({store,input,dataDir}),workspace=resolved?.workspace??p.workspace;
+        await store.transaction(s=>{const r=find(s,'runs',run.id,p.id);r.workspace=workspace;r.sourceWorkspace=p.workspace;changed(r);});
+        const project=await ensureProject(p.id,{workspace});
         const validateDispatch=()=>{const current=store.read();
         const reserved=find(current,'runs',run.id,p.id);if(reserved.status!=='submitting'||reserved.stopRequest)fail('RUN_CANCELLED','Run admission was cancelled before dispatch',409);
+        validateBudgetAdmission(current,{run:reserved,input});
         const currentTask=find(current,'tasks',run.taskId,p.id),currentPlan=find(current,'plans',currentTask.planId,p.id);
         if(currentTask.revision!==run.approvalSnapshot.taskRevision+1||!currentPlan.approved||currentPlan.revision!==run.approvalSnapshot.planRevision||(currentTask.botId?find(current,'bots',currentTask.botId,p.id).revision:null)!==run.approvalSnapshot.botRevision||run.relayContext&&find(current,'projects',p.id).revision!==run.profileRevision)fail('REVISION_CONFLICT','Approved task, plan or bot changed during setup; review before a new attempt',409);
         validateAdaptiveContext(current,input);validateAssistanceContext(current,input);
         validateGoalContext({...current,runs:current.runs.filter(r=>r.id!==run.id)},input);
+        validateProactiveContext({...current,runs:current.runs.filter(r=>r.id!==run.id)},input);
+        if(run.proactiveContext)validateProactiveEnforcement(current,input,api.qualifyProactive(current,proactiveEnforcementRequest(current,input)));
+        validateWorkspaceContext(current,input);
         const currentHarness=checkCapabilities?.(current,{...input,botId:currentTask.botId},['provider',...(run.adaptiveContext?['skills']:[])]);
         if(run.harnessSelection&&contextDigest(currentHarness?.plugins)!==contextDigest(run.harnessSelection.plugins))fail('REVISION_CONFLICT','Scoped capabilities changed before dispatch',409);
-        assertWorkspaceAvailable(current,p.id,{runId:run.id,adaptiveLoopId:run.adaptiveContext?.loopId,assistanceLoopId:run.assistanceContext?.loopId,goalClaimId:run.goalContext?.claimId});
+        if(run.workspaceContext)assertIsolatedWorkspaceAvailable(current,p.id,{...input,runId:run.id});
+        else assertWorkspaceAvailable(current,p.id,{runId:run.id,adaptiveLoopId:run.adaptiveContext?.loopId,assistanceLoopId:run.assistanceContext?.loopId,goalClaimId:run.goalContext?.claimId,proactiveOccurrenceId:run.proactiveContext?.occurrenceId});
         if(contextDigest(find(current,'projects',p.id).profile)!==contextDigest(run.profile)||find(current,'projects',p.id).workspace!==p.workspace)fail('REVISION_CONFLICT','Execution settings changed during setup; review this attempt before starting again',409);
         };validateDispatch();
         const provider=run.selection;
@@ -188,13 +215,14 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
         const providerConnectionId=provider.connectionId??store.read().connections.find(c=>c.projectId===p.id&&c.kind==='provider'&&c.providerInstanceId===provider.instanceId&&c.enabled!==false)?.id;
         if(validateProviderSelection){if(!providerConnectionId)fail('PROVIDER_SETUP_REQUIRED','Connect and select this provider in Project accounts & models before execution',409);await validateProviderSelection({projectId:p.id,connectionId:providerConnectionId,selection:provider});}
         const bot=task.botId?find(s,'bots',task.botId,p.id):null;
-        let message=`FORGE task ${task.id}. Work only within this selected workspace: ${p.workspace}. Use this path explicitly as the working directory for commands.\n${task.title}\n${task.description??''}${bot?`\nAssigned bot: ${bot.name}. Role: ${bot.role??''}\n${bot.instructions??''}`:''}${adaptivePrompt(run.adaptiveContext)}${assistancePrompt(run.assistanceContext)}${goalPrompt(run.goalContext)}`;
+        let message=`FORGE task ${task.id}. Work only within this selected workspace: ${workspace}. Use this path explicitly as the working directory for commands.\n${task.title}\n${task.description??''}${bot?`\nAssigned bot: ${bot.name}. Role: ${bot.role??''}\n${bot.instructions??''}`:''}${adaptivePrompt(run.adaptiveContext)}${assistancePrompt(run.assistanceContext)}${goalPrompt(run.goalContext)}${proactivePrompt(run.proactiveContext)}${workspacePrompt(resolved)}`;
         if(prepareContext){const prepared=await prepareContext({run:find(store.read(),'runs',run.id,p.id),project:find(store.read(),'projects',p.id),baseMessage:message});if(typeof prepared?.message!=='string'||!prepared.message)fail('CONTEXT_INVALID','Dispatch context did not return a verified message',409);message=prepared.message;await store.transaction(s=>{const r=find(s,'runs',run.id,p.id);r.contextId=prepared.contextId;r.contextReceipt=structuredClone(prepared.receipt);r.contextMode=prepared.mode??'forge-prefix';changed(r);});}
+        if(run.workspaceContext){const latest=await resolveWorkspaceForRun({store,input,dataDir});if(contextDigest(latest)!==contextDigest(resolved))fail('WORKSPACE_CHANGED','Isolated checkout identity changed during setup',409);}
         validateDispatch();
         launchRequested=true;
         const launched=await call('t3_thread_launch',{projectId:project.id,clientRequestId:run.id,title:task.title,message,runtimeMode:'approval-required',...(provider?.instanceId&&provider?.model?{modelSelection:{instanceId:provider.instanceId,model:provider.model,options:provider.options??[]}}:{})});
         await store.transaction(state=>{const r=find(state,'runs',run.id);r.t3ProjectId=project.id;r.threadId=launched.threadId;r.providerRunId=launched.runId;r.providerInstanceId=provider?.instanceId;r.status=launched.status??'running';changed(r);const task=find(state,'tasks',r.taskId);task.threadId=r.threadId;task.status='running';changed(task);appendProtocol(state,r,{type:'RUN_STARTED',threadId:r.threadId,runId:r.id});});
-      }catch(e){await store.transaction(s=>{const r=find(s,'runs',run.id);r.status=launchRequested?'unknown':'failed';r.error=e.message;changed(r);if(!launchRequested){const task=find(s,'tasks',r.taskId,r.projectId);task.status='blocked';changed(task);}appendProtocol(s,r,{type:'CUSTOM',name:launchRequested?'forge.execution.uncertain':'forge.execution.setup-failed',value:{error:e.message,attemptId:r.attemptId}});});}
+      }catch(e){await store.transaction(s=>{const r=find(s,'runs',run.id);r.status=launchRequested?'unknown':'failed';r.error=e.message;changed(r);if(!launchRequested){const task=find(s,'tasks',r.taskId,r.projectId);task.status='blocked';changed(task);}appendProtocol(s,r,{type:'CUSTOM',name:launchRequested?'forge.execution.uncertain':'forge.execution.setup-failed',value:{error:e.message,attemptId:r.attemptId}});});if(!launchRequested)await onNotDispatched?.({projectId:run.projectId,runId:run.id,attemptId:run.attemptId,sourceReceiptId:`forge-task:not-dispatched:${run.id}`});}
       const observed=find(store.read(),'runs',run.id);if(observed.threadId){try{await protocol.observe(run.id);}catch{/* Execution is retained; explicit recovery exposes the disconnected observation. */}}
       return find(store.read(),'runs',run.id);
     },

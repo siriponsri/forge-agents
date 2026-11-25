@@ -1,5 +1,18 @@
 # Complete product acceptance matrix
 
+## Latest Owner extensions — 2026-11-25
+
+Mandatory additive scope: [Mission/Visualization/Parallel/Proactive](../../requirements/FORGE_MISSIONS_AND_VISUALIZATION.md),
+[SuperUser product/team adoption](../../requirements/SUPERUSER_ADOPTION.md) and
+[Research/Evaluation RES-01–10](../../requirements/RESEARCH_EVALUATION_ADDENDUM.md).
+Use their explicit evidence gates alongside every v3 row below. RES01–10 require
+reproducible local qualification and integrated GUI/headless paths; source
+metadata is not benchmark execution, and deterministic fixtures do not establish
+agent quality or research conclusions. No large benchmarks/additional benchmark
+API charges/GPU rental/RL training/prototype in this iteration. P01 requires an
+actual qualified guarded native route before automatic scope-enforced dispatch.
+Latest status remains IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN.
+
 Additional acceptance: DH-01–DH-09 from the [Owner addendum](13_DEEPSEEK_HARNESS_ADDENDUM.md)
 are mandatory at their declared priorities. [DH task map](../../DH_TASK_MAP.md)
 maps them to current capabilities and remaining checks. Registry/Plugin Manager,

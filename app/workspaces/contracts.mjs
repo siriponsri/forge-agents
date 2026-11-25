@@ -24,6 +24,7 @@ export function assertNoMixedControllers(s,projectId,input={}){
   const projects=relatedProjects(s,projectId),inactive=new Set(['completed','cancelled','stopped','exhausted']);
   if(s.events.some(e=>projects.has(e.projectId)&&(
     e.type==='goal.claim'&&e.status==='held'||
+    e.type==='proactive.occurrence'&&e.held===true||
     ['adaptive.loop','assistance.loop'].includes(e.type)&&!inactive.has(e.status)||
     e.type==='goal.goal'&&!inactive.has(e.status)&&e.taskIds?.includes(input.taskId)
   )))fail('WORKSPACE_CONTROLLER_CONFLICT','Reconcile the existing task strategy or goal checkout first',409);

@@ -66,3 +66,17 @@ quality claims. HOME_UAT_NOT_RUN remains explicit until the Owner runs it.
 - Treat unknown external outcomes as unknown; never replay effects to recover UI.
 - Keep authentication, authorization and scope independent of model-visible tools.
 - Expose actionable setup and truthful implementation/qualification limits.
+
+## Latest Owner extensions — 2026-11-25
+
+Apply SuperUser concepts to product workflows and development practice: compiled
+presets, five-part briefs, evidence-linked review and draft lessons, retaining
+canonical Mission/Goals/Memory/Adaptive authority. See
+`docs/requirements/SUPERUSER_ADOPTION.md`.
+
+Research Lab and reproducible evaluation RES-01–10 are required infrastructure,
+using existing owners and small deterministic qualification fixtures, with no
+large benchmark/API spend or RL training this iteration. See
+`docs/requirements/RESEARCH_EVALUATION_ADDENDUM.md`.
+Owner confirmed P01: start Proactive native enforcement with a bounded FORGE
+Guarded Route on T3/OpenCode; qualify actual deny/allow behavior before enabling.

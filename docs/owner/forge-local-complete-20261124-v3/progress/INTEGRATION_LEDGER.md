@@ -1,5 +1,15 @@
 # Integration Ledger
 
+## Latest controller integration — 2026-11-25
+
+Mission, isolated Parallel, Proactive, Budget and SuperUser have production
+App/Owner HTTP mounts and lead controller/restore seams. See CURRENT_STATUS for
+executed check scopes. Real Git/local tests/preview/ZIP are distinct from injected
+provider/native observations. Native budget billing receipt ingestion and native
+all-action proactive enforcement are still implementation work. P01 Guarded
+Route and RES01–10 Research Lab are active isolated assignments; neither is
+complete merely because its interface or source audit exists.
+
 ## Active completion integration — 2026-11-25
 
 Compute environment patch has been applied. `app/server/compute-credentials.mjs`

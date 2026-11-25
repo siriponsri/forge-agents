@@ -7,7 +7,7 @@ export class ApiError extends Error {
 export const operationId = () => crypto.randomUUID();
 let browserSession;
 async function ownerHeaders(path,body){
-  const needs=/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|memory|owner-memory|context|goals|compute|plugins|relay|secrets)\//.test(path);
+  const needs=/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|memory|owner-memory|context|goals|compute|plugins|relay|secrets|missions|proactive|workspaces|budgets|playbooks)\//.test(path);
   if(body===undefined||!needs)return {};
   browserSession??=fetch('/api/session',{cache:'no-store'}).then(async r=>{const data=await r.json();if(!r.ok||!data.csrf)throw new ApiError('Reload the FORGE page before performing this Owner action.',403,'BROWSER_SESSION_REQUIRED');return data;}).catch(e=>{browserSession=null;throw e;});
   return {'X-Forge-CSRF':(await browserSession).csrf};

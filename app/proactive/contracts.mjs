@@ -54,7 +54,8 @@ export function checkEnvelope(s,r,clock){
   graph(s,r.projectId);return v;
 }
 export function available(s,projectId,except){
-  workspaceFree(s,{projectId});const projects=workspaceProjects(s,projectId);
+  // Exclude only this controller's exact held claim from the shared guard.
+  workspaceFree({...s,events:s.events.filter(e=>e.type!=='proactive.occurrence'||e.id!==except)},{projectId});const projects=workspaceProjects(s,projectId);
   if(s.events.some(e=>e.type==='proactive.occurrence'&&projects.has(e.projectId)&&active(e)&&e.id!==except))fail('PROACTIVE_BUSY','An active or unknown proactive attempt owns this workspace',409);
 }
 export function taskFor(s,r,v){

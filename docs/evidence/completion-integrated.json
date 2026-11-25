@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-25",
+  "qualification": "PRODUCTION_APP_SQLITE_GIT_LOCAL_TESTS_PREVIEW_ZIP_INJECTED_NATIVE_PROVIDER_OBSERVATIONS",
+  "platform": "win32",
+  "node": "24.19.0",
+  "checks": [
+    {
+      "command": "npm run build",
+      "status": "PASS",
+      "durationSeconds": 86,
+      "notes": "Existing third-party use-client and large-chunk warnings remain."
+    },
+    {
+      "command": "node --test tests/product-workspace-dispatch.test.mjs tests/product-missions-proactive.test.mjs",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "real": ["Owner session and CSRF", "SQLite", "Git worktrees", "exact production T3 admission", "model/options/context binding", "local Node tests", "static preview", "QA/Owner receipts", "verified ZIP bytes", "restore and replay fences"],
+      "injected": ["Native T3 wire", "Provider execution observations"]
+    },
+    {
+      "command": "node --test tests/product-completion-ui.test.mjs",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "real": ["Built production App", "Owner forms", "HTTP services", "local Node test and preview", "delivery download"],
+      "surfaces": ["Missions", "Parallel workspaces", "Proactive workflows", "Budgets", "Workflow presets"],
+      "viewports": [{"width":1440,"language":"en"},{"width":375,"language":"th"}],
+      "captures": 10,
+      "pageErrors": [],
+      "documentOverflow": false,
+      "providerTurns": 0,
+      "injectedProviderObservations": true
+    }
+  ],
+  "accounting": "Unknown; no fabricated prices or native accounting finality",
+  "proactiveNativeEnforcement": "NOT_QUALIFIED; Inbox before start",
+  "fullSuite": "NOT_RUN_FOR_THIS_MERGED_CHECKPOINT",
+  "homeUat": "HOME_UAT_NOT_RUN",
+  "push": "NOT_RUN"
+}

@@ -1,5 +1,23 @@
 # Decisions
 
+## Owner extensions and P01 — 2026-11-25
+
+Owner chose applying the attached SuperUser pack to **both the app and team
+practice**: workflow presets, five-part briefs, evidence reviews and draft
+lessons. The archive is source material, not overriding AGENTS or model/account
+authority. Lead inspected it against main; source checksum/rights boundary and
+native-service mappings are in `docs/requirements/SUPERUSER_ADOPTION.md`.
+
+Owner confirmed P01: build bounded FORGE Guarded Route on T3/OpenCode, initially
+read/propose/text edits, then expand. Current null qualifier stays until native
+mandatory all-tool and path/identity controls pass actual negative tests. This
+is implementation authorization, not a declaration that existing T3 is sandboxed.
+
+`re_task.md` adds RES-01–10 reproducible Research/Evaluation infrastructure.
+Implement on existing owners with small deterministic qualification fixtures;
+no large benchmark execution, additional benchmark API charges, GPU rental,
+RL training or prototype activation. Existing completion/release gates persist.
+
 ## Completion and release authorization — 2026-11-25
 
 Owner explicitly requested opening a goal to complete every required function

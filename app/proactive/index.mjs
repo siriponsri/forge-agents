@@ -19,7 +19,7 @@ export async function dispatchProactiveRequest(service,method,input,caller){
  * No HTTP listener or network credential handling is created by this module.
  */
 export function createProactiveService({store,t3,authorize,authenticateEvent,clock=Date.now}){
-  let closed=false,timer=null,ticking=null,started=false,starting=null,closing=null;const pending=new Set();
+  let closed=false,suspended=false,timer=null,ticking=null,started=false,starting=null,closing=null;const pending=new Set();
   const get=(i,s=store.read())=>record(s,'recipe',i.recipeId,i.projectId);
   const trace=(s,r,action,data={})=>{changed(r);append(s,'transition',{recipeId:r.id,versionId:r.versionId,action,at:clock(),...data},r.projectId);};
   function inbox(s,r,code,o=null){
@@ -36,10 +36,10 @@ export function createProactiveService({store,t3,authorize,authenticateEvent,clo
     return {kind:'human',role:'owner',subject:a.subject};
   }
   async function command(method,input,caller,fn){
-    ensureOpen();exact(input,[...common,...extras[method]]);input=structuredClone(input);
+    ensureOpen();if(suspended)fail('RESTORE_BUSY','Proactive work is suspended during metadata restore',409);exact(input,[...common,...extras[method]]);input=structuredClone(input);
     boundedText(input.operationId,'operationId',200);const who=await actor(method,input,caller),fingerprint=digest({service:'proactive',method,input});
     return store.transaction(async s=>{
-      ensureOpen();
+      ensureOpen();if(suspended)fail('RESTORE_BUSY','Proactive work is suspended during metadata restore',409);
       find(s,'projects',input.projectId);
       const prior=s.receipts.find(x=>x.operationId===input.operationId);
       if(prior){if(prior.fingerprint!==fingerprint)fail('OPERATION_REUSE','Operation belongs to another command',409);return prior.result;}
@@ -98,7 +98,7 @@ export function createProactiveService({store,t3,authorize,authenticateEvent,clo
   async function dispatch(id,projectId){
     const reservation=await store.transaction(s=>{
       const o=record(s,'occurrence',id,projectId),r=get({recipeId:o.recipeId,projectId},s);
-      if(o.status!=='scheduled'||closed)return null;
+      if(o.status!=='scheduled'||closed||suspended)return null;
       try{
         const v=checkEnvelope(s,r,clock);if(o.versionId!==v.id||o.grantId!==r.grant.id)fail('STALE_TRIGGER','Trigger grant is stale',409);
         if(t3?.proactiveContextVersion!==1||['startRun','stop','reconcile'].some(k=>typeof t3?.[k]!=='function'))fail('PROACTIVE_CONTEXT_UNSUPPORTED','T3 must validate, persist and prompt proactive context version 1',409);
@@ -116,7 +116,7 @@ export function createProactiveService({store,t3,authorize,authenticateEvent,clo
     // before the one and only call; T3 must repeat the authoritative validation.
     const input=await store.transaction(s=>{
       const o=record(s,'occurrence',id,projectId),r=get({recipeId:o.recipeId,projectId},s);
-      if(o.status!=='claimed'||o.stopRequested||closed)return null;
+      if(o.status!=='claimed'||o.stopRequested||closed||suspended)return null;
       try{checkEnvelope(s,r,clock);checkBudget(s,r,currentVersion(s,r));available(s,projectId,o.id);const input={projectId,taskId:o.taskId,proactiveContext:o.context};validateProactiveEnforcement(s,input,t3.qualifyProactive(s,proactiveEnforcementRequest(s,input,clock)),clock);}catch(e){o.status='inbox';o.held=false;o.error=e.code??'NATIVE_ENFORCEMENT_UNQUALIFIED';inbox(s,r,o.error,o);changed(o);return null;}
       o.status='dispatching';o.dispatchedAt=clock();changed(o);trace(s,r,'dispatching',{occurrenceId:o.id});
       return {projectId,taskId:o.taskId,conversationId:null,operationId:o.operationId,proactiveContext:structuredClone(o.context)};
@@ -128,7 +128,16 @@ export function createProactiveService({store,t3,authorize,authenticateEvent,clo
     await stopOwned(id,projectId);
   }
   async function tick(){
-    ensureOpen();if(ticking)return ticking;
+    ensureOpen();if(suspended)return;if(ticking)return ticking;
+    // Do not turn an idle scheduler heartbeat into a canonical data revision.
+    // It otherwise continually invalidates Owner CAS and metadata restore.
+    const snapshot=store.read();
+    const needsWork=snapshot.events.some(e=>e.type==='proactive.occurrence'&&['scheduled','claimed','dispatching','dispatched','unknown'].includes(e.status))||snapshot.events.some(r=>{
+      if(r.type!=='proactive.recipe'||r.status!=='enabled')return false;
+      try{checkEnvelope(snapshot,r,clock);}catch{return true;}
+      return r.nextDue&&clock()>=r.nextDue.at;
+    });
+    if(!needsWork)return;
     const submissions=[];
     ticking=(async()=>{
       await store.transaction(s=>{
@@ -191,7 +200,7 @@ export function createProactiveService({store,t3,authorize,authenticateEvent,clo
     // INTERNAL seam only. authenticateEvent must verify an existing transport's
     // signature/session/replay evidence and bind source/subject/project/type.
     async ingestEvent(input,caller){
-      ensureOpen();exact(input,['projectId','recipeId','eventId','occurredAt']);input=structuredClone(input);boundedText(input.eventId,'eventId',200);integer(input.occurredAt,'occurredAt',0,Number.MAX_SAFE_INTEGER);
+      ensureOpen();if(suspended)fail('RESTORE_BUSY','Proactive work is suspended during metadata restore',409);exact(input,['projectId','recipeId','eventId','occurredAt']);input=structuredClone(input);boundedText(input.eventId,'eventId',200);integer(input.occurredAt,'occurredAt',0,Number.MAX_SAFE_INTEGER);
       const auth=await authenticateEvent?.({projectId:input.projectId,recipeId:input.recipeId,eventId:input.eventId,occurredAt:input.occurredAt},caller);
       if(!auth||auth.projectId!==input.projectId||!['source','subject','eventType'].every(k=>typeof auth[k]==='string'&&auth[k]))fail('EVENT_AUTH_REQUIRED','Authenticated event transport identity required',403);
       const result=await store.transaction(s=>{
@@ -221,6 +230,9 @@ export function createProactiveService({store,t3,authorize,authenticateEvent,clo
       starting=(async()=>{await api.recover();if(closed)return;started=true;timer=setInterval(()=>{track(tick()).catch(()=>{});},intervalMs);timer.unref?.();})();
       try{await starting;}finally{starting=null;}
     },
+    async suspendForRestore(){suspended=true;await Promise.allSettled([...pending]);},
+    async afterRestore(){await api.recover();},
+    cancelRestore(){suspended=false;},
     close(){
       if(closing)return closing;closed=true;clearInterval(timer);
       closing=(async()=>{

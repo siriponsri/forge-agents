@@ -2,14 +2,21 @@
 
 ## Latest scoped update — 2026-11-25
 
-This section supersedes old pending compute environment statements, not the
-full acceptance assessment. `IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN`.
+This section supersedes older pending integration statements for the rows below,
+not the full acceptance assessment. `IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN`.
 
 | Criteria | Integrated implementation and actual verification |
 |---|---|
 | A09/A10/A11 | Exact project/purpose machine-vault references now resolve into ephemeral SSH/Jupyter/cloud transport maps.17 focused tests PASS; production HTTP + actual Windows DPAPI check PASS for two-project same-name keys, rotation/removal/redaction/no global fallback. Cloud protocol is loopback fixture, live cloud/SSH NOT_RUN. |
 | A03/A04/A21/A22 | Chat→Workspace canonical live projection and guarded existing Run details mount;12 scoped graph/core/UI checks and production build PASS. Injected run observations remain explicitly separate from provider execution. |
-| New Mission/Parallel/Proactive | Accepted requirements; isolated workers implementing services/UI/tests. Lead runtime/HTTP/App integration and integrated qualification pending, not passed from worker reports. |
+| Mission + Delivery Pack | Production Owner HTTP/CSRF and built App mount. Actual form/plan, local Node tests, immutable static preview, independent QA/Owner receipts and verified ZIP download passed; provider observations are explicitly injected and billing remains unknown. Arbitrary server preview/dependency installation is not claimed. |
+| Parallel Workspace | Production T3 reservation, exact isolated Git checkout/project dispatch, model/options/context replay and final admission checked with real Git/SQLite plus injected native wire. Real two-branch merge/conflict checks are retained from worker tests. Live parallel provider turns NOT_RUN. |
+| Proactive Workflows / P01 | Production recipe/Owner UI, scheduler, Inbox, restore invalidation and unconditional admission are mounted. Unqualified native routes enter Inbox before any start. Idle scheduler does not change state revisions. Matching guarded native runtime is being implemented; all-action enforcement is not qualified by configuration or prompts. |
+| PC-04 Budget | Production task/conversation atomic reservation, final policy fence, host-only no-dispatch proof, restore safety, Owner policy routes and UI mounted. Actual immutable native monetary receipt ingestion remains implementation work; no costs or accounting finality inferred from completion/token context. |
+| SuperUser adoption | Five original presets, versioned five-part briefs, explicit canonical Mission draft materialization, evidence observations and draft-only procedural lessons merged and mounted. Production Owner HTTP replay/restore checks pass with zero approval or execution from presets; archive model/account defaults are not authority. |
+| RES-01–10 Research | Requirements and canonical policy/context receipt contract accepted. Isolated Research Lab worker active. Source audit, module implementation and production execution/HTTP/App composition remain separate gates; no benchmark/model-quality results claimed. |
+
+Latest production backend check: `node --test tests/product-workspace-dispatch.test.mjs tests/product-missions-proactive.test.mjs` — **7 PASS / 0 FAIL / 0 SKIP**. It exercises actual production services, session/CSRF, SQLite, Git, local tests, preview, ZIP and restore; native/provider wire observations are injected. Merged production build PASS (1m26s); `tests/product-completion-ui.test.mjs` **1 PASS**, actual built App at1440px English/375px Thai for Mission, Parallel, Proactive, Budget and Workflow screens, ten captures/no page errors/no document overflow. These are scoped results, not a complete product suite total. Evidence scope: `docs/evidence/completion-integrated.json`.
 
 The active goal includes all v3/addenda behavior, landing/public website and
 professional English README/screenshots/step-by-step GIFs. Final documentation,

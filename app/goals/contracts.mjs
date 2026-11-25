@@ -93,6 +93,8 @@ export function workspaceFree(s,g,exceptClaimId) {
   // No execution adapter currently proves separate workspaces. Advisory task
   // scope and a goal checkout are never advertised as filesystem isolation.
   const projects=workspaceProjects(s,g.projectId);
+  if(s.events.some(e=>e.type==='proactive.occurrence'&&projects.has(e.projectId)&&e.held===true))fail('PROACTIVE_CONTEXT_REQUIRED','A proactive controller owns this workspace',409);
+  if(s.events.some(e=>e.type==='workspace.workspace'&&projects.has(e.projectId)&&['admitting','running','unknown','stopping'].includes(e.status)))fail('WORKSPACE_CONTEXT_REQUIRED','An isolated workspace attempt owns this source project',409);
   if(s.runs.some(r=>projects.has(r.projectId)&&(!r.kind||r.taskId||r.kind==='conversation')&&!terminal.has(r.status)&&r.status!=='stopped')||s.jobs.some(j=>projects.has(j.projectId)&&j.computeAttempt&&['queued','submitting','submitted','starting','running','stopping','unknown','interrupted','awaiting-owner'].includes(j.status))||s.events.some(c=>c.type==='goal.claim'&&projects.has(c.projectId)&&c.status==='held'&&c.id!==exceptClaimId))fail('WORKSPACE_BUSY','Active or unknown execution owns this workspace; reconcile it first',409);
   if(s.events.some(e=>['adaptive.loop','assistance.loop'].includes(e.type)&&projects.has(e.projectId)&&!['completed','stopped','exhausted'].includes(e.status)))fail('CONTROLLER_BUSY','An existing role/skill controller owns this workspace',409);
 }
