@@ -1,0 +1,19 @@
+.budget-studio { max-width: 1180px; }
+.budget-studio .panel { margin-block: 20px; }
+.budget-studio h2 { margin: 0 0 16px; }
+.budget-studio .help { max-width: 75ch; line-height: 1.7; }
+.budget-studio .budget-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+.budget-studio fieldset { margin-block: 16px; padding: 18px; }
+.budget-studio .budget-table-scroll { overflow-x: auto; max-width: 100%; }
+.budget-studio table { width: 100%; border-collapse: collapse; text-align: left; font-variant-numeric: tabular-nums; }
+.budget-studio caption { text-align: left; color: var(--muted); margin-bottom: 12px; }
+.budget-studio td,.budget-studio th { padding: 12px 10px; vertical-align: top; border-bottom: 1px solid var(--line); }
+.budget-studio th { font-weight: 600; }
+.budget-studio td small,.budget-studio th small { display: block; margin-top: 6px; }
+.budget-studio code { overflow-wrap: anywhere; font-size: 11px; }
+.budget-studio .budget-warning { color: var(--warning); }
+.budget-studio details { padding-block: 16px; border-bottom: 1px solid var(--line); }
+.budget-studio summary { cursor: pointer; min-height: 32px; }
+.budget-studio li { margin-block: 10px; overflow-wrap: anywhere; }
+.budget-studio :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+@media(max-width: 640px) { .budget-studio .budget-fields { grid-template-columns: 1fr; } .budget-studio fieldset { padding: 12px; } .budget-studio .actions { flex-wrap: wrap; } }
