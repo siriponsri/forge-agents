@@ -65,7 +65,7 @@ test('exact cohort route, pending/final gates, global durable ledgers, gateway a
   h.control.beforePrompt=async run=>{
     await f.store.transaction(s=>{const r=s.runs.find(r=>r.id===run.id);r.threadId='thread:'+r.id;r.workspace=r.actualWorkspace;Object.assign(run,r);});
     const request=route.requestForInput(f.store.read(),run),profile={projectId:run.projectId,taskId:run.taskId,runId:run.id,threadId:run.threadId,...selected,scope:{...request.scope,maxBytes:request.maxBytes},expiresAt:request.deadlineAt,manifestDigest:'d'.repeat(64),contextDigest:'c'.repeat(64)};
-    lives.set(run.id,{profile,attestation:null,phases:[],live:false});
+    lives.set(run.id,{profile,routeProof:guarded.qualifyProactive(f.store.read(),request),attestation:null,phases:[],live:false});
     await f.store.transaction(s=>{assert.equal(route.validate(s,{run:s.runs.find(r=>r.id===run.id),stage:'reservation'}),true);assert.ok(route.reserve(s,{run:s.runs.find(r=>r.id===run.id)}));});
     const receiptPath=path.join(f.dir,run.id+'.sqlite');ledgers.set(run.id,receiptPath);const db=new DatabaseSync(receiptPath);db.exec('CREATE TABLE guarded_receipts(run TEXT,operation TEXT,request_hash TEXT,status TEXT,result TEXT)');db.close();
   };
@@ -76,7 +76,11 @@ test('exact cohort route, pending/final gates, global durable ledgers, gateway a
     run=f.store.read().runs.find(r=>r.id===run.id);messages.set(run.id,actual.message);
     assert.throws(()=>route.validate(f.store.read(),{run,stage:'send',messageDigest:digest(actual.message)}),{code:'RESEARCH_NATIVE_ATTESTATION_REQUIRED'});
     const live=lives.get(run.id),p=live.profile;live.attestation={profileDigest:digest(p),contextDigest:p.contextDigest,manifestDigest:p.manifestDigest,binarySha256:p.route.opencodeBinarySha256,policyGeneration:p.policyGeneration,toolGeneration:p.toolGeneration,effects:0,negativeCount:17};live.phases=['openSession','ensureThread'];live.live=true;
+    const qualificationReads=observed.requests;
     assert.equal(route.validate(f.store.read(),{run,stage:'send',messageDigest:digest(actual.message)}),true);
+    assert.equal(observed.requests,qualificationReads,'run callbacks use the same private accepted proof without nested installation qualification');
+    const identity=live.routeProof.identitySnapshot;live.routeProof.identitySnapshot='foreign';
+    assert.throws(()=>route.validate(f.store.read(),{run,stage:'send',messageDigest:digest(actual.message)}),{code:'RESEARCH_NATIVE_LIVE_PROOF_REQUIRED'});live.routeProof.identitySnapshot=identity;
     assert.throws(()=>route.validate(f.store.read(),{run,stage:'send',messageDigest:digest(actual.message+'changed')}),{code:'RESEARCH_FINAL_PROMPT'});
     return {...prepared,receipt:run.researchComponentReceipt};
   };

@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-11-25T08:41:15.518Z",
+  "authentication": "anonymous",
+  "results": [
+    {
+      "path": "/git/refs/heads/main",
+      "status": 200,
+      "sha": "d928e9cc97d54abbd38f2f65afa1798ac8b5b6d5"
+    },
+    {
+      "path": "/commits/d928e9cc97d54abbd38f2f65afa1798ac8b5b6d5",
+      "status": 200,
+      "sha": "d928e9cc97d54abbd38f2f65afa1798ac8b5b6d5"
+    },
+    {
+      "path": "/releases?per_page=20",
+      "status": 200,
+      "sha": null,
+      "releases": []
+    }
+  ]
+}

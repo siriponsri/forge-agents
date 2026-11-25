@@ -194,3 +194,11 @@ replace assembled product qualification. Next lead task at home: resolve the
 Research attestation timeout under existing fences, qualify full native cohort
 and mounted Office journey, then final review/media/clean-clone checks. Complete
 product goal remains open; see docs/CHECKPOINT_HOME_20261125.md.
+
+## Owner-requested pause and added tasks — 2026-11-25
+
+Pause the active goal until the Owner resumes it. Add pending tasks README-PRO
+(more professional English README) and LOGO-MIN (original minimal FORGE logo).
+Neither design task has started. Candidate Research investigation and exact
+latest failure are preserved in docs/NEXT_SESSION_20261126.md on the local
+continuation branch; main stays at the published checkpoint.

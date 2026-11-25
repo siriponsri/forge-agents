@@ -46,7 +46,14 @@ export function createResearchRoute({store,dataDir,policy,getGuarded,components,
     // Before reservation use the canonical allocation context, never a source
     // actor or caller record. The resolver has already verified that allocation.
     if(!run){const x=resolveResearchAllocation(s,{projectId:request.projectId,trialId:request.trialId,workspaceId:workspace.id,runOperationId:request.runOperationId});if(x)input.researchComponentContext=allocationContext(x.allocation);}
-    const g=getGuarded(),selected=sync(policy.observe,s,{projectId:request.projectId}),r=guardedRequest(s,input),proof=g?.qualifyProactive?.(s,r),live=run?g?.privateSnapshot?.(run.id):null;
+    const g=getGuarded(),selected=sync(policy.observe,s,{projectId:request.projectId}),r=guardedRequest(s,input),live=run?g?.privateSnapshot?.(run.id):null;
+    // The run-bound bridge validates its installation/images immediately before
+    // invoking these callbacks, under the same writer. Observe that SAME private
+    // accepted proof here; asking the installation host to re-qualify again at
+    // each nested callback multiplies synchronous image reads during attestation.
+    // privateSnapshot still checks live images; current policy is observed above.
+    const proof=run?live?.routeProof:g?.qualifyProactive?.(s,r);
+    if(run&&(!proof||proof.projectId!==r.projectId||proof.taskId!==r.taskId||proof.envelopeDigest!==r.envelopeDigest||proof.identitySnapshot!==r.identitySnapshot||proof.scopeDigest!==digest(r.scope)))fail('RESEARCH_NATIVE_LIVE_PROOF_REQUIRED','Exact private accepted route binding required',409);
     if(run&&(!live||live.profile?.runId!==run.id||live.revoked))fail('RESEARCH_NATIVE_LIVE_PROOF_REQUIRED','Actual private Guarded reservation required',409);
     if(run&&['send','action','native-phase','model-request'].includes(stage)&&live.live!==true)fail('RESEARCH_NATIVE_ATTESTATION_REQUIRED','Current live native lease required for effects',409);
     return {...selected,scope:structuredClone(scope),limits:r.limits,routeProof:proof,profile:live?.profile??null,attestation:live?.attestation??null,phases:live?.phases??[]};

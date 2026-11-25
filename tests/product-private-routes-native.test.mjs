@@ -15,6 +15,7 @@ import {bytesDigest} from '../app/guarded-runtime/profile.mjs';
 import {defaultResearchConfig} from '../app/research/index.mjs';
 
 const cache=process.env.FORGE_GUARDED_TEST_CACHE??path.join(os.tmpdir(),'forge-frontend-generation-VD6puQ');
+const researchOnly=process.env.FORGE_NATIVE_ROUTE_PURPOSE==='research';
 // Explicit qualification job: the last assembled run completed frontend, then
 // failed Research native attestation with zero model egress. See the checkpoint
 // handoff. Do not mistake an opt-in skip for qualification of that integration.
@@ -22,7 +23,7 @@ test('production supervised result and Research use their exact native purposes 
   const dir=await mkdtemp(path.join(os.tmpdir(),'forge-product-private-routes-')),workspace=path.join(dir,'source');await mkdir(workspace);await writeFile(path.join(workspace,'README.md'),'Disposable engineering fixture\n');
   const git=args=>execFileSync('git',args,{cwd:workspace,windowsHide:true,encoding:'utf8'});
   git(['init','--quiet']);git(['add','README.md']);git(['-c','user.name=FORGE fixture','-c','user.email=fixture@example.invalid','commit','--quiet','-m','Disposable base']);
-  let mode='frontend',requests=0;const bodies=[];let documentId;
+  let mode=researchOnly?'research':'frontend',requests=0;const bodies=[];let documentId;
   const model=createServer(async(req,res)=>{
     try{let raw='';for await(const b of req)raw+=b;const body=JSON.parse(raw);bodies.push({mode,body});requests++;
       const tools=body.messages.filter(m=>m.role==='tool');let call;
@@ -37,6 +38,10 @@ test('production supervised result and Research use their exact native purposes 
     }catch(e){res.writeHead(500,{'Content-Type':'application/json'});res.end(JSON.stringify({error:e.message}));}
   });await new Promise(r=>model.listen(0,'127.0.0.1',r));t.after(()=>new Promise(r=>{model.closeAllConnections();model.close(r);}));
   const app=await createApplication({dataDir:path.join(dir,'data'),machineSecretDir:path.join(dir,'machine'),guardedArtifactOptions:{approvedCache:cache}});t.after(()=>app.close());
+  // Transparent test diagnostics: preserve the real writer, return value,
+  // rollback and error. Record codes only; never prompt/credential contents.
+  const transactionFailures=[],transaction=app.store.transaction.bind(app.store);
+  app.store.transaction=fn=>transaction(fn).catch(error=>{transactionFailures.push(error.code??error.name);throw error;});
   const envName='FORGE_PRIVATE_FIXTURE_'+crypto.randomUUID().replaceAll('-','');process.env[envName]='INJECTED_NOT_LIVE';t.after(()=>delete process.env[envName]);
   const p=entity({name:'Native route product qualification',workspace,profile:{}}),plan=entity({name:'Approved engineering plan',approved:true},p.id),bot=entity({name:'Fixture agent',kind:'resident',status:'active'},p.id);
   const tasks=['Read the saved selection','Aggregate the immutable research input'].map(title=>entity({title,description:'Only the explicitly bounded native purpose.',planId:plan.id,botId:bot.id,status:'ready',runIds:[],dependsOn:[],artifactIds:[],evidence:[]},p.id));
@@ -51,12 +56,15 @@ test('production supervised result and Research use their exact native purposes 
   await assert.rejects(app.t3.startRun({projectId:p.id,taskId:crypto.randomUUID(),operationId:crypto.randomUUID()}));
   let setup=await post('/api/guarded/install',{projectId:p.id,operationId:crypto.randomUUID()});await until(async()=>{setup=await post('/api/guarded/state',{projectId:p.id});assert.notEqual(setup.installation.status,'failed',JSON.stringify(setup));return setup.installation.status==='ready';});
   await post('/api/guarded/check',{projectId:p.id,operationId:crypto.randomUUID()});assert.equal(requests,0);
+  let frontendRun;
+  if(!researchOnly){
   const intent=await post('/api/frontend-tools/intent',{projectId:p.id,taskId:tasks[0].id,documentId:doc.id,documentRevision:1,operationId:crypto.randomUUID()});
   const starting=post('/api/frontend-tools/start',{projectId:p.id,intentId:intent.intentId,operationId:intent.operationId});starting.catch(()=>{});
   const pending=await until(async()=>{const r=app.store.read().runs.find(r=>r.frontendContext);if(!r)return null;if(['failed','unknown'].includes(r.status))throw Error(JSON.stringify(r));const result=await post('/api/frontend-tools/pending',{projectId:p.id,runId:r.id,attemptId:r.attemptId});return result.calls.find(c=>c.status==='pending')?{run:r,call:result.calls.find(c=>c.status==='pending')}:null;});
   await post('/api/frontend-tools/result',{projectId:p.id,runId:pending.run.id,attemptId:pending.run.attemptId,pendingId:pending.call.pendingId,operationId:crypto.randomUUID(),result:{status:'ok',documentId:doc.id,revision:1,selection:{start:0,end:5,text:'hello'}}});await starting;
-  const frontendRun=await until(()=>{const r=app.store.read().runs.find(r=>r.id===pending.run.id);return r.terminalEvent?r:null;});assert.equal(frontendRun.status,'completed',frontendRun.error);assert.equal(frontendRun.guardedContext.profile.purpose,'supervised-frontend-v1');
+  frontendRun=await until(()=>{const r=app.store.read().runs.find(r=>r.id===pending.run.id);return r.terminalEvent?r:null;});assert.equal(frontendRun.status,'completed',frontendRun.error);assert.equal(frontendRun.guardedContext.profile.purpose,'supervised-frontend-v1');
   assert.ok(bodies.filter(x=>x.mode==='frontend').some(x=>x.body.messages.some(m=>m.role==='tool'&&JSON.stringify(m.content).includes('hello'))));
+  }
   mode='research';await post('/api/workspaces/configure',{projectId:p.id,operationId:crypto.randomUUID(),expectedRevision:0,maxConcurrent:1,providerLimit:1,checks:['diff']});
   const w=await post('/api/workspaces/create',{projectId:p.id,taskId:tasks[1].id,expectedTaskRevision:tasks[1].revision,operationId:crypto.randomUUID()});
   const config={...defaultResearchConfig(),execution:'agent',repetitions:1,policies:['static'],ablations:[{name:'bounded-native',components:{memory:false,skills:false,adaptation:false,staffing:false,verification:false}}],limits:{...defaultResearchConfig().limits,maxMs:300000,maxSteps:8,unknownAccounting:'allow'}};
@@ -64,7 +72,7 @@ test('production supervised result and Research use their exact native purposes 
   const executed=await post('/api/research/execute',{projectId:p.id,trialId:trial.id,expectedRevision:trial.revision,operationId:crypto.randomUUID()});assert.notEqual(executed.status,'reconcile-required',JSON.stringify(executed));
   const nativeResearch=await until(()=>{const r=app.store.read().runs.find(r=>r.researchContext);if(r&&['failed','unknown'].includes(r.status))throw Error(JSON.stringify(r));return r?.terminalEvent?r:null;});assert.equal(nativeResearch.status,'completed',nativeResearch.error);
   const current=app.store.read().events.find(t=>t.id===trial.id),reconciled=await post('/api/research/reconcile',{projectId:p.id,trialId:trial.id,expectedRevision:current.revision,operationId:crypto.randomUUID()});assert.equal(reconciled.status,'awaiting-validation',JSON.stringify(reconciled));
-  const verified=await post('/api/research/validate',{projectId:p.id,trialId:trial.id,expectedRevision:reconciled.revision,operationId:crypto.randomUUID()});assert.equal(verified.status,'PASSED',JSON.stringify(verified));
-  assert.equal(nativeResearch.guardedContext.profile.purpose,undefined);assert.equal(app.store.read().runs.length,2);assert.equal(app.store.read().receipts.filter(r=>r.type==='guarded.file-receipt').length,1);assert.ok((await readFile(path.join(w.worktreePath,'output.json'),'utf8')).startsWith('['));
-  t.diagnostic(JSON.stringify({directory:dir,nativeProtocolRequests:requests,externalProviderRequests:0,frontendRun:frontendRun.id,researchRun:nativeResearch.id}));
+  const verified=await post('/api/research/validate',{projectId:p.id,trialId:trial.id,expectedRevision:reconciled.revision,operationId:crypto.randomUUID()});assert.equal(verified.status,'PASSED',JSON.stringify({trialStatus:verified.status,transactionFailures,evidence:app.store.read().events.filter(e=>e.type==='research.evidence').map(e=>({status:e.status,checks:e.checks}))}));
+  assert.equal(nativeResearch.guardedContext.profile.purpose,undefined);assert.equal(app.store.read().runs.length,researchOnly?1:2);assert.equal(app.store.read().receipts.filter(r=>r.type==='guarded.file-receipt').length,1);assert.ok((await readFile(path.join(w.worktreePath,'output.json'),'utf8')).startsWith('['));
+  t.diagnostic(JSON.stringify({directory:dir,nativeProtocolRequests:requests,externalProviderRequests:0,frontendRun:frontendRun?.id??null,researchRun:nativeResearch.id}));
 });
