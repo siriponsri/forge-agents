@@ -35,7 +35,7 @@ export function trustedMcp(info:any,discovered:any){
   // Only the fixed privately bootstrapped MCP server is configured. Native
   // attached-client registration is disabled by the derivative patch.
   const operation=discovered.name
-  const execute=(input:any,context:any)=>Effect.tryPromise({try:async()=>({output:await boundedAction(operation,input,context)}),catch:()=>new Tool.Error({message:"FORGE_BOUNDED_ACTION_DENIED"})})
+  const execute=(input:any,context:any)=>Effect.tryPromise({try:async()=>({output:await boundedAction(operation,input,context)}),catch:error=>new Tool.Error({message:error instanceof Error&&error.message==="FORGE_BOUNDED_ACTION_OUTCOME_UNKNOWN"?"FORGE_BOUNDED_ACTION_OUTCOME_UNKNOWN":"FORGE_BOUNDED_ACTION_DENIED"})})
   authenticated.set(execute,operation)
   return {...info,execute,output:{},options:{...info.options,codemode:false}}
 }

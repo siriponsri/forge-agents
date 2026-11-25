@@ -19,8 +19,18 @@ if(process.env.FORGE_GUARDED_BOOTSTRAP_FD==="3"){
 const current=()=>{if(!boot||boot.profile.expiresAt<=Date.now())throw Error("FORGE_PRIVATE_PROFILE_REQUIRED");return boot}
 async function call(endpoint:string,body:any){
   const b=current(),text=canonical(body)
-  const response=await fetch(b.brokerUrl+endpoint,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+b.key,"X-Forge-Mac":createHmac("sha256",Buffer.from(b.key,"hex")).update(text).digest("hex")},body:text,signal:AbortSignal.timeout(5000)})
-  const result:any=await response.json();if(!response.ok||!result.ok)throw Error("FORGE_CURRENT_AUTHORITY_DENIED")
+  // Transport patience does not extend canonical expiry, action admission or
+  // Stop. A missing acknowledgement is uncertain delivery, never a retry grant.
+  let response:Response,result:any
+  try{
+    response=await fetch(b.brokerUrl+endpoint,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+b.key,"X-Forge-Mac":createHmac("sha256",Buffer.from(b.key,"hex")).update(text).digest("hex")},body:text,signal:AbortSignal.timeout(30000)})
+    result=await response.json()
+  }catch{throw Error(endpoint==="/action"?"FORGE_BOUNDED_ACTION_OUTCOME_UNKNOWN":"FORGE_CURRENT_AUTHORITY_UNAVAILABLE")}
+  if(!response.ok||!result?.ok){
+    if(endpoint==="/action"&&(response.status>=500||response.ok&&result?.ok!==false||result?.error==="OUTCOME_UNKNOWN"||result?.error==="BROKER_UNKNOWN"))throw Error("FORGE_BOUNDED_ACTION_OUTCOME_UNKNOWN")
+    throw Error("FORGE_CURRENT_AUTHORITY_DENIED")
+  }
+  if(endpoint==="/action"&&(!result.result||typeof result.result!=="object"))throw Error("FORGE_BOUNDED_ACTION_OUTCOME_UNKNOWN")
   return result.result
 }
 export const bound=()=>!!boot

@@ -308,3 +308,80 @@ Exact source seams: T3 RuntimePolicy/ProviderAdapter/OpenCode2Server/v2 adapter/
 private entry; OpenCode Tool/raw/runtime/MCP, Config/plugin modules, Session/
 context/prompt/model-request/private authenticated probe route. Only isolated
 source trees are patched. Lead owns final checksum acquisition/activation.
+
+## Follow-up: 30-second transport and uncertain acknowledgement
+
+The lead and independent application run reproduced the original5s abort AFTER
+actual local completed receipts under build contention. This narrow correction
+changes only bootstrap transport/error classification and its bounded Tool error
+mapper. Broker authority, canonical expiry/wall/action caps (including root's240s
+fixture), Stop, scope, admission and receipt/replay semantics are unchanged.
+
+Private fetch waits at most30000ms for response/body. Abort/network/unreadable
+acknowledgement, server failure, malformed success and explicit broker unknown
+become `FORGE_BOUNDED_ACTION_OUTCOME_UNKNOWN`. Explicit policy HTTP403 remains
+`FORGE_BOUNDED_ACTION_DENIED`. Model errors contain only fixed diagnostics;
+private owner receipts remain excluded. There is exactly one fetch per invocation,
+no retry/backoff/replacement operation. A timeout can still occur and cannot prove
+no effect. Root reconciles the ORIGINAL durable operation; unresolved stays unknown,
+never an automatic replay/new-operation grant. Transport patience extends no
+canonical expiry or Stop deadline.
+
+NEW isolated cache: `%TEMP%/forge-guarded-timeout30s-20261125`.
+Executable: `opencode/forge-guarded-cli-build/cli-windows-x64/bin/opencode.exe`.
+
+| Trust pin | New checked value |
+| --- | --- |
+| OpenCode SHA256 | `33ef775f30afbf7808773e97bc4d70e1dc990155541162c92e5b6e2dc1c18ad3` |
+| T3 aggregate (unchanged) | `3494a3e4bce00e971a999fe51f5334d471e8d7a220db43e90f50f535314b0bf9` |
+| Broker (unchanged) | `0c8a796db59f0829ac4b28b97be774523210f5ff99b7e6139e3fc442e8d2e08d` |
+| Patch changes digest | `93dd03f0c868158be340019d8bbaea7a86b3c8681104dfd5d3da5d3d62631582` |
+| Bootstrap source SHA256 LF | `733c714e30cf6dd5389ec3085639ec6d08123330c09a56c99a86227cc650f1a3` |
+| Native guard source SHA256 LF | `a1f6992ea6c0c17d15e430732da265b31579322f1b3810fa4fcc7952d7c9f470` |
+
+Fresh archive/preimage checks and filtered frozen Bun install ran in NEW source
+and dependency trees. Unchanged pinned T3 compiled files/broker were verified and
+copied; T3 fixture dependencies reuse read-only old paths. Extended Windows paths
+handled a long pinned T3 fixture directory; no source was omitted/substituted.
+Final byte hashes confirm original OpenCode309f61..., broker and all45 T3 compiled
+files unchanged. No current old image/cache output was overwritten.
+
+Actual new compiled image + matching T3 lifecycle checks PASS:
+
+- Positive read/propose/edit acknowledgements each held6500ms AFTER durable
+  receipt: three completed tool items, no failed positive, three distinct requests/
+  operations/receipts, one edit effect.
+- Dropped edit connection AFTER local completion, and separately an acknowledgement
+  held31000ms: both yield exact OUTCOME_UNKNOWN; one edit effect; zero automatic
+  retry/new operation. This tests actual network loss AND actual30s timeout.
+- Explicit canonical action policy403 still yields DENIED and no read receipt.
+- Every transport mode runs15 deterministic loopback requests, all17 zero-effect
+  native negatives, identity/context/expiry/Stop refusals, exact3-tool discovery
+  and no private receipt metadata in model context. No real provider/account call.
+- Node24.19 supervisor completion and Stop both pass with this exact new image,
+  real completed/interrupted native terminals, and proof null after Stop.
+
+Actual root installer source stayed READ-ONLY. Its real code executed in a private
+source-overlay copy preserving root's pipeline (including its current LICENSE),
+with only explicit proposed trust pins and module/source relocation. Old pins
+refuse PIPELINE_CHANGED; wrong patch digest refuses PATCH_CHANGED; proposed exact
+pins yield ready and verified copied artifacts. Production installer was NOT
+repinned: lead must deliberately update APPROVED.opencode, PATCH_DIGEST and the
+two PIPELINE source hashes. Root's full application contention recheck for this
+generation remains separate; these engineering records grant no authority.
+
+Sanitized results: `app/guarded-runtime/timeout30s-evidence.json`, proof:null.
+Full reports/manifests/staging scripts remain in the NEW cache only:
+`artifact-manifest.json`, `installer-trust-{proposal,report}.json`,
+`transport-{delay,drop,timeout,policy}-report.json`,
+`supervisor-current{,-stop}-report.json`, `old-generation-preservation.json`,
+`stage-generation.mjs`, `stage-transport-fixture.mjs`, `transport-fixture.mjs`,
+`qualify-installer.mjs`, `collect-timeout-evidence.mjs`. Reproduce transport checks:
+
+```powershell
+$env:FORGE_TRANSPORT_FIXTURE_MODE='delay' # or drop, timeout, policy
+node <new-cache>/transport-fixture.mjs <new-cache> t3
+```
+
+No root files, shared contracts, current cache images, broker semantics or accounts
+were changed by this follow-up.

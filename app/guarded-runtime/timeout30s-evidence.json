@@ -1,0 +1,305 @@
+{
+  "version": 1,
+  "purpose": "narrow timeout/uncertain-ack native engineering qualification",
+  "proof": null,
+  "automaticExecutionQualified": false,
+  "externalProviderOrAccountTurn": false,
+  "generation": "forge-guarded-timeout30s-20261125",
+  "transportTimeoutMs": 30000,
+  "canonicalWallActionExpiryAndStopUnchanged": true,
+  "approvedSubsetUnchanged": true,
+  "installerTrustProposal": {
+    "version": 1,
+    "scope": "proposed installer trust update only; not production activation",
+    "approved": {
+      "t3": "3494a3e4bce00e971a999fe51f5334d471e8d7a220db43e90f50f535314b0bf9",
+      "opencode": "33ef775f30afbf7808773e97bc4d70e1dc990155541162c92e5b6e2dc1c18ad3",
+      "broker": "0c8a796db59f0829ac4b28b97be774523210f5ff99b7e6139e3fc442e8d2e08d"
+    },
+    "patchDigest": "93dd03f0c868158be340019d8bbaea7a86b3c8681104dfd5d3da5d3d62631582",
+    "pipeline": {
+      "app/guarded-runtime/native/opencode-bootstrap.ts": "733c714e30cf6dd5389ec3085639ec6d08123330c09a56c99a86227cc650f1a3",
+      "app/guarded-runtime/native/opencode-guard.ts": "a1f6992ea6c0c17d15e430732da265b31579322f1b3810fa4fcc7952d7c9f470"
+    },
+    "proof": null
+  },
+  "artifactHashes": {
+    "opencode": "33ef775f30afbf7808773e97bc4d70e1dc990155541162c92e5b6e2dc1c18ad3",
+    "t3": "3494a3e4bce00e971a999fe51f5334d471e8d7a220db43e90f50f535314b0bf9",
+    "broker": "0c8a796db59f0829ac4b28b97be774523210f5ff99b7e6139e3fc442e8d2e08d"
+  },
+  "sourcePatchDigest": "93dd03f0c868158be340019d8bbaea7a86b3c8681104dfd5d3da5d3d62631582",
+  "transport": {
+    "delay": {
+      "mode": "delay",
+      "positive": [
+        {
+          "name": "forge_guarded_edit_text",
+          "status": "completed",
+          "error": null
+        },
+        {
+          "name": "forge_guarded_propose_change",
+          "status": "completed",
+          "error": null
+        },
+        {
+          "name": "forge_guarded_read_text",
+          "status": "completed",
+          "error": null
+        }
+      ],
+      "actionRequests": 3,
+      "uniqueOperationIds": 3,
+      "localCompletedReceipts": 3,
+      "editEffects": 1,
+      "droppedAfterCompleted": 0,
+      "automaticRetries": 0,
+      "artificialAcknowledgementDelayMs": 6500,
+      "modelProtocolRequests": 15,
+      "nativeGateNegatives": 17,
+      "untrustedExecutorEffects": 0,
+      "currentAuthorityNegatives": [
+        "account",
+        "provider",
+        "model",
+        "options",
+        "binary",
+        "policy",
+        "manifest",
+        "context",
+        "expired",
+        "stopped",
+        "revoked",
+        "file-context",
+        "foreign-session"
+      ]
+    },
+    "drop": {
+      "mode": "drop",
+      "positive": [
+        {
+          "name": "forge_guarded_edit_text",
+          "status": "error",
+          "error": "FORGE_BOUNDED_ACTION_OUTCOME_UNKNOWN"
+        },
+        {
+          "name": "forge_guarded_propose_change",
+          "status": "completed",
+          "error": null
+        },
+        {
+          "name": "forge_guarded_read_text",
+          "status": "completed",
+          "error": null
+        }
+      ],
+      "actionRequests": 3,
+      "uniqueOperationIds": 3,
+      "localCompletedReceipts": 3,
+      "editEffects": 1,
+      "droppedAfterCompleted": 1,
+      "automaticRetries": 0,
+      "artificialAcknowledgementDelayMs": 0,
+      "modelProtocolRequests": 15,
+      "nativeGateNegatives": 17,
+      "untrustedExecutorEffects": 0,
+      "currentAuthorityNegatives": [
+        "account",
+        "provider",
+        "model",
+        "options",
+        "binary",
+        "policy",
+        "manifest",
+        "context",
+        "expired",
+        "stopped",
+        "revoked",
+        "file-context",
+        "foreign-session"
+      ]
+    },
+    "timeout": {
+      "mode": "timeout",
+      "positive": [
+        {
+          "name": "forge_guarded_edit_text",
+          "status": "error",
+          "error": "FORGE_BOUNDED_ACTION_OUTCOME_UNKNOWN"
+        },
+        {
+          "name": "forge_guarded_propose_change",
+          "status": "completed",
+          "error": null
+        },
+        {
+          "name": "forge_guarded_read_text",
+          "status": "completed",
+          "error": null
+        }
+      ],
+      "actionRequests": 3,
+      "uniqueOperationIds": 3,
+      "localCompletedReceipts": 3,
+      "editEffects": 1,
+      "droppedAfterCompleted": 1,
+      "automaticRetries": 0,
+      "artificialAcknowledgementDelayMs": 31000,
+      "modelProtocolRequests": 15,
+      "nativeGateNegatives": 17,
+      "untrustedExecutorEffects": 0,
+      "currentAuthorityNegatives": [
+        "account",
+        "provider",
+        "model",
+        "options",
+        "binary",
+        "policy",
+        "manifest",
+        "context",
+        "expired",
+        "stopped",
+        "revoked",
+        "file-context",
+        "foreign-session"
+      ]
+    },
+    "policy": {
+      "mode": "policy",
+      "positive": [
+        {
+          "name": "forge_guarded_edit_text",
+          "status": "completed",
+          "error": null
+        },
+        {
+          "name": "forge_guarded_propose_change",
+          "status": "completed",
+          "error": null
+        },
+        {
+          "name": "forge_guarded_read_text",
+          "status": "error",
+          "error": "FORGE_BOUNDED_ACTION_DENIED"
+        }
+      ],
+      "actionRequests": 3,
+      "uniqueOperationIds": 3,
+      "localCompletedReceipts": 2,
+      "editEffects": 1,
+      "droppedAfterCompleted": 0,
+      "automaticRetries": 0,
+      "artificialAcknowledgementDelayMs": 0,
+      "modelProtocolRequests": 15,
+      "nativeGateNegatives": 17,
+      "untrustedExecutorEffects": 0,
+      "currentAuthorityNegatives": [
+        "account",
+        "provider",
+        "model",
+        "options",
+        "binary",
+        "policy",
+        "manifest",
+        "context",
+        "expired",
+        "stopped",
+        "revoked",
+        "file-context",
+        "foreign-session"
+      ]
+    }
+  },
+  "supervisors": {
+    "complete": {
+      "runtimeNode": "24.19.0",
+      "t3BinarySha256": "3494a3e4bce00e971a999fe51f5334d471e8d7a220db43e90f50f535314b0bf9",
+      "opencodeBinarySha256": "33ef775f30afbf7808773e97bc4d70e1dc990155541162c92e5b6e2dc1c18ad3",
+      "fileBrokerBinarySha256": "0c8a796db59f0829ac4b28b97be774523210f5ff99b7e6139e3fc442e8d2e08d",
+      "installationReadiness": "PASS",
+      "nativeNegatives": 17,
+      "t3Negatives": 2,
+      "noInventedTaskRun": true,
+      "installationProviderTurns": 0,
+      "reserveOrphanDenied": true,
+      "bindAndActualT3EnsureAndProbe": "PASS",
+      "ownerProviderProtocolRequests": 1,
+      "actualTerminal": "completed",
+      "eventTypes": [
+        "provider_turn.updated",
+        "provider_thread.updated",
+        "provider_session.updated",
+        "node.updated",
+        "message.updated",
+        "turn_item.updated",
+        "turn.terminal"
+      ],
+      "proofAfterStop": null,
+      "nativeTurnRefStrength": "weak"
+    },
+    "stop": {
+      "runtimeNode": "24.19.0",
+      "t3BinarySha256": "3494a3e4bce00e971a999fe51f5334d471e8d7a220db43e90f50f535314b0bf9",
+      "opencodeBinarySha256": "33ef775f30afbf7808773e97bc4d70e1dc990155541162c92e5b6e2dc1c18ad3",
+      "fileBrokerBinarySha256": "0c8a796db59f0829ac4b28b97be774523210f5ff99b7e6139e3fc442e8d2e08d",
+      "installationReadiness": "PASS",
+      "nativeNegatives": 17,
+      "t3Negatives": 2,
+      "noInventedTaskRun": true,
+      "installationProviderTurns": 0,
+      "reserveOrphanDenied": true,
+      "bindAndActualT3EnsureAndProbe": "PASS",
+      "ownerProviderProtocolRequests": 1,
+      "actualTerminal": "interrupted",
+      "eventTypes": [
+        "provider_turn.updated",
+        "provider_thread.updated",
+        "provider_session.updated",
+        "turn.terminal"
+      ],
+      "proofAfterStop": null,
+      "nativeTurnRefStrength": "weak"
+    }
+  },
+  "installer": {
+    "version": 1,
+    "scope": "real installer copy with explicit proposed pins; production source unchanged",
+    "rootInstallerSha256": "e79b01bf2725dc98b69fe46b78862c11876e7ade896dfbc36727bbb6901ab7e5",
+    "results": [
+      {
+        "kind": "old-pins",
+        "status": "failed",
+        "error": "PIPELINE_CHANGED"
+      },
+      {
+        "kind": "wrong-patch",
+        "status": "failed",
+        "error": "PATCH_CHANGED"
+      },
+      {
+        "kind": "proposed-pins",
+        "status": "ready",
+        "error": null
+      }
+    ],
+    "proof": null
+  },
+  "preservation": {
+    "oldOpencodeSha256": "309f61f0fc52f849256a9e4e26af55365da32d9ff4773f273bd6a186ae296def",
+    "oldBrokerSha256": "0c8a796db59f0829ac4b28b97be774523210f5ff99b7e6139e3fc442e8d2e08d",
+    "oldT3FilesChecked": 45,
+    "allByteHashesUnchanged": true
+  },
+  "stagedFixtures": {
+    "stage-generation.mjs": "1b04015ba256ef577450f5c480e8b81010935bd60f3b8b2064f5c9ca65971ff9",
+    "stage-transport-fixture.mjs": "2e7bc1c6dc650a61c8d7d27ba104738c549f10738653b9298d6ca2d8e165aae4",
+    "transport-fixture.mjs": "391003307cc878b1d714e1e0de280ebb00ebe05326682022907b1a6d98b009d6",
+    "qualify-installer.mjs": "e4caafa88c90de2ffd45569179616881774709b01b922b2bfb5f5d63abf17dbd"
+  },
+  "limitations": [
+    "Production installer pins are lead-owned and were not edited.",
+    "Root full application contention recheck on the new generation remains separate.",
+    "Missing acknowledgement remains uncertain even with a completed local receipt; no automatic retry/new operation."
+  ]
+}
