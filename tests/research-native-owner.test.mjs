@@ -73,6 +73,12 @@ test('Research private native owner: canonical resource and identity fences',asy
       observeGuarded:(_s,{run})=>{const p={...profile,taskId:run.taskId,runId:run.id,threadId:run.threadId};return {...observed,profile:p,routeProof:{...observed.routeProof,taskId:run.taskId},attestation:{...observed.attestation,profileDigest:digest(p)}};},
     });
     const first=owner.requestForRun(s,primary),second=owner.requestForRun(s,helperRun);owner.retain(s,first);owner.retain(s,second);
+    const pending=structuredClone(s);pending.runs=[];pending.events=pending.events.filter(e=>!e.type.startsWith('research.native-')&&e.type!=='research.enforcement');
+    const pendingOwner=createResearchNativeOwner({clock:()=>now,resolveAllocation:(s,i)=>{const w=s.events.find(w=>w.id===i.workspaceId),trial=s.events.find(t=>t.id===i.trialId);return {composition:{id:'INJECTED_COMPOSITION_NOT_LIVE'},allocation:{id:w.id===helper.id?'helper':'primary',workspaceId:w.id,operationId:i.runOperationId},workspace:w,task:s.tasks.find(t=>t.id===w.taskId),trial,manifest:trial.manifest,envelope:{trialId:trial.id,manifestDigest:trial.manifestDigest,limits:trial.manifest.limits,deadlineAt:trial.deadlineAt,allocationCount:2,allocationIds}};},observeGuarded:(_s,{workspace})=>({...observed,profile:null,routeProof:{...observed.routeProof,taskId:workspace.taskId}})});
+    const pendingFirst={...first,runId:null,attemptId:null},pendingSecond={...second,runId:null,attemptId:null};
+    assert.ok(pendingOwner.retain(pending,pendingFirst));assert.ok(pendingOwner.retain(pending,pendingSecond));
+    assert.ok(pendingOwner.qualification(pending,pendingFirst));assert.ok(pendingOwner.qualification(pending,pendingSecond));
+    assert.equal(pending.events.filter(e=>e.type==='research.native-envelope').length,1);
     owner.modelRequest(s,{run:primary});owner.modelRequest(s,{run:helperRun});owner.modelRequest(s,{run:primary});assert.throws(()=>owner.modelRequest(s,{run:helperRun}),{code:'RESEARCH_NATIVE_STEP_LIMIT'});
     assert.equal(owner.resourceSnapshot(s,first).id,owner.resourceSnapshot(s,second).id);assert.equal(owner.resourceSnapshot(s,second).modelRequests,3);
     assert.equal(s.events.filter(e=>e.type==='research.native-envelope').length,1);

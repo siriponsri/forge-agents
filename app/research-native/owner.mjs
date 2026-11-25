@@ -90,7 +90,7 @@ export function createResearchNativeOwner({observeGuarded,resolveAllocation,cloc
       if(existing){live(s,request,'retain');return api.qualification(s,request);}
       // A persisted run claim without this process capability is unknown. Never
       // reset counters or recreate an execution lease on restart.
-      if(s.events.some(e=>e.type==='research.native-resources'&&e.trialId===x.trial.id&&e.runId===request.runId))deny('RESEARCH_NATIVE_RESTART_RECONCILE');
+      if(s.events.some(e=>e.type==='research.native-resources'&&e.trialId===x.trial.id&&(request.runId===null?e.requestDigest===key:e.runId===request.runId)))deny('RESEARCH_NATIVE_RESTART_RECONCILE');
       const value={...x,key},stage=x.run?'reserved-mandatory-gates':'route-admission';
       let g=s.events.find(e=>e.type==='research.native-envelope'&&e.projectId===x.trial.projectId&&e.trialId===x.trial.id);
       if(g&&!envelopes.has(x.trial.id))deny('RESEARCH_NATIVE_RESTART_RECONCILE');
