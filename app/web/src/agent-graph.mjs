@@ -31,8 +31,9 @@ export function createConversationGraph(state, projectId, conversationId) {
     groups.get(group).rows.push(runNode);
     nodes.push(runNode); connect(`bot:${group}`, runNode.id, 'execution');
     for (const [index, tool] of tools.slice(0, 3).entries()) {
-      const status = tool.nonExecutionKind ? 'not-executed' : tool.outputIndicatesFailure ? 'failed' : tool.resultObserved ? tool.status : active.has(tool.status) ? tool.status : 'unknown';
-      const node = {id: `tool:${run.id}:${tool.id}`, kind: 'tool', sourceId: tool.id, runId: run.id, observing: runNode.observing, title: tool.name ?? tool.id, status, detail: tool.resultObserved ? 'result-observed' : 'result-unconfirmed', x: 810, y: nextY + index * 112};
+      const fileChange = tool.observationKind === 'file_change';
+      const status = tool.nonExecutionKind ? 'not-executed' : tool.outputIndicatesFailure ? 'failed' : tool.resultObserved || fileChange ? tool.status : active.has(tool.status) ? tool.status : 'unknown';
+      const node = {id: `tool:${run.id}:${tool.id}`, kind: 'tool', sourceId: tool.id, runId: run.id, observing: runNode.observing, title: fileChange ? tool.path ?? tool.id : tool.name ?? tool.id, observationKind: tool.observationKind, status, detail: fileChange ? 'file-change-observed' : tool.resultObserved ? 'result-observed' : 'result-unconfirmed', x: 810, y: nextY + index * 112};
       nodes.push(node); connect(runNode.id, node.id, 'tool');
     }
     for (const [index, artifact] of outputs.slice(0, 2).entries()) {

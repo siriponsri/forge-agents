@@ -68,12 +68,16 @@ test('built Chat transforms into a scoped graph and reuses guarded run controls 
     const record = state.runs.find(run => run.id === runId);
     record.status = 'unknown'; record.connection.status = 'disconnected';
     record.toolObservations.read = {...record.toolObservations.read, status: 'completed', argumentsComplete: true, resultObserved: false};
+    record.toolObservations.edit = {id:'edit',name:'file_change',observationKind:'file_change',path:'allowed/a.txt',status:'completed',argumentsComplete:false,resultObserved:false};
     record.revision++;
     const child = state.runs.find(run => run.parentRunId === runId); child.status = 'completed'; child.connection.status = 'disconnected'; child.revision++;
   });
   await page.getByRole('button', {name: /Tool · read source · fixture · Outcome unconfirmed/}).waitFor();
   await page.getByRole('button', {name: /Tool · read source · fixture/}).click();
   await page.getByText('Tool call observed; its result has not been confirmed.', {exact: true}).waitFor();
+  await page.getByRole('button',{name:/Tool · File change: allowed\/a.txt/}).click();
+  await page.getByText('Native provider file change observed; this is not a tool result.',{exact:true}).waitFor();
+  await page.getByText('File change: allowed/a.txt',{exact:true}).first().waitFor();
   await page.getByRole('button', {name: 'Zoom out', exact: true}).click();
   await page.getByRole('button', {name: 'Fit readable', exact: true}).click();
   await page.getByRole('button', {name: 'Show list', exact: true}).click();

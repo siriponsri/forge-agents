@@ -41,12 +41,19 @@ Developer verification connects the production application, authenticated Owner
 HTTP actions, real installer copy, scheduler, canonical T3 reservation, Context,
 native adapter, compiled CLI, actual file broker and AG-UI. The deterministic
 loopback model protocol and controlled schedule due time are labelled fixtures.
-One test completed four protocol requests, three real effects/receipts and one
-canonical run in 83.4 seconds, with successful tool acknowledgments. Related
-policy, DPAPI and lifecycle regressions passed. No external account/model-quality
-check or home UAT has run. A longer authenticated transport acknowledgment window
-and explicit unknown classification are under separate qualification; they do
-not enlarge the accepted wall deadline or grant retries.
+The current production check completed four protocol requests, three acknowledged
+file operations (one edit), one canonical run and three visible native operation
+observations in 109.8 seconds. Actual read/proposal inputs replace preliminary
+empty placeholders. Native file changes are displayed as observations, without
+inventing tool-role results. Related policy, DPAPI and lifecycle checks passed.
+
+The transport waits up to 30 seconds for acknowledgments without enlarging the
+accepted wall deadline. Dropped acknowledgments and a receipt-owner failure after
+a durable edit report an unknown outcome, never a pre-effect denial or a retry
+grant. Delayed, dropped, timed-out and postcommit-failure cases were checked with
+the compiled native runtime and deterministic loopback protocol. Explicit
+pre-effect policy denials remain denied. No external account/model-quality
+check or home UAT has run.
 
 Research agent component/action/resource qualification and arbitrary native
 Memory attachment remain separate unsupported contracts. Local Research CPU/file

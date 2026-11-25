@@ -43,19 +43,39 @@ function toolArguments(item){
   if(item.type==='command_execution'&&typeof item.input==='string'&&item.input)return {name:'command_execution',args:JSON.stringify({command:item.input})};
 }
 function observeTool(state,run,item){
+  if(item.type==='file_change'){
+    // This is the native provider's file-change observation, not a tool-role
+    // result. Keep its real identity/path visible without inventing an MCP call.
+    const value={id:item.id,name:'file_change',observationKind:'file_change',path:item.fileName??null,status:item.status,argumentsComplete:false,resultObserved:false};
+    const prior=run.toolObservations[item.id];
+    run.toolObservations[item.id]=value;
+    if(digest(prior??null)!==digest(value))emit(state,run,{type:'CUSTOM',name:'forge.file-change.observed',value},`file-change:${item.id}:${run.protocolSequence??0}:${digest(value)}`);
+    return;
+  }
   const args=toolArguments(item);if(!args)return;
   const id=item.id,prior=run.toolObservations[id];
   if(!prior){
     emit(state,run,{type:'TOOL_CALL_START',toolCallId:id,toolCallName:args.name,parentMessageId:`tool-call:${id}`},`tool:${id}:start`);
+  }
+  // The native stream can first publish an empty placeholder, then the actual
+  // input. Do not seal that placeholder as completed arguments.
+  const complete=args.args!=='{}'||TERMINAL.has(item.status);
+  const argumentHash=digest(args.args);
+  if(complete&&!prior?.argumentsComplete){
     emit(state,run,{type:'TOOL_CALL_ARGS',toolCallId:id,delta:args.args},`tool:${id}:args`);
     emit(state,run,{type:'TOOL_CALL_END',toolCallId:id},`tool:${id}:args-end`);
+  }else if(complete&&prior?.argumentsComplete&&prior.argumentHash!==argumentHash){
+    // AG-UI argument deltas append; a correction must not append a second JSON
+    // object. The custom replacement and authoritative message snapshot retain
+    // the observed correction under the same native call identity.
+    emit(state,run,{type:'CUSTOM',name:'forge.tool.arguments-replaced',value:{toolCallId:id,arguments:JSON.parse(args.args),argumentHash}},`tool:${id}:args-replaced:${run.protocolSequence??0}:${argumentHash}`);
   }
   // END above proves argument completion only. Missing/cancelled outputs remain
   // explicit observations; a terminal item is never turned into an invented result.
   const resultPresent=Object.hasOwn(item,'output')&&!item.outputOmitted;
-  const value={id,name:args.name,argumentsComplete:true,status:item.status,resultObserved:resultPresent&&TERMINAL.has(item.status),...(item.toolNonExecutionKind?{nonExecutionKind:item.toolNonExecutionKind}:{}),...(item.outputIndicatesFailure!==undefined?{outputIndicatesFailure:item.outputIndicatesFailure}:{}),...(item.exitCode!==undefined?{exitCode:item.exitCode}:{})};
-  if(prior&&prior.argumentHash!==digest(args.args))value.argumentsChanged=true;
-  run.toolObservations[id]={...value,argumentHash:prior?.argumentHash??digest(args.args)};
+  const value={id,name:args.name,argumentsComplete:complete,status:item.status,resultObserved:resultPresent&&TERMINAL.has(item.status),...(item.toolNonExecutionKind?{nonExecutionKind:item.toolNonExecutionKind}:{}),...(item.outputIndicatesFailure!==undefined?{outputIndicatesFailure:item.outputIndicatesFailure}:{}),...(item.exitCode!==undefined?{exitCode:item.exitCode}:{})};
+  if(prior&&prior.argumentHash!==argumentHash)value.argumentsChanged=true;
+  run.toolObservations[id]={...value,arguments:JSON.parse(args.args),argumentHash};
   if(value.resultObserved){
     const content=typeof item.output==='string'?item.output:JSON.stringify(item.output);
     emit(state,run,{type:'TOOL_CALL_RESULT',toolCallId:id,messageId:`tool-result:${id}`,role:'tool',content},`tool:${id}:result`);

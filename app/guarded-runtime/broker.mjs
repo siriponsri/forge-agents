@@ -53,12 +53,13 @@ export function createBoundedBroker({authority,handle,key,file,receiptPath,withF
       if(previous){
         if(previous.request_hash!==requestHash)fail('OPERATION_COLLISION');
         if(previous.status!=='completed')fail('OUTCOME_UNKNOWN');
-        const result=JSON.parse(previous.result);if(recordReceipt(result.receipt)!==undefined)fail('SYNCHRONOUS_RECEIPT_OWNER_REQUIRED');
+        const result=JSON.parse(previous.result);try{if(recordReceipt(result.receipt)!==undefined)fail('SYNCHRONOUS_RECEIPT_OWNER_REQUIRED');}catch{fail('OUTCOME_UNKNOWN');}
         return {...result,replayed:true};
       }
       // Persist uncertainty BEFORE opening a path or returning data. Any crash,
       // failed ack, validation or partially completed edit leaves no retry grant.
       reserve.run(bound.runId,envelope.operationId,requestHash);
+      let effectRequested=false,completed=false;
       try {
         const held=await file.command({op:'prepare',path:request.path,write:request.tool==='edit_text',maxBytes:p.scope.maxBytes});
         check(request); // current authority after race-safe handle acquisition
@@ -72,14 +73,16 @@ export function createBoundedBroker({authority,handle,key,file,receiptPath,withF
           await file.command({op:'abort'});
         }else{
           check(request);
+          effectRequested=true;
           const edited=await file.command({op:'commit',ticket:held.ticket,expectedRevision:request.expectedRevision,text:request.text});
           result={tool:request.tool,path:request.path,...edited,effect:true};
         }
         result.receipt={version:1,owner:'guarded-file-broker',id:digest({owner:'guarded-file-broker',runId:bound.runId,operationId:envelope.operationId}),projectId:p.projectId,taskId:p.taskId,runId:p.runId,operationId:envelope.operationId,requestDigest:requestHash,profileDigest:digest(p),routeDigest:digest(p.route),scopeDigest:digest(p.scope),manifestDigest:p.manifestDigest,contextDigest:p.contextDigest,policyGeneration:p.policyGeneration,toolGeneration:p.toolGeneration,capability:{read_text:'read',propose_change:'propose',edit_text:'workspace.write'}[request.tool],path:request.path,beforeRevision:held.revision,afterRevision:result.revision??held.revision,outcome:'completed',effect:request.tool==='edit_text'};
         finish.run(JSON.stringify(result),bound.runId,envelope.operationId,requestHash);
+        completed=true;
         if(recordReceipt(result.receipt)!==undefined)fail('SYNCHRONOUS_RECEIPT_OWNER_REQUIRED');
         return {...result,replayed:false};
-      }catch(e){try{await file.command({op:'abort'});}catch{}throw e;}
+      }catch(e){try{await file.command({op:'abort'});}catch{}if(effectRequested||completed)fail('OUTCOME_UNKNOWN');throw e;}
     });
   }
   return Object.freeze({

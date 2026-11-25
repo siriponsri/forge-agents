@@ -36,6 +36,13 @@ test('tool IDs are attempt scoped and artifact references do not cross project b
   assert.equal(graph.edges.filter(edge => edge.kind === 'delegation').length, 1);
   assert.ok(graph.edges.every(edge => graph.nodes.some(node => node.id === edge.source) && graph.nodes.some(node => node.id === edge.target)));
 });
+
+test('native file-change observations appear in the graph without claiming a tool result', () => {
+  const state=fixture();state.runs[0].toolObservations={edit:{id:'edit',name:'file_change',observationKind:'file_change',path:'allowed/a.txt',status:'completed',resultObserved:false}};
+  const node=createConversationGraph(state,'project','room').nodes.find(node=>node.sourceId==='edit');
+  assert.equal(node.title,'allowed/a.txt');assert.equal(node.status,'completed');
+  assert.equal(node.observationKind,'file_change');assert.equal(node.detail,'file-change-observed');
+});
 test('pending owner input and disconnected observation stay explicit', () => {
   const state = fixture();
   state.runs[0].pendingApprovals = [{requestId: 'approval'}];

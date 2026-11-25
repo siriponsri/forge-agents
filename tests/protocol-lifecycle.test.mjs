@@ -49,6 +49,43 @@ test('FIXTURE partial invalid JSON, failed output, and cancelled non-execution k
   assert.equal(protocolEvents(f.store.read(),f.run.id).filter(e=>e.type==='RUN_ERROR').length,1);
 });
 
+test('FIXTURE empty native placeholders wait for actual arguments; later corrections replace rather than append',async t=>{
+  const f=await fixture(t),tool=item('dynamic_tool','streamed',{toolName:'forge_guarded_propose_change',input:{}});
+  await f.apply(native('running',[tool]));
+  assert.equal(find(f.store.read(),'runs',f.run.id).toolObservations.streamed.argumentsComplete,false);
+  assert.deepEqual(protocolEvents(f.store.read(),f.run.id).filter(e=>e.type.startsWith('TOOL_')).map(e=>e.type),['TOOL_CALL_START']);
+  const input={path:'allowed/a.txt',expectedRevision:'a'.repeat(64),text:'after'};
+  await f.apply(native('running',[{...tool,input}]));
+  await f.apply(native('running',[{...tool,input}]));
+  let events=protocolEvents(f.store.read(),f.run.id);
+  assert.equal(events.filter(e=>e.type==='TOOL_CALL_ARGS').length,1);
+  assert.deepEqual(JSON.parse(events.find(e=>e.type==='TOOL_CALL_ARGS').delta),input);
+  assert.equal(events.filter(e=>e.type==='TOOL_CALL_END').length,1);
+  const corrected={...input,text:'corrected'};
+  await f.apply(native('running',[{...tool,input:corrected}]));
+  events=protocolEvents(f.store.read(),f.run.id);
+  assert.equal(events.filter(e=>e.type==='TOOL_CALL_ARGS').length,1);
+  assert.deepEqual(events.find(e=>e.type==='CUSTOM'&&e.name==='forge.tool.arguments-replaced').value.arguments,corrected);
+  assert.equal(events.filter(e=>e.type==='MESSAGES_SNAPSHOT').at(-1).messages[0].toolCalls[0].function.arguments,JSON.stringify(corrected));
+  assert.deepEqual(find(f.store.read(),'runs',f.run.id).toolObservations.streamed.arguments,corrected);
+  assert.equal(events.some(e=>e.type==='TOOL_CALL_RESULT'),false);
+  await f.apply(native('running',[item('dynamic_tool','empty',{toolName:'valid_no_args',input:{},status:'completed'})]));
+  assert.equal(protocolEvents(f.store.read(),f.run.id).find(e=>e.type==='TOOL_CALL_ARGS'&&e.toolCallId==='empty').delta,'{}');
+});
+
+test('FIXTURE native file changes retain real identity/path without an invented tool result, including replay',async t=>{
+  const f=await fixture(t),change=item('file_change','edit-native',{fileName:'allowed/a.txt',diffStr:'actual native diff',status:'completed'});
+  await f.apply(native('completed',[change]));
+  const observed=find(f.store.read(),'runs',f.run.id).toolObservations['edit-native'];
+  assert.equal(observed.path,'allowed/a.txt');assert.equal(observed.observationKind,'file_change');
+  assert.equal(observed.status,'completed');assert.equal(observed.resultObserved,false);
+  const events=protocolEvents(f.store.read(),f.run.id);
+  assert.equal(events.filter(e=>e.type==='CUSTOM'&&e.name==='forge.file-change.observed').length,1);
+  assert.equal(events.some(e=>e.type.startsWith('TOOL_')),false);
+  const records=protocolRecords(f.store.read(),f.run.id);await f.restart();await f.apply(native('completed',[change]));
+  assert.deepEqual(protocolRecords(f.store.read(),f.run.id),records);
+});
+
 test('FIXTURE message prefixes append once, non-prefix edits replace and replay survives SQLite restart',async t=>{
   const f=await fixture(t);
   await f.apply(native('running',[text('Hello')]));

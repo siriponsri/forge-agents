@@ -3,12 +3,14 @@ import assert from 'node:assert/strict';
 import {mkdtemp,writeFile,readFile,mkdir,rm,link,symlink,rename} from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import {randomBytes} from 'node:crypto';
+import {randomBytes,createHmac} from 'node:crypto';
 import {buildWindows} from '../tools/guarded-runtime/build-windows.mjs';
 import {openConfinedText} from '../app/guarded-runtime/windows-client.mjs';
 import {createProfileAuthority,digest,bytesDigest} from '../app/guarded-runtime/profile.mjs';
 import {createBoundedBroker,signRequest,inspectGuardedReceipt} from '../app/guarded-runtime/broker.mjs';
 import {createNativeGate,qualifyGuardedRuntime} from '../app/guarded-runtime/gate.mjs';
+import {openLocalGateway} from '../app/guarded-runtime/local-gateway.mjs';
+import {canonical} from '../app/guarded-runtime/profile.mjs';
 
 export function profile(){
   const hash='a'.repeat(64);
@@ -100,7 +102,7 @@ test('durable unknown outcome is never auto-replayed after a lost effect acknowl
     // native broker and its successful commit ack is deliberately discarded.
     const faulty=createBoundedBroker({...f.options,receiptPath:path.join(f.root,'lost.sqlite'),file:{close(){},async command(x){const r=await original.command(x);if(x.op==='commit')throw Error('LOST_ACK');return r;}}});
     const req=f.request('lost',{tool:'edit_text',path:'allowed/a.txt',expectedRevision:bytesDigest('before'),text:'once'});
-    await assert.rejects(faulty.receive(req),/LOST_ACK/);await faulty.close();
+    await assert.rejects(faulty.receive(req),{code:'OUTCOME_UNKNOWN'});await faulty.close();
     assert.equal(await readFile(path.join(f.workspace,'allowed/a.txt'),'utf8'),'once');
     const recovered=createBoundedBroker({...f.options,receiptPath:path.join(f.root,'lost.sqlite'),file:{...original,close(){}}});
     await assert.rejects(recovered.receive(req),{code:'OUTCOME_UNKNOWN'});await recovered.close();
@@ -126,7 +128,7 @@ test('durable completed owner receipt survives callback lost acknowledgement wit
   const f=await fixture({recordReceipt(receipt){if(lost)throw Error('OWNER_LOST_ACK');owner.set(receipt.id,receipt);}});
   try{
     const req=f.request('owner-receipt',{tool:'edit_text',path:'allowed/a.txt',expectedRevision:bytesDigest('before'),text:'once'});
-    await assert.rejects(f.broker.receive(req),/OWNER_LOST_ACK/);
+    await assert.rejects(f.broker.receive(req),{code:'OUTCOME_UNKNOWN'});
     assert.equal(await readFile(path.join(f.workspace,'allowed/a.txt'),'utf8'),'once');
     const durable=f.broker.readReceipt('owner-receipt');assert.equal(durable.status,'completed');
     assert.equal(durable.receipt.runId,'run');assert.equal(durable.receipt.afterRevision,bytesDigest('once'));
@@ -153,4 +155,26 @@ test('uninstalled gate helper refuses raw aliases/nested/unknown/provenance swap
   for(const context of [{sessionID:'other'},{sessionID:p.threadId,codemode:true},{sessionID:p.threadId,background:true},{sessionID:p.threadId,parentCallId:'x'},{sessionID:p.threadId,delegated:true}])assert.throws(()=>gate.assert({...action,context}),{code:'NATIVE_TOOL_DENIED'});
   assert.throws(()=>gate.assert({...action,tool:{...tool}}),{code:'NATIVE_TOOL_DENIED'});assert.throws(()=>gate.context(),{code:'NATIVE_CONTEXT_DENIED'});
   assert.equal(qualifyGuardedRuntime({supported:true,proof:{}}),null);
+});
+
+test('actual HTTP gateway distinguishes completed edit receipt-owner loss from a pre-effect denial',windows,async()=>{
+  let allow=true,ownerAvailable=false;
+  const f=await fixture({authorize:()=>allow,recordReceipt(){if(!ownerAvailable)throw Object.assign(Error('revoked after completion'),{code:'GUARDED_AUTHORITY_REVOKED'});}});
+  const gateway=await openLocalGateway({...f.options,broker:f.broker,nativeSessionId:()=> 'native-session'});
+  const send=async request=>{
+    const body=canonical({...request,nativeSessionId:'native-session'});
+    const response=await fetch(gateway.url+'/action',{method:'POST',headers:{Authorization:'Bearer '+f.key.toString('hex'),'Content-Type':'application/json','X-Forge-Mac':createHmac('sha256',f.key).update(body).digest('hex')},body});
+    return {status:response.status,value:await response.json()};
+  };
+  try{
+    const request=f.request('owner-http',{tool:'edit_text',path:'allowed/a.txt',expectedRevision:bytesDigest('before'),text:'once'});
+    assert.deepEqual(await send(request),{status:403,value:{ok:false,error:'OUTCOME_UNKNOWN'}});
+    assert.equal(await readFile(path.join(f.workspace,'allowed/a.txt'),'utf8'),'once');
+    assert.equal(f.broker.readReceipt('owner-http').status,'completed');
+    assert.equal((await send(request)).value.error,'OUTCOME_UNKNOWN');
+    ownerAvailable=true;assert.equal((await send(request)).value.result.replayed,true);
+    allow=false;const denied=await send(f.request('denied-http',{tool:'edit_text',path:'allowed/a.txt',expectedRevision:bytesDigest('once'),text:'BAD'}));
+    assert.equal(denied.value.error,'CANONICAL_ACTION_DENIED');assert.equal(f.broker.readReceipt('denied-http'),null);
+    assert.equal(await readFile(path.join(f.workspace,'allowed/a.txt'),'utf8'),'once');
+  }finally{await gateway.close();await f.close();}
 });

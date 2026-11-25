@@ -50,6 +50,12 @@ test('production Guarded setup drives one approved recipe through actual native 
   assert.equal(state.runs.length,1);assert.equal(await readFile(path.join(workspace,'allowed/a.txt'),'utf8'),'after');assert.equal(requests,4);assert.equal(state.receipts.filter(r=>r.type==='guarded.file-receipt').length,3);
   assert.equal(state.events.some(e=>e.type==='agui'&&e.runId===run.id&&e.event.type==='TOOL_CALL_RESULT'),true);assert.equal(state.events.some(e=>e.type==='agui'&&e.runId===run.id&&e.event.type==='RUN_FINISHED'),true);
   assert.equal(run.guardedProjection.turnItems.some(i=>i.status==='failed'),false,'bounded tool responses must acknowledge the same completed effects, not time out after them');
+  const tools=Object.values(run.toolObservations),events=state.events.filter(e=>e.type==='agui'&&e.runId===run.id).map(e=>e.event);
+  assert.equal(tools.length,3,'read, proposal and actual native file change remain visible');
+  const change=tools.find(i=>i.observationKind==='file_change');assert.equal(change.path,'allowed/a.txt');assert.equal(change.resultObserved,false);
+  assert.equal(events.some(e=>e.type==='TOOL_CALL_RESULT'&&e.toolCallId===change.id),false,'a file change is not an invented tool-role result');
+  const argumentEvents=events.filter(e=>e.type==='TOOL_CALL_ARGS');assert.equal(argumentEvents.length,2);
+  for(const event of argumentEvents)assert.equal(JSON.parse(event.delta).path,'allowed/a.txt','actual native arguments replace preliminary empty inputs');
   assert.equal(run.nativeTurnRef.strength,'weak');assert.equal(run.providerRunId,undefined);assert.equal(state.tasks.find(t=>t.id===task.id).status,'review');assert.ok(run.contextReceipt);assert.ok(run.guardedReceipt);assert.equal(JSON.stringify(state).includes('FIXTURE_NOT_A_REAL_ACCOUNT'),false);
   const replay=await app.t3.startRun({projectId:p.id,taskId:task.id,conversationId:null,operationId:run.operationId,proactiveContext:run.proactiveContext});assert.equal(replay.id,run.id);assert.equal(requests,4);
   t.diagnostic(JSON.stringify({directory:dir,nativeProtocolRequests:requests,externalProviderRequests:0,aguiTools:Object.keys(run.toolObservations??{}).length}));

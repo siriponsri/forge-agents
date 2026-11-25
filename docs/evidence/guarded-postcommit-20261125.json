@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "transportTruth": {
+    "mode": "owner-lost",
+    "positive": [
+      {
+        "name": "forge_guarded_edit_text",
+        "status": "error",
+        "error": "FORGE_BOUNDED_ACTION_OUTCOME_UNKNOWN"
+      },
+      {
+        "name": "forge_guarded_propose_change",
+        "status": "completed",
+        "error": null
+      },
+      {
+        "name": "forge_guarded_read_text",
+        "status": "completed",
+        "error": null
+      }
+    ],
+    "actionRequests": 3,
+    "uniqueOperationIds": 3,
+    "localCompletedReceipts": 3,
+    "editEffects": 1,
+    "droppedAfterCompleted": 0,
+    "automaticRetries": 0,
+    "artificialAcknowledgementDelayMs": 0
+  },
+  "scope": "actual compiled native engineering protocol only; no external provider/account/model quality or product activation",
+  "actualCompiledCli": "PASS",
+  "binarySha256": "33ef775f30afbf7808773e97bc4d70e1dc990155541162c92e5b6e2dc1c18ad3",
+  "requests": 15,
+  "negative": [
+    "account",
+    "provider",
+    "model",
+    "options",
+    "binary",
+    "policy",
+    "manifest",
+    "context",
+    "expired",
+    "stopped",
+    "revoked",
+    "file-context",
+    "foreign-session"
+  ],
+  "advertisedTools": [
+    "forge_guarded_edit_text",
+    "forge_guarded_propose_change",
+    "forge_guarded_read_text"
+  ],
+  "nativeGateNegatives": 17,
+  "untrustedExecutorEffects": 0,
+  "proof": null,
+  "sourceSha256": {
+    "app/guarded-runtime/broker.mjs": "e05ea19de45b37c12e2e2f8eb451fc000585ec50f640afab83836694fec1383d",
+    "app/guarded-runtime/local-gateway.mjs": "a941a0cc6ebe48cb475750853ec5b0ff533c69730899284c9e353f2d77c9fd4c",
+    "tools/guarded-runtime/stage-transport-fixture.mjs": "d3b5a740e7cf67d326d2745228fbd2006f8c53e5ed11f0d77ffd5bcd683cddac"
+  },
+  "qualification": "DEVELOPER_ACTUAL_NATIVE_LOOPBACK; injected postcommit owner callback failure; no external provider/account"
+}
