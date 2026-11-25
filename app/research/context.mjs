@@ -1,4 +1,5 @@
 import {record,records,verifyTrial,digest,canonical,exact,fail,activeTrial} from './contracts.mjs';
+import {validateResearchComponentContext} from '../research-components/contracts.mjs';
 export function buildResearchContext(state,{projectId,trialId}){
   const t=record(state,'trial',trialId,projectId),e=record(state,'experiment',t.manifest.experimentId,projectId);verifyTrial(t,e);
   const m=t.manifest;
@@ -14,11 +15,13 @@ export function researchContextPolicy(state,{projectId,components}){
 // Mandatory seam in BOTH canonical T3 reservation and final dispatch checks.
 // Never call this on a body value without resolving canonical trial authority.
 export function admitResearchTrial(state,input){
+  const component=validateResearchComponentContext(state,input);
   const bound=records(state,'trial',input.projectId).find(t=>t.runOperationId===input.operationId||t.manifest.workspaceId===input.workspaceContext?.workspaceId&&t.manifest.execution==='agent');
   if(input.researchContext===undefined){if(bound)fail('RESEARCH_CONTEXT','Research admission cannot be stripped',409);return null;}
   exact(input.researchContext,['version','experimentId','trialId','configDigest','manifestDigest','split','adapterId','adapterVersion','policyVersion','workspaceId','contextPolicyDigest']);
   const t=record(state,'trial',input.researchContext.trialId,input.projectId),e=record(state,'experiment',t.manifest.experimentId,input.projectId);verifyTrial(t,e);
-  if(canonical(input.researchContext)!==canonical(buildResearchContext(state,{projectId:input.projectId,trialId:t.id}))||t.manifest.execution!=='agent'||!['reserved','dispatching','running'].includes(t.status)||t.stopRequested||t.restoreReviewRequired||t.runOperationId!==input.operationId||t.manifest.taskId!==input.taskId||!input.workspaceContext||t.manifest.workspaceId!==input.workspaceContext.workspaceId)fail('RESEARCH_CONTEXT','Stale, foreign or unbound research admission',409);
+  const workspaceId=component?.workspaceId??t.manifest.workspaceId,taskId=component?.taskId??t.manifest.taskId,operationId=component?.operationId??t.runOperationId;
+  if(canonical(input.researchContext)!==canonical(buildResearchContext(state,{projectId:input.projectId,trialId:t.id}))||t.manifest.execution!=='agent'||!['reserved','dispatching','running'].includes(t.status)||t.stopRequested||t.restoreReviewRequired||operationId!==input.operationId||taskId!==input.taskId||!input.workspaceContext||workspaceId!==input.workspaceContext.workspaceId)fail('RESEARCH_CONTEXT','Stale, foreign or unbound research admission',409);
   if(digest(researchContextPolicy(state,{projectId:input.projectId,components:t.manifest.components}))!==t.manifest.contextPolicyDigest)fail('RESEARCH_CONTEXT_POLICY','Declared context policy changed before dispatch',409);
   if(t.deadlineAt!==null&&Date.now()>=t.deadlineAt)fail('RESEARCH_LIMIT','Trial elapsed limit reached before dispatch',409);
   const r=state.runs.find(r=>r.operationId===input.operationId);

@@ -9,6 +9,9 @@ import {createResearchService,defaultResearchConfig,buildResearchContext} from '
 import {createResearchNativeOwner} from '../app/research-native/owner.mjs';
 import {precreateResearchOutput} from '../app/research-native/output.mjs';
 import {digest} from '../app/research/contracts.mjs';
+import {createResearchRoute} from '../app/server/research-route.mjs';
+import {contextFor} from '../app/workspaces/contracts.mjs';
+import {validateWorkspaceContext} from '../app/workspaces/context.mjs';
 
 test('Research private native owner: canonical resource and identity fences',async t=>{
   const f=await fixture(t);await f.configure();const w=await f.create();
@@ -33,6 +36,12 @@ test('Research private native owner: canonical resource and identity fences',asy
     const s=structuredClone(before),owner=createResearchNativeOwner({clock:()=>now,observeGuarded:()=>({...observed,profile:null})});
     assert.ok(owner.retain(s,request0));assert.ok(owner.qualification(s,request0));assert.equal(owner.qualification(s,request),null);
     assert.equal(JSON.stringify(s.events.filter(e=>e.type==='research.enforcement')).includes('INJECTED_NATIVE_PROOF_NOT_LIVE'),false);
+    const pending=structuredClone(before),input={projectId:f.p.id,taskId:w.taskId,operationId:trial.runOperationId,workspaceContext:contextFor(w),researchContext:buildResearchContext(pending,{projectId:f.p.id,trialId:trial.id})};
+    assert.throws(()=>validateWorkspaceContext(pending,{...input,preparing:true}),{code:'WORKSPACE_CONTEXT'});
+    assert.ok(validateWorkspaceContext(pending,input,{preparing:true}));
+    const route=createResearchRoute({store:f.store,dataDir:f.dataDir,clock:()=>now,policy:{observe:()=>observed,resolve:()=>{throw Error('No provider allowed in pending admission fixture');}},getGuarded:()=>({qualifyProactive:()=>observed.routeProof})});
+    assert.ok(route.retainInput(pending,input),'initial real route contract can retain pending authority before Workspace reservation');
+    assert.equal(pending.runs.length,0);void route.close();
   });
   await t.test('logical steps, actual egress attempts, one agent and unknown accounting',()=>{
     const {s,owner,r}=setup();

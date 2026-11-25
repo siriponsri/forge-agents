@@ -114,6 +114,7 @@ export function createResearchService({store,dataDir,executionOwner,authorizeOwn
     let {t}=readTrial(i);if(!supported())fail('RESEARCH_OWNER_INTEGRATION','Existing execution owner is not integrated',409);
     // Never re-submit on an unknown response, even when no run is visible yet.
     await executionOwner.reconcile({projectId:i.projectId,trialId:t.id,workspaceId:t.manifest.workspaceId,runOperationId:t.runOperationId,runId:t.runId??null},caller);
+    if(records(store.read(),'composition',i.projectId).some(c=>c.trialId===t.id))return syncComposition(i,caller);
     const s=store.read();t=trial(s,i);const r=canonicalRun(t,s);
     const telemetry=await executionOwner.telemetry({projectId:i.projectId,runId:r.id,attemptId:r.attemptId},caller);
     const usage={tokens:telemetry?.tokens??null,cost:telemetry?.cost??null};for(const k of ['tokens','cost'])if(usage[k]!==null&&(!Number.isFinite(usage[k])||usage[k]<0))fail('RESEARCH_TELEMETRY','Invalid owner accounting',409);
@@ -121,6 +122,26 @@ export function createResearchService({store,dataDir,executionOwner,authorizeOwn
     if(!t.manifest.components.memory&&(memoryRefs.length||activeMemory.length))fail('RESEARCH_COMPONENT_MISMATCH','Memory-off ablation received FORGE memory',409);
     const componentReceipts={memory:{requested:t.manifest.components.memory,status:!t.manifest.components.memory?'DISABLED':memoryRefs.length&&activeMemory.length?'APPLIED':'NEEDS_SETUP',contextId:r.contextId,selectedCount:activeMemory.length},skills:{requested:t.manifest.components.skills,status:'OWNER_RECEIPTS_REQUIRED'},staffing:{requested:t.manifest.components.staffing,status:'OWNER_RECEIPTS_REQUIRED'},adaptation:{requested:t.manifest.components.adaptation,status:'POLICY_REQUEST_ONLY'},verification:{requested:t.manifest.components.verification,status:'FINAL_INDEPENDENT_CHECK_ALWAYS_REQUIRED'}};
     return update(i,t=>{t.runId=r.id;t.attemptId=r.attemptId;t.componentReceipts=componentReceipts;t.componentQualification='COMPONENT_EFFECTS_UNQUALIFIED_UNTIL_OWNER_RECEIPTS';t.telemetry={...t.telemetry,...usage,currency:typeof telemetry?.currency==='string'?telemetry.currency:null,source:'canonical-execution-owner',providerExecution:r.fixture??'CANONICAL_T3',memory:{status:componentReceipts.memory.status,selectedCount:activeMemory.length}};t.status=t.stopRequested?(terminalRunStatuses.has(r.status)?'stopped':'stopping'):r.status==='completed'?'awaiting-validation':terminalRunStatuses.has(r.status)?'FAILED':'running';});
+  }
+  async function syncComposition(i,caller){
+    if(typeof executionOwner?.exportComposition!=='function')fail('RESEARCH_COMPONENT_UNAVAILABLE','Canonical cohort export verification required',409);
+    const exported=await executionOwner.exportComposition({projectId:i.projectId,trialId:i.trialId},caller),c=exported.data;
+    if(exported.format!=='forge-research-components-json/1'||exported.sha256!==digest(c)||c.composition.trialId!==i.trialId)fail('RESEARCH_COMPONENT_INTEGRITY','Exact cohort result required',409);
+    return update(i,(t,s)=>{
+      if(c.composition.manifestDigest!==t.manifestDigest)fail('RESEARCH_COMPONENT_INTEGRITY','Cohort manifest changed',409);
+      const primary=c.attempts.find(a=>a.allocation.role==='primary')?.run,effective=c.attempts.filter(a=>a.allocation.role!=='helper').at(-1);
+      const consumption=records(s,'component-consumption',i.projectId).filter(p=>p.compositionId===c.composition.id&&c.attempts.some(a=>a.run?.id===p.runId&&a.run?.attemptId===p.attemptId));
+      const memories=c.attempts.map(a=>s.events.find(e=>e.id===a.run?.contextId)).filter(Boolean),memoryCount=memories.reduce((n,e)=>n+(e.active??[]).filter(x=>x.memory===true).length,0);
+      const flags=t.manifest.components;
+      t.runId=primary?.id??t.runId;t.attemptId=primary?.attemptId??t.attemptId;
+      t.cohort={compositionId:c.composition.id,status:c.status,runIds:c.attempts.map(a=>a.run?.id).filter(Boolean),evidenceIds:c.attempts.map(a=>a.evidence?.id).filter(Boolean),exportSha256:exported.sha256,effectiveRunId:effective?.run?.id??null};
+      t.evidenceId=c.effectiveEvidence?.id??null;
+      t.componentReceipts={memory:{requested:flags.memory,status:!flags.memory?'DISABLED':memoryCount?'APPLIED':'NEEDS_SETUP',selectedCount:memoryCount},skills:{requested:flags.skills,status:!flags.skills?'DISABLED':consumption.length&&consumption.every(p=>p.skills.length)?'APPLIED':'OWNER_RECEIPTS_REQUIRED',receiptIds:consumption.map(p=>p.id)},staffing:{requested:flags.staffing,status:!flags.staffing?'DISABLED':c.attempts.some(a=>a.allocation.role==='helper'&&a.run)?'APPLIED':'ALLOCATION_PENDING'},adaptation:{requested:flags.adaptation,status:!flags.adaptation?'DISABLED':c.attempts.some(a=>a.run&&(a.allocation.role==='revision'||a.allocation.feedback?.reason==='initial-capability-qualified-route'))?'APPLIED':'NO_ADAPTATION_OBSERVED'},verification:{requested:flags.verification,status:c.attempts.some(a=>a.evidence)?'INDEPENDENT_EVIDENCE_RETAINED':'EVIDENCE_PENDING'}};
+      t.componentQualification='CANONICAL_OWNER_RECEIPTS; native enforcement remains exact-run bound';
+      t.telemetry={...t.telemetry,tokens:c.usage.tokens,cost:c.usage.cost,currency:c.usage.currency,controllerMs:c.usage.controller.elapsedMs,source:'canonical-cohort-owner-observations'};
+      t.status=['PASSED','FAILED','stopped','stopping','reconcile-required','awaiting-validation'].includes(c.status)?c.status:'running';
+      if(['PASSED','FAILED'].includes(t.status))t.completedAt=clock();
+    });
   }
   const api={
     async state(input,caller){await identity('state',input,caller);const s=store.read();return {projectId:input.projectId,experiments:records(s,'experiment',input.projectId),trials:records(s,'trial',input.projectId),evidence:records(s,'evidence',input.projectId),operations:records(s,'operation',input.projectId).map(({input,...o})=>o),catalog:registry.list(),sources:RESEARCH_SOURCES,limits:LIMITS,policies:POLICIES,components:COMPONENTS,faults:FAULTS,defaultConfig:defaultResearchConfig(),policyInterfaces:FUTURE_POLICY_INTERFACES,capabilities:{agentExecution:supported()&&executionOwner.nativeQualificationAvailable!==false,agentBridgeIntegrated:supported(),nativeQualification:executionOwner?.nativeQualificationAvailable===false?'UNAVAILABLE':'PER_TRIAL_REQUIRED',localExecution:true,osSandbox:false,training:false},suspended};},
@@ -174,6 +195,11 @@ export function createResearchService({store,dataDir,executionOwner,authorizeOwn
       const {t}=readTrial(i);revision(t,i.expectedRevision);
       if(t.manifest.execution==='local')return validateLocal(i);
       if(!supported()||!['awaiting-validation','PASSED','FAILED'].includes(t.status))fail('RESEARCH_EVIDENCE','Completed owned run required for independent validation',409);
+      if(records(store.read(),'composition',i.projectId).some(c=>c.trialId===t.id)){
+        const cohort=await executionOwner.cohortState({projectId:i.projectId,trialId:t.id},caller);
+        for(const a of cohort.attempts.filter(a=>a.run?.status==='completed'))await executionOwner.validate({projectId:i.projectId,trialId:t.id,runId:a.run.id,attemptId:a.run.attemptId,manifestDigest:t.manifestDigest,dataset:t.manifest.dataset},caller);
+        return syncComposition(i,caller);
+      }
       const r=canonicalRun(t,store.read());
       const result=await executionOwner.validate({projectId:i.projectId,runId:r.id,attemptId:r.attemptId,trialId:t.id,manifestDigest:t.manifestDigest,dataset:t.manifest.dataset},caller);
       // The owner returns a canonical evidence ID, never a success boolean.
@@ -185,6 +211,7 @@ export function createResearchService({store,dataDir,executionOwner,authorizeOwn
       if(t.manifest.execution==='agent'&&t.dispatchAcknowledged){if(!supported())return update(i,t=>{t.status='reconcile-required';});await executionOwner.stop({projectId:i.projectId,trialId:t.id,workspaceId:t.manifest.workspaceId,runOperationId:t.runOperationId,runId:t.runId??null},caller);return reconcileAgent(i,caller);}return trial(store.read(),i);
     }));},
     async compare(input,caller){await identity('compare',input,caller);return compareResearch(store.read(),input.projectId,input.experimentIds);},
+    async syncComposition(input,caller){await identity('cohort-state',input,caller);if(closed||suspended)fail('RESEARCH_SUSPENDED','Research is suspended',409);return syncComposition(input,caller);},
     async export(input,caller){await identity('export',input,caller);const s=store.read(),e=verifyExperiment(record(s,'experiment',input.experimentId,input.projectId));const trials=records(s,'trial',input.projectId).filter(t=>t.manifest.experimentId===e.id);for(const t of trials)verifyTrial(t,e);const evidence=records(s,'evidence',input.projectId).filter(e=>trials.some(t=>t.id===e.trialId));for(const ev of evidence)if(digest({...ev,digest:undefined})!==ev.digest)fail('RESEARCH_EVIDENCE','Evidence digest changed',409);const data={version:1,experiment:e,trials,evidence,sources:RESEARCH_SOURCES,policyInterfaces:FUTURE_POLICY_INTERFACES,comparison:compareResearch(s,input.projectId,[e.id]),qualification:'Engineering fixture evidence only; no measured research improvement or official benchmark result',exportedAt:clock()};return {format:'forge-research-json/1',data,sha256:digest(data)};},
     async recover(){return store.transaction(s=>{for(const t of records(s,'trial'))if(['dispatching','running','stopping'].includes(t.status)){t.status='reconcile-required';t.revision++;}for(const o of records(s,'operation'))if(o.status==='pending'){o.status='reconcile-required';o.revision++;}});},
     async suspendForRestore(){suspended=true;await Promise.allSettled([...pending]);const active=records(store.read(),'trial').filter(activeTrial);if(active.length)fail('RESEARCH_RESTORE_BUSY','Stop and reconcile reserved research trials before restore',409);},

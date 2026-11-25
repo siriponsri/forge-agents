@@ -27,7 +27,7 @@ export function createResearchRoute({store,dataDir,policy,getGuarded,components,
     const w=x?.workspace??s.events.find(e=>e.type==='workspace.workspace'&&e.id===t.manifest.workspaceId&&e.projectId===input.projectId);
     if(!w||input.taskId!==w.taskId||input.operationId!==`workspace-run:${w.id}`||!same(input.workspaceContext,contextFor(w))||!same(input.researchContext,buildResearchContext(s,{projectId:t.projectId,trialId:t.id})))fail('RESEARCH_OWNERSHIP','Exact canonical Research member required',409);
     assertNoMixedControllers(s,t.projectId,{taskId:w.taskId});
-    validateWorkspaceContext(s,{projectId:t.projectId,taskId:w.taskId,operationId:input.operationId,workspaceContext:input.workspaceContext});
+    validateWorkspaceContext(s,{projectId:t.projectId,taskId:w.taskId,operationId:input.operationId,workspaceContext:input.workspaceContext},{preparing:true});
     if(closed||t.stopRequested||t.restoreReviewRequired||w.stopRequested||w.restoreReviewRequired||!Number.isSafeInteger(t.startedAt)||t.deadlineAt!==t.startedAt+t.manifest.limits.maxMs||clock()>=t.deadlineAt)fail('RESEARCH_LIMIT','Stopped, frozen or expired Research route',409);
     const run=s.runs.find(r=>r.projectId===t.projectId&&r.operationId===input.operationId)??null;
     return {trial:t,workspace:w,allocation:x?.allocation??null,run};

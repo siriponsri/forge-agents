@@ -10,7 +10,7 @@ export {componentUsage} from './accounting.mjs';
 export {runResearchComposition} from './runner.mjs';
 
 // Policy composition only. Workspace/T3 remain the sole execution and Stop owners.
-export function createResearchComponentService({store,workspaces,adaptive,providers,authorizeOwner,dataDir,clock=Date.now,registry}={}){
+export function createResearchComponentService({store,workspaces,adaptive,providers,authorizeOwner,dataDir,clock=Date.now,registry,stopExistingWorkspace}={}){
   if(!store?.read||!store?.transaction||!dataDir)throw new TypeError('Existing durable store and private dataDir required');
   const pending=new Set(),locks=new Set(),timers=new Map();let closed=false;
   const artifacts=createComponentArtifacts({store,dataDir,clock,registry});
@@ -73,7 +73,18 @@ export function createResearchComponentService({store,workspaces,adaptive,provid
     if(!deterministicFailure||c.policy==='evidence-guided'&&(!intactInput||!artifact))return {status:'FAILED',reason:'insufficient-independent-adaptation-evidence'};
     return {slot:revision,reason:c.policy==='rule-adapt'?'rule:independent-answer-check-failed':'evidence:input-intact-artifact-observed-answer-check-failed',evidence:e};
   }
-  function arm(c,caller){if(timers.has(c.id)||stopped(store.read(),c)||completion(store.read(),c))return;const t=trialFor(store.read(),c.projectId,c.trialId);if(!t.deadlineAt||['PASSED','FAILED','stopped','LIMIT_REACHED'].includes(t.status))return;const timer=setTimeout(()=>{timers.delete(c.id);track(api.stop({projectId:c.projectId,trialId:c.trialId,operationId:`research-components-deadline:${c.id}`},caller)).catch(()=>{});},Math.max(0,t.deadlineAt-clock()));timer.unref?.();timers.set(c.id,timer);}
+  async function stopCohort(i,caller,{recovery=false}={}){
+    const c=current(store.read(),i),t=trialFor(store.read(),i.projectId,i.trialId);
+    if(recovery&&(!Number.isSafeInteger(t.deadlineAt)||clock()<t.deadlineAt&&!t.stopRequested))fail('RESEARCH_COMPONENT_STOP','Recovery may only stop expired or already stopped work',409);
+    clearTimeout(timers.get(c.id));timers.delete(c.id);
+    await store.transaction(s=>{const t=trialFor(s,i.projectId,i.trialId);t.stopRequested=true;t.status='stopping';t.revision++;if(!stopped(s,c))seal(s,'component-stop',{compositionId:c.id,trialId:c.trialId,reason:recovery?'absolute-deadline-recovery':'owner-or-absolute-deadline'},i.projectId,clock);});
+    for(const a of allocationsFor(store.read(),c)){
+      const claim=await store.transaction(s=>{if(records(s,'component-stop-claim',i.projectId).some(e=>e.allocationId===a.id))return false;seal(s,'component-stop-claim',{compositionId:c.id,allocationId:a.id,workspaceId:a.workspaceId,workspaceStopOperationId:`research-component-stop:${a.id}`},i.projectId,clock);return true;});
+      if(claim){const s=store.read(),w=workspaceFor(s,a.workspaceId,i.projectId),r=runFor(s,a),input={projectId:i.projectId,workspaceId:w.id,operationId:`research-component-stop:${a.id}`,expectedRevision:w.revision};try{if(recovery){if(typeof stopExistingWorkspace!=='function')fail('RESEARCH_COMPONENT_RECOVERY','Private existing-attempt Stop is unavailable',409);if(r&&!terminal.has(r.status))await stopExistingWorkspace(input,{runId:r.id,reason:'absolute-deadline'});}else await workspaces.stop(input,caller);}catch{/* Unknown Stop stays retained; never submit it twice. */}}
+    }
+    return summary(store.read(),c);
+  }
+  function arm(c,caller){if(timers.has(c.id)||stopped(store.read(),c)||completion(store.read(),c))return;const t=trialFor(store.read(),c.projectId,c.trialId);if(!t.deadlineAt||['PASSED','FAILED','stopped','LIMIT_REACHED'].includes(t.status))return;const timer=setTimeout(()=>{timers.delete(c.id);const input={projectId:c.projectId,trialId:c.trialId,operationId:`research-components-deadline:${c.id}`};track(caller==null?stopCohort(input,null,{recovery:true}):api.stop(input,caller)).catch(()=>{});},Math.max(0,t.deadlineAt-clock()));timer.unref?.();timers.set(c.id,timer);}
   const api={
     contextVersion:1,
     prepare(input,caller){return track(command('prepare',input,caller,async i=>{
@@ -110,7 +121,7 @@ export function createResearchComponentService({store,workspaces,adaptive,provid
         const c=current(s,i),t=fence(s,c),choice=choose(s,c);if(choice.slot?.workspaceId!==next.slot.workspaceId)fail('RESEARCH_COMPONENT_BUSY','Cohort allocation changed',409);assertContinuation(s,c,t.manifest.limits);
         if(allocationsFor(s,c).length>=t.manifest.limits.maxAgents)fail('RESEARCH_COMPONENT_BUDGET','Global agent allocation limit reached',409);
         const slot=choice.slot,w=workspaceFor(s,slot.workspaceId,i.projectId);if(w.status!=='ready'||w.runOperationId||w.stopRequested||w.restoreReviewRequired||workspacePin(w)!==slot.workspaceDigest)fail('RESEARCH_COMPONENT_SCOPE','Allocation workspace changed before dispatch',409);validateSkills(s,c,slot);
-        if(t.deadlineAt===null){t.startedAt=clock();t.deadlineAt=clock()+t.manifest.limits.maxMs;}t.status='dispatching';t.revision++;
+        if(t.deadlineAt===null){t.startedAt=clock();t.deadlineAt=t.startedAt+t.manifest.limits.maxMs;}t.status='dispatching';t.revision++;
         const helpers=allocationsFor(s,c).filter(a=>a.role==='helper').map(a=>evidenceFor(s,c,a)).filter(e=>e?.status==='PASSED');
         const decision=seal(s,'component-decision',{compositionId:c.id,trialId:t.id,manifestDigest:t.manifestDigest,policy:c.policy,action:choice.reason,evidenceId:choice.evidence?.id??null,slotId:slot.workspaceId,usage:componentUsage(s,c),mandatorySecurity:true},i.projectId,clock);
         return seal(s,'allocation',{compositionId:c.id,trialId:t.id,manifestDigest:t.manifestDigest,workspaceId:w.id,taskId:w.taskId,botId:w.botId??null,operationId:`workspace-run:${w.id}`,workspaceStartOperationId:`research-component-workspace:${c.id}:${w.id}`,role:slot.role,selection:slot.selection,skills:slot.skills,decisionId:slot.decisionId,policyDecisionId:decision.id,envelope:slot.envelope,feedback:{evidenceId:choice.evidence?.id??null,reason:choice.reason,helperEvidenceIds:slot.role==='revision'?helpers.map(e=>e.id):[]}},i.projectId,clock);
@@ -132,19 +143,13 @@ export function createResearchComponentService({store,workspaces,adaptive,provid
       exact(i,['projectId','trialId','operationId','allocationId']);const s=store.read(),c=current(s,i),a=allocationsFor(s,c).find(a=>a.id===i.allocationId);if(!a)fail('RESEARCH_COMPONENT_SCOPE','Allocation not in this cohort',409);const r=runFor(s,a);if(!r)fail('RESEARCH_COMPONENT_SCOPE','Canonical run not observed',409);return artifacts.validate(r);
     }));},
     stop(input,caller){return track(command('stop',input,caller,async i=>{
-      exact(i,['projectId','trialId','operationId']);const c=current(store.read(),i);clearTimeout(timers.get(c.id));timers.delete(c.id);
-      await store.transaction(s=>{const t=trialFor(s,i.projectId,i.trialId);t.stopRequested=true;t.status='stopping';t.revision++;if(!stopped(s,c))seal(s,'component-stop',{compositionId:c.id,trialId:c.trialId,reason:'owner-or-absolute-deadline'},i.projectId,clock);});
-      for(const a of allocationsFor(store.read(),c)){
-        const claim=await store.transaction(s=>{if(records(s,'component-stop-claim',i.projectId).some(e=>e.allocationId===a.id))return false;seal(s,'component-stop-claim',{compositionId:c.id,allocationId:a.id,workspaceId:a.workspaceId,workspaceStopOperationId:`research-component-stop:${a.id}`},i.projectId,clock);return true;});
-        if(claim){const w=workspaceFor(store.read(),a.workspaceId,i.projectId);try{await workspaces.stop({projectId:i.projectId,workspaceId:w.id,operationId:`research-component-stop:${a.id}`,expectedRevision:w.revision},caller);}catch{/* Unknown Stop stays retained; never submit it twice. */}}
-      }
-      return summary(store.read(),c);
+      exact(i,['projectId','trialId','operationId']);return stopCohort(i,caller);
     }));},
     async state(input,caller){await identity(input,caller);return summary(store.read(),current(store.read(),input));},
     preparePrompt(args){if(closed)fail('RESEARCH_COMPONENT_CLOSED','Service closed',409);return track(artifacts.preparePrompt(args));},
     validatePrompt(...args){if(closed)fail('RESEARCH_COMPONENT_CLOSED','Service closed',409);return artifacts.validatePrompt(...args);},
     // Recovery may observe/arm existing work only. Opaque authority is host-provided.
-    async recover(caller){for(const c of records(store.read(),'composition').map(intact)){const t=trialFor(store.read(),c.projectId,c.trialId);if(stopped(store.read(),c)||completion(store.read(),c)||['PASSED','FAILED','stopped','LIMIT_REACHED'].includes(t.status))continue;const all=allocationsFor(store.read(),c);if(all.length){if(t.deadlineAt!==null&&clock()>=t.deadlineAt)await api.stop({projectId:c.projectId,trialId:c.trialId,operationId:`research-components-deadline:${c.id}`},caller);else arm(c,caller);}}return {status:'reconciliation-only',redispatch:false};},
+    async recover(caller){for(const c of records(store.read(),'composition').map(intact)){const t=trialFor(store.read(),c.projectId,c.trialId);if(stopped(store.read(),c)||completion(store.read(),c)||['PASSED','FAILED','stopped','LIMIT_REACHED'].includes(t.status))continue;const all=allocationsFor(store.read(),c);if(all.length){if(t.deadlineAt!==null&&clock()>=t.deadlineAt){if(caller==null)await stopCohort({projectId:c.projectId,trialId:c.trialId},null,{recovery:true});else await api.stop({projectId:c.projectId,trialId:c.trialId,operationId:`research-components-deadline:${c.id}`},caller);}else arm(c,caller);}}return {status:'reconciliation-only',redispatch:false};},
     async close(){closed=true;for(const timer of timers.values())clearTimeout(timer);timers.clear();await Promise.allSettled([...pending]);},
   };
   return api;

@@ -1,5 +1,10 @@
 # FORGE
 
+> **25 Nov development checkpoint:** source is being handed off through `main`
+> for continuation on the home machine. The complete-product goal remains open;
+> assembled Research native attestation and final integration review are pending.
+> [Checkpoint status, verified scope and home instructions](docs/CHECKPOINT_HOME_20261125.md).
+
 **From an idea to a plan, working files, a preview and verified delivery.**
 
 FORGE is a local-first workspace for coordinating AI agents and reviewing their

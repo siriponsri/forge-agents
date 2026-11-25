@@ -5,9 +5,11 @@ import {checkoutPath,inspectSource,inspectWorkspace,addWorktree,git,gitText,runC
 
 export function createWorkspaceService({store,dataDir,t3,authorize}){
   const pending=new Set(),locks=new Set();let closed=false;
+  const recoveryStop=Symbol('private existing Research workspace Stop');
   const get=(s,i)=>record(s,'workspace',i.workspaceId,i.projectId);
   const queue=(s,i)=>record(s,'integration',i.integrationId,i.projectId);
   async function identity(action,input,caller){
+    if(caller===recoveryStop&&action==='stop')return;
     if(!authorize||await authorize({action:action==='state'?'read':'write',scope:{kind:'project',id:input.projectId,projectId:input.projectId},callerContext:caller,state:store.read()})!==true)fail('OWNER_REQUIRED','An authenticated local Owner action is required',403);
   }
   function track(p){pending.add(p);p.then(()=>pending.delete(p),()=>pending.delete(p));return p;}
@@ -39,6 +41,7 @@ export function createWorkspaceService({store,dataDir,t3,authorize}){
   function exactRun(s,w){const r=ownedRun(s,w);if(!r)fail('RUN_UNKNOWN','No authoritative T3 run has been observed; do not redispatch',409);return r;}
   function currentCheck(s,w,head){const c=w.checkId&&record(s,'check',w.checkId,w.projectId);if(!c||c.status!=='passed'||c.head!==head||c.baseSha!==w.baseSha||c.runId!==w.runId||c.attemptId!==w.attemptId)fail('CHECKS_REQUIRED','Run checks against the exact current head and attempt',409);return c;}
   const api={
+    get researchComponentContextVersion(){return t3?.researchComponentContextVersion===1?1:0;},
     async state(input,caller){await identity('state',input,caller);find(store.read(),'projects',input.projectId);const s=store.read();return {projectId:input.projectId,stateRevision:s.revision,policy:policy(s,input.projectId),workspaces:records(s,'workspace',input.projectId),integrations:records(s,'integration',input.projectId),checks:records(s,'check',input.projectId),operations:records(s,'operation',input.projectId),capabilities:{executionSupported:executionSupported(),isolation:'git-worktree-files',osSandbox:false,automaticPush:false,checks:['diff','node-test'],capacitySource:'explicit-owner-ceilings'}};},
     configure(input,caller){return operation('configure',input,caller,async i=>store.transaction(s=>{
       const old=policy(s,i.projectId);if((old?.revision??0)!==i.expectedRevision)fail('REVISION_CONFLICT','Parallel policy changed',409);
@@ -62,9 +65,10 @@ export function createWorkspaceService({store,dataDir,t3,authorize}){
       try{await addWorktree(w,dataDir);return store.transaction(s=>{const r=get(s,{...i,workspaceId:w.id});r.status='ready';changed(r);return r;});}
       catch(e){await store.transaction(s=>{const r=get(s,{...i,workspaceId:w.id});r.status='creation-unknown';r.error=e.message;changed(r);});throw e;}
     });},
-    start(input,caller,{researchContext}={}){
-      if(input.researchContext!==undefined)fail('RESEARCH_CONTEXT','Research context is host-only, not a Workspace body field',403);
-      return operation('start',{...input,...(researchContext?{researchContext:structuredClone(researchContext)}:{})},caller,async i=>{
+    start(input,caller,{researchContext,researchComponentContext}={}){
+      if(input.researchContext!==undefined||input.researchComponentContext!==undefined)fail('RESEARCH_CONTEXT','Research context is host-only, not a Workspace body field',403);
+      if(researchComponentContext&&api.researchComponentContextVersion!==1)fail('RESEARCH_COMPONENT_INTEGRATION','Canonical T3 component admission is required',409);
+      return operation('start',{...input,...(researchContext?{researchContext:structuredClone(researchContext)}:{}),...(researchComponentContext?{researchComponentContext:structuredClone(researchComponentContext)}:{})},caller,async i=>{
       if(!executionSupported())fail('WORKSPACE_INTEGRATION_REQUIRED','T3 must retain and resolve the authoritative workspace context before dispatch',409);
       const before=get(store.read(),i);revision(before,i.expectedRevision);const files=await observed(before);
       if(files.head!==before.baseSha||files.dirty)fail('WORKSPACE_CHANGED','A new execution requires its unchanged reserved checkout',409);
@@ -74,7 +78,7 @@ export function createWorkspaceService({store,dataDir,t3,authorize}){
         assertIsolatedWorkspaceAvailable(s,i.projectId,{projectId:i.projectId,taskId:w.taskId,operationId:w.runOperationId,workspaceContext:contextFor(w)});changed(w);return w;
       });
       let response;
-      try{response=await t3.startRun({projectId:w.projectId,taskId:w.taskId,operationId:w.runOperationId,workspaceContext:contextFor(w),...(i.researchContext?{researchContext:i.researchContext}:{})});}
+      try{response=await t3.startRun({projectId:w.projectId,taskId:w.taskId,operationId:w.runOperationId,workspaceContext:contextFor(w),...(i.researchContext?{researchContext:i.researchContext}:{}),...(i.researchComponentContext?{researchComponentContext:i.researchComponentContext}:{})});}
       catch(e){await store.transaction(s=>{const w=get(s,i);w.status='unknown';w.error=e.message;changed(w);});return get(store.read(),i);}
       return store.transaction(s=>{const w=get(s,i);let run;try{run=ownedRun(s,w);}catch(e){w.status='unknown';w.error=e.message;changed(w);return w;}if(!run||response?.id!==run.id){w.status='unknown';w.error='T3 did not retain a matching authoritative run';}else{w.runId=run.id;w.attemptId=run.attemptId;w.status=terminal.has(run.status)?(w.stopRequested?'stopped':run.status==='completed'?'review':'failed'):run.status==='unknown'?'unknown':'running';}changed(w);return w;});
     });},
@@ -182,6 +186,14 @@ export function createWorkspaceService({store,dataDir,t3,authorize}){
     const after=await integrationProof(q);if(after.tree!==proof.tree)fail('CHECK_CHANGED','Combined files changed during verification',409);
     return store.transaction(s=>{const q=queue(s,i);q.combinedTree=proof.tree;q.combinedCheck={...results,tree:proof.tree,targetHead:q.targetHead,candidateHead:q.candidateHead,checkedAt:new Date().toISOString()};q.status=results.status==='passed'?'awaiting-owner':'checks-failed';q.error=results.status==='passed'?null:'Combined verification failed';q.approval=null;q.conflicts=[];changed(q);return q;});
   }
-  for(const method of Object.keys(api).filter(m=>!['state','close','recover'].includes(m))){const fn=api[method];api[method]=(...args)=>closed?Promise.reject(Object.assign(new Error('Workspaces closed'),{code:'SHUTTING_DOWN',statusCode:409})):track(fn(...args));}
+  for(const method of Object.keys(api).filter(m=>typeof api[m]==='function'&&!['state','close','recover'].includes(m))){const fn=api[method];api[method]=(...args)=>closed?Promise.reject(Object.assign(new Error('Workspaces closed'),{code:'SHUTTING_DOWN',statusCode:409})):track(fn(...args));}
+  // Host-only, stop-only capability. The HTTP dispatcher has an explicit
+  // allowlist and never exposes this method or the private caller token.
+  Object.defineProperty(api,'stopExisting',{value:(input,{runId,reason}={})=>{
+    if(!['absolute-deadline','recovery','shutdown'].includes(reason))fail('WORKSPACE_STOP_SCOPE','Explicit recovery Stop reason required',403);
+    const w=get(store.read(),input),r=ownedRun(store.read(),w);
+    if(!r||r.id!==runId||!r.researchContext||r.workspaceContext?.workspaceId!==w.id)fail('WORKSPACE_STOP_SCOPE','Only the exact retained Research attempt can be stopped',403);
+    return api.stop(input,recoveryStop);
+  }});
   return api;
 }

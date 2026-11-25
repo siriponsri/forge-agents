@@ -1,20 +1,23 @@
 import {record,records,find,fail,digest,contextFor,approvedTask,taskSignature,planSignature,assertNoMixedControllers,relatedProjects,policy,terminal,activeWorkspace,pathKey,ownedRun} from './contracts.mjs';
 import {inspectWorkspace} from './git.mjs';
+import {digest as observationDigest} from '../server/agui.mjs';
 
 // Call inside T3's authoritative reservation and immediately before launch.
 // Paths supplied by HTTP/model input are never accepted as checkout authority.
-export function validateWorkspaceContext(s,input){
+export function validateWorkspaceContext(s,input,{preparing=false}={}){
   if(input.workspaceContext===undefined)return null;
   const c=input.workspaceContext;
   if(!c||c.version!==1)fail('WORKSPACE_CONTEXT','Version-1 workspace context required',409);
   const w=record(s,'workspace',c.workspaceId,input.projectId);
-  if(digest(c)!==digest(contextFor(w))||input.taskId!==w.taskId||input.operationId!==w.runOperationId||w.stopRequested||w.restoreReviewRequired||!['admitting','running'].includes(w.status))fail('WORKSPACE_CONTEXT','Stale or foreign workspace admission',409);
+  const unused=preparing===true&&w.status==='ready'&&!w.runOperationId&&!s.runs.some(r=>r.workspaceContext?.workspaceId===w.id);
+  if(digest(c)!==digest(contextFor(w))||input.taskId!==w.taskId||input.operationId!==(unused?`workspace-run:${w.id}`:w.runOperationId)||w.stopRequested||w.restoreReviewRequired||!unused&&!['admitting','running'].includes(w.status))fail('WORKSPACE_CONTEXT','Stale or foreign workspace admission',409);
   assertNoMixedControllers(s,w.projectId,input);
   const {task,plan}=approvedTask(s,w.projectId,w.taskId),r=s.runs.find(r=>r.operationId===input.operationId);
   if(r){ownedRun(s,w);if(r.stopRequest)fail('WORKSPACE_CONTEXT','The owned run has a retained Stop request',409);}
   const taskRevision=r?.approvalSnapshot?.taskRevision===w.taskRevision?w.taskRevision+1:w.taskRevision;
+  const taskMatches=r?.guardedContext?r.approvalSnapshot?.taskRevision===w.taskRevision&&observationDigest(task)===(r.guardedTaskSnapshot??r.guardedReservedTaskSnapshot):task.revision===taskRevision;
   const project=find(s,'projects',w.projectId);
-  if(task.revision!==taskRevision||taskSignature(task)!==w.taskSignature||plan.revision!==w.planRevision||planSignature(plan)!==w.planSignature||(task.botId?find(s,'bots',task.botId,w.projectId).revision:null)!==w.botRevision||digest(project.profile)!==w.profileDigest||pathKey(project.workspace)!==pathKey(w.sourceRoot))fail('REVISION_CONFLICT','Approved work or execution settings changed; create a new workspace',409);
+  if(!taskMatches||taskSignature(task)!==w.taskSignature||plan.revision!==w.planRevision||planSignature(plan)!==w.planSignature||(task.botId?find(s,'bots',task.botId,w.projectId).revision:null)!==w.botRevision||digest(project.profile)!==w.profileDigest||pathKey(project.workspace)!==pathKey(w.sourceRoot))fail('REVISION_CONFLICT','Approved work or execution settings changed; create a new workspace',409);
   return structuredClone(c);
 }
 

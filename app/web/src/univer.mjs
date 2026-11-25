@@ -150,6 +150,7 @@ export async function mountEditor(container, record, onChange) {
       },
     );
     return {
+      univer,unit,
       snapshot: () => snapshotWithImages(unit.save(), [...imageIO.assets.values()], record.projectId),
       rawSnapshot: () => snapshotWithImages(unit.save(), [...imageIO.assets.values()], record.projectId, { validate: false }),
       uploadImage: (file) => imageIO.uploadImage(file),

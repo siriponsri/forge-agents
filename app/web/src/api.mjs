@@ -7,8 +7,8 @@ export class ApiError extends Error {
 export const operationId = () => crypto.randomUUID();
 let browserSession;
 async function ownerHeaders(path,body){
-  const needs=/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/mcp\/(configure|enable|discover|call|stop)$|^\/api\/mcp\/[^/]+\/(discover|call)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|memory|owner-memory|memory-mcp|context|goals|compute|plugins|relay|secrets|missions|proactive|workspaces|budgets|playbooks|research|guarded)\//.test(path);
-  if(body===undefined||!needs)return {};
+  const needs=/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/mcp\/(configure|enable|discover|call|stop)$|^\/api\/mcp\/[^/]+\/(discover|call)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|memory|owner-memory|memory-mcp|context|goals|compute|plugins|relay|secrets|missions|proactive|workspaces|budgets|playbooks|research|research-components|frontend-tools|guarded)\//.test(path);
+  if(!needs||body===undefined&&!path.startsWith('/api/frontend-tools/pending?'))return {};
   browserSession??=fetch('/api/session',{cache:'no-store'}).then(async r=>{const data=await r.json();if(!r.ok||!data.csrf)throw new ApiError('Reload the FORGE page before performing this Owner action.',403,'BROWSER_SESSION_REQUIRED');return data;}).catch(e=>{browserSession=null;throw e;});
   return {'X-Forge-CSRF':(await browserSession).csrf};
 }
@@ -21,7 +21,7 @@ export async function request(
   try {
     response = await fetch(path, {
       method,
-      headers: body === undefined ? {} : { "Content-Type": "application/json",...await ownerHeaders(path,body) },
+      headers: { ...(body === undefined ? {} : { "Content-Type": "application/json" }),...await ownerHeaders(path,body) },
       body: body === undefined ? undefined : JSON.stringify(body),
     });
   } catch (error) {

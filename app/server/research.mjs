@@ -44,7 +44,7 @@ async function boundedFile(dir,name,maxBytes){
  * No HTTP/MCP surface, provider client, arbitrary adapter or execution command.
  * qualification consumes actual owner receipts; it never manufactures proof.
  */
-export function createResearchExecutionBridge({store,dataDir,workspaces,t3,authorizeOwner,registry=pinnedRegistry,qualification,components,stopExistingWorkspace,clock=Date.now}={}){
+export function createResearchExecutionBridge({store,dataDir,workspaces,t3,authorizeOwner,registry=pinnedRegistry,qualification,prepareAdmission,components,stopExistingWorkspace,clock=Date.now}={}){
   if(!store?.read||!store?.transaction||!dataDir||!workspaces?.start||!workspaces?.stop||!workspaces?.reconcile||!t3)throw new TypeError('Canonical store, data directory and Workspace/T3 owners required');
   if(components&&['preparePrompt','validatePrompt','advance','reconcile','stop','state','validate','recover'].some(k=>typeof components[k]!=='function'))throw new TypeError('Actual Research component service required');
   let closed=false;const timers=new Map(),preparing=new Set(),pending=new Set();
@@ -178,6 +178,7 @@ export function createResearchExecutionBridge({store,dataDir,workspaces,t3,autho
         if(input.experimentId!==x.experiment.id||input.taskId!==x.w.taskId||!equal(input.researchContext,buildResearchContext(s,{projectId:input.projectId,trialId:input.trialId}))||!equal(input.policy,decideResearchPolicy({policy:x.trial.manifest.policy,components:x.trial.manifest.components,limits:x.trial.manifest.limits,step:0})))fail('RESEARCH_OWNERSHIP','Dispatch must use exact canonical trial context and policy',409);
         if(compositionFor(s,input.projectId,input.trialId)){if(!components)fail('RESEARCH_COMPONENT_UNAVAILABLE','Actual component owner required',409);return components.advance({projectId:input.projectId,trialId:input.trialId,operationId:`research-bridge-advance:${input.trialId}`},caller);}
         if(records(s,'bridge-dispatch',input.projectId).some(e=>e.trialId===input.trialId))return {status:'reconcile-required'};
+        if(prepareAdmission){await prepareAdmission({projectId:input.projectId,taskId:x.w.taskId,operationId:x.operationId,workspaceContext:contextFor(x.w),researchContext:buildResearchContext(s,{projectId:input.projectId,trialId:input.trialId})});s=store.read();x=snapshot(s,input.projectId,input.trialId);}
         admission(s,x);qualify(s,x);
         await files(x,{pristine:true});s=store.read();x=snapshot(s,input.projectId,input.trialId);admission(s,x);qualify(s,x);
         const claimed=await store.transaction(s=>{const x=snapshot(s,input.projectId,input.trialId);admission(s,x);qualify(s,x);if(records(s,'bridge-dispatch',input.projectId).some(e=>e.trialId===input.trialId))return false;append(s,'bridge-dispatch',{trialId:input.trialId,manifestDigest:x.trial.manifestDigest,workspaceId:x.w.id,runOperationId:x.trial.runOperationId,status:'reserved'},input.projectId,clock);return true;});

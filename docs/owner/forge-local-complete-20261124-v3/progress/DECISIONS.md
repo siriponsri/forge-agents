@@ -141,3 +141,12 @@ Research on 2026-11-24 found issue #38609 explicitly reporting hidden gpt-6.2-so
 - Revisit condition:
 
 Do not re-ask settled product requirements. Record routine engineering decisions and continue; ask only for an unresolved material choice or account/resource binding when it becomes necessary.
+# Checkpoint decision — 2026-11-25
+
+The Owner requested an early main checkpoint for continuation at home, ultimately
+allowing ten minutes. Publish the coherent development checkpoint with explicit
+implementation gaps; do not label the complete-product goal achieved. Stop scope
+expansion, preserve authority and keep failing native Research admission closed.
+No authorization for paid compute, prototype activation or public deployment is
+added. Frontend intents newly created in this generation have five minutes total
+including native setup and Owner waiting, with no reset of prior deadlines.

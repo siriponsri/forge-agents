@@ -291,3 +291,12 @@ The documentation package adds AG-UI, Univer, WordCraft/PdfCraft and a T3 model-
 - Next executable task:
 
 Keep result evidence and decisions. Do not record credentials, private chain-of-thought or full raw provider sessions. Workers use task-specific notes; the integration owner consolidates this log.
+# Early checkpoint — 2026-11-25
+
+Owner requested main delivery within the shortened work-machine window.
+Integrated Research route 332ff2e, frontend route 6b974ea and unified runtime
+fa4d183 with root admission/lifecycle/UI wiring. Native frontend result returned
+inside its original turn; Research assembled attestation still times out before
+upstream execution. Preserve this as IMPLEMENTATION_INCOMPLETE, with an explicit
+opt-in regression. See docs/CHECKPOINT_HOME_20261125.md for home continuation,
+qualified scope, earlier failed runs and final check records.

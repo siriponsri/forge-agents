@@ -175,3 +175,13 @@ For each named route, record implementation paths and supported operations separ
 Record source/API/MCP version and license where relevant, setup/dependency steps, credential binding method without values, representative structured outputs, failure/cancellation/recovery handling, and qualification target/time. Unknown capabilities must stay unknown rather than being inferred from the provider name.
 
 The future CA-EWS profile selected Windows + Colab Free + LitServe + Drive/local/Git. It is not automatically instantiated or executed by this product implementation. Other project profiles remain independent.
+# Checkpoint integration delta — 2026-11-25
+
+| Scope | Implementation | Qualification |
+| --- | --- | --- |
+| Unified private installer/runtime | merged, source/image/provenance pins and purpose separation | worker native15 PASS; verified cache copy PASS; fresh latest source build NOT_RUN |
+| Frontend result path | Owner facade + raw SDK + T3/Context + Office mount + restore/Stop | module/browser + assembled native original-turn result exercised; full mounted native GUI journey pending |
+| Research native route | pending/reserved/run receipts, same-writer action/resource hooks, fixed output and model gateway | assembled attestation timeout before model egress; IMPLEMENTATION_INCOMPLETE |
+| Research components | Workspace/T3 context forwarding, pinned selection, consumption, cohort outcome/UI/headless and recovery | actual SQLite/Git/service checks PASS; assembled native cohort qualification pending |
+| Horizontal diagrams | light/dark/full assets and readable focal labels | contrast235/235; native mobile/browser fixtures documented; live GitHub rendering NOT_RUN |
+| Vast MCP | optional preset + real three-tool transport | inspected repository is synthetic/read-only; no live rental/billing capability claimed |

@@ -11,6 +11,7 @@ import {
   Submit,
 } from "./ui.jsx";
 import { mountEditor, newSnapshot, PACKAGE_VERSION } from "./univer.mjs";
+import FrontendTools,{FrontendRunControl} from './FrontendTools.jsx';
 
 export default function Office({
   t,
@@ -131,6 +132,9 @@ export default function Office({
   );
 }
 function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,themeKind,themeId }) {
+  const [frontendRunId,setFrontendRunId]=useState('');
+  const frontendRuns=(state.runs??[]).filter(r=>r.projectId===projectId&&r.frontendContext?.documentId===record.id);
+  const frontendRun=frontendRuns.find(r=>r.id===frontendRunId)??frontendRuns.at(-1);
   const container = useRef(null),
     editor = useRef(null),
     base = useRef(record),
@@ -440,6 +444,10 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
           "Editor menus use English (1.6.1 ships no Thai locale). Thai content is supported. Native save needs no commercial service.",
         )}
       </div>
+      {record.kind==='doc'&&<>
+        <FrontendRunControl {...{t,projectId,state,record,busy}} dirty={dirty||locked||queueLocked||!ready} onStarted={result=>{setFrontendRunId(result.run?.id??result.intent?.runId??'');run(async()=>result);}}/>
+        <FrontendTools {...{t,projectId,busy}} run={frontendRun} getEditor={()=>({univer:editor.current?.univer,unit:editor.current?.unit,record:base.current,currentRevision:record.revision,ready,dirty:dirty||locked||queueLocked,saving:saving.current,pendingEdit:!!pending.current,baseline:baseline.current,rawSnapshot:editor.current?.rawSnapshot})} onResult={result=>run(async()=>result)}/>
+      </>}
       {newer && (
         <div className="alert">
           {t(

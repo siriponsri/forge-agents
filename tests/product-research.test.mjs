@@ -21,7 +21,7 @@ test('production Research Owner API executes fixed local trials, retains evidenc
   const call=async(method,input={})=>{const response=await post('/api/research/'+method,{projectId:p.id,...input});assert.equal(response.status,200,JSON.stringify(response.data));return response.data;};
   assert.equal((await post('/api/research/state',{projectId:p.id},false)).status,403);
   for(const method of ['recover','close','prepare','__proto__'])assert.equal((await post('/api/research/'+method,{projectId:p.id})).status,404);
-  const initial=await call('state');assert.equal(initial.capabilities.agentExecution,false);assert.equal(initial.capabilities.agentBridgeIntegrated,true);assert.equal(initial.capabilities.nativeQualification,'UNAVAILABLE');assert.equal(app.t3.researchContextVersion,1);
+  const initial=await call('state');assert.equal(initial.capabilities.agentExecution,true);assert.equal(initial.capabilities.agentBridgeIntegrated,true);assert.equal(initial.capabilities.nativeQualification,'PER_TRIAL_REQUIRED');assert.equal(app.t3.researchContextVersion,1);assert.equal(app.workspaces.researchComponentContextVersion,1);
   const backup=(await post('/api/storage/backup',{})).data;
   const config={...initial.defaultConfig,repetitions:1,policies:['static']},creation={operationId:crypto.randomUUID(),config};
   const experiment=await call('create',creation);assert.equal((await call('create',creation)).id,experiment.id);

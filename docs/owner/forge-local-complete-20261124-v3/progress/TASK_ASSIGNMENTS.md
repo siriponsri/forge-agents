@@ -185,3 +185,12 @@ The installed development T3 diagnostic is separately scoped and does not become
 ## Completion record per task
 
 Record changed files, commits/diff, checks, findings, blockers and integration notes. The lead reviews and merges in dependency order, then verifies the combined tree. Mark integration separately from worker completion.
+# Checkpoint handoff — 2026-11-25
+
+Research route worker332ff2e, frontend facade worker6b974ea and unified private
+runtime workerfa4d183 delivered scoped clean commits; lead merged them and owns
+the final shared admission/lifecycle/UI checkpoint. Their scoped checks do not
+replace assembled product qualification. Next lead task at home: resolve the
+Research attestation timeout under existing fences, qualify full native cohort
+and mounted Office journey, then final review/media/clean-clone checks. Complete
+product goal remains open; see docs/CHECKPOINT_HOME_20261125.md.

@@ -1,7 +1,8 @@
 # เปิด FORGE workbench ระหว่างพัฒนา
 
 สถานะปัจจุบัน **IMPLEMENTATION_INCOMPLETE** ยังไม่ใช่ complete-product release
-และ **HOME_UAT_NOT_RUN**. ใช้ integration branch ตาม progress ก่อน main delivery.
+และ **HOME_UAT_NOT_RUN**. checkpoint ล่าสุดส่งผ่าน main เพื่อทำต่อที่เครื่องบ้าน
+ตาม [สถานะและคำแนะนำ checkpoint](CHECKPOINT_HOME_20261125.md).
 ไม่สร้าง CA-EWS หรือโปรเจกต์ต้นแบบให้อัตโนมัติ
 
 1. ติดตั้ง Node.js24.13 ขึ้นไป และ Git สำหรับงาน coding/Git

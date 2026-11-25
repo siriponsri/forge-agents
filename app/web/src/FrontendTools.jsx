@@ -115,7 +115,7 @@ export function FrontendRunControl({ t = translate, projectId, state, record, di
       <option value="">{t('เลือกงานจากแผนที่อนุมัติแล้ว', 'Choose a task from an approved plan')}</option>
       {tasks.map(task => <option key={task.id} value={task.id}>{task.title}</option>)}
     </select></Field>
-    <p className="help">{dirty ? t('บันทึกเอกสารก่อนเริ่มงาน', 'Save the document before starting.') : t('งานนี้อ่านเฉพาะข้อความที่เลือกจากเอกสารรุ่นที่บันทึกไว้', 'This task reads only selected text from the saved document revision.')}</p>
+    <p className="help">{dirty ? t('บันทึกเอกสารก่อนเริ่มงาน', 'Save the document before starting.') : t('อ่านเฉพาะข้อความที่เลือกจากเอกสารรุ่นที่บันทึกไว้ คำขอมีเวลา 5 นาทีรวมการเตรียมระบบและรอคำตอบ', 'Reads only selected text from the saved revision. The request lasts five minutes including setup and waiting for your response.')}</p>
     <button type="submit" disabled={busy || sending || dirty || record?.kind !== 'doc' || !taskId}>{sending ? t('กำลังเริ่ม…', 'Starting…') : t('เริ่มงานอ่านข้อความที่เลือก', 'Start selection task')}</button>
     {error && <p role="alert">{t('เริ่มงานไม่ได้ ตรวจแผน รุ่นเอกสาร และโมเดลใน Settings แล้วลองอีกครั้ง', 'Could not start. Check the plan, document revision, and selected model in Settings, then retry.')} {error.code ?? ''}</p>}
   </form>;

@@ -53,7 +53,7 @@ async function fixture(t) {
   const cleanups = [];
   t.after(async () => { for (const fn of cleanups.reverse()) await fn(); await route.close(); await store.close(); await rm(dir, { recursive: true, force: true }); });
   async function start() { const intent = await route.createIntent(create, owner); return route.start({ projectId: 'p', intentId: intent.intentId, operationId: intent.operationId }, owner); }
-  return { store, options, route, owner, session, start, cleanup: fn => cleanups.push(fn), native: () => native, input: () => captured, launches: () => launches, stops: () => stops, expire: () => { time += 120001; }, uncheck: () => { checked = false; }, replace: next => { route = next; } };
+  return { store, options, route, owner, session, start, cleanup: fn => cleanups.push(fn), native: () => native, input: () => captured, launches: () => launches, stops: () => stops, expire: () => { time += 300001; }, uncheck: () => { checked = false; }, replace: next => { route = next; } };
 }
 
 test('opaque Owner chooses saved Doc + approved task; exact operation/context dispatches once through SAME T3', async t => {
@@ -122,7 +122,7 @@ test('absence of actual native observations, wrong strength/session and default 
 
 test('SDK original call waits for Owner result; canonical Stop revokes it before real T3 stop', async t => {
   const f = await fixture(t); await f.start();
-  const gateway = await f.route.createFrontendGateway({ profile: f.native().profile, assertCurrent: () => f.native().profile, authorizePhase: () => true, withFence: async (_id, fn) => f.store.transaction(() => fn()) });
+  const gateway = await f.route.createFrontendGateway({ profile: f.native().profile, assertCurrent: () => f.native().profile, authorizePhase: () => true, withFence: async fn => f.store.transaction(() => fn()) });
   const boot = gateway.bootstrap();
   const bind = async () => {
     const raw = JSON.stringify({ profileDigest: digest(f.native().profile), sessionId: 'ses_observed', callId: 'Tool.Context.id:1', messageId: 'msg:1' });
@@ -151,7 +151,7 @@ test('SDK original call waits for Owner result; canonical Stop revokes it before
 
 test('closing one native gateway revokes only its run and does not close product broker for later attempts', async t => {
   const f = await fixture(t); await f.start();
-  const options = () => ({ profile: f.native().profile, assertCurrent: () => f.native().profile, authorizePhase: () => true, withFence: async (_id, fn) => f.store.transaction(() => fn()) });
+  const options = () => ({ profile: f.native().profile, assertCurrent: () => f.native().profile, authorizePhase: () => true, withFence: async fn => f.store.transaction(() => fn()) });
   const first = await f.route.createFrontendGateway(options());
   await first.close(); await first.close();
   const intent = await f.route.createIntent({ ...create, operationId: 'second-intent' }, f.owner);

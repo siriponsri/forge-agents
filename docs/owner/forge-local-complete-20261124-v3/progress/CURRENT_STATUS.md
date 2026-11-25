@@ -1,5 +1,38 @@
 # Current Status — Complete Local FORGE
 
+## Owner-requested early main checkpoint — 2026-11-25
+
+**IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN.** The Owner shortened the
+remaining work-machine window to ten minutes and requested the largest safe
+checkpoint on main for continuation at home. This supersedes release-readiness
+interpretations of older entries below; it is not a complete-product release.
+See [home checkpoint handoff](../../../CHECKPOINT_HOME_20261125.md).
+
+Unified private runtime/installer, frontend facade and Research native/component
+owners are merged. Shared Workspace/T3/Context admission, final message receipts,
+Owner HTTP/CSRF, Office selection controls, cohort UI/headless route, restore and
+recovery Stop are connected. Production Guarded integration passed on the unified
+image (one run, four loopback requests, three acknowledged actions/AG-UI records).
+The assembled frontend path completed and returned the actual Owner selection
+to the original model turn. New intents use an absolute five-minute envelope
+including setup; existing deadlines are unchanged.
+
+**Open implementation defect:** the same assembled test then timed out in
+Research native attestation, before model egress. The Research run was retained
+failed/not-dispatched. Native owner/service fixtures and independent validators
+pass, but do not qualify the assembled Research or native cohort journey. Do not
+manufacture proof, relax image/Stop fences or attribute this to credentials.
+The explicit opt-in regression and retained temporary evidence are documented
+in the checkpoint handoff. Monetary finality remains unsupported.
+
+Final checkpoint build PASS (15.84s); affected backend/admission/Context subset
+52 PASS and mounted frontend/Univer/boundaries 5 PASS, with zero failures/skips.
+Source commit and remote verification are recorded at handoff. Earlier
+698-pass/9-skip serial evidence predates these final
+integrations. Latest screenshots/GIFs also predate the new Office/cohort mounts;
+refresh them and public-site source/status copy after the remaining review.
+No paid compute, credential migration, prototype activation or public deployment.
+
 ## Bounded native route integration — 2026-11-25
 
 Native bridge 385e25b and installer a8225c3 are merged as dce62e5 and 38710ea.

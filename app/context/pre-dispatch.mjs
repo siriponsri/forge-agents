@@ -9,7 +9,7 @@ export function createT3ContextSeam({service,callerContextForRun,memoryForRun,al
   return async function prepare({run,project,baseMessage}){
     const caller=await callerContextForRun(run);
     if(!caller)fail('CONTEXT_FORBIDDEN','Run has no trusted context caller',403);
-    const selection=selectionForRun(run,project.profile?.provider);
+    const selection=selectionForRun(run,project.profile?.provider,{preflight:true});
     const memory=await memoryForRun?.(run);
     return service.preDispatch({projectId:run.projectId,taskId:run.taskId,runId:run.id,operationId:`context:${run.id}`,route:{providerId:selection.instanceId,modelId:selection.model},selection,...(run.assistanceContext?{assistanceContext:structuredClone(run.assistanceContext)}:{}),baseMessage,...(memory?{memory}:{})},caller,{allowNativePassthrough});
   };

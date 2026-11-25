@@ -97,7 +97,7 @@ export function createFrontendRoute({ store, authorizeOwner, policy, getGuarded,
     const run = s.runs.find(x => x.operationId === input.operationId);
     const c = validateContext(s, input, { run });
     if (!c) return null;
-    return { projectId: c.projectId, taskId: c.taskId, purpose: FRONTEND_PURPOSE, envelopeDigest: digest(c), identitySnapshot: c.identitySnapshot, scope: structuredClone(c.scope), deadlineAt: c.expiresAt, limits: { maxRunMs: 120000, maxTokens: null, maxCost: null } };
+    return { projectId: c.projectId, taskId: c.taskId, purpose: FRONTEND_PURPOSE, envelopeDigest: digest(c), identitySnapshot: c.identitySnapshot, scope: structuredClone(c.scope), deadlineAt: c.expiresAt, limits: { maxRunMs: 300000, maxTokens: null, maxCost: null } };
   }
   function reserve(s, { run, input }) {
     const c = validateContext(s, input, { run });
@@ -143,7 +143,7 @@ export function createFrontendRoute({ store, authorizeOwner, policy, getGuarded,
       const prior = s.receipts.find(x => x.operationId === raw.operationId);
       if (prior) { if (prior.type !== 'frontend-route.intent' || prior.fingerprint !== fingerprint) fail('FRONTEND_OPERATION_REUSE'); return view(find(s, 'events', prior.intentId)); }
       const observed = snapshot(s, raw), task = find(s, 'tasks', raw.taskId, raw.projectId);
-      const context = { version: 1, purpose: FRONTEND_PURPOSE, intentId: id, projectId: raw.projectId, taskId: raw.taskId, planId: task.planId, botId: task.botId ?? null, documentId: raw.documentId, documentRevision: raw.documentRevision, operationId: randomUUID(), selection: structuredClone(find(s, 'projects', raw.projectId).profile.provider), snapshot: observed, scope: { paths: ['.'], capabilities: ['frontend_selection_read'] }, expiresAt: now() + 120000 };
+      const context = { version: 1, purpose: FRONTEND_PURPOSE, intentId: id, projectId: raw.projectId, taskId: raw.taskId, planId: task.planId, botId: task.botId ?? null, documentId: raw.documentId, documentRevision: raw.documentRevision, operationId: randomUUID(), selection: structuredClone(find(s, 'projects', raw.projectId).profile.provider), snapshot: observed, scope: { paths: ['.'], capabilities: ['frontend_selection_read'] }, expiresAt: now() + 300000 };
       context.identitySnapshot = digest({ projectId: context.projectId, taskId: context.taskId, planId: context.planId, botId: context.botId, snapshot: observed });
       const row = { id, type: INTENT, projectId: raw.projectId, fingerprint, context, status: 'approved', createdAt: now() };
       s.events.push(row); s.receipts.push({ type: 'frontend-route.intent', operationId: raw.operationId, projectId: raw.projectId, intentId: id, fingerprint });
