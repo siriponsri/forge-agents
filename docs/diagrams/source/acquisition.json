@@ -1,0 +1,70 @@
+{
+  "diagramDesignRevision": "b228c5d77794a84150fca41b22940bb316b1398d",
+  "googleFontsLicenseRevision": "83c62e30d87daa70216dab6b984d00d20d96d585",
+  "files": [
+    {
+      "path": "credits/diagram-design-LICENSE.txt",
+      "url": "https://raw.githubusercontent.com/cathrynlavery/diagram-design/b228c5d77794a84150fca41b22940bb316b1398d/LICENSE",
+      "sha256": "bb7e12e91fecef43024111123ff784cec6c485585561d8b552557c0173b3ed29",
+      "bytes": 1071,
+      "upstreamSha256": "bb7e12e91fecef43024111123ff784cec6c485585561d8b552557c0173b3ed29"
+    },
+    {
+      "path": "source/google-fonts.css",
+      "url": "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;600&family=Geist+Mono:wght@400&display=swap",
+      "sha256": "6b621530763d6d0ac5e82c288bbe07dc8ebec1fe39dc687fa254c00b0908760b",
+      "bytes": 1109
+    },
+    {
+      "path": "fonts/geist-400-normal.ttf",
+      "url": "https://fonts.gstatic.com/s/geist/v5/gyBhhwUxId8gMGYQMKR3pzfaWI_RnOM4nQ.ttf",
+      "sha256": "ccce59465ae5c61930ada5453834f60500fbd95084d85db63e0e65fad0125455",
+      "bytes": 72916
+    },
+    {
+      "path": "fonts/geist-600-normal.ttf",
+      "url": "https://fonts.gstatic.com/s/geist/v5/gyBhhwUxId8gMGYQMKR3pzfaWI_RQuQ4nQ.ttf",
+      "sha256": "7171f481b121803d007f5c6c76cd9988c0d41cce4202db9a18dff9945505d36d",
+      "bytes": 73048
+    },
+    {
+      "path": "fonts/geist-mono-400-normal.ttf",
+      "url": "https://fonts.gstatic.com/s/geistmono/v6/or3yQ6H-1_WfwkMZI_qYPLs1a-t7PU0AbeE9KJ5T.ttf",
+      "sha256": "7022da390e9b401ea35b722f8ed2376948e70add10954bc798839b4bfe17ef3f",
+      "bytes": 71160
+    },
+    {
+      "path": "fonts/instrument-serif-400-italic.ttf",
+      "url": "https://fonts.gstatic.com/s/instrumentserif/v5/jizHRFtNs2ka5fXjeivQ4LroWlx-6zATiw.ttf",
+      "sha256": "fecf4861d5202405b8bd45c683858b6870642a026784fe0dbf88ff55dedee8a0",
+      "bytes": 64208
+    },
+    {
+      "path": "fonts/instrument-serif-400-normal.ttf",
+      "url": "https://fonts.gstatic.com/s/instrumentserif/v5/jizBRFtNs2ka5fXjeivQ4LroWlx-2zI.ttf",
+      "sha256": "a99e3db50076202713812ed541feeb23ffeebb61db1fa6b1cf48fe590d37ef18",
+      "bytes": 62284
+    },
+    {
+      "path": "credits/geist-OFL.txt",
+      "url": "https://raw.githubusercontent.com/google/fonts/83c62e30d87daa70216dab6b984d00d20d96d585/ofl/geist/OFL.txt",
+      "sha256": "fb64c1011862d97fe49c633ad9180ffd80a61aab6ff220a2935704e8a0c3a7c4",
+      "bytes": 4386,
+      "upstreamSha256": "1781d2806a07d91c4edf4740b88449fab7d0eadad53f7c351b94cd4d4eb8c00f"
+    },
+    {
+      "path": "credits/geistmono-OFL.txt",
+      "url": "https://raw.githubusercontent.com/google/fonts/83c62e30d87daa70216dab6b984d00d20d96d585/ofl/geistmono/OFL.txt",
+      "sha256": "fb64c1011862d97fe49c633ad9180ffd80a61aab6ff220a2935704e8a0c3a7c4",
+      "bytes": 4386,
+      "upstreamSha256": "1781d2806a07d91c4edf4740b88449fab7d0eadad53f7c351b94cd4d4eb8c00f"
+    },
+    {
+      "path": "credits/instrumentserif-OFL.txt",
+      "url": "https://raw.githubusercontent.com/google/fonts/83c62e30d87daa70216dab6b984d00d20d96d585/ofl/instrumentserif/OFL.txt",
+      "sha256": "b6b2292aa580937fb63796878d65a027a27f8c3db2d97601d0c34d9031f4ca17",
+      "bytes": 4404,
+      "upstreamSha256": "129ed7618959716959f2941fdd5b49e0ad6e6c1d78726761786a00253d865521"
+    }
+  ]
+}

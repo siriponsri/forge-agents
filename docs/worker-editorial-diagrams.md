@@ -1,0 +1,15 @@
+# Editorial horizontal diagrams — worker handoff
+
+Base: `b238a5d`. Branch: `t3/editorial-horizontal-diagrams`. Scope: README's two diagram blocks and embedding captions; two `.mmd` semantic sources; new `docs/diagrams/**`; new generation script. App, website, runtime, bootstrap, adapters, manifests, lockfiles, screenshots, GIFs and central progress are untouched.
+
+Delivered the Owner-selected Diagram Design visual world as five left-to-right workflow stages and an eight-node horizontal architecture. Minimal light, minimal dark and full editorial HTML variants each have actual PNG and outlined SVG exports. README selects light/dark SVG through `<picture>` with PNG fallback and zoom links. Fonts are embedded in HTML and converted to paths for static SVG, with MIT/OFL credits and hashes.
+
+Workflow preserves Idea/Mission → approved Plan → T3 Executor Build / Asst advice when needed → Verify real registered outputs, reviewed local tests, static preview, QA + Owner acceptance → selected-files Delivery Pack. Architecture preserves FORGE canonical authority, single T3 provider-turn owner, observed Chat/Node-Edge views, scoped Context/Memory, Office/reports, compute/targets and artifacts. Unknown results/costs remain unknown; uncertain effects are reconciled rather than replayed. No new qualification claim is introduced.
+
+Validation: `node --check tools/readme-media/diagrams.mjs`; actual offline Chromium export and six-variant captures at 1040/900/375; four exact README picture fixtures; computed type and font metrics, label containment, local scroll/end reachability, print rules, PNG fallback decoding; orthogonal route / transit / overlap / crossing / port checks; XML and file SHA-256 checks; exact README outside-block preservation; `git diff --check`. [Detailed checks, sources and limitations](diagrams/README.md), [actual render data](diagrams/evidence/render-checks.json), [skill gate audit](diagrams/evidence/skill-checks.json).
+
+The installed `self_check.py` fails only because it forbids embedded font data URLs. The requested offline font behavior is audited by exact font hashes; its unchanged remaining gates pass on temporary copies with only those font-face rules removed. This is documented as an exception, not a raw skill PASS. No managed plugin or global profile was changed. No app build/test suite was needed for static documentation-only files.
+
+Visual inspection found the five stages clear at 900px; supporting architecture routes do not cross node boxes. One explicit bridge protects the Context/Memory route at the FORGE-to-compute crossing. The 375px HTML view scrolls locally; the README thumbnail requires its full-size / PNG zoom link to read fine detail. Live GitHub sanitizer behavior was not published/tested; portable outlined paths and PNG fallback reduce that dependency.
+
+Implementation gaps: none within this assigned documentation scope. Missing live credentials / Home UAT: not part of diagram verification and no qualification claimed. Lead still owns independent review, final media manifest refresh, integration, release and push. No push performed.

@@ -1,21 +1,11 @@
+%% Semantic source only. Editorial layout: tools/readme-media/diagrams.mjs.
+%% Exactly five stages; file/test/preview/acceptance detail belongs inside Verify.
 flowchart LR
-  Brief[Mission and decisions] --> Plan[Review canonical Plan<br/>Tasks and dependencies]
-  Plan --> Approve[Owner plan approval]
-  Approve --> Execute[Scoped T3 execution<br/>Executor; Asst when qualified]
-  Execute --> Register[Register actual output bytes<br/>Run / task / attempt identity]
-  Register --> Test[Review command and file hashes<br/>Run local tests]
-  Register --> Preview[Preview registered file snapshot]
-  Test --> QA[Review evidence and pass QA]
-  Preview --> QA
-  QA --> Owner[Owner accepts delivery]
-  Owner --> ZIP[Delivery Pack ZIP<br/>Files, checks and limitations]
-  Unknown[Unknown outcomes or usage] --> Reconcile[Reconcile existing identity<br/>Never replay uncertain effects]
-  Reconcile --> QA
-  classDef owner fill:#ff8a33,color:#171717,stroke:#e46c14,stroke-width:2px;
-  classDef work fill:#153c58,color:#edf6ff,stroke:#4f9bcc;
-  classDef evidence fill:#203b32,color:#edf9f2,stroke:#76a88e;
-  classDef unknown fill:#292722,color:#efe5cd,stroke:#ad9666,stroke-dasharray:5 4;
-  class Approve,Owner owner;
-  class Brief,Plan,Execute work;
-  class Register,Test,Preview,QA,ZIP evidence;
-  class Unknown,Reconcile unknown;
+  Idea["Idea / Mission<br/>Outcome, inputs, acceptance criteria and open decisions"]
+  Plan["Approved Plan<br/>Canonical tasks + dependencies; Owner approves before execution"]
+  Build["Build<br/>T3 Executor; Asst advice when needed"]
+  Verify["Verify<br/>Actual registered files; local tests + static preview; QA + Owner acceptance"]
+  Pack["Delivery Pack<br/>Selected-files ZIP; manifest, evidence and limitations"]
+  Idea --> Plan --> Build --> Verify --> Pack
+%% Preview scope: registered immutable static files, not arbitrary app execution.
+%% Unknown outcomes are reconciled by existing identity, never replayed.

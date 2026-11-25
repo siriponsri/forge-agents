@@ -1,21 +1,23 @@
+%% Semantic source only. Editorial layout: tools/readme-media/diagrams.mjs.
+%% Eight components. Connections are selected relationships, not an API call map.
 flowchart LR
-  Owner["Owner<br/>Decisions and approval"] --> Forge["FORGE canonical services<br/>Projects / plans / tasks / evidence"]
-  Forge --> T3["T3 provider threads<br/>Single execution owner"]
-  T3 --> Projection["AG-UI<br/>Observed state and events"]
-  Projection --> Views["Chat + Node-Edge Workspace<br/>Two views of the same records"]
-  Views --> Forge
-  Forge --> Office["Univer Docs + Sheets<br/>Revisioned save and reopen"]
-  Office --> Reports["Saved report sources<br/>WordCraft / PdfCraft"]
-  Reports --> Artifacts["Verified artifacts<br/>Content hashes and provenance"]
+  Owner["Owner<br/>Decisions + approvals; TH / EN GUI"]
+  Forge["FORGE domain authority<br/>Projects, plans, tasks, approvals and evidence; SQLite + durable events"]
+  T3["Matching T3 runtime<br/>One owner per provider turn; Executor / Asst roles; scoped operations"]
+  Views["Observed views<br/>Chat + Node-Edge Workspace; AG-UI state + events; controls checked by FORGE"]
+  Office["Office / Reports<br/>Univer Docs + Sheets revisions; saved report sources; WordCraft / PdfCraft"]
+  Memory["Context / Memory<br/>Scoped references; exact revisions; explicit Owner grants"]
+  Compute["Capability adapters<br/>Compute, serving, storage and targets; configured scope + permissions"]
+  Artifacts["Artifacts / Evidence<br/>Registered outputs; content hashes, provenance, receipts and verification"]
+  Owner --> Forge --> T3
+  T3 -.-> Views
+  Forge -.-> Memory
+  Memory -.-> T3
+  Forge --> Office
+  Forge --> Compute
   T3 --> Artifacts
-  Artifacts --> Review["QA evidence<br/>Owner acceptance"]
-  Forge -.-> Guard["Bounded native route<br/>Live route and run checks"]
-  Forge -.-> Assist["Executor + Asst<br/>Roles within existing execution authority"]
-  classDef owner fill:#ff8a33,color:#171717,stroke:#e46c14,stroke-width:2px;
-  classDef core fill:#153c58,color:#edf6ff,stroke:#4f9bcc,stroke-width:2px;
-  classDef data fill:#202932,color:#edf6ff,stroke:#708494;
-  classDef pending fill:#292722,color:#efe5cd,stroke:#ad9666,stroke-dasharray:5 4;
-  class Owner,Review owner;
-  class Forge,T3 core;
-  class Projection,Views,Office,Reports,Artifacts,Assist data;
-  class Guard pending;
+  Compute --> Artifacts
+  Office --> Artifacts
+%% Solid: coordination / outputs. Dashed: observations / scoped context.
+%% Unknown outcome or cost remains unknown; reconcile existing identity first.
+%% Integration boundaries do not establish live qualification or Home UAT.

@@ -1,0 +1,514 @@
+[
+  {
+    "slug": "software-delivery",
+    "title": "From an idea to a delivery.",
+    "eyebrow": "FORGE / THE WORKFLOW",
+    "width": 1040,
+    "height": 492,
+    "subtitle": "Five stages. One reviewed trail of decisions, files and evidence.",
+    "desc": "Idea / Mission becomes an Owner-approved Plan, then T3 Executor Build with Asst advice when needed, Verify of actual outputs, local tests, static preview, QA and Owner acceptance, and a selected-files Delivery Pack ZIP.",
+    "nodes": [
+      {
+        "id": "idea",
+        "x": 40,
+        "y": 184,
+        "w": 160,
+        "h": 188,
+        "tag": "01 / DEFINE",
+        "name": [
+          "Idea / Mission"
+        ],
+        "lines": [
+          "Outcome + inputs",
+          "Acceptance criteria",
+          "Open decisions"
+        ]
+      },
+      {
+        "id": "plan",
+        "x": 240,
+        "y": 184,
+        "w": 160,
+        "h": 188,
+        "tag": "02 / APPROVE",
+        "name": [
+          "Approved Plan"
+        ],
+        "lines": [
+          "Tasks + dependencies",
+          "Owner approves",
+          "before execution"
+        ]
+      },
+      {
+        "id": "build",
+        "x": 440,
+        "y": 184,
+        "w": 160,
+        "h": 188,
+        "tag": "03 / EXECUTE",
+        "name": [
+          "Build"
+        ],
+        "lines": [
+          "T3 Executor",
+          "Asst advice when",
+          "needed"
+        ]
+      },
+      {
+        "id": "verify",
+        "x": 640,
+        "y": 184,
+        "w": 160,
+        "h": 188,
+        "tag": "04 / REVIEW",
+        "name": [
+          "Verify"
+        ],
+        "lines": [
+          "Actual output files",
+          "Local tests + preview",
+          "QA + Owner accepts"
+        ],
+        "focal": true
+      },
+      {
+        "id": "pack",
+        "x": 840,
+        "y": 184,
+        "w": 160,
+        "h": 188,
+        "tag": "05 / HAND OVER",
+        "name": [
+          "Delivery Pack"
+        ],
+        "lines": [
+          "Selected-files ZIP",
+          "Manifest + evidence",
+          "Limits included"
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "from": "idea",
+        "to": "plan",
+        "points": [
+          [
+            200,
+            256
+          ],
+          [
+            240,
+            256
+          ]
+        ]
+      },
+      {
+        "from": "plan",
+        "to": "build",
+        "points": [
+          [
+            400,
+            256
+          ],
+          [
+            440,
+            256
+          ]
+        ]
+      },
+      {
+        "from": "build",
+        "to": "verify",
+        "points": [
+          [
+            600,
+            256
+          ],
+          [
+            640,
+            256
+          ]
+        ]
+      },
+      {
+        "from": "verify",
+        "to": "pack",
+        "points": [
+          [
+            800,
+            256
+          ],
+          [
+            840,
+            256
+          ]
+        ]
+      }
+    ],
+    "note": "Preview covers registered static files. Unknown outcomes are reconciled, never replayed.",
+    "legend": "Left to right: reviewed handoffs",
+    "key": "Tangerine: evidence and acceptance gate",
+    "editorial": [
+      [
+        "The plan sets the scope.",
+        "An approved plan connects the Mission to canonical tasks and their dependencies. Executor and Asst remain roles within the existing execution authority."
+      ],
+      [
+        "Evidence travels with the files.",
+        "The Verify stage groups file registration, reviewed local tests, immutable static preview, QA and Owner acceptance. The Delivery Pack includes selected files and recorded limitations."
+      ]
+    ]
+  },
+  {
+    "slug": "architecture",
+    "title": "One authority. Connected views.",
+    "eyebrow": "FORGE / THE SYSTEM",
+    "width": 1040,
+    "height": 676,
+    "subtitle": "FORGE owns domain records. T3 owns each provider turn.",
+    "desc": "Owner decisions enter FORGE canonical domain records, which coordinate the matching T3 provider-turn owner; AG-UI projects observed state into Chat and Node-Edge views, with scoped Context / Memory, Office / Reports, compute adapters and artifacts as supporting components.",
+    "nodes": [
+      {
+        "id": "owner",
+        "x": 40,
+        "y": 200,
+        "w": 160,
+        "h": 144,
+        "tag": "HUMAN",
+        "name": [
+          "Owner"
+        ],
+        "lines": [
+          "Decisions + approvals",
+          "TH / EN GUI"
+        ],
+        "type": "input"
+      },
+      {
+        "id": "forge",
+        "x": 240,
+        "y": 200,
+        "w": 220,
+        "h": 144,
+        "tag": "DOMAIN AUTHORITY",
+        "name": [
+          "FORGE"
+        ],
+        "lines": [
+          "Projects · plans · tasks",
+          "Approvals + evidence",
+          "SQLite + durable events"
+        ],
+        "focal": true
+      },
+      {
+        "id": "t3",
+        "x": 508,
+        "y": 200,
+        "w": 232,
+        "h": 144,
+        "tag": "EXECUTION OWNER",
+        "name": [
+          "Matching T3 runtime"
+        ],
+        "lines": [
+          "One owner per provider turn",
+          "Executor / Asst roles",
+          "Scoped tools + operations"
+        ],
+        "focal": true
+      },
+      {
+        "id": "views",
+        "x": 788,
+        "y": 200,
+        "w": 212,
+        "h": 144,
+        "tag": "OBSERVED VIEWS",
+        "name": [
+          "Chat + Node-Edge"
+        ],
+        "lines": [
+          "AG-UI state + events",
+          "Same canonical identities",
+          "Controls checked by FORGE"
+        ],
+        "type": "store"
+      },
+      {
+        "id": "office",
+        "x": 40,
+        "y": 416,
+        "w": 160,
+        "h": 132,
+        "tag": "OFFICE / REPORTS",
+        "name": [
+          "Docs + Sheets"
+        ],
+        "lines": [
+          "Univer revisions",
+          "Saved report sources",
+          "WordCraft / PdfCraft"
+        ]
+      },
+      {
+        "id": "memory",
+        "x": 240,
+        "y": 416,
+        "w": 220,
+        "h": 132,
+        "tag": "CONTEXT / MEMORY",
+        "name": [
+          "Scoped references"
+        ],
+        "lines": [
+          "Exact source revisions",
+          "Explicit Owner grants"
+        ],
+        "type": "store"
+      },
+      {
+        "id": "compute",
+        "x": 508,
+        "y": 416,
+        "w": 232,
+        "h": 132,
+        "tag": "CAPABILITY ADAPTERS",
+        "name": [
+          "Compute + targets"
+        ],
+        "lines": [
+          "Jobs · serving · storage",
+          "Configured scope + permissions"
+        ],
+        "type": "optional"
+      },
+      {
+        "id": "artifacts",
+        "x": 788,
+        "y": 416,
+        "w": 212,
+        "h": 132,
+        "tag": "ARTIFACTS / EVIDENCE",
+        "name": [
+          "Registered outputs"
+        ],
+        "lines": [
+          "Content hashes + provenance",
+          "Receipts + verification"
+        ],
+        "type": "store"
+      }
+    ],
+    "edges": [
+      {
+        "from": "owner",
+        "to": "forge",
+        "points": [
+          [
+            200,
+            272
+          ],
+          [
+            240,
+            272
+          ]
+        ]
+      },
+      {
+        "from": "forge",
+        "to": "t3",
+        "points": [
+          [
+            460,
+            272
+          ],
+          [
+            508,
+            272
+          ]
+        ]
+      },
+      {
+        "from": "t3",
+        "to": "views",
+        "points": [
+          [
+            740,
+            272
+          ],
+          [
+            788,
+            272
+          ]
+        ],
+        "dashed": true
+      },
+      {
+        "from": "forge",
+        "to": "memory",
+        "points": [
+          [
+            350,
+            344
+          ],
+          [
+            350,
+            416
+          ]
+        ],
+        "dashed": true
+      },
+      {
+        "from": "memory",
+        "to": "t3",
+        "points": [
+          [
+            460,
+            480
+          ],
+          [
+            488,
+            480
+          ],
+          [
+            488,
+            368
+          ],
+          [
+            568,
+            368
+          ],
+          [
+            568,
+            344
+          ]
+        ],
+        "dashed": true,
+        "bridge": {
+          "x": 488,
+          "y": 400
+        },
+        "d": "M 460 480 H 480 Q 488 480 488 472 V 408 A 8 8 0 0 0 488 392 V 376 Q 488 368 496 368 H 560 Q 568 368 568 360 V 344"
+      },
+      {
+        "from": "forge",
+        "to": "office",
+        "points": [
+          [
+            292,
+            344
+          ],
+          [
+            292,
+            384
+          ],
+          [
+            120,
+            384
+          ],
+          [
+            120,
+            416
+          ]
+        ]
+      },
+      {
+        "from": "forge",
+        "to": "compute",
+        "points": [
+          [
+            408,
+            344
+          ],
+          [
+            408,
+            400
+          ],
+          [
+            624,
+            400
+          ],
+          [
+            624,
+            416
+          ]
+        ]
+      },
+      {
+        "from": "t3",
+        "to": "artifacts",
+        "points": [
+          [
+            680,
+            344
+          ],
+          [
+            680,
+            368
+          ],
+          [
+            900,
+            368
+          ],
+          [
+            900,
+            416
+          ]
+        ]
+      },
+      {
+        "from": "compute",
+        "to": "artifacts",
+        "points": [
+          [
+            740,
+            484
+          ],
+          [
+            788,
+            484
+          ]
+        ]
+      },
+      {
+        "from": "office",
+        "to": "artifacts",
+        "points": [
+          [
+            120,
+            548
+          ],
+          [
+            120,
+            584
+          ],
+          [
+            844,
+            584
+          ],
+          [
+            844,
+            548
+          ]
+        ]
+      }
+    ],
+    "note": "Unknown outcome or cost stays unknown. Reconcile the existing identity before another effect.",
+    "legend": "Solid: coordination / outputs",
+    "key": "Dashed: observations / scoped context",
+    "editorial": [
+      [
+        "Authority stays explicit.",
+        "FORGE owns the domain and checks commands. T3 remains the single provider-turn owner. AG-UI is a projection of observed lifecycle events, not another execution controller."
+      ],
+      [
+        "Capability is not qualification.",
+        "Supporting components describe integration boundaries. This drawing does not claim live account access, remote compute qualification, native automation coverage or completed Home UAT."
+      ]
+    ]
+  }
+]

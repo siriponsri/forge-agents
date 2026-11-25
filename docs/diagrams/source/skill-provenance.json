@@ -1,0 +1,64 @@
+{
+  "package": "diagram-design",
+  "installedVersion": "2.6.48",
+  "source": "https://github.com/cathrynlavery/diagram-design",
+  "usage": "Editorial system and adapted template structure; original FORGE layout and content",
+  "files": [
+    {
+      "path": "SKILL.md",
+      "sha256": "1222a27da40b3f9f4226707a3eba019056364bd2a49e6ee0372f38b1cdab175f"
+    },
+    {
+      "path": "references/profiles.md",
+      "sha256": "51f6d24e40eca1a13dc562b4b33aa76b56172c5c30fc94897e5bb369a34f9886"
+    },
+    {
+      "path": "references/style-guide.md",
+      "sha256": "f667075e888bf27b981a3c8c51175b7be82a00bcad9d7c33ca9dfe59240a5a38"
+    },
+    {
+      "path": "references/semantic-patterns.md",
+      "sha256": "5618d37a8f0aab85790d85abb0dcd07863e1c2079a93a38be89af4b82f6858a5"
+    },
+    {
+      "path": "references/type-process.md",
+      "sha256": "8b149deb5393d5b6eaefdd525ef65143caf763283f3b668ce301bd3b0b808815"
+    },
+    {
+      "path": "references/type-architecture.md",
+      "sha256": "cb5672b5c69cbe24a0b18d144f8b2e4507a124ebb0dbc0bc898ceafb27612caa"
+    },
+    {
+      "path": "references/layout-budget.md",
+      "sha256": "d11f907b679012389bfd3a1a0b3a925c3860beec0c45f04ad03e9d7072a3ec3b"
+    },
+    {
+      "path": "references/output-spec.md",
+      "sha256": "ca333e5eed72947dbc4f354b38c31005f949dbfcb98bdbbe595a3cf408d6e4ce"
+    },
+    {
+      "path": "references/import-mermaid.md",
+      "sha256": "95060ae8a4a068d73e154d06f938b87930434c8dfdaadda58e8711179495d090"
+    },
+    {
+      "path": "references/export.md",
+      "sha256": "244095d54e3ba1da8c3be3fc16dcd6179d099f4d0b238ebe380137ca1f2cd7f3"
+    },
+    {
+      "path": "assets/template.html",
+      "sha256": "86322001cf758d02aaf323e550a818620d25afd4b9087aafb35a31dd5f01c858"
+    },
+    {
+      "path": "assets/template-dark.html",
+      "sha256": "6114859e48ed8a0da7825e2855d6d0653e5c8bb223f96b72b793cd7aad5457b0"
+    },
+    {
+      "path": "assets/template-full.html",
+      "sha256": "1ceada773af8c318d19aa1dfd2da7ddc74ee071cac7790a1e2a5325ca0b0c3f3"
+    },
+    {
+      "path": "scripts/self_check.py",
+      "sha256": "b5f798725d4a76693b6d1c2ff5ecfc0aa162c69ffe38cd63c32bb192f49afd13"
+    }
+  ]
+}

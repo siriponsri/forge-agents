@@ -105,23 +105,15 @@ engineering input; no model authored them in this recording. Local effects are
 real. [Static alternative](docs/media/screenshots/mission-preview.png) ·
 [Full steps and source recording](docs/media/README.md#software-mission).*
 
-```mermaid
-flowchart LR
-  Brief["Mission + resolved decisions"] --> Plan["Owner-approved plan"]
-  Plan --> Run["Scoped T3 execution"]
-  Run --> Files["Registered output bytes"]
-  Files --> Checks["Local tests + preview"]
-  Checks --> Review["QA + Owner acceptance"]
-  Review --> Pack["Verified Delivery Pack"]
-  Run -.-> Asst["Asst advice<br/>For difficult or stuck work"]
-  Asst -.-> Run
-  classDef decision fill:#ff8a33,color:#171717,stroke:#e46c14;
-  classDef work fill:#153c58,color:#edf6ff,stroke:#4f9bcc;
-  classDef evidence fill:#203b32,color:#edf9f2,stroke:#76a88e;
-  class Plan,Review decision;
-  class Brief,Run,Asst work;
-  class Files,Checks,Pack evidence;
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/software-delivery-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/diagrams/software-delivery.svg">
+  <img src="docs/diagrams/software-delivery.png" alt="Five stages, left to right: Idea / Mission → Owner-approved Plan → Build with T3 Executor and Asst advice when needed → Verify actual outputs, local tests, registered static preview, QA and Owner acceptance → Delivery Pack with selected files, evidence and limitations." width="1040" height="492">
+</picture>
+
+*Read left to right. [Open full size](docs/diagrams/software-delivery.svg) for zoom ·
+[PNG alternative](docs/diagrams/software-delivery.png) ·
+[Editable sources and visual credits](docs/diagrams/README.md).*
 
 Unknown execution outcomes are reconciled using their existing identities.
 Reconnection and page reload do not mean an uncertain action should run again.
@@ -178,30 +170,16 @@ used. [All 21 screenshots, static alternatives and provenance](docs/media/README
 
 ## How the system fits together
 
-```mermaid
-flowchart TB
-  Owner["Owner: decisions and approval"] --> GUI["FORGE GUI: TH / EN"]
-  GUI --> Core["Canonical services: SQLite + durable events"]
-  Core --> T3["Matching T3 runtime: supervised execution"]
-  T3 --> State["AG-UI observations"]
-  State --> Chat["Chat + Node-Edge Workspace"]
-  Chat --> Core
-  Core --> Office["Univer Docs + Sheets"]
-  Office --> Reports["Saved ReportSpec: WordCraft / PdfCraft"]
-  Core --> Adapters["Compute / serving / storage / desktop"]
-  Memory["Scoped Memory + explicit Owner grants"] --> Context["Context policy + exact references"]
-  Context --> T3
-  T3 --> Evidence["Artifacts, receipts and verification"]
-  Reports --> Evidence
-  Adapters --> Evidence
-  Evidence --> Review["QA + Owner acceptance"]
-  classDef owner fill:#ff8a33,color:#171717,stroke:#e46c14;
-  classDef core fill:#153c58,color:#edf6ff,stroke:#4f9bcc;
-  classDef evidence fill:#203b32,color:#edf9f2,stroke:#76a88e;
-  class Owner,Review owner;
-  class GUI,Core,T3 core;
-  class Evidence evidence;
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/architecture-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/diagrams/architecture.svg">
+  <img src="docs/diagrams/architecture.png" alt="Owner → FORGE canonical domain authority → matching T3 provider-turn owner → observed Chat and Node-Edge views. Supporting paths show scoped Context / Memory, Univer Office and reports, compute and targets, and registered artifacts. Unknown outcomes and costs stay unknown." width="1040" height="676">
+</picture>
+
+*The main path runs left to right; supporting paths sit below it.
+[Open full size](docs/diagrams/architecture.svg) for zoom ·
+[PNG alternative](docs/diagrams/architecture.png) ·
+[Editable sources and visual credits](docs/diagrams/README.md).*
 
 FORGE owns project, plan, task, approval and evidence records. T3 owns provider
 execution. Executor/Asst are execution roles; they do not introduce another

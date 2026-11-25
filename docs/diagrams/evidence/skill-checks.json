@@ -1,0 +1,104 @@
+{
+  "scope": "Documentation diagrams only; not product or live qualification",
+  "fontPolicy": "Exact acquired TTF bytes only; no external fetch at render time",
+  "variants": [
+    {
+      "file": "architecture-dark.html",
+      "rawSkillGate": {
+        "exit": 1,
+        "errors": [
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed"
+        ]
+      },
+      "embeddedFontAudit": "PASS",
+      "skillGateAfterRemovingOnlyAuditedFontFaces": "PASS",
+      "outlinedSVGStructure": "PASS"
+    },
+    {
+      "file": "architecture-full.html",
+      "rawSkillGate": {
+        "exit": 1,
+        "errors": [
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed"
+        ]
+      },
+      "embeddedFontAudit": "PASS",
+      "skillGateAfterRemovingOnlyAuditedFontFaces": "PASS",
+      "outlinedSVGStructure": "PASS"
+    },
+    {
+      "file": "architecture.html",
+      "rawSkillGate": {
+        "exit": 1,
+        "errors": [
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed"
+        ]
+      },
+      "embeddedFontAudit": "PASS",
+      "skillGateAfterRemovingOnlyAuditedFontFaces": "PASS",
+      "outlinedSVGStructure": "PASS"
+    },
+    {
+      "file": "software-delivery-dark.html",
+      "rawSkillGate": {
+        "exit": 1,
+        "errors": [
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed"
+        ]
+      },
+      "embeddedFontAudit": "PASS",
+      "skillGateAfterRemovingOnlyAuditedFontFaces": "PASS",
+      "outlinedSVGStructure": "PASS"
+    },
+    {
+      "file": "software-delivery-full.html",
+      "rawSkillGate": {
+        "exit": 1,
+        "errors": [
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed"
+        ]
+      },
+      "embeddedFontAudit": "PASS",
+      "skillGateAfterRemovingOnlyAuditedFontFaces": "PASS",
+      "outlinedSVGStructure": "PASS"
+    },
+    {
+      "file": "software-delivery.html",
+      "rawSkillGate": {
+        "exit": 1,
+        "errors": [
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed",
+          "non-fragment CSS url() is not allowed"
+        ]
+      },
+      "embeddedFontAudit": "PASS",
+      "skillGateAfterRemovingOnlyAuditedFontFaces": "PASS",
+      "outlinedSVGStructure": "PASS"
+    }
+  ],
+  "generatedFileHashes": "PASS",
+  "READMEOutsideDiagramEmbeds": "PASS"
+}

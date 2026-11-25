@@ -1,0 +1,1815 @@
+{
+  "browser": "159.0.8154.6",
+  "playwright": "1.65.1",
+  "opentype": "1.3.4",
+  "generatedBy": "node tools/readme-media/diagrams.mjs --render --modules <isolated-prefix>/node_modules",
+  "variants": [
+    {
+      "slug": "software-delivery",
+      "width": 1040,
+      "height": 492,
+      "nodeCount": 5,
+      "edgeCount": 4,
+      "externalRequests": [],
+      "errors": [],
+      "fonts": [
+        {
+          "family": "Geist",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Geist",
+          "weight": "600",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Geist Mono",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Instrument Serif",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Instrument Serif",
+          "weight": "400",
+          "style": "italic",
+          "status": "unloaded"
+        }
+      ],
+      "textStyles": [
+        {
+          "family": "Geist Mono",
+          "size": 8,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Instrument Serif",
+          "size": 40,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 12,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 16,
+          "weight": 600,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 11,
+          "weight": 400,
+          "style": "normal"
+        }
+      ],
+      "labelContainment": [
+        {
+          "node": "idea",
+          "text": "01 / DEFINE",
+          "inside": true
+        },
+        {
+          "node": "idea",
+          "text": "Idea / Mission",
+          "inside": true
+        },
+        {
+          "node": "idea",
+          "text": "Outcome + inputs",
+          "inside": true
+        },
+        {
+          "node": "idea",
+          "text": "Acceptance criteria",
+          "inside": true
+        },
+        {
+          "node": "idea",
+          "text": "Open decisions",
+          "inside": true
+        },
+        {
+          "node": "plan",
+          "text": "02 / APPROVE",
+          "inside": true
+        },
+        {
+          "node": "plan",
+          "text": "Approved Plan",
+          "inside": true
+        },
+        {
+          "node": "plan",
+          "text": "Tasks + dependencies",
+          "inside": true
+        },
+        {
+          "node": "plan",
+          "text": "Owner approves",
+          "inside": true
+        },
+        {
+          "node": "plan",
+          "text": "before execution",
+          "inside": true
+        },
+        {
+          "node": "build",
+          "text": "03 / EXECUTE",
+          "inside": true
+        },
+        {
+          "node": "build",
+          "text": "Build",
+          "inside": true
+        },
+        {
+          "node": "build",
+          "text": "T3 Executor",
+          "inside": true
+        },
+        {
+          "node": "build",
+          "text": "Asst advice when",
+          "inside": true
+        },
+        {
+          "node": "build",
+          "text": "needed",
+          "inside": true
+        },
+        {
+          "node": "verify",
+          "text": "04 / REVIEW",
+          "inside": true
+        },
+        {
+          "node": "verify",
+          "text": "Verify",
+          "inside": true
+        },
+        {
+          "node": "verify",
+          "text": "Actual output files",
+          "inside": true
+        },
+        {
+          "node": "verify",
+          "text": "Local tests + preview",
+          "inside": true
+        },
+        {
+          "node": "verify",
+          "text": "QA + Owner accepts",
+          "inside": true
+        },
+        {
+          "node": "pack",
+          "text": "05 / HAND OVER",
+          "inside": true
+        },
+        {
+          "node": "pack",
+          "text": "Delivery Pack",
+          "inside": true
+        },
+        {
+          "node": "pack",
+          "text": "Selected-files ZIP",
+          "inside": true
+        },
+        {
+          "node": "pack",
+          "text": "Manifest + evidence",
+          "inside": true
+        },
+        {
+          "node": "pack",
+          "text": "Limits included",
+          "inside": true
+        }
+      ],
+      "viewports": [
+        {
+          "viewport": 1040,
+          "documentWidth": 1040,
+          "scrollerWidth": 1040,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "capture": "evidence/software-delivery-1040.png"
+        },
+        {
+          "viewport": 900,
+          "documentWidth": 900,
+          "scrollerWidth": 900,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "capture": "evidence/software-delivery-900.png"
+        },
+        {
+          "viewport": 375,
+          "documentWidth": 375,
+          "scrollerWidth": 375,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "endCapture": "evidence/software-delivery-375-end.png",
+          "capture": "evidence/software-delivery-375.png"
+        }
+      ],
+      "print": {
+        "minWidth": "0px",
+        "overflow": "visible"
+      }
+    },
+    {
+      "slug": "software-delivery-dark",
+      "width": 1040,
+      "height": 492,
+      "nodeCount": 5,
+      "edgeCount": 4,
+      "externalRequests": [],
+      "errors": [],
+      "fonts": [
+        {
+          "family": "Geist",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Geist",
+          "weight": "600",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Geist Mono",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Instrument Serif",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Instrument Serif",
+          "weight": "400",
+          "style": "italic",
+          "status": "unloaded"
+        }
+      ],
+      "textStyles": [
+        {
+          "family": "Geist Mono",
+          "size": 8,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Instrument Serif",
+          "size": 40,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 12,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 16,
+          "weight": 600,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 11,
+          "weight": 400,
+          "style": "normal"
+        }
+      ],
+      "labelContainment": [
+        {
+          "node": "idea",
+          "text": "01 / DEFINE",
+          "inside": true
+        },
+        {
+          "node": "idea",
+          "text": "Idea / Mission",
+          "inside": true
+        },
+        {
+          "node": "idea",
+          "text": "Outcome + inputs",
+          "inside": true
+        },
+        {
+          "node": "idea",
+          "text": "Acceptance criteria",
+          "inside": true
+        },
+        {
+          "node": "idea",
+          "text": "Open decisions",
+          "inside": true
+        },
+        {
+          "node": "plan",
+          "text": "02 / APPROVE",
+          "inside": true
+        },
+        {
+          "node": "plan",
+          "text": "Approved Plan",
+          "inside": true
+        },
+        {
+          "node": "plan",
+          "text": "Tasks + dependencies",
+          "inside": true
+        },
+        {
+          "node": "plan",
+          "text": "Owner approves",
+          "inside": true
+        },
+        {
+          "node": "plan",
+          "text": "before execution",
+          "inside": true
+        },
+        {
+          "node": "build",
+          "text": "03 / EXECUTE",
+          "inside": true
+        },
+        {
+          "node": "build",
+          "text": "Build",
+          "inside": true
+        },
+        {
+          "node": "build",
+          "text": "T3 Executor",
+          "inside": true
+        },
+        {
+          "node": "build",
+          "text": "Asst advice when",
+          "inside": true
+        },
+        {
+          "node": "build",
+          "text": "needed",
+          "inside": true
+        },
+        {
+          "node": "verify",
+          "text": "04 / REVIEW",
+          "inside": true
+        },
+        {
+          "node": "verify",
+          "text": "Verify",
+          "inside": true
+        },
+        {
+          "node": "verify",
+          "text": "Actual output files",
+          "inside": true
+        },
+        {
+          "node": "verify",
+          "text": "Local tests + preview",
+          "inside": true
+        },
+        {
+          "node": "verify",
+          "text": "QA + Owner accepts",
+          "inside": true
+        },
+        {
+          "node": "pack",
+          "text": "05 / HAND OVER",
+          "inside": true
+        },
+        {
+          "node": "pack",
+          "text": "Delivery Pack",
+          "inside": true
+        },
+        {
+          "node": "pack",
+          "text": "Selected-files ZIP",
+          "inside": true
+        },
+        {
+          "node": "pack",
+          "text": "Manifest + evidence",
+          "inside": true
+        },
+        {
+          "node": "pack",
+          "text": "Limits included",
+          "inside": true
+        }
+      ],
+      "viewports": [
+        {
+          "viewport": 1040,
+          "documentWidth": 1040,
+          "scrollerWidth": 1040,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "capture": "evidence/software-delivery-dark-1040.png"
+        },
+        {
+          "viewport": 900,
+          "documentWidth": 900,
+          "scrollerWidth": 900,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "capture": "evidence/software-delivery-dark-900.png"
+        },
+        {
+          "viewport": 375,
+          "documentWidth": 375,
+          "scrollerWidth": 375,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "endCapture": "evidence/software-delivery-dark-375-end.png",
+          "capture": "evidence/software-delivery-dark-375.png"
+        }
+      ],
+      "print": {
+        "minWidth": "0px",
+        "overflow": "visible"
+      }
+    },
+    {
+      "slug": "software-delivery-full",
+      "width": 1040,
+      "height": 492,
+      "nodeCount": 5,
+      "edgeCount": 4,
+      "externalRequests": [],
+      "errors": [],
+      "fonts": [
+        {
+          "family": "Geist",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Geist",
+          "weight": "600",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Geist Mono",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Instrument Serif",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Instrument Serif",
+          "weight": "400",
+          "style": "italic",
+          "status": "unloaded"
+        }
+      ],
+      "textStyles": [
+        {
+          "family": "Geist Mono",
+          "size": 8,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Instrument Serif",
+          "size": 40,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 12,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 16,
+          "weight": 600,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 11,
+          "weight": 400,
+          "style": "normal"
+        }
+      ],
+      "labelContainment": [
+        {
+          "node": "idea",
+          "text": "01 / DEFINE",
+          "inside": true
+        },
+        {
+          "node": "idea",
+          "text": "Idea / Mission",
+          "inside": true
+        },
+        {
+          "node": "idea",
+          "text": "Outcome + inputs",
+          "inside": true
+        },
+        {
+          "node": "idea",
+          "text": "Acceptance criteria",
+          "inside": true
+        },
+        {
+          "node": "idea",
+          "text": "Open decisions",
+          "inside": true
+        },
+        {
+          "node": "plan",
+          "text": "02 / APPROVE",
+          "inside": true
+        },
+        {
+          "node": "plan",
+          "text": "Approved Plan",
+          "inside": true
+        },
+        {
+          "node": "plan",
+          "text": "Tasks + dependencies",
+          "inside": true
+        },
+        {
+          "node": "plan",
+          "text": "Owner approves",
+          "inside": true
+        },
+        {
+          "node": "plan",
+          "text": "before execution",
+          "inside": true
+        },
+        {
+          "node": "build",
+          "text": "03 / EXECUTE",
+          "inside": true
+        },
+        {
+          "node": "build",
+          "text": "Build",
+          "inside": true
+        },
+        {
+          "node": "build",
+          "text": "T3 Executor",
+          "inside": true
+        },
+        {
+          "node": "build",
+          "text": "Asst advice when",
+          "inside": true
+        },
+        {
+          "node": "build",
+          "text": "needed",
+          "inside": true
+        },
+        {
+          "node": "verify",
+          "text": "04 / REVIEW",
+          "inside": true
+        },
+        {
+          "node": "verify",
+          "text": "Verify",
+          "inside": true
+        },
+        {
+          "node": "verify",
+          "text": "Actual output files",
+          "inside": true
+        },
+        {
+          "node": "verify",
+          "text": "Local tests + preview",
+          "inside": true
+        },
+        {
+          "node": "verify",
+          "text": "QA + Owner accepts",
+          "inside": true
+        },
+        {
+          "node": "pack",
+          "text": "05 / HAND OVER",
+          "inside": true
+        },
+        {
+          "node": "pack",
+          "text": "Delivery Pack",
+          "inside": true
+        },
+        {
+          "node": "pack",
+          "text": "Selected-files ZIP",
+          "inside": true
+        },
+        {
+          "node": "pack",
+          "text": "Manifest + evidence",
+          "inside": true
+        },
+        {
+          "node": "pack",
+          "text": "Limits included",
+          "inside": true
+        }
+      ],
+      "viewports": [
+        {
+          "viewport": 1040,
+          "documentWidth": 1040,
+          "scrollerWidth": 1040,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "capture": "evidence/software-delivery-full-1040.png"
+        },
+        {
+          "viewport": 900,
+          "documentWidth": 900,
+          "scrollerWidth": 900,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "capture": "evidence/software-delivery-full-900.png"
+        },
+        {
+          "viewport": 375,
+          "documentWidth": 375,
+          "scrollerWidth": 375,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "endCapture": "evidence/software-delivery-full-375-end.png",
+          "capture": "evidence/software-delivery-full-375.png"
+        }
+      ],
+      "print": {
+        "minWidth": "0px",
+        "overflow": "visible"
+      }
+    },
+    {
+      "slug": "architecture",
+      "width": 1040,
+      "height": 676,
+      "nodeCount": 8,
+      "edgeCount": 10,
+      "externalRequests": [],
+      "errors": [],
+      "fonts": [
+        {
+          "family": "Geist",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Geist",
+          "weight": "600",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Geist Mono",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Instrument Serif",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Instrument Serif",
+          "weight": "400",
+          "style": "italic",
+          "status": "unloaded"
+        }
+      ],
+      "textStyles": [
+        {
+          "family": "Geist Mono",
+          "size": 8,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Instrument Serif",
+          "size": 40,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 12,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 16,
+          "weight": 600,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 11,
+          "weight": 400,
+          "style": "normal"
+        }
+      ],
+      "labelContainment": [
+        {
+          "node": "owner",
+          "text": "HUMAN",
+          "inside": true
+        },
+        {
+          "node": "owner",
+          "text": "Owner",
+          "inside": true
+        },
+        {
+          "node": "owner",
+          "text": "Decisions + approvals",
+          "inside": true
+        },
+        {
+          "node": "owner",
+          "text": "TH / EN GUI",
+          "inside": true
+        },
+        {
+          "node": "forge",
+          "text": "DOMAIN AUTHORITY",
+          "inside": true
+        },
+        {
+          "node": "forge",
+          "text": "FORGE",
+          "inside": true
+        },
+        {
+          "node": "forge",
+          "text": "Projects · plans · tasks",
+          "inside": true
+        },
+        {
+          "node": "forge",
+          "text": "Approvals + evidence",
+          "inside": true
+        },
+        {
+          "node": "forge",
+          "text": "SQLite + durable events",
+          "inside": true
+        },
+        {
+          "node": "t3",
+          "text": "EXECUTION OWNER",
+          "inside": true
+        },
+        {
+          "node": "t3",
+          "text": "Matching T3 runtime",
+          "inside": true
+        },
+        {
+          "node": "t3",
+          "text": "One owner per provider turn",
+          "inside": true
+        },
+        {
+          "node": "t3",
+          "text": "Executor / Asst roles",
+          "inside": true
+        },
+        {
+          "node": "t3",
+          "text": "Scoped tools + operations",
+          "inside": true
+        },
+        {
+          "node": "views",
+          "text": "OBSERVED VIEWS",
+          "inside": true
+        },
+        {
+          "node": "views",
+          "text": "Chat + Node-Edge",
+          "inside": true
+        },
+        {
+          "node": "views",
+          "text": "AG-UI state + events",
+          "inside": true
+        },
+        {
+          "node": "views",
+          "text": "Same canonical identities",
+          "inside": true
+        },
+        {
+          "node": "views",
+          "text": "Controls checked by FORGE",
+          "inside": true
+        },
+        {
+          "node": "office",
+          "text": "OFFICE / REPORTS",
+          "inside": true
+        },
+        {
+          "node": "office",
+          "text": "Docs + Sheets",
+          "inside": true
+        },
+        {
+          "node": "office",
+          "text": "Univer revisions",
+          "inside": true
+        },
+        {
+          "node": "office",
+          "text": "Saved report sources",
+          "inside": true
+        },
+        {
+          "node": "office",
+          "text": "WordCraft / PdfCraft",
+          "inside": true
+        },
+        {
+          "node": "memory",
+          "text": "CONTEXT / MEMORY",
+          "inside": true
+        },
+        {
+          "node": "memory",
+          "text": "Scoped references",
+          "inside": true
+        },
+        {
+          "node": "memory",
+          "text": "Exact source revisions",
+          "inside": true
+        },
+        {
+          "node": "memory",
+          "text": "Explicit Owner grants",
+          "inside": true
+        },
+        {
+          "node": "compute",
+          "text": "CAPABILITY ADAPTERS",
+          "inside": true
+        },
+        {
+          "node": "compute",
+          "text": "Compute + targets",
+          "inside": true
+        },
+        {
+          "node": "compute",
+          "text": "Jobs · serving · storage",
+          "inside": true
+        },
+        {
+          "node": "compute",
+          "text": "Configured scope + permissions",
+          "inside": true
+        },
+        {
+          "node": "artifacts",
+          "text": "ARTIFACTS / EVIDENCE",
+          "inside": true
+        },
+        {
+          "node": "artifacts",
+          "text": "Registered outputs",
+          "inside": true
+        },
+        {
+          "node": "artifacts",
+          "text": "Content hashes + provenance",
+          "inside": true
+        },
+        {
+          "node": "artifacts",
+          "text": "Receipts + verification",
+          "inside": true
+        }
+      ],
+      "viewports": [
+        {
+          "viewport": 1040,
+          "documentWidth": 1040,
+          "scrollerWidth": 1040,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "capture": "evidence/architecture-1040.png"
+        },
+        {
+          "viewport": 900,
+          "documentWidth": 900,
+          "scrollerWidth": 900,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "capture": "evidence/architecture-900.png"
+        },
+        {
+          "viewport": 375,
+          "documentWidth": 375,
+          "scrollerWidth": 375,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "endCapture": "evidence/architecture-375-end.png",
+          "capture": "evidence/architecture-375.png"
+        }
+      ],
+      "print": {
+        "minWidth": "0px",
+        "overflow": "visible"
+      }
+    },
+    {
+      "slug": "architecture-dark",
+      "width": 1040,
+      "height": 676,
+      "nodeCount": 8,
+      "edgeCount": 10,
+      "externalRequests": [],
+      "errors": [],
+      "fonts": [
+        {
+          "family": "Geist",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Geist",
+          "weight": "600",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Geist Mono",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Instrument Serif",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Instrument Serif",
+          "weight": "400",
+          "style": "italic",
+          "status": "unloaded"
+        }
+      ],
+      "textStyles": [
+        {
+          "family": "Geist Mono",
+          "size": 8,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Instrument Serif",
+          "size": 40,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 12,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 16,
+          "weight": 600,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 11,
+          "weight": 400,
+          "style": "normal"
+        }
+      ],
+      "labelContainment": [
+        {
+          "node": "owner",
+          "text": "HUMAN",
+          "inside": true
+        },
+        {
+          "node": "owner",
+          "text": "Owner",
+          "inside": true
+        },
+        {
+          "node": "owner",
+          "text": "Decisions + approvals",
+          "inside": true
+        },
+        {
+          "node": "owner",
+          "text": "TH / EN GUI",
+          "inside": true
+        },
+        {
+          "node": "forge",
+          "text": "DOMAIN AUTHORITY",
+          "inside": true
+        },
+        {
+          "node": "forge",
+          "text": "FORGE",
+          "inside": true
+        },
+        {
+          "node": "forge",
+          "text": "Projects · plans · tasks",
+          "inside": true
+        },
+        {
+          "node": "forge",
+          "text": "Approvals + evidence",
+          "inside": true
+        },
+        {
+          "node": "forge",
+          "text": "SQLite + durable events",
+          "inside": true
+        },
+        {
+          "node": "t3",
+          "text": "EXECUTION OWNER",
+          "inside": true
+        },
+        {
+          "node": "t3",
+          "text": "Matching T3 runtime",
+          "inside": true
+        },
+        {
+          "node": "t3",
+          "text": "One owner per provider turn",
+          "inside": true
+        },
+        {
+          "node": "t3",
+          "text": "Executor / Asst roles",
+          "inside": true
+        },
+        {
+          "node": "t3",
+          "text": "Scoped tools + operations",
+          "inside": true
+        },
+        {
+          "node": "views",
+          "text": "OBSERVED VIEWS",
+          "inside": true
+        },
+        {
+          "node": "views",
+          "text": "Chat + Node-Edge",
+          "inside": true
+        },
+        {
+          "node": "views",
+          "text": "AG-UI state + events",
+          "inside": true
+        },
+        {
+          "node": "views",
+          "text": "Same canonical identities",
+          "inside": true
+        },
+        {
+          "node": "views",
+          "text": "Controls checked by FORGE",
+          "inside": true
+        },
+        {
+          "node": "office",
+          "text": "OFFICE / REPORTS",
+          "inside": true
+        },
+        {
+          "node": "office",
+          "text": "Docs + Sheets",
+          "inside": true
+        },
+        {
+          "node": "office",
+          "text": "Univer revisions",
+          "inside": true
+        },
+        {
+          "node": "office",
+          "text": "Saved report sources",
+          "inside": true
+        },
+        {
+          "node": "office",
+          "text": "WordCraft / PdfCraft",
+          "inside": true
+        },
+        {
+          "node": "memory",
+          "text": "CONTEXT / MEMORY",
+          "inside": true
+        },
+        {
+          "node": "memory",
+          "text": "Scoped references",
+          "inside": true
+        },
+        {
+          "node": "memory",
+          "text": "Exact source revisions",
+          "inside": true
+        },
+        {
+          "node": "memory",
+          "text": "Explicit Owner grants",
+          "inside": true
+        },
+        {
+          "node": "compute",
+          "text": "CAPABILITY ADAPTERS",
+          "inside": true
+        },
+        {
+          "node": "compute",
+          "text": "Compute + targets",
+          "inside": true
+        },
+        {
+          "node": "compute",
+          "text": "Jobs · serving · storage",
+          "inside": true
+        },
+        {
+          "node": "compute",
+          "text": "Configured scope + permissions",
+          "inside": true
+        },
+        {
+          "node": "artifacts",
+          "text": "ARTIFACTS / EVIDENCE",
+          "inside": true
+        },
+        {
+          "node": "artifacts",
+          "text": "Registered outputs",
+          "inside": true
+        },
+        {
+          "node": "artifacts",
+          "text": "Content hashes + provenance",
+          "inside": true
+        },
+        {
+          "node": "artifacts",
+          "text": "Receipts + verification",
+          "inside": true
+        }
+      ],
+      "viewports": [
+        {
+          "viewport": 1040,
+          "documentWidth": 1040,
+          "scrollerWidth": 1040,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "capture": "evidence/architecture-dark-1040.png"
+        },
+        {
+          "viewport": 900,
+          "documentWidth": 900,
+          "scrollerWidth": 900,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "capture": "evidence/architecture-dark-900.png"
+        },
+        {
+          "viewport": 375,
+          "documentWidth": 375,
+          "scrollerWidth": 375,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "endCapture": "evidence/architecture-dark-375-end.png",
+          "capture": "evidence/architecture-dark-375.png"
+        }
+      ],
+      "print": {
+        "minWidth": "0px",
+        "overflow": "visible"
+      }
+    },
+    {
+      "slug": "architecture-full",
+      "width": 1040,
+      "height": 676,
+      "nodeCount": 8,
+      "edgeCount": 10,
+      "externalRequests": [],
+      "errors": [],
+      "fonts": [
+        {
+          "family": "Geist",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Geist",
+          "weight": "600",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Geist Mono",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Instrument Serif",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Instrument Serif",
+          "weight": "400",
+          "style": "italic",
+          "status": "unloaded"
+        }
+      ],
+      "textStyles": [
+        {
+          "family": "Geist Mono",
+          "size": 8,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Instrument Serif",
+          "size": 40,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 12,
+          "weight": 400,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 16,
+          "weight": 600,
+          "style": "normal"
+        },
+        {
+          "family": "Geist",
+          "size": 11,
+          "weight": 400,
+          "style": "normal"
+        }
+      ],
+      "labelContainment": [
+        {
+          "node": "owner",
+          "text": "HUMAN",
+          "inside": true
+        },
+        {
+          "node": "owner",
+          "text": "Owner",
+          "inside": true
+        },
+        {
+          "node": "owner",
+          "text": "Decisions + approvals",
+          "inside": true
+        },
+        {
+          "node": "owner",
+          "text": "TH / EN GUI",
+          "inside": true
+        },
+        {
+          "node": "forge",
+          "text": "DOMAIN AUTHORITY",
+          "inside": true
+        },
+        {
+          "node": "forge",
+          "text": "FORGE",
+          "inside": true
+        },
+        {
+          "node": "forge",
+          "text": "Projects · plans · tasks",
+          "inside": true
+        },
+        {
+          "node": "forge",
+          "text": "Approvals + evidence",
+          "inside": true
+        },
+        {
+          "node": "forge",
+          "text": "SQLite + durable events",
+          "inside": true
+        },
+        {
+          "node": "t3",
+          "text": "EXECUTION OWNER",
+          "inside": true
+        },
+        {
+          "node": "t3",
+          "text": "Matching T3 runtime",
+          "inside": true
+        },
+        {
+          "node": "t3",
+          "text": "One owner per provider turn",
+          "inside": true
+        },
+        {
+          "node": "t3",
+          "text": "Executor / Asst roles",
+          "inside": true
+        },
+        {
+          "node": "t3",
+          "text": "Scoped tools + operations",
+          "inside": true
+        },
+        {
+          "node": "views",
+          "text": "OBSERVED VIEWS",
+          "inside": true
+        },
+        {
+          "node": "views",
+          "text": "Chat + Node-Edge",
+          "inside": true
+        },
+        {
+          "node": "views",
+          "text": "AG-UI state + events",
+          "inside": true
+        },
+        {
+          "node": "views",
+          "text": "Same canonical identities",
+          "inside": true
+        },
+        {
+          "node": "views",
+          "text": "Controls checked by FORGE",
+          "inside": true
+        },
+        {
+          "node": "office",
+          "text": "OFFICE / REPORTS",
+          "inside": true
+        },
+        {
+          "node": "office",
+          "text": "Docs + Sheets",
+          "inside": true
+        },
+        {
+          "node": "office",
+          "text": "Univer revisions",
+          "inside": true
+        },
+        {
+          "node": "office",
+          "text": "Saved report sources",
+          "inside": true
+        },
+        {
+          "node": "office",
+          "text": "WordCraft / PdfCraft",
+          "inside": true
+        },
+        {
+          "node": "memory",
+          "text": "CONTEXT / MEMORY",
+          "inside": true
+        },
+        {
+          "node": "memory",
+          "text": "Scoped references",
+          "inside": true
+        },
+        {
+          "node": "memory",
+          "text": "Exact source revisions",
+          "inside": true
+        },
+        {
+          "node": "memory",
+          "text": "Explicit Owner grants",
+          "inside": true
+        },
+        {
+          "node": "compute",
+          "text": "CAPABILITY ADAPTERS",
+          "inside": true
+        },
+        {
+          "node": "compute",
+          "text": "Compute + targets",
+          "inside": true
+        },
+        {
+          "node": "compute",
+          "text": "Jobs · serving · storage",
+          "inside": true
+        },
+        {
+          "node": "compute",
+          "text": "Configured scope + permissions",
+          "inside": true
+        },
+        {
+          "node": "artifacts",
+          "text": "ARTIFACTS / EVIDENCE",
+          "inside": true
+        },
+        {
+          "node": "artifacts",
+          "text": "Registered outputs",
+          "inside": true
+        },
+        {
+          "node": "artifacts",
+          "text": "Content hashes + provenance",
+          "inside": true
+        },
+        {
+          "node": "artifacts",
+          "text": "Receipts + verification",
+          "inside": true
+        }
+      ],
+      "viewports": [
+        {
+          "viewport": 1040,
+          "documentWidth": 1040,
+          "scrollerWidth": 1040,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "capture": "evidence/architecture-full-1040.png"
+        },
+        {
+          "viewport": 900,
+          "documentWidth": 900,
+          "scrollerWidth": 900,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "capture": "evidence/architecture-full-900.png"
+        },
+        {
+          "viewport": 375,
+          "documentWidth": 375,
+          "scrollerWidth": 375,
+          "scrollWidth": 1040,
+          "minWidth": "1040px",
+          "reachableEnd": true,
+          "endCapture": "evidence/architecture-full-375-end.png",
+          "capture": "evidence/architecture-full-375.png"
+        }
+      ],
+      "print": {
+        "minWidth": "0px",
+        "overflow": "visible"
+      }
+    }
+  ],
+  "readme": [
+    {
+      "colorScheme": "light",
+      "width": 900,
+      "selected": [
+        {
+          "currentSrc": "software-delivery.svg",
+          "naturalWidth": 1040,
+          "naturalHeight": 492,
+          "displayWidth": 900
+        },
+        {
+          "currentSrc": "architecture.svg",
+          "naturalWidth": 1040,
+          "naturalHeight": 676,
+          "displayWidth": 900
+        }
+      ],
+      "fallback": [
+        {
+          "src": "software-delivery.png",
+          "naturalWidth": 2080
+        },
+        {
+          "src": "architecture.png",
+          "naturalWidth": 2080
+        }
+      ],
+      "capture": "evidence/readme-light-900.png"
+    },
+    {
+      "colorScheme": "light",
+      "width": 375,
+      "selected": [
+        {
+          "currentSrc": "software-delivery.svg",
+          "naturalWidth": 1040,
+          "naturalHeight": 492,
+          "displayWidth": 375
+        },
+        {
+          "currentSrc": "architecture.svg",
+          "naturalWidth": 1040,
+          "naturalHeight": 676,
+          "displayWidth": 375
+        }
+      ],
+      "fallback": [
+        {
+          "src": "software-delivery.png",
+          "naturalWidth": 2080
+        },
+        {
+          "src": "architecture.png",
+          "naturalWidth": 2080
+        }
+      ],
+      "capture": "evidence/readme-light-375.png"
+    },
+    {
+      "colorScheme": "dark",
+      "width": 900,
+      "selected": [
+        {
+          "currentSrc": "software-delivery-dark.svg",
+          "naturalWidth": 1040,
+          "naturalHeight": 492,
+          "displayWidth": 900
+        },
+        {
+          "currentSrc": "architecture-dark.svg",
+          "naturalWidth": 1040,
+          "naturalHeight": 676,
+          "displayWidth": 900
+        }
+      ],
+      "fallback": [
+        {
+          "src": "software-delivery.png",
+          "naturalWidth": 2080
+        },
+        {
+          "src": "architecture.png",
+          "naturalWidth": 2080
+        }
+      ],
+      "capture": "evidence/readme-dark-900.png"
+    },
+    {
+      "colorScheme": "dark",
+      "width": 375,
+      "selected": [
+        {
+          "currentSrc": "software-delivery-dark.svg",
+          "naturalWidth": 1040,
+          "naturalHeight": 492,
+          "displayWidth": 375
+        },
+        {
+          "currentSrc": "architecture-dark.svg",
+          "naturalWidth": 1040,
+          "naturalHeight": 676,
+          "displayWidth": 375
+        }
+      ],
+      "fallback": [
+        {
+          "src": "software-delivery.png",
+          "naturalWidth": 2080
+        },
+        {
+          "src": "architecture.png",
+          "naturalWidth": 2080
+        }
+      ],
+      "capture": "evidence/readme-dark-375.png"
+    }
+  ],
+  "routes": [
+    {
+      "slug": "software-delivery",
+      "failures": [],
+      "crossings": [],
+      "orthogonal": true,
+      "cornerRadius": 8,
+      "attachSpacingMinimum": 12
+    },
+    {
+      "slug": "architecture",
+      "failures": [],
+      "crossings": [
+        {
+          "edges": [
+            4,
+            6
+          ],
+          "x": 488,
+          "y": 400,
+          "bridged": true
+        }
+      ],
+      "orthogonal": true,
+      "cornerRadius": 8,
+      "attachSpacingMinimum": 12
+    }
+  ],
+  "files": [
+    {
+      "file": "architecture-dark.html",
+      "bytes": 471884,
+      "sha256": "43445d1e867993ec7127e96c1ef5e63cfd0d671f39c65de33f813061a215a04a"
+    },
+    {
+      "file": "architecture-dark.png",
+      "bytes": 196605,
+      "sha256": "5d82db8bff937a113317d76f9bb98411cd252e41247bf91fd86f93ed3c287d0e"
+    },
+    {
+      "file": "architecture-dark.svg",
+      "bytes": 544923,
+      "sha256": "226cfad174ec9096416ea824fc21dc2eb268094a9d95a36c675fe0331b6704bf"
+    },
+    {
+      "file": "architecture-full.html",
+      "bytes": 472599,
+      "sha256": "428b815e601b8beaf238d914b4b42191d23e07825e8be51898d4969f320f96f9"
+    },
+    {
+      "file": "architecture-full.png",
+      "bytes": 197337,
+      "sha256": "1d9dcb1c3e7088593f25b904456ed30f06dd3982b483252974374fe23b2ae9c6"
+    },
+    {
+      "file": "architecture-full.svg",
+      "bytes": 544832,
+      "sha256": "bfe3b6a344ce1f3693e9fb8dcfdf4a769677914cffd52f326ce5a6a67702fcbe"
+    },
+    {
+      "file": "architecture.html",
+      "bytes": 471799,
+      "sha256": "43d6c974c16034fc84a49459e6508ecd27b228bd77545647bbc73894f0cf9d7f"
+    },
+    {
+      "file": "architecture.png",
+      "bytes": 197337,
+      "sha256": "1d9dcb1c3e7088593f25b904456ed30f06dd3982b483252974374fe23b2ae9c6"
+    },
+    {
+      "file": "architecture.svg",
+      "bytes": 544747,
+      "sha256": "73be7ca087e03dfb30b7c15243bd7b786494515b9990d8255913d60def62ecb8"
+    },
+    {
+      "file": "software-delivery-dark.html",
+      "bytes": 468101,
+      "sha256": "01eac85cf29ea19da4c9f8154c90ce541ca60252394c113d6e20573be019031c"
+    },
+    {
+      "file": "software-delivery-dark.png",
+      "bytes": 119211,
+      "sha256": "173ba722f159900a5750860d5b8040a0265ea61c68f6a8511dcfcd9667a80d88"
+    },
+    {
+      "file": "software-delivery-dark.svg",
+      "bytes": 358592,
+      "sha256": "953120a1023ecea7853862b02d4ee899a50e7a0c24fe346cb5fdfa5cad8a2318"
+    },
+    {
+      "file": "software-delivery-full.html",
+      "bytes": 468796,
+      "sha256": "6993fae2282fd96f2a088cfad898e5d582187672a3fa36317e1d9ea6de26a470"
+    },
+    {
+      "file": "software-delivery-full.png",
+      "bytes": 119497,
+      "sha256": "02c8c17f3e7ff035cb66fade58f4db756b60587da3efc0124647893636879bd3"
+    },
+    {
+      "file": "software-delivery-full.svg",
+      "bytes": 358525,
+      "sha256": "f5fa46f2f3a5003713aa48269e488ced80f3d2f580bab36978604d4180590ce1"
+    },
+    {
+      "file": "software-delivery.html",
+      "bytes": 468051,
+      "sha256": "9f0b6858682446ce445e3e0fc9684a68fb9d2898337dc2cf6469eb4ec84cd377"
+    },
+    {
+      "file": "software-delivery.png",
+      "bytes": 119497,
+      "sha256": "02c8c17f3e7ff035cb66fade58f4db756b60587da3efc0124647893636879bd3"
+    },
+    {
+      "file": "software-delivery.svg",
+      "bytes": 358475,
+      "sha256": "75df92b67ade0da4d15c424aff2f0dc5d9fe88f2d9afc513b3e72fe55c622a25"
+    }
+  ]
+}
