@@ -1,0 +1,203 @@
+{
+  "version": 1,
+  "kind": "selected-primary-source-audit",
+  "sourceIntegrity": "VERIFIED",
+  "automaticExecutionQualified": false,
+  "runtimeEnforcement": "NOT_TESTED_BY_SOURCE_AUDIT",
+  "proof": null,
+  "findings": [
+    {
+      "code": "T3_OPENCODE2_SESSION_OVERRIDE",
+      "meaning": "T3 installs session shell/edit/external_directory approval rules and enables the thread T3 MCP namespace, not a mandatory native tool-name allowlist."
+    },
+    {
+      "code": "OPENCODE_TOOL_POLICY_REQUIRES_PERMISSION_CALL",
+      "meaning": "tool.use policy is a permission evaluate hook; central Tool execution does not assert it for every native tool."
+    },
+    {
+      "code": "OPENCODE_DISCOVERY_USES_PERMISSION_ALIAS",
+      "meaning": "whollyDisabled filters the declared permission action or tool name; a new native tool declaring an allowed/ask alias is not universally denied by its own name."
+    },
+    {
+      "code": "OPENCODE_AMBIENT_CONTEXT_OUTSIDE_ACTION_GATE",
+      "meaning": "Native instruction discovery reads workspace/global instruction files through FSUtil outside the model tool permission guard."
+    },
+    {
+      "code": "FORGE_MEDIATED_ROUTE_NOT_IMPLEMENTED",
+      "meaning": "No qualified mandatory all-action route with authenticated bounded FORGE MCP actions and current per-effect proof has been delivered by this research worker."
+    }
+  ],
+  "sources": [
+    {
+      "id": "t3",
+      "version": "0.1.11",
+      "revision": "59651c1761f6c63e9b6056839067066968e6a406",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "LICENSE",
+          "sha256LF": "935d8f2af0c703f9c39517ee57cc4930b19d02d533be930b63f0e82f93614b43",
+          "sha256Raw": "935d8f2af0c703f9c39517ee57cc4930b19d02d533be930b63f0e82f93614b43"
+        },
+        {
+          "path": "packages/provider-opencode/src/settings.ts",
+          "sha256LF": "c099678ca063d76c4652f0fbcea4309e8089d3b9dfe76ff3ba255ecea0e95723",
+          "sha256Raw": "c099678ca063d76c4652f0fbcea4309e8089d3b9dfe76ff3ba255ecea0e95723"
+        },
+        {
+          "path": "packages/provider-opencode/src/server/driver.ts",
+          "sha256LF": "a37b80f244ed3d82e371c2a4c7c420d4c0d5595dacf730956bca282c79e7b333",
+          "sha256Raw": "a37b80f244ed3d82e371c2a4c7c420d4c0d5595dacf730956bca282c79e7b333"
+        },
+        {
+          "path": "packages/provider-opencode/src/server/v2/adapter.ts",
+          "sha256LF": "a0fabe9941e9edf1e4502f60a4763d7447a4e6b86645901f630039ca9f11d470",
+          "sha256Raw": "a0fabe9941e9edf1e4502f60a4763d7447a4e6b86645901f630039ca9f11d470"
+        },
+        {
+          "path": "packages/provider-opencode/src/server/v2/OpenCode2Server.ts",
+          "sha256LF": "06475872136a6445b66fb14985b46b5c3442863738d46427492e9f81bef36d6f",
+          "sha256Raw": "06475872136a6445b66fb14985b46b5c3442863738d46427492e9f81bef36d6f"
+        },
+        {
+          "path": "packages/provider-core/src/server/ProviderAdapter.ts",
+          "sha256LF": "b225b3b85516c27913c6a68b49b98c36b36ec5ceb0f4cd152661741a3f498d9e",
+          "sha256Raw": "b225b3b85516c27913c6a68b49b98c36b36ec5ceb0f4cd152661741a3f498d9e"
+        },
+        {
+          "path": "packages/provider-core/src/server/instanceEnvironment.ts",
+          "sha256LF": "b2c702f81f16e95afb9ecc5fa8c402227edee90f4bf5a91c150046ca4903e22a",
+          "sha256Raw": "b2c702f81f16e95afb9ecc5fa8c402227edee90f4bf5a91c150046ca4903e22a"
+        },
+        {
+          "path": "packages/provider-core/src/server/mcpSession.ts",
+          "sha256LF": "52f85432b1463c667ed34d51a90f2c1088cb9514317fb9e7e0e24afb373cdde8",
+          "sha256Raw": "52f85432b1463c667ed34d51a90f2c1088cb9514317fb9e7e0e24afb373cdde8"
+        },
+        {
+          "path": "packages/contracts/src/orchestratorMcp.ts",
+          "sha256LF": "ad980f83f0312189c11a32c4e7b80e2740eb4c6ce637f772d1b9a2c1568321dd",
+          "sha256Raw": "ad980f83f0312189c11a32c4e7b80e2740eb4c6ce637f772d1b9a2c1568321dd"
+        },
+        {
+          "path": "apps/server/src/orchestration-v2/RuntimePolicy.ts",
+          "sha256LF": "98f3d63b87b22887643d57556bae8b4b784fae7c02021b392923a128535b7140",
+          "sha256Raw": "98f3d63b87b22887643d57556bae8b4b784fae7c02021b392923a128535b7140"
+        },
+        {
+          "path": "apps/server/src/orchestration-v2/Adapters/CodexAdapterV2.ts",
+          "sha256LF": "cd336623f9e2a292137233292765da52a8fe251743d082a042ef5873551334d2",
+          "sha256Raw": "cd336623f9e2a292137233292765da52a8fe251743d082a042ef5873551334d2"
+        }
+      ]
+    },
+    {
+      "id": "opencode",
+      "version": "2.4.1",
+      "revision": "6f0514052a3c859894ad01bb14cc14dda1e44b96",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "LICENSE",
+          "sha256LF": "625f0f619133f89bbbb2abe37369613dfa1885eba1e50d02170deb62bb42cb6b",
+          "sha256Raw": "b5c625d157735f04e1b2b7ceccee849130b554bdb23cd58db55a38a257efbbdd"
+        },
+        {
+          "path": "packages/core/src/tool.ts",
+          "sha256LF": "b17480e66ee6b1dca20be08b3c59c8bd2b359d4e74eef8e1680792886490121e",
+          "sha256Raw": "f99b99dd3b8c1079f7cfe384e20c86a7a97f014dc85837e872df4b69a24e1175"
+        },
+        {
+          "path": "packages/core/src/tool/runtime.ts",
+          "sha256LF": "85bcfde3554941130353d61e7f32fd6d69c0b0de2eaf4ee212b68bc66581f0f1",
+          "sha256Raw": "0103cf53df3a259aeeda52ec78ed45143067fff673ea750fe4146d4f7b510a99"
+        },
+        {
+          "path": "packages/core/src/tool/plugin/opencode.ts",
+          "sha256LF": "fedec97cef76b5931f549e25aaf94ca49ebad9167a0359b0c5c90606e9cef457",
+          "sha256Raw": "e0c948e4cbc5369bebdda3e1da45c71a4c75ea5e9ee92fe9177ec12ce9285d57"
+        },
+        {
+          "path": "packages/core/src/tool/mcp.ts",
+          "sha256LF": "eead09dddf29082187cc293e63510b578b568d0cc489fd5a6f366cac51e3ca34",
+          "sha256Raw": "e63970fd941bfc5f5f53ab884902c1c195670ed9645e943b5fad5fe3ebf8e744"
+        },
+        {
+          "path": "packages/core/src/permission.ts",
+          "sha256LF": "243beefe96619ea6d10deab183a5bdf5b27a89558ced1f71bf90e7c9d4b75c5c",
+          "sha256Raw": "747d8b6aafc38e326d51b00f70104d169686e7f4c437ef4b1a724ada44aa9aa0"
+        },
+        {
+          "path": "packages/core/src/session/context.ts",
+          "sha256LF": "6222ef8e6b3763b09272c30f436be48e35065807ae0a6a408383add65471fdb8",
+          "sha256Raw": "2d8b78718bf3299dd18542837b272114df16e4c9f4f6ecd441f6fea8c8e0c623"
+        },
+        {
+          "path": "packages/core/src/config/plugin/policy.ts",
+          "sha256LF": "73cbffe0583bbc7e569442eae71d5c9a79d8927a8b18711bd9e634648336409e",
+          "sha256Raw": "d0417cad19ddf0dc9c7eb48b6a1b4a90092eed1bbfa9d8ad5f2474945c43b754"
+        },
+        {
+          "path": "packages/core/src/config/plugin/agent.ts",
+          "sha256LF": "911b81c0338c4d2f8f5fb8cc25e56a75d50261fb79a55cd343ba1e104c12c822",
+          "sha256Raw": "d78aa3af73324c0c2d5176acc138d4f98dd4672e300ff05f2b01f1b8a57d5a2d"
+        },
+        {
+          "path": "packages/core/src/config/plugin/instruction.ts",
+          "sha256LF": "497b9f266c4f95ee44b6b879b10f3b653f427c3ebb9d53908899f08c68e417ff",
+          "sha256Raw": "20468fe771fa0795532f12b626509f34bdd4ac38ab0fd05a4a31ddc90e813a32"
+        },
+        {
+          "path": "packages/core/src/managed-policy.ts",
+          "sha256LF": "ca523aad4cbd12d7dc2d46ddf2f47a3fb0c2023e0790e41e895df0fbf3241715",
+          "sha256Raw": "3f3ae79d151bd2d5ed8e5172c08741f29e952af0b74b9f91288b9a250c2ea840"
+        },
+        {
+          "path": "packages/core/src/config.ts",
+          "sha256LF": "192e96259a94604defd99f8971df915df829567dace08a58d7cafbeaee35e51a",
+          "sha256Raw": "44f346d2da7fec930394ac2e4ce8dfa334c7e219a9b75b7682868dd71b43f006"
+        },
+        {
+          "path": "packages/core/src/config/discovery.ts",
+          "sha256LF": "37d5eb5e7b1d34187706f0ea97204c36e3aa4c8c54a2b7d1663ec7068c0a8af5",
+          "sha256Raw": "d9f6179af282afcfd85bcb4fd938c7f388ae3061bc7e84277691e4ef47caf9e0"
+        },
+        {
+          "path": "packages/core/src/plugin/module.ts",
+          "sha256LF": "b86b6f84b06ba89796618ee36db1bcb7364200107fa80e0f31296645804a1bb2",
+          "sha256Raw": "9fb0b3b857d479658f4a139d5f613f5fb9197cc00b5fd32e1377ada337dbbd24"
+        },
+        {
+          "path": "packages/core/src/instruction-discovery.ts",
+          "sha256LF": "ada6248033059c99ced484095661de9ad5020a2bf4937aa9437315702dd8c230",
+          "sha256Raw": "357e77f2bfb89973f48fbd8bf7e58f91c79728f8daa0c9ae0882707b342050e8"
+        },
+        {
+          "path": "packages/schema/src/config.ts",
+          "sha256LF": "39e49268e4107fffec8c12949b7b2a9445f006206ae5a29f8aa1a7ca73ee0558",
+          "sha256Raw": "fafada01c6c03b58b7b7264ec733fe3994c624c8a425d68acb220533051e010b"
+        },
+        {
+          "path": "packages/schema/src/config/policy.ts",
+          "sha256LF": "72586095738f791dc7cef2c3e134c19be9b85130d66fdaa0dbebb74e9530df52",
+          "sha256Raw": "bb49a8a48c964d9dba58f2df891968c9ba7086797c5dda9be2c79ef3f6264682"
+        },
+        {
+          "path": "packages/schema/src/config/flag.ts",
+          "sha256LF": "99a11da2f74e0dcbce8f0be663fa38071f31795cab2aadbb1e5a8f870011531e",
+          "sha256Raw": "c1639fdb5a78155f940ad7a27b9adecfce8b877a0b987181bf76938bb18545e5"
+        },
+        {
+          "path": "packages/server/src/options.ts",
+          "sha256LF": "b7c963036d6ce58f048e77794ae459d773ea268d0f8dbb93b753dec5306249d5",
+          "sha256Raw": "c045b781346c51b1dd9bf5faba2d40cf58afc411eda873afdb50be377d383c92"
+        },
+        {
+          "path": "packages/cli/src/server-process.ts",
+          "sha256LF": "9b27eea0927a1a0015bd3634d659518602205f6ebe543b476419a0e1b84a298d",
+          "sha256Raw": "9b35864fe6f780dbc98c38e9324b750afa9f7c5412a9875d13f0a7f7974c92e7"
+        }
+      ]
+    }
+  ]
+}
