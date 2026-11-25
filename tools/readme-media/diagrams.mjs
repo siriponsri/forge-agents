@@ -20,8 +20,8 @@ const fonts = [
 const fontCSS = (await Promise.all(fonts.map(async ([family, weight, style, file]) =>
   `@font-face{font-family:'${family}';font-weight:${weight};font-style:${style};font-display:block;src:url(data:font/ttf;base64,${(await fs.readFile(path.join(out, 'fonts', file))).toString('base64')}) format('truetype');}`))).join('\n');
 const palettes = {
-  light: { paper:'#f5f5f5', ink:'#2d3142', muted:'#4f5d75', soft:'#616d84', rule:'#c8cbd1', accent:'#eb6c36', tint:'#f7e9e2', node:'#ffffff', store:'#e9eaec' },
-  dark: { paper:'#2d3142', ink:'#f5f5f5', muted:'#bfc0c0', soft:'#b1b8c8', rule:'#63697b', accent:'#f08a59', tint:'#443a44', node:'#363b4e', store:'#3b4053' },
+  light: { paper:'#f5f5f5', ink:'#2d3142', muted:'#4f5d75', soft:'#616d84', rule:'#c8cbd1', accent:'#eb6c36', accentText:'#a6431c', tint:'#f7e9e2', node:'#ffffff', store:'#e9eaec' },
+  dark: { paper:'#2d3142', ink:'#f5f5f5', muted:'#bfc0c0', soft:'#b1b8c8', rule:'#63697b', accent:'#f08a59', accentText:'#f69a70', tint:'#443a44', node:'#363b4e', store:'#3b4053' },
 };
 // Coordinates are authored for a left-to-right fit canvas; never imported from Mermaid.
 const workflow = {
@@ -103,7 +103,7 @@ function diagram(model, variant) {
     const arch=model.slug==='architecture';
     const labelY=n.y+(arch?56:64), bodyY=labelY+(arch?24:32);
     return `<g data-node="${n.id}">${rect(n.x,n.y,n.w,n.h,fill,stroke,6,n.type==='optional'?'stroke-dasharray="5 4"':'')}
-    ${text(n.x+16,n.y+28,n.tag,{size:8,family:'Geist Mono',fill:n.focal?(dark?p.accent:'#a6431c'):p.muted,track:.5})}
+    ${text(n.x+16,n.y+28,n.tag,{size:8,family:'Geist Mono',fill:n.focal?p.accentText:p.muted,track:.5})}
     ${n.name.map((v,i)=>text(n.x+16,labelY+i*20,v,{size:16,weight:600})).join('')}
     ${n.lines.map((v,i)=>text(n.x+16,bodyY+i*(arch?18:20),v,{size:12,fill:p.muted})).join('')}</g>`;
   }).join('\n');
@@ -141,7 +141,7 @@ const {chromium}=require('playwright');
 const opentype=require('opentype.js');
 const parsedFonts=new Map(fonts.map(([f,w,s,file])=>[`${f}/${w}/${s}`,opentype.loadSync(path.join(out,'fonts',file))]));
 const browser=await chromium.launch({headless:true});
-const evidence={browser:browser.version(),playwright:require('playwright/package.json').version,opentype:require('opentype.js/package.json').version,generatedBy:'node tools/readme-media/diagrams.mjs --render --modules <isolated-prefix>/node_modules',variants:[]};
+const evidence={browser:browser.version(),playwright:require('playwright/package.json').version,opentype:require('opentype.js/package.json').version,generatedBy:'node tools/readme-media/diagrams.mjs --render --modules <isolated-prefix>/node_modules',contrastPolicy:{normalText:4.5,largeText:3,largeMinimumPx:24,largeBoldMinimumPx:18.6666666667,boldMinimumWeight:700,scope:'All painted SVG text and HTML help / editorial / footer text; actual computed foreground and containing opaque surface'},variants:[]};
 try {
  for(const m of models) for(const variant of ['light','dark','full']) {
   const {slug}=diagram(m,variant);
@@ -158,6 +158,36 @@ try {
     containment:[...document.querySelectorAll('[data-node]')].flatMap(n=>{const r=n.querySelector('rect');const x=+r.getAttribute('x'),y=+r.getAttribute('y'),w=+r.getAttribute('width'),h=+r.getAttribute('height');return [...n.querySelectorAll('text')].map(t=>{const b=t.getBBox();return {node:n.dataset.node,text:t.textContent,inside:b.x>=x+10&&b.y>=y+8&&b.x+b.width<=x+w-10&&b.y+b.height<=y+h-8};});}),
   }));
   if(metrics.containment.some(x=>!x.inside)) throw new Error(`${slug}: clipped node labels: ${JSON.stringify(metrics.containment.filter(x=>!x.inside))}`);
+  const textContrast=await page.evaluate(()=>{
+    const rgb=value=>{
+      const channels=value.match(/[\d.]+/g)?.map(Number);
+      if(!channels||channels.length<3||channels.length>3&&channels[3]!==1) throw new Error(`Contrast audit requires opaque resolved color: ${value}`);
+      return channels.slice(0,3);
+    };
+    const luminance=channels=>channels.map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+    return [...document.querySelectorAll('svg text, .scroll-help, .editorial h2, .editorial p, footer')].map(el=>{
+      const style=getComputedStyle(el),inSVG=el.namespaceURI==='http://www.w3.org/2000/svg';
+      let background;
+      if(inSVG) {
+        const surface=el.closest('[data-node]')?.querySelector('rect')||el.ownerSVGElement.querySelector(':scope > rect');
+        background=getComputedStyle(surface).fill;
+      } else {
+        for(let ancestor=el;ancestor;ancestor=ancestor.parentElement) {
+          const color=getComputedStyle(ancestor).backgroundColor;
+          if(color==='transparent'||color==='rgba(0, 0, 0, 0)') continue;
+          background=color;break;
+        }
+      }
+      const foreground=inSVG?style.fill:style.color;
+      const l1=luminance(rgb(foreground)),l2=luminance(rgb(background));
+      const ratio=(Math.max(l1,l2)+.05)/(Math.min(l1,l2)+.05);
+      const size=parseFloat(style.fontSize),weight=parseFloat(style.fontWeight);
+      const required=size>=24||weight>=700&&size>=18.6666666667?3:4.5;
+      return {text:el.textContent.trim(),foreground,background,size,weight,ratio,required,pass:ratio>=required};
+    });
+  });
+  const contrastFailures=textContrast.filter(t=>!t.pass);
+  if(contrastFailures.length) throw new Error(`${slug}: text contrast below WCAG AA: ${JSON.stringify(contrastFailures)}`);
   if(requests.length||errors.length) throw new Error(`${slug}: unexpected requests or browser errors`);
   await page.locator('svg').evaluate(el=>{for(let a=el.parentElement;a;a=a.parentElement)a.style.overflow='visible';});
   await page.locator('svg').screenshot({path:path.join(out,`${slug}.png`),omitBackground:true});
@@ -175,7 +205,7 @@ try {
   },outlines);
   const svg=await page.locator('svg').evaluate(el=>{el.setAttribute('width',el.viewBox.baseVal.width);el.setAttribute('height',el.viewBox.baseVal.height);return el.outerHTML;});
   await fs.writeFile(path.join(out,`${slug}.svg`),'<?xml version="1.0" encoding="UTF-8"?>\n'+svg+'\n');
-  const record={slug,width:m.width,height:m.height,nodeCount:m.nodes.length,edgeCount:m.edges.length,externalRequests:requests,errors,fonts:metrics.fonts,textStyles:[...new Map(metrics.text.map(t=>[`${t.family}/${t.size}/${t.weight}/${t.style}`,{family:t.family,size:t.size,weight:t.weight,style:t.style}])).values()],labelContainment:metrics.containment,viewports:[]};
+  const record={slug,width:m.width,height:m.height,nodeCount:m.nodes.length,edgeCount:m.edges.length,externalRequests:requests,errors,fonts:metrics.fonts,textStyles:[...new Map(metrics.text.map(t=>[`${t.family}/${t.size}/${t.weight}/${t.style}`,{family:t.family,size:t.size,weight:t.weight,style:t.style}])).values()],textContrast:{minimum:Math.min(...textContrast.map(t=>t.ratio)),failures:contrastFailures,text:textContrast},labelContainment:metrics.containment,viewports:[]};
   await context.close();
   for(const width of [1040,900,375]) {
     const c=await browser.newContext({viewport:{width,height:900},deviceScaleFactor:1});
@@ -259,5 +289,7 @@ if(routeChecks.some(r=>r.failures.length)) throw new Error(JSON.stringify(routeC
 evidence.routes=routeChecks;
 evidence.files=[];
 for(const file of (await fs.readdir(out)).filter(f=>/\.(html|svg|png)$/.test(f))) {const b=await fs.readFile(path.join(out,file));evidence.files.push({file,bytes:b.length,sha256:createHash('sha256').update(b).digest('hex')});}
+evidence.captures=[];
+for(const file of (await fs.readdir(path.join(out,'evidence'))).filter(f=>f.endsWith('.png'))) {const b=await fs.readFile(path.join(out,'evidence',file));evidence.captures.push({file:`evidence/${file}`,bytes:b.length,sha256:createHash('sha256').update(b).digest('hex')});}
 await fs.writeFile(path.join(out,'evidence/render-checks.json'),JSON.stringify(evidence,null,2)+'\n');
 console.log('Saved actual browser metrics, captures, source routing checks and SHA-256 file inventory.');

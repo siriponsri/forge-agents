@@ -99,6 +99,7 @@
       "outlinedSVGStructure": "PASS"
     }
   ],
+  "computedTextContrast": "PASS",
   "generatedFileHashes": "PASS",
   "READMEOutsideDiagramEmbeds": "PASS"
 }

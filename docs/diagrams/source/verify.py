@@ -57,8 +57,15 @@ for html in sorted(root.glob('*.html')):
 
 # Verify generated inventory, including every HTML, SVG and PNG export.
 inventory = json.loads((root / 'evidence/render-checks.json').read_text())
-for f in inventory['files']:
+for f in inventory['files'] + inventory['captures']:
     assert hashlib.sha256((root / f['file']).read_bytes()).hexdigest() == f['sha256'], f['file']
+for variant in inventory['variants']:
+    contrast = variant['textContrast']
+    assert contrast['text'] and not contrast['failures'], variant['slug']
+    for text in contrast['text']:
+        required = 3 if text['size'] >= 24 or text['weight'] >= 700 and text['size'] >= 18.6666666667 else 4.5
+        assert text['required'] == required and text['ratio'] >= required and text['pass'], text
+report['computedTextContrast'] = 'PASS'
 report['generatedFileHashes'] = 'PASS'
 current = (root.parents[1] / 'README.md').read_text(encoding='utf-8')
 original = subprocess.run(['git', 'show', 'b238a5d:README.md'], capture_output=True, check=True).stdout.decode('utf-8')

@@ -3,6 +3,14 @@
   "playwright": "1.65.1",
   "opentype": "1.3.4",
   "generatedBy": "node tools/readme-media/diagrams.mjs --render --modules <isolated-prefix>/node_modules",
+  "contrastPolicy": {
+    "normalText": 4.5,
+    "largeText": 3,
+    "largeMinimumPx": 24,
+    "largeBoldMinimumPx": 18.6666666667,
+    "boldMinimumWeight": 700,
+    "scope": "All painted SVG text and HTML help / editorial / footer text; actual computed foreground and containing opaque surface"
+  },
   "variants": [
     {
       "slug": "software-delivery",
@@ -76,6 +84,332 @@
           "style": "normal"
         }
       ],
+      "textContrast": {
+        "minimum": 5.14630891467548,
+        "failures": [],
+        "text": [
+          {
+            "text": "FORGE / THE WORKFLOW",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "From an idea to a delivery.",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(245, 245, 245)",
+            "size": 40,
+            "weight": 400,
+            "ratio": 11.820262966376038,
+            "required": 3,
+            "pass": true
+          },
+          {
+            "text": "Five stages. One reviewed trail of decisions, files and evidence.",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "01 / DEFINE",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Idea / Mission",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 12.886817037468983,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Outcome + inputs",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Acceptance criteria",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Open decisions",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "02 / APPROVE",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Approved Plan",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 12.886817037468983,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Tasks + dependencies",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Owner approves",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "before execution",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "03 / EXECUTE",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Build",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 12.886817037468983,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "T3 Executor",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Asst advice when",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "needed",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "04 / REVIEW",
+            "foreground": "rgb(166, 67, 28)",
+            "background": "rgb(247, 233, 226)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.14630891467548,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Verify",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(247, 233, 226)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.867019640994812,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Actual output files",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Local tests + preview",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "QA + Owner accepts",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "05 / HAND OVER",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Delivery Pack",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 12.886817037468983,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Selected-files ZIP",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Manifest + evidence",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Limits included",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Preview covers registered static files. Unknown outcomes are reconciled, never replayed.",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Left to right: reviewed handoffs",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 11,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Tangerine: evidence and acceptance gate",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 11,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "On a narrow screen, scroll the diagram horizontally. README images open at full size for zoom.",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          }
+        ]
+      },
       "labelContainment": [
         {
           "node": "idea",
@@ -310,6 +644,332 @@
           "style": "normal"
         }
       ],
+      "textContrast": {
+        "minimum": 5.052916588108822,
+        "failures": [],
+        "text": [
+          {
+            "text": "FORGE / THE WORKFLOW",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(45, 49, 66)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 7.067058160253254,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "From an idea to a delivery.",
+            "foreground": "rgb(245, 245, 245)",
+            "background": "rgb(45, 49, 66)",
+            "size": 40,
+            "weight": 400,
+            "ratio": 11.820262966376038,
+            "required": 3,
+            "pass": true
+          },
+          {
+            "text": "Five stages. One reviewed trail of decisions, files and evidence.",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(45, 49, 66)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 7.067058160253254,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "01 / DEFINE",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Idea / Mission",
+            "foreground": "rgb(245, 245, 245)",
+            "background": "rgb(54, 59, 78)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.178317971504805,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Outcome + inputs",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Acceptance criteria",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Open decisions",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "02 / APPROVE",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Approved Plan",
+            "foreground": "rgb(245, 245, 245)",
+            "background": "rgb(54, 59, 78)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.178317971504805,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Tasks + dependencies",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Owner approves",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "before execution",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "03 / EXECUTE",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Build",
+            "foreground": "rgb(245, 245, 245)",
+            "background": "rgb(54, 59, 78)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.178317971504805,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "T3 Executor",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Asst advice when",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "needed",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "04 / REVIEW",
+            "foreground": "rgb(246, 154, 112)",
+            "background": "rgb(68, 58, 68)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.052916588108822,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Verify",
+            "foreground": "rgb(245, 245, 245)",
+            "background": "rgb(68, 58, 68)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 9.957172805597684,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Actual output files",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(68, 58, 68)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.953160224016989,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Local tests + preview",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(68, 58, 68)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.953160224016989,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "QA + Owner accepts",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(68, 58, 68)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.953160224016989,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "05 / HAND OVER",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Delivery Pack",
+            "foreground": "rgb(245, 245, 245)",
+            "background": "rgb(54, 59, 78)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.178317971504805,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Selected-files ZIP",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Manifest + evidence",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Limits included",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Preview covers registered static files. Unknown outcomes are reconciled, never replayed.",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(45, 49, 66)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 7.067058160253254,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Left to right: reviewed handoffs",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(45, 49, 66)",
+            "size": 11,
+            "weight": 400,
+            "ratio": 7.067058160253254,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Tangerine: evidence and acceptance gate",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(45, 49, 66)",
+            "size": 11,
+            "weight": 400,
+            "ratio": 7.067058160253254,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "On a narrow screen, scroll the diagram horizontally. README images open at full size for zoom.",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(45, 49, 66)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 7.067058160253254,
+            "required": 4.5,
+            "pass": true
+          }
+        ]
+      },
       "labelContainment": [
         {
           "node": "idea",
@@ -544,6 +1204,382 @@
           "style": "normal"
         }
       ],
+      "textContrast": {
+        "minimum": 5.14630891467548,
+        "failures": [],
+        "text": [
+          {
+            "text": "FORGE / THE WORKFLOW",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "From an idea to a delivery.",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(245, 245, 245)",
+            "size": 40,
+            "weight": 400,
+            "ratio": 11.820262966376038,
+            "required": 3,
+            "pass": true
+          },
+          {
+            "text": "Five stages. One reviewed trail of decisions, files and evidence.",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "01 / DEFINE",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Idea / Mission",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 12.886817037468983,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Outcome + inputs",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Acceptance criteria",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Open decisions",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "02 / APPROVE",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Approved Plan",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 12.886817037468983,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Tasks + dependencies",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Owner approves",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "before execution",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "03 / EXECUTE",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Build",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 12.886817037468983,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "T3 Executor",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Asst advice when",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "needed",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "04 / REVIEW",
+            "foreground": "rgb(166, 67, 28)",
+            "background": "rgb(247, 233, 226)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.14630891467548,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Verify",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(247, 233, 226)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.867019640994812,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Actual output files",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Local tests + preview",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "QA + Owner accepts",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "05 / HAND OVER",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Delivery Pack",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 12.886817037468983,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Selected-files ZIP",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Manifest + evidence",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Limits included",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Preview covers registered static files. Unknown outcomes are reconciled, never replayed.",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Left to right: reviewed handoffs",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 11,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Tangerine: evidence and acceptance gate",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 11,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "On a narrow screen, scroll the diagram horizontally. README images open at full size for zoom.",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "The plan sets the scope.",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 28,
+            "weight": 400,
+            "ratio": 12.886817037468983,
+            "required": 3,
+            "pass": true
+          },
+          {
+            "text": "An approved plan connects the Mission to canonical tasks and their dependencies. Executor and Asst remain roles within the existing execution authority.",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 14,
+            "weight": 400,
+            "ratio": 12.886817037468983,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Evidence travels with the files.",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 28,
+            "weight": 400,
+            "ratio": 12.886817037468983,
+            "required": 3,
+            "pass": true
+          },
+          {
+            "text": "The Verify stage groups file registration, reviewed local tests, immutable static preview, QA and Owner acceptance. The Delivery Pack includes selected files and recorded limitations.",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 14,
+            "weight": 400,
+            "ratio": 12.886817037468983,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "FORGE · Architecture and workflow · Documentation overviewVisual system: Diagram Design by Cathryn Lavery · Source and licenses in credits/",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 11,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          }
+        ]
+      },
       "labelContainment": [
         {
           "node": "idea",
@@ -778,6 +1814,442 @@
           "style": "normal"
         }
       ],
+      "textContrast": {
+        "minimum": 5.14630891467548,
+        "failures": [],
+        "text": [
+          {
+            "text": "FORGE / THE SYSTEM",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "One authority. Connected views.",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(245, 245, 245)",
+            "size": 40,
+            "weight": 400,
+            "ratio": 11.820262966376038,
+            "required": 3,
+            "pass": true
+          },
+          {
+            "text": "FORGE owns domain records. T3 owns each provider turn.",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "HUMAN",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Owner",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(233, 234, 236)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.705312611709715,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Decisions + approvals",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "TH / EN GUI",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "DOMAIN AUTHORITY",
+            "foreground": "rgb(166, 67, 28)",
+            "background": "rgb(247, 233, 226)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.14630891467548,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "FORGE",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(247, 233, 226)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.867019640994812,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Projects · plans · tasks",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Approvals + evidence",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "SQLite + durable events",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "EXECUTION OWNER",
+            "foreground": "rgb(166, 67, 28)",
+            "background": "rgb(247, 233, 226)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.14630891467548,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Matching T3 runtime",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(247, 233, 226)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.867019640994812,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "One owner per provider turn",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Executor / Asst roles",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Scoped tools + operations",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "OBSERVED VIEWS",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Chat + Node-Edge",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(233, 234, 236)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.705312611709715,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "AG-UI state + events",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Same canonical identities",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Controls checked by FORGE",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "OFFICE / REPORTS",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Docs + Sheets",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 12.886817037468983,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Univer revisions",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Saved report sources",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "WordCraft / PdfCraft",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "CONTEXT / MEMORY",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Scoped references",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(233, 234, 236)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.705312611709715,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Exact source revisions",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Explicit Owner grants",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "CAPABILITY ADAPTERS",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Compute + targets",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 12.886817037468983,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Jobs · serving · storage",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Configured scope + permissions",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "ARTIFACTS / EVIDENCE",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Registered outputs",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(233, 234, 236)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.705312611709715,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Content hashes + provenance",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Receipts + verification",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Unknown outcome or cost stays unknown. Reconcile the existing identity before another effect.",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Solid: coordination / outputs",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 11,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Dashed: observations / scoped context",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 11,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "On a narrow screen, scroll the diagram horizontally. README images open at full size for zoom.",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          }
+        ]
+      },
       "labelContainment": [
         {
           "node": "owner",
@@ -1067,6 +2539,442 @@
           "style": "normal"
         }
       ],
+      "textContrast": {
+        "minimum": 5.052916588108822,
+        "failures": [],
+        "text": [
+          {
+            "text": "FORGE / THE SYSTEM",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(45, 49, 66)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 7.067058160253254,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "One authority. Connected views.",
+            "foreground": "rgb(245, 245, 245)",
+            "background": "rgb(45, 49, 66)",
+            "size": 40,
+            "weight": 400,
+            "ratio": 11.820262966376038,
+            "required": 3,
+            "pass": true
+          },
+          {
+            "text": "FORGE owns domain records. T3 owns each provider turn.",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(45, 49, 66)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 7.067058160253254,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "HUMAN",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(59, 64, 83)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.633565094080208,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Owner",
+            "foreground": "rgb(245, 245, 245)",
+            "background": "rgb(59, 64, 83)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 9.422622446316291,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Decisions + approvals",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(59, 64, 83)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.633565094080208,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "TH / EN GUI",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(59, 64, 83)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.633565094080208,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "DOMAIN AUTHORITY",
+            "foreground": "rgb(246, 154, 112)",
+            "background": "rgb(68, 58, 68)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.052916588108822,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "FORGE",
+            "foreground": "rgb(245, 245, 245)",
+            "background": "rgb(68, 58, 68)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 9.957172805597684,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Projects · plans · tasks",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(68, 58, 68)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.953160224016989,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Approvals + evidence",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(68, 58, 68)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.953160224016989,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "SQLite + durable events",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(68, 58, 68)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.953160224016989,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "EXECUTION OWNER",
+            "foreground": "rgb(246, 154, 112)",
+            "background": "rgb(68, 58, 68)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.052916588108822,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Matching T3 runtime",
+            "foreground": "rgb(245, 245, 245)",
+            "background": "rgb(68, 58, 68)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 9.957172805597684,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "One owner per provider turn",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(68, 58, 68)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.953160224016989,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Executor / Asst roles",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(68, 58, 68)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.953160224016989,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Scoped tools + operations",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(68, 58, 68)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.953160224016989,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "OBSERVED VIEWS",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(59, 64, 83)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.633565094080208,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Chat + Node-Edge",
+            "foreground": "rgb(245, 245, 245)",
+            "background": "rgb(59, 64, 83)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 9.422622446316291,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "AG-UI state + events",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(59, 64, 83)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.633565094080208,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Same canonical identities",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(59, 64, 83)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.633565094080208,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Controls checked by FORGE",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(59, 64, 83)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.633565094080208,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "OFFICE / REPORTS",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Docs + Sheets",
+            "foreground": "rgb(245, 245, 245)",
+            "background": "rgb(54, 59, 78)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.178317971504805,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Univer revisions",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Saved report sources",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "WordCraft / PdfCraft",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "CONTEXT / MEMORY",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(59, 64, 83)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.633565094080208,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Scoped references",
+            "foreground": "rgb(245, 245, 245)",
+            "background": "rgb(59, 64, 83)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 9.422622446316291,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Exact source revisions",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(59, 64, 83)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.633565094080208,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Explicit Owner grants",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(59, 64, 83)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.633565094080208,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "CAPABILITY ADAPTERS",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Compute + targets",
+            "foreground": "rgb(245, 245, 245)",
+            "background": "rgb(54, 59, 78)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.178317971504805,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Jobs · serving · storage",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Configured scope + permissions",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(54, 59, 78)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.085377735063077,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "ARTIFACTS / EVIDENCE",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(59, 64, 83)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.633565094080208,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Registered outputs",
+            "foreground": "rgb(245, 245, 245)",
+            "background": "rgb(59, 64, 83)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 9.422622446316291,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Content hashes + provenance",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(59, 64, 83)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.633565094080208,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Receipts + verification",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(59, 64, 83)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.633565094080208,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Unknown outcome or cost stays unknown. Reconcile the existing identity before another effect.",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(45, 49, 66)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 7.067058160253254,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Solid: coordination / outputs",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(45, 49, 66)",
+            "size": 11,
+            "weight": 400,
+            "ratio": 7.067058160253254,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Dashed: observations / scoped context",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(45, 49, 66)",
+            "size": 11,
+            "weight": 400,
+            "ratio": 7.067058160253254,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "On a narrow screen, scroll the diagram horizontally. README images open at full size for zoom.",
+            "foreground": "rgb(191, 192, 192)",
+            "background": "rgb(45, 49, 66)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 7.067058160253254,
+            "required": 4.5,
+            "pass": true
+          }
+        ]
+      },
       "labelContainment": [
         {
           "node": "owner",
@@ -1356,6 +3264,492 @@
           "style": "normal"
         }
       ],
+      "textContrast": {
+        "minimum": 5.14630891467548,
+        "failures": [],
+        "text": [
+          {
+            "text": "FORGE / THE SYSTEM",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "One authority. Connected views.",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(245, 245, 245)",
+            "size": 40,
+            "weight": 400,
+            "ratio": 11.820262966376038,
+            "required": 3,
+            "pass": true
+          },
+          {
+            "text": "FORGE owns domain records. T3 owns each provider turn.",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "HUMAN",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Owner",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(233, 234, 236)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.705312611709715,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Decisions + approvals",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "TH / EN GUI",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "DOMAIN AUTHORITY",
+            "foreground": "rgb(166, 67, 28)",
+            "background": "rgb(247, 233, 226)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.14630891467548,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "FORGE",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(247, 233, 226)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.867019640994812,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Projects · plans · tasks",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Approvals + evidence",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "SQLite + durable events",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "EXECUTION OWNER",
+            "foreground": "rgb(166, 67, 28)",
+            "background": "rgb(247, 233, 226)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.14630891467548,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Matching T3 runtime",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(247, 233, 226)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.867019640994812,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "One owner per provider turn",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Executor / Asst roles",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Scoped tools + operations",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(247, 233, 226)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.612752564038973,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "OBSERVED VIEWS",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Chat + Node-Edge",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(233, 234, 236)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.705312611709715,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "AG-UI state + events",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Same canonical identities",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Controls checked by FORGE",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "OFFICE / REPORTS",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Docs + Sheets",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 12.886817037468983,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Univer revisions",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Saved report sources",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "WordCraft / PdfCraft",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "CONTEXT / MEMORY",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Scoped references",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(233, 234, 236)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.705312611709715,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Exact source revisions",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Explicit Owner grants",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "CAPABILITY ADAPTERS",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Compute + targets",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 12.886817037468983,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Jobs · serving · storage",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Configured scope + permissions",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(255, 255, 255)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.655966194861292,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "ARTIFACTS / EVIDENCE",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 8,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Registered outputs",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(233, 234, 236)",
+            "size": 16,
+            "weight": 600,
+            "ratio": 10.705312611709715,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Content hashes + provenance",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Receipts + verification",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(233, 234, 236)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 5.529231822085113,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Unknown outcome or cost stays unknown. Reconcile the existing identity before another effect.",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Solid: coordination / outputs",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 11,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Dashed: observations / scoped context",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 11,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "On a narrow screen, scroll the diagram horizontally. README images open at full size for zoom.",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 12,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Authority stays explicit.",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 28,
+            "weight": 400,
+            "ratio": 12.886817037468983,
+            "required": 3,
+            "pass": true
+          },
+          {
+            "text": "FORGE owns the domain and checks commands. T3 remains the single provider-turn owner. AG-UI is a projection of observed lifecycle events, not another execution controller.",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 14,
+            "weight": 400,
+            "ratio": 12.886817037468983,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "Capability is not qualification.",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 28,
+            "weight": 400,
+            "ratio": 12.886817037468983,
+            "required": 3,
+            "pass": true
+          },
+          {
+            "text": "Supporting components describe integration boundaries. This drawing does not claim live account access, remote compute qualification, native automation coverage or completed Home UAT.",
+            "foreground": "rgb(45, 49, 66)",
+            "background": "rgb(255, 255, 255)",
+            "size": 14,
+            "weight": 400,
+            "ratio": 12.886817037468983,
+            "required": 4.5,
+            "pass": true
+          },
+          {
+            "text": "FORGE · Architecture and workflow · Documentation overviewVisual system: Diagram Design by Cathryn Lavery · Source and licenses in credits/",
+            "foreground": "rgb(79, 93, 117)",
+            "background": "rgb(245, 245, 245)",
+            "size": 11,
+            "weight": 400,
+            "ratio": 6.105097208241413,
+            "required": 4.5,
+            "pass": true
+          }
+        ]
+      },
       "labelContainment": [
         {
           "node": "owner",
@@ -1724,17 +4118,17 @@
     {
       "file": "architecture-dark.html",
       "bytes": 471884,
-      "sha256": "43445d1e867993ec7127e96c1ef5e63cfd0d671f39c65de33f813061a215a04a"
+      "sha256": "4c2bc25d2d4b2421b859c9a30793a584743efe05d9d6617dea3d4f7f94acbf7f"
     },
     {
       "file": "architecture-dark.png",
-      "bytes": 196605,
-      "sha256": "5d82db8bff937a113317d76f9bb98411cd252e41247bf91fd86f93ed3c287d0e"
+      "bytes": 196587,
+      "sha256": "ac233d89b0abe1aece1cc78657d18a60e636ebf0067c353e8a2aeb6d81a3680f"
     },
     {
       "file": "architecture-dark.svg",
-      "bytes": 544923,
-      "sha256": "226cfad174ec9096416ea824fc21dc2eb268094a9d95a36c675fe0331b6704bf"
+      "bytes": 544925,
+      "sha256": "bf6846cb673344720a1b1b58574ea8bf5c98f20ca276ad858bf6f2616fa84913"
     },
     {
       "file": "architecture-full.html",
@@ -1769,17 +4163,17 @@
     {
       "file": "software-delivery-dark.html",
       "bytes": 468101,
-      "sha256": "01eac85cf29ea19da4c9f8154c90ce541ca60252394c113d6e20573be019031c"
+      "sha256": "51eae5daddcf04dc58ad909490b57cd29e40372d4b5df46827d5b383563236de"
     },
     {
       "file": "software-delivery-dark.png",
-      "bytes": 119211,
-      "sha256": "173ba722f159900a5750860d5b8040a0265ea61c68f6a8511dcfcd9667a80d88"
+      "bytes": 119213,
+      "sha256": "242e34ec19c32c0022fb47b5c7858c93de34446ba8718ab68ee6296745a35be8"
     },
     {
       "file": "software-delivery-dark.svg",
-      "bytes": 358592,
-      "sha256": "953120a1023ecea7853862b02d4ee899a50e7a0c24fe346cb5fdfa5cad8a2318"
+      "bytes": 358593,
+      "sha256": "f64892042df591ba5d389bdaabc78153e10ec47db4881989d30c8753a39bbf82"
     },
     {
       "file": "software-delivery-full.html",
@@ -1810,6 +4204,148 @@
       "file": "software-delivery.svg",
       "bytes": 358475,
       "sha256": "75df92b67ade0da4d15c424aff2f0dc5d9fe88f2d9afc513b3e72fe55c622a25"
+    }
+  ],
+  "captures": [
+    {
+      "file": "evidence/architecture-1040.png",
+      "bytes": 95856,
+      "sha256": "d4d4ee5467dfe5d7339d1ababacd916ef94d930e92280d65f7a8d4bf756e357f"
+    },
+    {
+      "file": "evidence/architecture-375-end.png",
+      "bytes": 29617,
+      "sha256": "3964f32682cfb9272fbb1cafbcb55589f9cc7edbb5f7e2c4a1a1e35e51737d63"
+    },
+    {
+      "file": "evidence/architecture-375.png",
+      "bytes": 51379,
+      "sha256": "6eb7db7666cb7d2de24062816accf40f34a9f8f36b91a2ff20d44cccc03533fb"
+    },
+    {
+      "file": "evidence/architecture-900.png",
+      "bytes": 90706,
+      "sha256": "2eeefd9ead4fd95be7b30cc1921cfc8abcc96b672a79bcc469a12da542b24c0b"
+    },
+    {
+      "file": "evidence/architecture-dark-1040.png",
+      "bytes": 96136,
+      "sha256": "fa74882e81f8547080ced0b1ceccd8803aa70d96ba24d6126c96cefa96d295c1"
+    },
+    {
+      "file": "evidence/architecture-dark-375-end.png",
+      "bytes": 30268,
+      "sha256": "947b5fcdbb0dfba1804c8d484d8eccf1d9e892b521a72e4eb5927542ce4c3e06"
+    },
+    {
+      "file": "evidence/architecture-dark-375.png",
+      "bytes": 52231,
+      "sha256": "dd7312f3f0265ed8306650113fc8524d5ede656857183545a594a0a5823c6a7c"
+    },
+    {
+      "file": "evidence/architecture-dark-900.png",
+      "bytes": 91414,
+      "sha256": "f6235b81d8a66e232e68759190f44ede14557c7956b056a80a028fdbeb4c2d09"
+    },
+    {
+      "file": "evidence/architecture-full-1040.png",
+      "bytes": 135208,
+      "sha256": "26055c63b290ceb349b56bbceb9de9e45a85f2392f24f581527fd3b77d3d6fb5"
+    },
+    {
+      "file": "evidence/architecture-full-375-end.png",
+      "bytes": 73049,
+      "sha256": "a4c8e40485dae60506d08bf99d620216965dd9bb07912b5bb521011a261191d3"
+    },
+    {
+      "file": "evidence/architecture-full-375.png",
+      "bytes": 94051,
+      "sha256": "1380611dffd1bca32fe9ecf13b3eed521935183c2e1d6a0d6746cb706bfeaef0"
+    },
+    {
+      "file": "evidence/architecture-full-900.png",
+      "bytes": 131750,
+      "sha256": "75b176d0a9879e1070aa95a565975edad5df473519d61dcbd5a3444024725429"
+    },
+    {
+      "file": "evidence/readme-dark-375.png",
+      "bytes": 45227,
+      "sha256": "e04a230e16db405a34afcfd8a5db144e1625b9c5f17d92dfc0aa5e3c3c5f32df"
+    },
+    {
+      "file": "evidence/readme-dark-900.png",
+      "bytes": 148776,
+      "sha256": "879e320ce082e4a414d697202432f7d4374e8acce7c8c1810f5befed7db248ea"
+    },
+    {
+      "file": "evidence/readme-light-375.png",
+      "bytes": 45920,
+      "sha256": "ab3bb60f2f292268d86ec767c38d5e3a9fc8bf3d8e7c91ea635892081af8ecfc"
+    },
+    {
+      "file": "evidence/readme-light-900.png",
+      "bytes": 151202,
+      "sha256": "2356f865e91922526d8dd9dd012a0de624d62b5d5b66529aa840c5ccc6604d0f"
+    },
+    {
+      "file": "evidence/software-delivery-1040.png",
+      "bytes": 60870,
+      "sha256": "0af35cc836f3d226c40ac4a3b5c7bcd1072607a705a29320b96e092a28448886"
+    },
+    {
+      "file": "evidence/software-delivery-375-end.png",
+      "bytes": 22317,
+      "sha256": "551bcfc1a148e1abf22c01abcdf4b85faddceca96f6977be0df12ec5ee60ecc3"
+    },
+    {
+      "file": "evidence/software-delivery-375.png",
+      "bytes": 38460,
+      "sha256": "0c4420564a06b862ee6184cc690c51348f4f0d15e865b7ee1a339a72725d718f"
+    },
+    {
+      "file": "evidence/software-delivery-900.png",
+      "bytes": 57841,
+      "sha256": "3b8b7478718bebad755063cb679752091c6e26f4bb6922c9858aeaed98b78a6d"
+    },
+    {
+      "file": "evidence/software-delivery-dark-1040.png",
+      "bytes": 61764,
+      "sha256": "ea394b8605b17c7391cde1935a07bd81d827c331f197e0116d43eed16f817239"
+    },
+    {
+      "file": "evidence/software-delivery-dark-375-end.png",
+      "bytes": 22769,
+      "sha256": "c55f3d8f0809bcab685d14df1b0ad03bbfc718cb3a78bfe9b6e19ac3180b9f59"
+    },
+    {
+      "file": "evidence/software-delivery-dark-375.png",
+      "bytes": 39262,
+      "sha256": "4831c2627e7c7bd932906b89e92c0398a52264ffb6d98ed5e6d696f23456df2f"
+    },
+    {
+      "file": "evidence/software-delivery-dark-900.png",
+      "bytes": 58748,
+      "sha256": "6677126cae06e1873015b40bc7d13a4209792d7d9e71793dcc29f12e3e8fc28b"
+    },
+    {
+      "file": "evidence/software-delivery-full-1040.png",
+      "bytes": 98007,
+      "sha256": "25de4a9629be253239864f86bf4035201a18ea4150df16544c497db0fa95154e"
+    },
+    {
+      "file": "evidence/software-delivery-full-375-end.png",
+      "bytes": 62476,
+      "sha256": "a5ca59bfbc16483455ee0e30b08862c7f063ce6fa8446fd7fcffe63d9982ded0"
+    },
+    {
+      "file": "evidence/software-delivery-full-375.png",
+      "bytes": 78460,
+      "sha256": "3cd91e476218e62d2fefa221ea338bd585b75ff4761d71ba4428ac735213a781"
+    },
+    {
+      "file": "evidence/software-delivery-full-900.png",
+      "bytes": 94849,
+      "sha256": "65412ea9f626028739060079ed7a2b829571289fc219b014ba4f2dd05a8e1770"
     }
   ]
 }

@@ -13,3 +13,13 @@ The installed `self_check.py` fails only because it forbids embedded font data U
 Visual inspection found the five stages clear at 900px; supporting architecture routes do not cross node boxes. One explicit bridge protects the Context/Memory route at the FORGE-to-compute crossing. The 375px HTML view scrolls locally; the README thumbnail requires its full-size / PNG zoom link to read fine detail. Live GitHub sanitizer behavior was not published/tested; portable outlined paths and PNG fallback reduce that dependency.
 
 Implementation gaps: none within this assigned documentation scope. Missing live credentials / Home UAT: not part of diagram verification and no qualification claimed. Lead still owns independent review, final media manifest refresh, integration, release and push. No push performed.
+
+## Narrow contrast follow-up
+
+Independent review of integrated `f64fd87` identified the dark focal tag text pair `#f08a59` / `#443a44` at 4.386030815:1. The generator now uses dedicated dark text token `accentText: #f69a70`, keeping the existing focal tint and border accent. Actual browser contrast is **5.052916588:1** for `04 / REVIEW`, `DOMAIN AUTHORITY` and `EXECUTION OWNER`.
+
+Added a failing assertion for every painted SVG text element and HTML help / editorial / footer text in every variant: normal text >=4.5, large text >=3 (24px, or 18.667px at weight 700+). Before changing the token, the new assertion reproduced the old `04 / REVIEW` failure at 4.386030815:1 with exit 1. After the fix, all **235 measured text entries across six variants** pass; light/full minimum 5.146308915:1, dark minimum 5.052916588:1. Computed foreground, background, size, weight, threshold, ratio and result are recorded in `render-checks.json`.
+
+Regenerated all six variants and reran the actual 1040/900/375 Chromium captures, scroll/end, font, containment, route, image selection, fallback and print checks. Dark HTML / outlined SVG / PNG and affected captures changed; light/full exports remain byte-identical. Fresh inventory includes all 28 evidence PNG hashes. `verify.py` checks both export/capture hashes and all recorded contrast thresholds, plus the existing exact-font / remaining skill gates. The original embedded-font exception remains explicit. `node --check` and `git diff --check` pass. README, Mermaid companions, application paths, manifests and central progress remain unchanged in this delta.
+
+This is a delta on worker commit `20c96d3`; apply only the follow-up commit to the lead's already-integrated tree. No push or release action performed.
