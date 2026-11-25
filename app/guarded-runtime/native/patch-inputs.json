@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "sources": {
+    "t3": {
+      "packages/provider-core/src/server/ProviderAdapter.ts": "b225b3b85516c27913c6a68b49b98c36b36ec5ceb0f4cd152661741a3f498d9e",
+      "apps/server/src/orchestration-v2/RuntimePolicy.ts": "98f3d63b87b22887643d57556bae8b4b784fae7c02021b392923a128535b7140",
+      "packages/provider-opencode/src/server/v2/adapter.ts": "a0fabe9941e9edf1e4502f60a4763d7447a4e6b86645901f630039ca9f11d470",
+      "packages/provider-opencode/src/server/v2/OpenCode2Server.ts": "06475872136a6445b66fb14985b46b5c3442863738d46427492e9f81bef36d6f",
+      "apps/server/vite.config.ts": "d5198593f4e680acd992de43ffc397e24dc7d773ef0ef0d222fe7973653bceaf"
+    },
+    "opencode": {
+      "packages/core/src/tool/runtime.ts": "85bcfde3554941130353d61e7f32fd6d69c0b0de2eaf4ee212b68bc66581f0f1",
+      "packages/core/src/tool.ts": "b17480e66ee6b1dca20be08b3c59c8bd2b359d4e74eef8e1680792886490121e",
+      "packages/core/src/config/plugin/instruction.ts": "497b9f266c4f95ee44b6b879b10f3b653f427c3ebb9d53908899f08c68e417ff",
+      "packages/core/src/config/plugin/agent.ts": "911b81c0338c4d2f8f5fb8cc25e56a75d50261fb79a55cd343ba1e104c12c822",
+      "packages/core/src/config/plugin/skill.ts": "114c3ac6be02289b6736159a5e80a9bb3abff39eca763b3f47106bb651c27023",
+      "packages/core/src/config/plugin/command.ts": "84e73b376adf1fdf57c5ada482779245a4603bae37db5669621f0e260778c943",
+      "packages/core/src/session/prompt.ts": "e829ad71c25cb43f48935245bf797bde6e3a490b4217cade2e99cb158db59c3d",
+      "packages/core/src/config.ts": "192e96259a94604defd99f8971df915df829567dace08a58d7cafbeaee35e51a",
+      "packages/core/src/plugin/module.ts": "b86b6f84b06ba89796618ee36db1bcb7364200107fa80e0f31296645804a1bb2",
+      "packages/core/src/mcp/index.ts": "dc93b07dd0a0323922dde7b6255cfe09de7d9ece69c403143c98b2881dcd86b6",
+      "packages/core/src/tool/mcp.ts": "eead09dddf29082187cc293e63510b578b568d0cc489fd5a6f366cac51e3ca34",
+      "packages/core/src/session/context.ts": "6222ef8e6b3763b09272c30f436be48e35065807ae0a6a408383add65471fdb8",
+      "packages/core/src/session/model-request.ts": "7653df3f7fdc679245fe85f0b135f4a0219f996833d10292b1dedd80095bdc7d",
+      "packages/core/src/session.ts": "89eccc3b3fe6d71b4d74a8e4b5f0d693912fb12658b07f08e26be4684eb41076",
+      "packages/server/src/routes.ts": "7064313bff265ea0e42fec7f36d68ed43d1fcfeaae77f9beb59997c86d5d0a5d"
+    }
+  }
+}

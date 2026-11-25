@@ -1,0 +1,13 @@
+import {spawnSync} from 'node:child_process';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
+import {digest} from '../../app/guarded-runtime/profile.mjs';
+import path from 'node:path';
+const cache=path.resolve(process.argv[2]),mode=process.argv[3]??'install';
+const source=path.join(cache,'t3'),node=path.join(cache,'node/node.exe'),pnpm=path.join(cache,'pnpm-exe/pnpm.exe'),home=path.join(cache,'t3-build-home');await mkdir(home,{recursive:true});
+const npmrc=path.join(home,'empty.npmrc');await writeFile(npmrc,'');
+const env={SystemRoot:process.env.SystemRoot,TEMP:process.env.TEMP,TMP:process.env.TEMP,PATH:[path.dirname(node),path.join(process.env.SystemRoot,'System32')].join(path.delimiter),HOME:home,USERPROFILE:home,APPDATA:home,LOCALAPPDATA:home,XDG_CONFIG_HOME:home,XDG_DATA_HOME:home,XDG_CACHE_HOME:home,NPM_CONFIG_USERCONFIG:npmrc,NPM_CONFIG_GLOBALCONFIG:npmrc,CI:'1'};
+const args=mode==='install'?['--filter','t3...','install','--frozen-lockfile','--ignore-scripts',`--store-dir=${path.join(cache,'pnpm-store')}`]:['--filter','t3','build:bundle'];
+const result=spawnSync(pnpm,args,{cwd:source,env,windowsHide:true,encoding:'utf8',timeout:300000,maxBuffer:8*1024*1024});console.log(result.stdout,result.stderr);
+const patches=JSON.parse(await readFile(path.join(cache,'patch-report.json'),'utf8'));
+await writeFile(path.join(cache,`t3-${mode}-report.json`),JSON.stringify({version:1,patchDigest:digest(patches.changes.filter(x=>x.source==='t3')),exitCode:result.status,error:result.error?.code??null,stdout:result.stdout,stderr:result.stderr,proof:null},null,2)+'\n');
+if(result.status!==0)process.exitCode=1;

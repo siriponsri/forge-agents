@@ -25,7 +25,7 @@ export function servePrivateBroker({readable,writable,broker,onFailure=()=>{}}){
   return {async close(){await tail;stop();}};
 }
 
-// Only these schemas may be advertised by a future authenticated native MCP
+// Only these schemas may be advertised by the authenticated native MCP
 // bridge. Discovery does not itself authenticate or qualify that bridge.
 export const boundedToolSchemas=Object.freeze(TOOLS.map(tool=>({
   name:tool,

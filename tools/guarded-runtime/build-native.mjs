@@ -1,5 +1,6 @@
 import {spawnSync} from 'node:child_process';
-import {mkdir,writeFile} from 'node:fs/promises';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
+import {digest} from '../../app/guarded-runtime/profile.mjs';
 import path from 'node:path';
 const [source,bun]=process.argv.slice(2);
 if(!path.isAbsolute(source??'')||!path.isAbsolute(bun??''))throw Error('ISOLATED_PATHS_REQUIRED');
@@ -12,5 +13,6 @@ const env={SystemRoot:process.env.SystemRoot,TEMP:process.env.TEMP,TMP:process.e
 env.OPENCODE_VERSION='2.4.1-forge-guarded.0';env.OPENCODE_CHANNEL='forge-guarded';
 const result=spawnSync(bun,['run','script/build.ts','--single','--skip-install','--skip-web-ui',`--outdir=${out}`],{cwd:path.join(source,'packages/cli'),env,encoding:'utf8',timeout:180000,windowsHide:true,maxBuffer:4*1024*1024});
 console.log(result.stdout,result.stderr);
-await writeFile(path.join(path.dirname(source),'cli-build-report.json'),JSON.stringify({version:1,exitCode:result.status,error:result.error?.code??null,stdout:result.stdout,stderr:result.stderr,proof:null},null,2)+'\n');
+const patches=JSON.parse(await readFile(path.join(path.dirname(source),'patch-report.json'),'utf8'));
+await writeFile(path.join(path.dirname(source),'cli-build-report.json'),JSON.stringify({version:1,patchDigest:digest(patches.changes.filter(x=>x.source==='opencode')),exitCode:result.status,error:result.error?.code??null,stdout:result.stdout,stderr:result.stderr,proof:null},null,2)+'\n');
 if(result.status!==0)process.exitCode=1;

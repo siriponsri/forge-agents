@@ -1,0 +1,466 @@
+{
+  "version": 1,
+  "date": "2026-11-25",
+  "scope": "isolated actual compiled native engineering qualification only",
+  "productActivation": false,
+  "realProviderOrAccountTurn": false,
+  "homeUat": "NOT_RUN",
+  "proof": null,
+  "automaticExecutionQualified": false,
+  "artifactInventory": {
+    "version": 1,
+    "purpose": "checked engineering artifacts; rehash and live-qualify after packaging",
+    "proof": null,
+    "automaticExecutionQualified": false,
+    "t3": {
+      "revision": "59651c1761f6c63e9b6056839067066968e6a406",
+      "entry": "forge-guarded-host.mjs",
+      "files": [
+        {
+          "name": "AcpMcpStdioBridge--1XJxo60.mjs",
+          "sha256": "dd639f4f1bdc6d2f04319cd5f3c0b5756d9386c4251696f72af47168b3eadbd6"
+        },
+        {
+          "name": "AcpMcpStdioBridge-GC8SpcqJ.mjs",
+          "sha256": "a804b7887ff0569158d609e57006c53b1efc71379d16d474c88b5ee78f8716a6"
+        },
+        {
+          "name": "CodexManagedTokenProtocol-CaLecs78.mjs",
+          "sha256": "f90eac02224e0f1a15e4c0476c3ee33236784b2a53ada3ffb5967831be9a7893"
+        },
+        {
+          "name": "HostProcess-J-XzA_Md.mjs",
+          "sha256": "f0c3734aaa4d24cf78405a5a68d5a4ca5ebb3c135b837d783329bd5363ba2509"
+        },
+        {
+          "name": "Latch-BcHM6v7y.mjs",
+          "sha256": "8be184ec9afda46dc61e4dc3ed06ea8b70240648fa98093f53692be97f6c581a"
+        },
+        {
+          "name": "ManagedEndpointRuntime-ZaIrouXL.mjs",
+          "sha256": "5c8057c40d125ca6f9d1d4b7669e45c2fef28f6fb300ca8768db7d0e84a78874"
+        },
+        {
+          "name": "NodeCrypto-DGnJfiCx.mjs",
+          "sha256": "b13b8bef3353e119230931697b9dc04f849b44cf12e47013b2dd10251ec8f4d6"
+        },
+        {
+          "name": "NodeServices-B3NUQTaH.mjs",
+          "sha256": "630e33a1bf7bc3c3ddd8dc8fc8122cb01217e6d4591420893530c6af5d6f5155"
+        },
+        {
+          "name": "RuntimePolicy-BtFSuDhU.mjs",
+          "sha256": "0e3f58b6a976080a6f8463512eb1cb7081c87841b293840b74ba23c01db4c022"
+        },
+        {
+          "name": "Schema-6kp_5w8L.mjs",
+          "sha256": "e6d674bbccb44d6bde1023eac7a6dcb1c2020f6fec97d5ca1ed0c21382a9f9a3"
+        },
+        {
+          "name": "Socket-CYW20OK6.mjs",
+          "sha256": "8a9f930a408a7de41f9aee8f661b6f2bf0e34a93fa064360a0b8099669cca537"
+        },
+        {
+          "name": "Stream-BUTyk4Nm.mjs",
+          "sha256": "efb0e2a885c4ae71067d44eef53f7dd9ed21d9d3b57cdb244d6cc73234289391"
+        },
+        {
+          "name": "Undici-6dy-4BRg.mjs",
+          "sha256": "928ffbc5e203587dff64d023c106a081ea0aec32df9b860b0136d97b272b69e0"
+        },
+        {
+          "name": "adapter-CIuQGCgw.mjs",
+          "sha256": "1faf93bf9e779c121a28a6b672a23ff50d25762d8f1542c84fbe7d2aacf5e13f"
+        },
+        {
+          "name": "bin.mjs",
+          "sha256": "069baee285723fc8832298c4c36b32e121eed3ebe4fdad4159be876b12ed259f"
+        },
+        {
+          "name": "binCli-CvdT1zM8.mjs",
+          "sha256": "b182fe41c67bb6358e068776ba05843ee2103208b91af4b6af60f28d19c07e1c"
+        },
+        {
+          "name": "binMain-BfLx7NSS.mjs",
+          "sha256": "5440520604d90292d4630791d8921e3251ccb8f214536d2296c77eba168440ec"
+        },
+        {
+          "name": "character-entities-BC7As2mc.mjs",
+          "sha256": "27f9b5c3e908eb084dd79fcc2095d049c098eacede68a261a89d4c4728f2d8cb"
+        },
+        {
+          "name": "claude-history-worker.mjs",
+          "sha256": "acf9d4ba79e203892ab877fb2fd96232612a70cb5b87de9280eafac2e6884c5f"
+        },
+        {
+          "name": "claudeHistoryWorker-BefmlO0N.mjs",
+          "sha256": "6ed503e1840fa8eefe28d5339440865e2a0a246f61bb94ad0de9a0a7086a3d80"
+        },
+        {
+          "name": "claudeHistoryWorker-C7u0n4Gj.mjs",
+          "sha256": "d4f31ed8c4a8659d414e67103280fc8fc446fe4cfcc7467bed091cfad0dfb0bf"
+        },
+        {
+          "name": "consoleStdin-Brqa2Bxa.mjs",
+          "sha256": "dbe5fbb7add55f942834c40c7cf72e827c36a12f2e621c3ead39edf11932d918"
+        },
+        {
+          "name": "consoleStdin-D5q417Vc.mjs",
+          "sha256": "fb38101a06f513a271879c04a6736fa95ebdaf29fe93c2dc77e0728c9a76f1ac"
+        },
+        {
+          "name": "documentTextWorker-X2EIMqj8.mjs",
+          "sha256": "2a526a0c0f7193b26d97389ea6702e3c9306afe66bfb0483eccea512319392e8"
+        },
+        {
+          "name": "forge-guarded-host.mjs",
+          "sha256": "07417c289d2190f9a2d5e319978621ec77c24c511f01a1adfa4a403c013d5c2f"
+        },
+        {
+          "name": "managedChatGptToken-jVKIje5R.mjs",
+          "sha256": "243a368761a2b998920b5c8bc16e0735d21146f3175b5910ec8b83b946b953d7"
+        },
+        {
+          "name": "mcpResponsePayloads-BhY5hh3Q.mjs",
+          "sha256": "2a6c88bb19358d94926a281e78d703394144d6c106b948c2f5b7077a824fdbaf"
+        },
+        {
+          "name": "native-C_-xbgAx.mjs",
+          "sha256": "b0fbc77904a87ff7c9c366e43302cb33bb202abd1d8515d541929eedeaa22d9a"
+        },
+        {
+          "name": "native-IwHky4jN.mjs",
+          "sha256": "a8870ac9e9d38865ba6dd5edd3b45393759cc875b8450786a5da636235638b9d"
+        },
+        {
+          "name": "noCopyOnWrite-CiUe--I6.mjs",
+          "sha256": "029b9a41854ad729453398e305aee96d5a956c8a783fdc4ede66912a76c5663c"
+        },
+        {
+          "name": "outboundHttp-BsOM_gO4.mjs",
+          "sha256": "f7dde68b43fd9655f98897a0058b5f5e9e99caf19f780eb59b1fd7fc96a0d1b0"
+        },
+        {
+          "name": "outboundHttp-licDtJv9.mjs",
+          "sha256": "6191ae8ad44580ef78bd151141160130d3a7c68992acac3d6c89516a04537b41"
+        },
+        {
+          "name": "promise-RruFANOS.mjs",
+          "sha256": "0c3eb0ae99e344e09883b04f5247f5e8bd99e438c643f941cb369c25f86e7c8d"
+        },
+        {
+          "name": "relayTracing-C5KB72OU.mjs",
+          "sha256": "d1ccf6795f190cbd6c08bc06bcfa79ccc63dd6fe2333464e542b133d8b3bfade"
+        },
+        {
+          "name": "runtimeLayer-CCtF_Yhe.mjs",
+          "sha256": "b8cb4332ef46824c45292ef91c589dd8fd6aed4c7ef2aa68c6c8f7fc5052609f"
+        },
+        {
+          "name": "runtimeLayer-DyVsMpyW.mjs",
+          "sha256": "383233b2ccb9028c2c8ca18b7ee17a748f144633636a3d9bdb35f9befee9becf"
+        },
+        {
+          "name": "sdk-C3ea13Cc.mjs",
+          "sha256": "3e3f833221a6a1bb49aa9d494a540e16bd175771f6a3d46c30f44fcb65b20df5"
+        },
+        {
+          "name": "server-cvhSXRjY.mjs",
+          "sha256": "8d778e0e5890842ac87c880655d87d22898e1781b61242c5df0c46bbb31b6e7a"
+        },
+        {
+          "name": "service-probe-frbwqjmf-DxesH_h7.mjs",
+          "sha256": "8f3190d9bd440f32d87e69bf608cd791cef86bb9d4edbdd77e2bd734bdea03cc"
+        },
+        {
+          "name": "serviceLauncher-B3U0fwNX.mjs",
+          "sha256": "19025067368821713366696beb211ee0da8aa02bc00423711479feb5ed48dd3c"
+        },
+        {
+          "name": "serviceLauncher-Bc_Z7WLi.mjs",
+          "sha256": "1e2efa6fdba7bec5c7e63864165689662170d4ce3411faf60f49fe93e9596908"
+        },
+        {
+          "name": "serviceLauncher-DdNin5_8.mjs",
+          "sha256": "9c1be9d559f4380f0aedbded95594c84a92e0e1568d6a28d4a67f4c983715746"
+        },
+        {
+          "name": "upgrade-C6HDX5WI.mjs",
+          "sha256": "d44a161087e61d18f2b7d35a6dd021b1926a497fb20415c70cc5d7ab73aaf9be"
+        },
+        {
+          "name": "upgrade-Dhn0LEZD.mjs",
+          "sha256": "166a503f0c679a141170fd534ba27ebda87120966c65d9878ea1b424f7ff8349"
+        },
+        {
+          "name": "yauzl-FBCEDEFC.mjs",
+          "sha256": "a48e4782d869b85664ec490e5e05cebb410a499ded19cf74b686474fb06b1b9b"
+        }
+      ],
+      "runtimeNode": {
+        "name": "node.exe",
+        "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+      },
+      "profileSha256": "3494a3e4bce00e971a999fe51f5334d471e8d7a220db43e90f50f535314b0bf9"
+    },
+    "opencode": {
+      "revision": "6f0514052a3c859894ad01bb14cc14dda1e44b96",
+      "version": "2.4.1-forge-guarded.0",
+      "file": "opencode.exe",
+      "sha256": "309f61f0fc52f849256a9e4e26af55365da32d9ff4773f273bd6a186ae296def"
+    },
+    "fileBroker": {
+      "file": "ConfinedText.exe",
+      "version": 1,
+      "sourceSha256": "f5ee43d7d32c5b783359baec2984f22c25ffece380c5d28c9f1325547a5a58b2",
+      "binarySha256": "0c8a796db59f0829ac4b28b97be774523210f5ff99b7e6139e3fc442e8d2e08d",
+      "compilerSha256": "46809206887326d2d24db1eff1f3064de972c3451abe766b49111450a5e08e00",
+      "nativeQualification": null
+    },
+    "licenses": [
+      {
+        "name": "T3-LICENSE.txt",
+        "sha256": "935d8f2af0c703f9c39517ee57cc4930b19d02d533be930b63f0e82f93614b43"
+      },
+      {
+        "name": "OPENCODE-LICENSE.txt",
+        "sha256": "625f0f619133f89bbbb2abe37369613dfa1885eba1e50d02170deb62bb42cb6b"
+      }
+    ],
+    "patches": [
+      {
+        "source": "opencode",
+        "file": "packages/core/src/forge-guard.ts",
+        "before": null,
+        "after": "9bfb97d77b7dbf7e1971fb77fe1ca109fc36d56c6442fa384cf73a9ae0503b13"
+      },
+      {
+        "source": "opencode",
+        "file": "packages/core/src/forge-bootstrap.ts",
+        "before": null,
+        "after": "cc0ae430802dd2b639597d59de36a3588249dea8971e04e1563bbd4a1d11b370"
+      },
+      {
+        "source": "opencode",
+        "file": "packages/server/src/forge-attest.ts",
+        "before": null,
+        "after": "d7d3e67c979641705e6ea826b94c19b70e872d169155c831ff0bc5a5d49e7643"
+      },
+      {
+        "source": "opencode",
+        "file": "packages/core/src/tool/runtime.ts",
+        "before": "85bcfde3554941130353d61e7f32fd6d69c0b0de2eaf4ee212b68bc66581f0f1",
+        "after": "c51486d115905ed7a445e653be92e0e4168246ae7fe485f668b3d57a75a0b4b6"
+      },
+      {
+        "source": "opencode",
+        "file": "packages/core/src/tool.ts",
+        "before": "b17480e66ee6b1dca20be08b3c59c8bd2b359d4e74eef8e1680792886490121e",
+        "after": "40f02e5ba6c6423e25e9c4508108ed2e7545f61041a265f2d313a86cf7a0b8f8"
+      },
+      {
+        "source": "opencode",
+        "file": "packages/core/src/config/plugin/instruction.ts",
+        "before": "497b9f266c4f95ee44b6b879b10f3b653f427c3ebb9d53908899f08c68e417ff",
+        "after": "e4738dbe5cedfb662942671f17e173526b8639f01d9aaeacaeb2e61806525a86"
+      },
+      {
+        "source": "opencode",
+        "file": "packages/core/src/config/plugin/agent.ts",
+        "before": "911b81c0338c4d2f8f5fb8cc25e56a75d50261fb79a55cd343ba1e104c12c822",
+        "after": "76d7853e69f91631ec21abfce75f558acede3b98330dd6d4a97ee4ffc42c7334"
+      },
+      {
+        "source": "opencode",
+        "file": "packages/core/src/config/plugin/skill.ts",
+        "before": "114c3ac6be02289b6736159a5e80a9bb3abff39eca763b3f47106bb651c27023",
+        "after": "6437afc4ff24127659321092e6b580881c33afd65264688b32e11c1658072da4"
+      },
+      {
+        "source": "opencode",
+        "file": "packages/core/src/config/plugin/command.ts",
+        "before": "84e73b376adf1fdf57c5ada482779245a4603bae37db5669621f0e260778c943",
+        "after": "12c77143bf89fa7bb471cbca03d4d5b2a7475fc629fe084655db2e76168a59be"
+      },
+      {
+        "source": "opencode",
+        "file": "packages/core/src/session/prompt.ts",
+        "before": "e829ad71c25cb43f48935245bf797bde6e3a490b4217cade2e99cb158db59c3d",
+        "after": "502490f48b86578fca197d1448d603fd9f79e6d0931890d99d742880b3346dbb"
+      },
+      {
+        "source": "opencode",
+        "file": "packages/core/src/config.ts",
+        "before": "192e96259a94604defd99f8971df915df829567dace08a58d7cafbeaee35e51a",
+        "after": "708f6387064118ddbcb4105412e9b80de30ab3a7e02a62f5b5960ebe6919398e"
+      },
+      {
+        "source": "opencode",
+        "file": "packages/core/src/plugin/module.ts",
+        "before": "b86b6f84b06ba89796618ee36db1bcb7364200107fa80e0f31296645804a1bb2",
+        "after": "c59cb415fdb610c8340d5bbeb1fd24aafb3093641cff1781f6c556759592cc1e"
+      },
+      {
+        "source": "opencode",
+        "file": "packages/core/src/mcp/index.ts",
+        "before": "dc93b07dd0a0323922dde7b6255cfe09de7d9ece69c403143c98b2881dcd86b6",
+        "after": "a9ddfe61c0cc34b8e405f23f93677a2b6bcf89ddedd37d4cd187fe7e0ba07aca"
+      },
+      {
+        "source": "opencode",
+        "file": "packages/core/src/tool/mcp.ts",
+        "before": "eead09dddf29082187cc293e63510b578b568d0cc489fd5a6f366cac51e3ca34",
+        "after": "95ab7c91b35c851ed13532f9044404fca7a622e0ee28365eda30482df44e00fe"
+      },
+      {
+        "source": "opencode",
+        "file": "packages/core/src/session/context.ts",
+        "before": "6222ef8e6b3763b09272c30f436be48e35065807ae0a6a408383add65471fdb8",
+        "after": "ff27d359c97d661921b20d05eeff8b386b5d60da0300b9a16c17f0c27d6a46fc"
+      },
+      {
+        "source": "opencode",
+        "file": "packages/core/src/session/model-request.ts",
+        "before": "7653df3f7fdc679245fe85f0b135f4a0219f996833d10292b1dedd80095bdc7d",
+        "after": "a69957ea3ea2c4a2120648a7ab168a6229240fac4c08ce5c27adfe6f6b0bf408"
+      },
+      {
+        "source": "opencode",
+        "file": "packages/core/src/session.ts",
+        "before": "89eccc3b3fe6d71b4d74a8e4b5f0d693912fb12658b07f08e26be4684eb41076",
+        "after": "06ec40bc34e8589bbf4e180ae03fa697416c6308f8a7a01cc37e3b024638bd53"
+      },
+      {
+        "source": "opencode",
+        "file": "packages/server/src/routes.ts",
+        "before": "7064313bff265ea0e42fec7f36d68ed43d1fcfeaae77f9beb59997c86d5d0a5d",
+        "after": "675985683cf19fa44273aebaed954382d70524e2764c8e5a8c2e104b9962054b"
+      },
+      {
+        "source": "t3",
+        "file": "packages/provider-core/src/server/forgeGuard.ts",
+        "before": null,
+        "after": "b08a98fb2865752d31d2a4d85cc4ce0a98d397f1286222544b9894771fd52bd4"
+      },
+      {
+        "source": "t3",
+        "file": "apps/server/src/forge-guarded-host.ts",
+        "before": null,
+        "after": "650621442cbe5165fa65a7aa4b5bcd94f44326a10e3290796acdd717f3cdb9e1"
+      },
+      {
+        "source": "t3",
+        "file": "apps/server/vite.config.ts",
+        "before": "d5198593f4e680acd992de43ffc397e24dc7d773ef0ef0d222fe7973653bceaf",
+        "after": "bf3c46a7bf3f137ef86c68f86de49b447748ae7e04482e0f1f7b2be7bffbcca9"
+      },
+      {
+        "source": "t3",
+        "file": "packages/provider-core/src/server/ProviderAdapter.ts",
+        "before": "b225b3b85516c27913c6a68b49b98c36b36ec5ceb0f4cd152661741a3f498d9e",
+        "after": "f4ecaf852030b3c970455405a2c6815173a57bcc21acf290864d2c07d534b332"
+      },
+      {
+        "source": "t3",
+        "file": "apps/server/src/orchestration-v2/RuntimePolicy.ts",
+        "before": "98f3d63b87b22887643d57556bae8b4b784fae7c02021b392923a128535b7140",
+        "after": "1583f31c0513505604a99fba896e0b7c39e718e48f4287e380c8e976d9f11000"
+      },
+      {
+        "source": "t3",
+        "file": "packages/provider-opencode/src/server/v2/OpenCode2Server.ts",
+        "before": "06475872136a6445b66fb14985b46b5c3442863738d46427492e9f81bef36d6f",
+        "after": "0d6448c56aa4080f957e6ddd7fb5ee5e5ae436726fa522417b03a3633fc210e6"
+      },
+      {
+        "source": "t3",
+        "file": "packages/provider-opencode/src/server/v2/adapter.ts",
+        "before": "a0fabe9941e9edf1e4502f60a4763d7447a4e6b86645901f630039ca9f11d470",
+        "after": "e36db2899354711abeebbb9dc52b324d2fd3b27d2490d07a4e16b32900f68e2e"
+      }
+    ]
+  },
+  "observedVersion": "opencode v2.4.1-forge-guarded.0",
+  "checks": {
+    "node24Completed": {
+      "runtimeNode": "24.19.0",
+      "installationProviderTurns": 0,
+      "nativeNegatives": 17,
+      "t3Negatives": 2,
+      "reserveOrphanDenied": true,
+      "ownerProviderProtocolRequests": 1,
+      "actualTerminal": "completed",
+      "nativeTurnRefStrength": "weak",
+      "eventTypes": [
+        "provider_turn.updated",
+        "provider_thread.updated",
+        "provider_session.updated",
+        "node.updated",
+        "message.updated",
+        "turn_item.updated",
+        "turn.terminal"
+      ],
+      "proofAfterStop": null
+    },
+    "node24StopDuringRequest": {
+      "runtimeNode": "24.19.0",
+      "installationProviderTurns": 0,
+      "nativeNegatives": 17,
+      "t3Negatives": 2,
+      "reserveOrphanDenied": true,
+      "ownerProviderProtocolRequests": 1,
+      "actualTerminal": "interrupted",
+      "nativeTurnRefStrength": "weak",
+      "eventTypes": [
+        "provider_turn.updated",
+        "provider_thread.updated",
+        "provider_session.updated",
+        "turn.terminal"
+      ],
+      "proofAfterStop": null
+    },
+    "compiledT3Cli": {
+      "version": 1,
+      "scope": "actual compiled native engineering protocol only; no external provider/account/model quality or product activation",
+      "actualCompiledCli": "PASS",
+      "binarySha256": "309f61f0fc52f849256a9e4e26af55365da32d9ff4773f273bd6a186ae296def",
+      "requests": 15,
+      "negative": [
+        "account",
+        "provider",
+        "model",
+        "options",
+        "binary",
+        "policy",
+        "manifest",
+        "context",
+        "expired",
+        "stopped",
+        "revoked",
+        "file-context",
+        "foreign-session"
+      ],
+      "advertisedTools": [
+        "forge_guarded_edit_text",
+        "forge_guarded_propose_change",
+        "forge_guarded_read_text"
+      ],
+      "nativeGateNegatives": 17,
+      "untrustedExecutorEffects": 0,
+      "proof": null
+    },
+    "windowsBrokerTests": {
+      "command": "node --test tests/guarded-runtime-broker.test.mjs tests/guarded-runtime-host.test.mjs",
+      "observedInEngineeringSession": {
+        "passed": 9,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    "standalonePrivateEntry": {
+      "runtimeNode": "24.19.0",
+      "observedInEngineeringSession": "PASS without node_modules/source ancestors"
+    }
+  },
+  "sourcePatchDigest": "18ae81444cbb94948c977dd319f675f58433bf6f714412587f2029e67b230479"
+}

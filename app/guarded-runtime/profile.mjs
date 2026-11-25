@@ -24,11 +24,15 @@ export function checkProfile(p,now=Date.now()){
   if(p.version!==1||!Number.isSafeInteger(p.expiresAt)||p.expiresAt<=now)fail('PROFILE_EXPIRED');
   for(const k of ['projectId','taskId','runId','threadId','policyGeneration','toolGeneration'])if(typeof p[k]!=='string'||!p[k]||p[k].length>200)fail('PROFILE_INVALID');
   for(const k of ['envelopeDigest','identitySnapshot','manifestDigest','contextDigest'])if(!/^[a-f0-9]{64}$/.test(p[k]))fail('PROFILE_INVALID');
-  exact(p.route,['providerInstanceId','providerImplementation','accountGeneration','modelId','options','t3Revision','opencodeRevision','t3BinarySha256','opencodeBinarySha256']);
-  for(const k of ['providerInstanceId','providerImplementation','accountGeneration','modelId'])if(typeof p.route[k]!=='string'||!p.route[k]||p.route[k].length>300)fail('ROUTE_INVALID');
+  exact(p.route,['providerInstanceId','apiProviderId','providerImplementation','accountGeneration','modelId','options','t3Revision','opencodeRevision','t3BinarySha256','opencodeBinarySha256']);
+  for(const k of ['providerInstanceId','apiProviderId','providerImplementation','accountGeneration','modelId'])if(typeof p.route[k]!=='string'||!p.route[k]||p.route[k].length>300)fail('ROUTE_INVALID');
   if(p.route.providerImplementation!=='opencode2-api'||p.route.t3Revision!=='59651c1761f6c63e9b6056839067066968e6a406'||p.route.opencodeRevision!=='6f0514052a3c859894ad01bb14cc14dda1e44b96')fail('ROUTE_UNSUPPORTED');
   for(const k of ['t3BinarySha256','opencodeBinarySha256'])if(!/^[a-f0-9]{64}$/.test(p.route[k]))fail('ROUTE_INVALID');
   canonical(p.route.options);
+  if(Array.isArray(p.route.options)){
+    if(p.route.options.length>1)fail('ROUTE_OPTIONS_UNSUPPORTED');
+    for(const option of p.route.options){exact(option,['id','value']);if(option.id!=='variant'||typeof option.value!=='string'||!option.value||option.value.length>200)fail('ROUTE_OPTIONS_UNSUPPORTED');}
+  }else if(!p.route.options||Object.keys(p.route.options).length)fail('ROUTE_OPTIONS_UNSUPPORTED');
   exact(p.scope,['paths','capabilities','maxBytes']);
   if(!Array.isArray(p.scope.paths)||!p.scope.paths.length||p.scope.paths.length>32)fail('SCOPE_INVALID');
   p.scope.paths.forEach(x=>x==='.'?null:relativeTextPath(x));

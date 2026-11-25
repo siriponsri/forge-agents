@@ -12,7 +12,7 @@ import {createBoundedBroker} from './broker.mjs';
  * host must atomically mutate Stop/policy/route under the SAME withFence used
  * by receive. Merely supplying this bridge/config cannot create evidence.
  */
-export function createGuardedHostBridge({readRunState,observeRoute,observeManifest,observeContext,observePolicyGeneration,binaries,snapshot,proofForRun,ordinaryGovernance,withFence,clock=Date.now}){
+export function createGuardedHostBridge({readRunState,observeRoute,observeManifest,observeContext,observePolicyGeneration,binaries,snapshot,proofForRun,ordinaryGovernance,withFence,recordReceipt,clock=Date.now}){
   for(const fn of [readRunState,observeRoute,observeManifest,observeContext,observePolicyGeneration,snapshot,proofForRun,ordinaryGovernance,withFence])if(typeof fn!=='function')fail('HOST_BRIDGE_REQUIRED');
   if(!binaries?.t3||!binaries?.opencode)fail('OBSERVED_BINARIES_REQUIRED');
   const sync=(fn,...args)=>{const value=fn(...args);if(value?.then)fail('SYNCHRONOUS_OBSERVATION_REQUIRED');return value;};
@@ -34,8 +34,9 @@ export function createGuardedHostBridge({readRunState,observeRoute,observeManife
       // bind() alone has no effect authority; force actual observations/proof
       // now too, and repeat inside every action while canonical fence is held.
       const handle=authority.bind(profile);authority.assert(handle);
-      const broker=createBoundedBroker({authority,handle,key,file,receiptPath,withFence,authorize:admit});
-      return Object.freeze({profileHandle:handle,assertCurrent:()=>authority.assert(handle),receive:broker.receive,close:broker.close});
+      if(typeof recordReceipt!=='function')fail('CANONICAL_RECEIPT_OWNER_REQUIRED');
+      const broker=createBoundedBroker({authority,handle,key,file,receiptPath,withFence,authorize:admit,recordReceipt});
+      return Object.freeze({profileHandle:handle,assertCurrent:()=>authority.assert(handle),receive:broker.receive,readReceipt:broker.readReceipt,close:broker.close});
     },
   });
 }

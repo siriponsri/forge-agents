@@ -1,0 +1,14 @@
+// Sanitized engineering record, never consumed by runtime authority/qualifiers.
+import {readFile,writeFile} from 'node:fs/promises';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {digest} from '../../app/guarded-runtime/profile.mjs';
+const cache=path.resolve(process.argv[2]),read=async name=>JSON.parse(await readFile(path.join(cache,name),'utf8'));
+const manifest=await read('artifact-manifest.json'),complete=await read('supervisor-current-report.json'),stop=await read('supervisor-current-stop-report.json'),cli=await read('cli-fixture-report.json'),probe=await read('binary-probe.json');
+for(const [record,outcome] of [[complete,'completed'],[stop,'interrupted']]){
+  const r=record.result;if(record.exitCode!==0||r.actualTerminal!==outcome||r.runtimeNode!=='24.19.0'||r.t3BinarySha256!==manifest.t3.profileSha256||r.opencodeBinarySha256!==manifest.opencode.sha256||r.fileBrokerBinarySha256!==manifest.fileBroker.binarySha256||r.nativeNegatives!==17||r.t3Negatives!==2||r.installationProviderTurns!==0||r.ownerProviderProtocolRequests!==1||r.proofAfterStop!==null)throw Error('REFUSE_UNMATCHED_NATIVE_EVIDENCE');
+}
+if(cli.actualCompiledCli!=='PASS'||cli.binarySha256!==manifest.opencode.sha256||cli.requests!==15||cli.untrustedExecutorEffects!==0||cli.nativeGateNegatives!==17||probe.exitCode!==0||probe.binarySha256!==manifest.opencode.sha256)throw Error('REFUSE_UNMATCHED_CLI_EVIDENCE');
+const summarize=r=>({runtimeNode:r.runtimeNode,installationProviderTurns:r.installationProviderTurns,nativeNegatives:r.nativeNegatives,t3Negatives:r.t3Negatives,reserveOrphanDenied:r.reserveOrphanDenied,ownerProviderProtocolRequests:r.ownerProviderProtocolRequests,actualTerminal:r.actualTerminal,nativeTurnRefStrength:r.nativeTurnRef.strength,eventTypes:r.eventTypes,proofAfterStop:r.proofAfterStop});
+const result={version:1,date:'2026-11-25',scope:'isolated actual compiled native engineering qualification only',productActivation:false,realProviderOrAccountTurn:false,homeUat:'NOT_RUN',proof:null,automaticExecutionQualified:false,artifactInventory:{...manifest,purpose:'checked engineering artifacts; rehash and live-qualify after packaging'},observedVersion:probe.observedVersion,checks:{node24Completed:summarize(complete.result),node24StopDuringRequest:summarize(stop.result),compiledT3Cli:cli,windowsBrokerTests:{command:'node --test tests/guarded-runtime-broker.test.mjs tests/guarded-runtime-host.test.mjs',observedInEngineeringSession:{passed:9,failed:0,skipped:0}},standalonePrivateEntry:{runtimeNode:'24.19.0',observedInEngineeringSession:'PASS without node_modules/source ancestors'}},sourcePatchDigest:digest(manifest.patches)};
+const output=fileURLToPath(new URL('../../app/guarded-runtime/qualification-evidence.json',import.meta.url));await writeFile(output,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({output,sourcePatchDigest:result.sourcePatchDigest,proof:null}));

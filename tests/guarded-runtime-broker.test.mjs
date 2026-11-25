@@ -7,14 +7,14 @@ import {randomBytes} from 'node:crypto';
 import {buildWindows} from '../tools/guarded-runtime/build-windows.mjs';
 import {openConfinedText} from '../app/guarded-runtime/windows-client.mjs';
 import {createProfileAuthority,digest,bytesDigest} from '../app/guarded-runtime/profile.mjs';
-import {createBoundedBroker,signRequest} from '../app/guarded-runtime/broker.mjs';
+import {createBoundedBroker,signRequest,inspectGuardedReceipt} from '../app/guarded-runtime/broker.mjs';
 import {createNativeGate,qualifyGuardedRuntime} from '../app/guarded-runtime/gate.mjs';
 
 export function profile(){
   const hash='a'.repeat(64);
-  return {version:1,projectId:'project',taskId:'task',runId:'run',threadId:'thread',envelopeDigest:hash,identitySnapshot:hash,scope:{paths:['allowed'],capabilities:['read','propose','workspace.write'],maxBytes:65536},route:{providerInstanceId:'fixture-only',providerImplementation:'opencode2-api',accountGeneration:'no-account',modelId:'no-model-turn',options:{},t3Revision:'59651c1761f6c63e9b6056839067066968e6a406',opencodeRevision:'6f0514052a3c859894ad01bb14cc14dda1e44b96',t3BinarySha256:hash,opencodeBinarySha256:hash},policyGeneration:'1',toolGeneration:'1',manifestDigest:hash,contextDigest:hash,expiresAt:Date.now()+60000};
+  return {version:1,projectId:'project',taskId:'task',runId:'run',threadId:'thread',envelopeDigest:hash,identitySnapshot:hash,scope:{paths:['allowed'],capabilities:['read','propose','workspace.write'],maxBytes:65536},route:{providerInstanceId:'fixture-only',apiProviderId:'fixture-api',providerImplementation:'opencode2-api',accountGeneration:'no-account',modelId:'no-model-turn',options:{},t3Revision:'59651c1761f6c63e9b6056839067066968e6a406',opencodeRevision:'6f0514052a3c859894ad01bb14cc14dda1e44b96',t3BinarySha256:hash,opencodeBinarySha256:hash},policyGeneration:'1',toolGeneration:'1',manifestDigest:hash,contextDigest:hash,expiresAt:Date.now()+60000};
 }
-async function fixture(){
+async function fixture(overrides={}){
   const root=await mkdtemp(path.join(os.tmpdir(),'forge-guarded-fixture-'));
   const workspace=path.join(root,'workspace');await mkdir(path.join(workspace,'allowed'),{recursive:true});
   await writeFile(path.join(workspace,'allowed','a.txt'),'before');await writeFile(path.join(root,'outside.txt'),'OUTSIDE');
@@ -27,7 +27,7 @@ async function fixture(){
   const authorize=()=>!stopPending;
   let fence=Promise.resolve();
   const withFence=(run,fn)=>{const next=fence.then(fn);fence=next.catch(()=>{});return next;};
-  const options={authority,handle,key,file,receiptPath:path.join(root,'receipts.sqlite'),withFence,authorize};
+  const options={authority,handle,key,file,receiptPath:path.join(root,'receipts.sqlite'),withFence,authorize,...overrides};
   let broker=createBoundedBroker(options);
   const request=(operationId,request,change={})=>signRequest(key,{version:1,runId:'run',operationId,request,...change});
   return {root,workspace,file,authority,handle,key,options,request,get live(){return live;},get broker(){return broker;},stop(){return withFence('run',()=>{live.stopped=true;});},setStopPending(){stopPending=true;},async restart(){await broker.close();const nextFile=await openConfinedText({...build,root:workspace});broker=createBoundedBroker({...options,file:nextFile});},async close(){await broker.close();await rm(root,{recursive:true,force:true});}};
@@ -104,7 +104,40 @@ test('durable unknown outcome is never auto-replayed after a lost effect acknowl
     assert.equal(await readFile(path.join(f.workspace,'allowed/a.txt'),'utf8'),'once');
     const recovered=createBoundedBroker({...f.options,receiptPath:path.join(f.root,'lost.sqlite'),file:{...original,close(){}}});
     await assert.rejects(recovered.receive(req),{code:'OUTCOME_UNKNOWN'});await recovered.close();
+    const unknown=inspectGuardedReceipt({receiptPath:path.join(f.root,'lost.sqlite'),runId:'run',operationId:'lost'});
+    assert.equal(unknown.status,'unknown');assert.equal(unknown.receipt,null);assert.equal('text' in unknown,false);
     assert.equal(await readFile(path.join(f.workspace,'allowed/a.txt'),'utf8'),'once');
+  }finally{await f.close();}
+});
+
+test('Stop arriving while native handles are being acquired fences the next effect',windows,async()=>{
+  const f=await fixture();try{
+    const file=f.options.file;
+    const racing=createBoundedBroker({...f.options,receiptPath:path.join(f.root,'stop-race.sqlite'),file:{close(){},async command(x){const result=await file.command(x);if(x.op==='prepare')f.live.stopped=true;return result;}}});
+    const req=f.request('stop-race',{tool:'edit_text',path:'allowed/a.txt',expectedRevision:bytesDigest('before'),text:'BAD'});
+    await assert.rejects(racing.receive(req),{code:'PROFILE_REVOKED'});f.live.stopped=false;
+    await assert.rejects(racing.receive(req),{code:'OUTCOME_UNKNOWN'});await racing.close();
+    assert.equal(await readFile(path.join(f.workspace,'allowed/a.txt'),'utf8'),'before');
+  }finally{await f.close();}
+});
+
+test('durable completed owner receipt survives callback lost acknowledgement without repeating the edit',windows,async()=>{
+  let lost=true;const owner=new Map();
+  const f=await fixture({recordReceipt(receipt){if(lost)throw Error('OWNER_LOST_ACK');owner.set(receipt.id,receipt);}});
+  try{
+    const req=f.request('owner-receipt',{tool:'edit_text',path:'allowed/a.txt',expectedRevision:bytesDigest('before'),text:'once'});
+    await assert.rejects(f.broker.receive(req),/OWNER_LOST_ACK/);
+    assert.equal(await readFile(path.join(f.workspace,'allowed/a.txt'),'utf8'),'once');
+    const durable=f.broker.readReceipt('owner-receipt');assert.equal(durable.status,'completed');
+    assert.equal(durable.receipt.runId,'run');assert.equal(durable.receipt.afterRevision,bytesDigest('once'));
+    assert.equal(durable.receipt.profileDigest,digest(f.live.profile));assert.equal(durable.receipt.effect,true);
+    // A replay must retain its receipt while leaving subsequent file changes alone.
+    await writeFile(path.join(f.workspace,'allowed/a.txt'),'subsequent');lost=false;
+    assert.equal((await f.broker.receive(req)).replayed,true);await f.restart();
+    assert.equal((await f.broker.receive(req)).replayed,true);assert.equal(owner.size,1);
+    await f.stop();const recovery=inspectGuardedReceipt({receiptPath:f.options.receiptPath,runId:'run',operationId:'owner-receipt'});
+    assert.equal(recovery.receipt.id,durable.receipt.id);assert.equal('text' in recovery,false);
+    assert.equal(await readFile(path.join(f.workspace,'allowed/a.txt'),'utf8'),'subsequent');
   }finally{await f.close();}
 });
 
