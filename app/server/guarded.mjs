@@ -7,7 +7,7 @@ import {installT3GuardedHost} from '../guarded-runtime/t3-host.mjs';
 import {createGuardedRuntimeHost} from '../guarded-runtime/runtime-host.mjs';
 import {createGuardedInstallationHost} from '../guarded-runtime/installation-host.mjs';
 import {boundedToolSchemas} from '../guarded-runtime/transport.mjs';
-import {inspectGuardedReceipt} from '../guarded-runtime/broker.mjs';
+import {inspectGuardedReceipt,inspectGuardedOperations} from '../guarded-runtime/broker.mjs';
 import {checkProfile,canonical,digest,exact,fail} from '../guarded-runtime/profile.mjs';
 
 const clone=structuredClone;
@@ -25,7 +25,7 @@ function physical(file){let p=path.resolve(file);for(;;){try{return path.resolve
  * native events into its existing domain/AG-UI via onEvent. No ordinary T3
  * controller, provider registry, credentials or legacy launcher is modified.
  */
-export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeOwner,resolveProvider,observeSelectedRoute,validateAdmission,onEvent,onReceipt,clock=Date.now}={}){
+export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeOwner,resolveProvider,observeSelectedRoute,validateAdmission,onEvent,onReceipt,onNativePhase,onBeforeAction,clock=Date.now}={}){
   if(!store||typeof store.read!=='function'||typeof store.transaction!=='function'||!path.isAbsolute(dataDir??''))fail('GUARDED_STORE_REQUIRED');
   const privateRoot=path.join(dataDir,'guarded-private'),installedArtifacts={},checks=new Map(),entries=new Map(),preparedValues=new WeakMap(),fenced=new AsyncLocalStorage();
   let closed=false,artifactIdentity,artifactPromise,reservation=null;
@@ -98,6 +98,19 @@ export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeO
       if(r.status!=='running'||turn?.status!=='running'||turn.runAttemptId!==r.attemptId||turn.nodeId!==r.rootNodeId||turn.providerThreadId!==e.providerThread?.id)fail('GUARDED_RUNNING_OBSERVATION_REQUIRED');
       current(e,s,'action',{...action,attestation:clone(attestation)});return true;
     },
+    authorizeNativePhase({profile,workspace,...detail}){
+      if(!onNativePhase)return true;
+      const s=frame();if(!s)fail('GUARDED_FENCE_REQUIRED');const e=entries.get(profile.runId);
+      if(e?.workspace!==workspace)return false;
+      const run=current(e,s,'current');
+      return sync(onNativePhase,s,{run,profile:clone(profile),workspace,...clone(detail)})===true;
+    },
+    beforeAction:onBeforeAction?({profile,workspace,attestation,...detail})=>{
+      const s=frame();if(!s)fail('GUARDED_FENCE_REQUIRED');const e=entries.get(profile.runId);
+      if(e?.workspace!==workspace||!same(attestation,e.attestation))fail('GUARDED_RUN_ATTESTATION_REQUIRED');
+      const run=current(e,s,'action',{capability:detail.capability,path:detail.path,attestation:clone(attestation)});
+      if(sync(onBeforeAction,s,{run,profile:clone(profile),workspace,attestation:clone(attestation),...clone(detail)})!==undefined)fail('GUARDED_ACTION_CALLBACK_REQUIRED');
+    }:undefined,
     recordReceipt(receipt){
       const s=frame();if(!s)fail('GUARDED_FENCE_REQUIRED');const e=entries.get(receipt.runId),run=current(e,s,'action',{capability:receipt.capability,path:receipt.path,attestation:clone(e.attestation)});
       if(receipt.owner!=='guarded-file-broker'||receipt.profileDigest!==digest(e.context.profile))fail('GUARDED_RECEIPT_CHANGED');
@@ -255,6 +268,12 @@ export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeO
       privatePaths(s);
       const receiptPath=path.join(privateRoot,'runs',c.storageId,'effects','effects.sqlite');
       return inspectGuardedReceipt({receiptPath,runId,operationId});
+    },
+    inspectOperations(runId){
+      const s=store.read(),r=findRun(s,runId),c=r.guardedContext;
+      if(c?.profile?.runId!==runId||!/^[a-f0-9-]{36}$/.test(c.storageId??''))fail('GUARDED_CONTEXT_REQUIRED');
+      privatePaths(s);
+      return inspectGuardedOperations({receiptPath:path.join(privateRoot,'runs',c.storageId,'effects','effects.sqlite'),runId});
     },
     async close(){if(closed)return;closed=true;for(const e of entries.values())e.revoked=true;await Promise.allSettled([...entries.values()].map(e=>cleanup(e,'shutdown')));await Promise.allSettled([...checks.values()].filter(c=>c.handle).map(c=>c.host.close(c.handle)));checks.clear();},
   };

@@ -54,7 +54,7 @@ export function createResearchService({store,dataDir,executionOwner,authorizeOwn
     let {t,e,adapter}=readTrial(i);const start=performance.now();
     if(t.stopRequested||t.restoreReviewRequired)fail('RESEARCH_CONTEXT','Trial is stopped or requires restore review',409);
     if(!['reserved','interrupted'].includes(t.status))fail('RESEARCH_STATE','A local trial must be reserved or explicitly interrupted',409);
-    if(!t.startedAt)await update(i,t=>{t.startedAt=clock();t.deadlineAt=clock()+t.manifest.limits.maxMs;});
+    if(!t.startedAt)await update(i,t=>{const startedAt=clock();t.startedAt=startedAt;t.deadlineAt=startedAt+t.manifest.limits.maxMs;});
     const dir=await trialDirectory(dataDir,t.id,{create:true});
     if(t.prepared){await verifyCheckpoint(t,dir);const input=await readFixed(dir,'input.json',t.manifest.limits.maxBytes);if(input.sha256!==t.prepared.inputDigest)fail('RESEARCH_SPLIT','Trial input bytes changed',409);}
     else{
@@ -156,7 +156,7 @@ export function createResearchService({store,dataDir,executionOwner,authorizeOwn
       if(t.manifest.execution==='local')return localExecution(i);
       if(!supported())fail('RESEARCH_OWNER_INTEGRATION','Existing owner integration required',409);
       if(t.status!=='reserved'||t.stopRequested||t.restoreReviewRequired)fail('RESEARCH_STATE','Trial is no longer admissible',409);
-      await update(i,t=>{t.status='dispatching';t.startedAt=clock();t.deadlineAt=clock()+t.manifest.limits.maxMs;t.dispatchAcknowledged=true;});
+      await update(i,t=>{t.status='dispatching';const startedAt=clock();t.startedAt=startedAt;t.deadlineAt=startedAt+t.manifest.limits.maxMs;t.dispatchAcknowledged=true;});
       try{const context=buildResearchContext(store.read(),{projectId:i.projectId,trialId:t.id});await executionOwner.dispatch({projectId:i.projectId,trialId:t.id,experimentId:t.manifest.experimentId,taskId:t.manifest.taskId,workspaceId:t.manifest.workspaceId,runOperationId:t.runOperationId,researchContext:context,policy:decideResearchPolicy({policy:t.manifest.policy,components:t.manifest.components,limits:t.manifest.limits,step:0})},caller);return await reconcileAgent(i,caller);}
       catch(error){return update(i,t=>{t.status='reconcile-required';t.error={code:error.code??'OUTCOME_UNKNOWN',message:redact(String(error.message)).slice(0,2000)};});}
     }));},

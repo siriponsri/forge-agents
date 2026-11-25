@@ -13,6 +13,12 @@ export function inspectGuardedReceipt({receiptPath,runId,operationId}){
   try{const row=db.prepare('SELECT request_hash,status,result FROM guarded_receipts WHERE run=? AND operation=?').get(runId,operationId);return row?{runId,operationId,requestDigest:row.request_hash,status:row.status,receipt:row.result?JSON.parse(row.result).receipt:null}:null;}
   finally{db.close();}
 }
+export function inspectGuardedOperations({receiptPath,runId}){
+  if(typeof runId!=='string'||!runId)fail('RECEIPT_ID_REQUIRED');
+  const db=new DatabaseSync(receiptPath,{readOnly:true});
+  try{return db.prepare('SELECT operation,request_hash,status FROM guarded_receipts WHERE run=? ORDER BY operation').all(runId).map(row=>({runId,operationId:row.operation,requestDigest:row.request_hash,status:row.status}));}
+  finally{db.close();}
+}
 
 /** Private inbound transport handler, not an HTTP/MCP install endpoint.
  * Host must serialize Stop/revoke/profile/policy mutations with withFence, and
@@ -20,8 +26,9 @@ export function inspectGuardedReceipt({receiptPath,runId,operationId}){
  * authorization callbacks; read current canonical state inside the fence twice.
  * Database path belongs to host's protected local state, outside editable scope.
  */
-export function createBoundedBroker({authority,handle,key,file,receiptPath,withFence,authorize,recordReceipt=()=>{}}){
+export function createBoundedBroker({authority,handle,key,file,receiptPath,withFence,authorize,beforeAction,recordReceipt=()=>{}}){
   if(!Buffer.isBuffer(key)||key.length!==32||typeof withFence!=='function'||typeof authorize!=='function')fail('BROKER_HOST_REQUIRED');
+  if(beforeAction!==undefined&&typeof beforeAction!=='function')fail('BROKER_HOST_REQUIRED');
   const secret=Buffer.from(key),bound=authority.assert(handle);
   const db=new DatabaseSync(receiptPath);db.exec('PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL; CREATE TABLE IF NOT EXISTS guarded_receipts (run TEXT NOT NULL, operation TEXT NOT NULL, request_hash TEXT NOT NULL, status TEXT NOT NULL, result TEXT, PRIMARY KEY(run,operation));');
   const get=db.prepare('SELECT * FROM guarded_receipts WHERE run=? AND operation=?');
@@ -55,6 +62,10 @@ export function createBoundedBroker({authority,handle,key,file,receiptPath,withF
         if(previous.status!=='completed')fail('OUTCOME_UNKNOWN');
         const result=JSON.parse(previous.result);try{if(recordReceipt(result.receipt)!==undefined)fail('SYNCHRONOUS_RECEIPT_OWNER_REQUIRED');}catch{fail('OUTCOME_UNKNOWN');}
         return {...result,replayed:true};
+      }
+      if(beforeAction){
+        const priorOperations=db.prepare('SELECT operation,request_hash,status FROM guarded_receipts WHERE run=?').all(bound.runId).map(row=>({runId:bound.runId,operationId:row.operation,requestDigest:row.request_hash,status:row.status}));
+        if(beforeAction({profile:p,runId:bound.runId,operationId:envelope.operationId,requestDigest:requestHash,tool:request.tool,path:request.path,capability:{read_text:'read',propose_change:'propose',edit_text:'workspace.write'}[request.tool],priorOperations})!==undefined)fail('SYNCHRONOUS_ACTION_OWNER_REQUIRED');
       }
       // Persist uncertainty BEFORE opening a path or returning data. Any crash,
       // failed ack, validation or partially completed edit leaves no retry grant.

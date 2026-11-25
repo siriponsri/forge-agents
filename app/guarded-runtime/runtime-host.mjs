@@ -14,9 +14,10 @@ import {openLocalGateway} from './local-gateway.mjs';
  * sends a provider/model request. `attest` invokes the actual native gate probe.
  * No API here is mounted on HTTP/MCP or accepts model-owned configuration.
  */
-export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,authorizeCurrent,authorizeAction,recordReceipt,withFence,artifacts,clock=Date.now}){
+export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,authorizeCurrent,authorizeAction,authorizeNativePhase,beforeAction,recordReceipt,withFence,artifacts,clock=Date.now}){
   assertInstalledT3Host(t3Host);
   if(![readRun,validateReservation,authorizeCurrent,authorizeAction,recordReceipt,withFence].every(x=>typeof x==='function'))fail('CANONICAL_HOST_REQUIRED');
+  if([authorizeNativePhase,beforeAction].some(x=>x!==undefined&&typeof x!=='function'))fail('CANONICAL_HOST_REQUIRED');
   const leases=new WeakMap();
   const state=lease=>leases.get(lease)??fail('PRIVATE_ROUTE_LEASE_REQUIRED');
   const synchronous=(fn,...args)=>{const result=fn(...args);if(result?.then)fail('SYNCHRONOUS_CANONICAL_STATE_REQUIRED');return result;};
@@ -69,11 +70,17 @@ export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,aut
       try{
         const authority=createProfileAuthority({readCurrent:()=>current(s),clock}),handle=authority.bind(s.profile);
         const file=await openConfinedText({binary:artifacts.fileBroker.path,binarySha256:artifacts.fileBroker.sha256,root:s.workspace});
-        s.broker=createBoundedBroker({authority,handle,key:s.key,file,receiptPath:s.receiptPath,withFence,recordReceipt,authorize:input=>{
+        s.broker=createBoundedBroker({authority,handle,key:s.key,file,receiptPath:s.receiptPath,withFence,recordReceipt,beforeAction:beforeAction?input=>{
+          if(s.phase!=='attested')fail('NATIVE_ATTESTATION_REQUIRED');
+          return synchronous(beforeAction,{...input,workspace:s.workspace,attestation:s.attestation});
+        }:undefined,authorize:input=>{
           if(s.phase!=='attested')fail('NATIVE_ATTESTATION_REQUIRED');
           return synchronous(authorizeAction,{...input,workspace:s.workspace,attestation:s.attestation})===true;
         }});
-        s.gateway=await openLocalGateway({authority,handle,key:s.key,broker:s.broker,withFence,nativeSessionId:()=>s.nativeSessionId,authorizeNativePhase:body=>s.phase==='attested'||['create','discovery'].includes(body.phase)||s.phase==='attesting'&&['attest','raw','resolved','executor'].includes(body.phase)});
+        s.gateway=await openLocalGateway({authority,handle,key:s.key,broker:s.broker,withFence,nativeSessionId:()=>s.nativeSessionId,authorizeNativePhase:body=>{
+          const permitted=s.phase==='attested'||['create','discovery'].includes(body.phase)||s.phase==='attesting'&&['attest','raw','resolved','executor'].includes(body.phase);
+          return permitted&&(!authorizeNativePhase||synchronous(authorizeNativePhase,{profile:s.profile,run:synchronous(readRun,s.profile.runId),workspace:s.workspace,runtimeDirectory:s.runtimeDirectory,body,phase:s.phase,attestation:s.attestation??null})===true);
+        }});
         const env={SystemRoot:process.env.SystemRoot,TEMP:s.homeDirectory,TMP:s.homeDirectory,HOME:s.homeDirectory,USERPROFILE:s.homeDirectory,APPDATA:s.homeDirectory,LOCALAPPDATA:s.homeDirectory,XDG_CONFIG_HOME:s.homeDirectory,XDG_DATA_HOME:s.homeDirectory,XDG_CACHE_HOME:s.homeDirectory,FORGE_GUARDED_BOOTSTRAP_FD:'3',OPENCODE_PASSWORD:s.password,OPENCODE_DISABLE_AUTOUPDATE:'1',OPENCODE_DISABLE_MODELS_FETCH:'1',OPENCODE_DISABLE_FILEWATCHER:'1',OPENCODE_DISABLE_FFF:'1',GIT_CONFIG_NOSYSTEM:'1',GIT_CONFIG_GLOBAL:'NUL'};
         s.child=spawn(artifacts.opencode.path,['serve','--hostname','127.0.0.1','--port','0'],{cwd:s.runtimeDirectory,env,windowsHide:true,stdio:['ignore','pipe','pipe','pipe']});
         s.childDone=new Promise(resolve=>s.child.once('close',resolve));

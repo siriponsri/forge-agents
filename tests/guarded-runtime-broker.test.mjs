@@ -7,7 +7,7 @@ import {randomBytes,createHmac} from 'node:crypto';
 import {buildWindows} from '../tools/guarded-runtime/build-windows.mjs';
 import {openConfinedText} from '../app/guarded-runtime/windows-client.mjs';
 import {createProfileAuthority,digest,bytesDigest} from '../app/guarded-runtime/profile.mjs';
-import {createBoundedBroker,signRequest,inspectGuardedReceipt} from '../app/guarded-runtime/broker.mjs';
+import {createBoundedBroker,signRequest,inspectGuardedReceipt,inspectGuardedOperations} from '../app/guarded-runtime/broker.mjs';
 import {createNativeGate,qualifyGuardedRuntime} from '../app/guarded-runtime/gate.mjs';
 import {openLocalGateway} from '../app/guarded-runtime/local-gateway.mjs';
 import {canonical} from '../app/guarded-runtime/profile.mjs';
@@ -177,4 +177,25 @@ test('actual HTTP gateway distinguishes completed edit receipt-owner loss from a
     assert.equal(denied.value.error,'CANONICAL_ACTION_DENIED');assert.equal(f.broker.readReceipt('denied-http'),null);
     assert.equal(await readFile(path.join(f.workspace,'allowed/a.txt'),'utf8'),'once');
   }finally{await gateway.close();await f.close();}
+});
+
+test('private resource admission sees durable unknown/completed operations and exact replay never consumes another action',windows,async()=>{
+  const admissions=[];
+  const f=await fixture({beforeAction(input){admissions.push(input);if(input.priorOperations.length>=2)throw Object.assign(Error('action cap'),{code:'ACTION_LIMIT'});}});
+  try{
+    const stale=f.request('stale-resource',{tool:'edit_text',path:'allowed/a.txt',expectedRevision:'b'.repeat(64),text:'BAD'});
+    await assert.rejects(f.broker.receive(stale),{code:'REVISION_CHANGED'});
+    const edit=f.request('actual-resource',{tool:'edit_text',path:'allowed/a.txt',expectedRevision:bytesDigest('before'),text:'once'});
+    await f.broker.receive(edit);assert.equal((await f.broker.receive(edit)).replayed,true);
+    assert.equal(admissions.length,2);assert.deepEqual(admissions[0].priorOperations,[]);
+    assert.equal(admissions[1].priorOperations[0].status,'unknown');
+    assert.equal(admissions[1].priorOperations[0].operationId,'stale-resource');
+    assert.equal(admissions[1].priorOperations[0].runId,'run');
+    const inspect=()=>inspectGuardedOperations({receiptPath:f.options.receiptPath,runId:'run'});
+    const rows=inspect();assert.deepEqual(rows.map(x=>x.status).sort(),['completed','unknown']);
+    assert.equal(rows.every(x=>/^[a-f0-9]{64}$/.test(x.requestDigest)),true);assert.equal(JSON.stringify(rows).includes('once'),false);
+    await f.restart();assert.deepEqual(inspect(),rows);
+    await assert.rejects(f.broker.receive(f.request('over-cap',{tool:'read_text',path:'allowed/a.txt'})),{code:'ACTION_LIMIT'});
+    assert.equal(f.broker.readReceipt('over-cap'),null);assert.equal(await readFile(path.join(f.workspace,'allowed/a.txt'),'utf8'),'once');
+  }finally{await f.close();}
 });
