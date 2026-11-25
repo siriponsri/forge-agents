@@ -1,5 +1,17 @@
 # Decisions
 
+## DOC-D02 — Horizontal editorial flows — 2026-11-25
+
+Owner requested clearer horizontal flows, then explicitly selected
+https://cathrynlavery.github.io/diagram-design/ as the visual reference. Use the
+installed Diagram Design skill, its restrained paper/ink/tangerine editorial
+style, and separate overview from detail. The README delivery overview has five
+left-to-right stages; the architecture view stays separate with at most nine
+nodes. Deliver editable sources and accessible static light/dark assets with
+real render checks. This changes documentation presentation, not runtime scope
+or approval semantics. Beautiful Mermaid was evaluated and installed locally;
+the later explicit gallery reference controls the final visual direction.
+
 ## L01 — Apache-2.0 local core — 2026-11-25
 
 Owner explicitly chose Apache-2.0 for FORGE's open-source local core. The root

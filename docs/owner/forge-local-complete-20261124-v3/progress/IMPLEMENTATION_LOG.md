@@ -1,5 +1,34 @@
 # Implementation Log
 
+## Native observation corrections and editorial review ? 2026-11-25
+
+Committed12ff52a closes three independent bc17a09 P2 findings. Real HTTP and
+compiled-native postcommit callback-loss checks report UNKNOWN, retain one actual
+edit and never retry. Native file changes remain observations rather than invented
+tool results; actual argument inputs replace preliminary empty placeholders.
+Targeted36 + production graph browser1 + actual native production1 checks pass;
+counts overlap. Production made4 loopback requests/3 visible operations/one edit
+in109.8s. Build23.73s passed. Sanitized evidence and reproduction are in
+[review corrections](../../../review-corrections-20261125.md).
+
+Diagram20c96d3 merged asf64fd87. Independent actual rerenders/hashes match; one dark
+small-label contrast P2 is being corrected. Current full serial suite is running;
+earlier run stopped before source correction and is not all-green evidence.
+Final media, fresh correction review, coverage audit and release remain pending.
+No external model/account check, home UAT or push is claimed.
+
+## Native bounded route and review corrections — 2026-11-25
+
+Production Settings/CSRF/installer, selected compatible API resolver, private
+credential generation fence, canonical run/Context/native turn/AG-UI, Stop and
+restore safety are integrated. Independent fc8867e review found first-running
+task adoption and the old5s acknowledgment weakness. Sealed reservation-task
+identity60116c6 preserves Owner edits. New native30s/unknown classification and
+repinned source/patch/image generation e2922cb/bc17a09 retain exact wall caps and
+no replay. New compiled bridge22 PASS, production under-contention activation1
+PASS112.9s, related installer/DPAPI/policy/HTTP/shutdown36 PASS (overlap). Full
+serial suite and fresh independent correction review are in progress. No push.
+
 ## Run Memory transport and native observations — 2026-11-25
 
 Merged native token bridgecc5c832 and Memory MCP gatewayd3ff337; root connected

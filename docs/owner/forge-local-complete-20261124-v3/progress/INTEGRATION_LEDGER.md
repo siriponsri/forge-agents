@@ -1,5 +1,34 @@
 # Integration Ledger
 
+## Native observation corrections and editorial review ? 2026-11-25
+
+Committed12ff52a closes three independent bc17a09 P2 findings. Real HTTP and
+compiled-native postcommit callback-loss checks report UNKNOWN, retain one actual
+edit and never retry. Native file changes remain observations rather than invented
+tool results; actual argument inputs replace preliminary empty placeholders.
+Targeted36 + production graph browser1 + actual native production1 checks pass;
+counts overlap. Production made4 loopback requests/3 visible operations/one edit
+in109.8s. Build23.73s passed. Sanitized evidence and reproduction are in
+[review corrections](../../../review-corrections-20261125.md).
+
+Diagram20c96d3 merged asf64fd87. Independent actual rerenders/hashes match; one dark
+small-label contrast P2 is being corrected. Current full serial suite is running;
+earlier run stopped before source correction and is not all-green evidence.
+Final media, fresh correction review, coverage audit and release remain pending.
+No external model/account check, home UAT or push is claimed.
+
+## Bounded route and correction generation — 2026-11-25
+
+Merged native source/bridge/installer through dce62e5, production activation
+fc8867e, sealed reservation-task authority60116c6 and acknowledgment generation
+e2922cb/bc17a09. Current pins bind the separate33ef775 native image, original T3
+bundle and confined broker. Actual complete native bridge22 checks PASS; real
+production Owner/recipe/Context/AG-UI activation PASS under build contention.
+The private transport classifies missing acknowledgments as unknown with no
+effect replay. Fresh independent correction review and full-suite verification
+are running. Research component/resource ownership, arbitrary native attachment
+and absent monetary invoices remain explicit distinct capability boundaries.
+
 ## Current native usage/Memory transport and UI — 2026-11-25
 
 Scoped native usagecc5c832 and Memory MCPd3ff337 are root-mounted with actual

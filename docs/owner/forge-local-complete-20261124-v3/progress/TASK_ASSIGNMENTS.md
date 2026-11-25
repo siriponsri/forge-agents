@@ -1,5 +1,21 @@
 # Task Assignments
 
+## Current assignments ? 2026-11-25, 532353f checkpoint
+
+Lead owns shared runtime, safety corrections, central progress and release.
+All actual workers inherit gpt-6.1-sol/xhigh. No model switch is inferred.
+
+| Active owner | Assigned paths | Work |
+|---|---|---|
+| Editorial diagram worker | Existing owned docs/diagrams and generator only | Correct dark small-label contrast and regenerate truthful evidence; original assets merged f64fd87 |
+| Diagram reviewer | Read-only isolated f64fd87 | Semantic/render/font/geometry/credits review; found dark label contrast P2 |
+| Required coverage reviewer | Read-only isolated f64fd87 | Compare actual required implementation to acceptance, separate unsupported contracts from missing live credentials |
+| Lead | Shared app/progress, media/release | Native P2 fixes12ff52a verified in targeted/actual production checks; full serial suite running, final media and fresh correction recheck pending |
+
+The bc17a09 correction reviewer has finished: prior two P1 fixes verified, three
+P2 findings reported and corrected in12ff52a. That scoped review is not full-release
+approval. Older assignment tables below are historical. No push yet.
+
 ## Latest isolated assignments — 2026-11-25
 
 Lead owns current shared integration and production checks. Mission, Parallel,

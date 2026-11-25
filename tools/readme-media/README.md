@@ -74,9 +74,10 @@ asset, not the lightweight first README view. Do not publish runtime diagnostics
 Every capture is **PREPARED_MEDIA_NOT_FINAL_RELEASE_VERIFICATION**. Refresh against
 the final merged tree and rerun decode/privacy/editorial review before release.
 The root README, final acceptance ledger, release checks and push remain lead-owned.
-`HOME_UAT_NOT_RUN`, account/macOS/remote checks and native guarded automation
-`NOT_QUALIFIED` (actual native supervisor not qualified) remain explicit and separate
-from media tooling gaps.
+`HOME_UAT_NOT_RUN` and account/macOS/remote checks remain explicit. Native guarded
+automation is not exercised by this media capture; separate bounded native
+developer checks and limitations are documented in [the route guide](../../docs/guarded-route.md).
+Media provenance does not qualify native automation or external accounts.
 
 ## Cleanup
 
