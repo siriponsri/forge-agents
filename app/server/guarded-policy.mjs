@@ -3,6 +3,7 @@ import {readFileSync,lstatSync,readdirSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {find,fail} from './domain.mjs';
 import {digest,bytesDigest} from '../guarded-runtime/profile.mjs';
+import {fileDigest} from '../guarded-runtime/file-digest.mjs';
 import {routeById} from '../providers/routes.mjs';
 import {proactiveEnforcementRequest} from '../proactive/enforcement.mjs';
 import {checkEnvelope,record} from '../proactive/contracts.mjs';
@@ -54,7 +55,7 @@ export function createGuardedPolicy({store,dataDir,secrets,providers,artifacts})
       if(!image)fail('GUARDED_SETUP_REQUIRED','Install the private bounded runtime in Settings first',409);
       if(stamp!==secrets.bindingStamp()||digest(find(store.read(),'connections',c.id,projectId))!==connection)fail('GUARDED_CREDENTIAL_CHANGED','Credential changed during setup',409);
       const accountGeneration=digest({connection:c.config.generation,reference:metadata?.reference??`env:${c.config.apiKeyEnv}`,revision:metadata?.revision??null,generation:metadata?.generation??null,stamp});
-      cache.set(projectId,{connection,selection:digest(selection),stamp,configPath,configHash:bytesDigest(raw),apiProviderId,model,baseURL:url.href,metadata,accountGeneration,...(!metadata?{envName:c.config.apiKeyEnv,envValue:process.env[c.config.apiKeyEnv]}:{}),t3Hash:digest(image.t3.files.map(f=>({name:f.name,sha256:bytesDigest(readFileSync(f.path))})).sort((a,b)=>a.name.localeCompare(b.name))),opencodeHash:bytesDigest(readFileSync(image.opencode.path)),brokerHash:bytesDigest(readFileSync(image.fileBroker.path))});
+      cache.set(projectId,{connection,selection:digest(selection),stamp,configPath,configHash:bytesDigest(raw),apiProviderId,model,baseURL:url.href,metadata,accountGeneration,...(!metadata?{envName:c.config.apiKeyEnv,envValue:process.env[c.config.apiKeyEnv]}:{}),t3Hash:digest(image.t3.files.map(f=>({name:f.name,sha256:fileDigest(f.path)})).sort((a,b)=>a.name.localeCompare(b.name))),opencodeHash:fileDigest(image.opencode.path),brokerHash:fileDigest(image.fileBroker.path)});
       return observe(store.read(),{projectId});
     },
     observe,

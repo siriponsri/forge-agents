@@ -1,9 +1,10 @@
 import {spawn} from 'node:child_process';
 import {mkdir,readFile} from 'node:fs/promises';
-import {realpathSync,readFileSync} from 'node:fs';
+import {realpathSync} from 'node:fs';
+import {fileDigest} from './file-digest.mjs';
 import {randomBytes,createHmac} from 'node:crypto';
 import path from 'node:path';
-import {checkProfile,createProfileAuthority,canonical,digest,bytesDigest,secretEqual,exact,fail} from './profile.mjs';
+import {checkProfile,createProfileAuthority,canonical,digest,secretEqual,exact,fail} from './profile.mjs';
 import {assertInstalledT3Host,observeInstalledT3Host} from './t3-host.mjs';
 import {createBoundedBroker} from './broker.mjs';
 import {openConfinedText} from './windows-client.mjs';
@@ -21,7 +22,7 @@ export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,aut
   const leases=new WeakMap();
   const state=lease=>leases.get(lease)??fail('PRIVATE_ROUTE_LEASE_REQUIRED');
   const synchronous=(fn,...args)=>{const result=fn(...args);if(result?.then)fail('SYNCHRONOUS_CANONICAL_STATE_REQUIRED');return result;};
-  const artifact=(name,expected)=>{const descriptor=artifacts[name];if(!descriptor)fail('RUNTIME_ARTIFACT_CHANGED');const actual=descriptor.files?digest(descriptor.files.map(file=>({name:file.name,sha256:bytesDigest(readFileSync(file.path))})).sort((a,b)=>a.name.localeCompare(b.name))):bytesDigest(readFileSync(descriptor.path));if(actual!==expected)fail('RUNTIME_ARTIFACT_CHANGED');};
+  const artifact=(name,expected)=>{const descriptor=artifacts[name];if(!descriptor)fail('RUNTIME_ARTIFACT_CHANGED');const actual=descriptor.files?digest(descriptor.files.map(file=>({name:file.name,sha256:fileDigest(file.path)})).sort((a,b)=>a.name.localeCompare(b.name))):fileDigest(descriptor.path);if(actual!==expected)fail('RUNTIME_ARTIFACT_CHANGED');};
   function current(s){
     if(s.phase==='closed')fail('ROUTE_CLOSED');
     artifact('t3',s.profile.route.t3BinarySha256);artifact('opencode',s.profile.route.opencodeBinarySha256);

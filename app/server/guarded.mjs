@@ -103,7 +103,7 @@ export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeO
       const s=frame();if(!s)fail('GUARDED_FENCE_REQUIRED');const e=entries.get(profile.runId);
       if(e?.workspace!==workspace)return false;
       const run=current(e,s,'current');
-      return sync(onNativePhase,s,{run,profile:clone(profile),workspace,...clone(detail)})===true;
+      return sync(onNativePhase,s,{...clone(detail),run,profile:clone(profile),workspace})===true;
     },
     beforeAction:onBeforeAction?({profile,workspace,attestation,...detail})=>{
       const s=frame();if(!s)fail('GUARDED_FENCE_REQUIRED');const e=entries.get(profile.runId);

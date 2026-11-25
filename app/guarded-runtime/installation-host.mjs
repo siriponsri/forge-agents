@@ -1,6 +1,6 @@
 import {spawn} from 'node:child_process';
 import {mkdtemp,mkdir,readFile,writeFile} from 'node:fs/promises';
-import {readFileSync} from 'node:fs';
+import {fileDigest} from './file-digest.mjs';
 import {randomBytes,createHmac} from 'node:crypto';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
@@ -22,7 +22,7 @@ export function createGuardedInstallationHost({t3Host,observeSelectedRoute,artif
   const checks=new WeakMap();
   const state=handle=>checks.get(handle)??fail('PRIVATE_INSTALLATION_CHECK_REQUIRED');
   const selected=()=>{const value=observeSelectedRoute();if(!value||value.then)fail('SYNCHRONOUS_ROUTE_OBSERVATION_REQUIRED');return value;};
-  function artifact(name){const d=artifacts[name];if(!d)fail('INSTALLATION_ARTIFACT_REQUIRED');return d.files?digest(d.files.map(f=>({name:f.name,sha256:bytesDigest(readFileSync(f.path))})).sort((a,b)=>a.name.localeCompare(b.name))):bytesDigest(readFileSync(d.path));}
+  function artifact(name){const d=artifacts[name];if(!d)fail('INSTALLATION_ARTIFACT_REQUIRED');return d.files?digest(d.files.map(f=>({name:f.name,sha256:fileDigest(f.path)})).sort((a,b)=>a.name.localeCompare(b.name))):fileDigest(d.path);}
   function current(s){if(s.closed||clock()>=s.expiresAt||digest(selected())!==s.selectedDigest||artifact('t3')!==s.profile.route.t3BinarySha256||artifact('opencode')!==s.profile.route.opencodeBinarySha256)fail('INSTALLATION_LEASE_CHANGED');return s.profile;}
   async function close(handle){const s=state(handle);if(s.closing)return s.closing;s.closed=true;s.revokeT3?.();clearTimeout(s.timer);s.closing=(async()=>{if(s.child){s.child.kill();await s.childDone;}if(s.gateway)await s.gateway.close();if(s.broker)await s.broker.close();s.key.fill(0);})();return s.closing;}
   async function api(s,endpoint,body,headers={}){current(s);const res=await fetch(s.url+endpoint,{method:body===undefined?'GET':'POST',headers:{Authorization:'Basic '+Buffer.from('opencode:'+s.password).toString('base64'),'Content-Type':'application/json',...headers},...(body===undefined?{}:{body:canonical(body)}),signal:AbortSignal.timeout(30000)});if(!res.ok){let diagnostic;try{diagnostic=await res.json();}catch{}fail('INSTALLATION_NATIVE_CHECK_FAILED'+(/^[a-z_]+$/.test(diagnostic?.stage??'')?'_'+diagnostic.stage.toUpperCase():''));}return res.json();}
