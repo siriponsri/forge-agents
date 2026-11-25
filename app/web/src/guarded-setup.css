@@ -1,0 +1,12 @@
+.guarded-setup { min-width: 0; overflow-wrap: anywhere; }
+.guarded-setup h2 { margin: 0 0 12px; }
+.guarded-setup > p, .guarded-setup-progress { max-width: 70ch; }
+.guarded-setup-status { font-weight: 600; margin: 24px 0 12px; }
+.guarded-setup-progress { display: grid; gap: 10px; margin: 16px 0 24px; }
+.guarded-setup-progress label { color: var(--ink); font-size: 12px; }
+.guarded-setup-progress progress { display: block; width: 100%; height: 8px; accent-color: var(--accent); }
+.guarded-setup-progress p { margin: 0; }
+.guarded-setup-actions { margin-top: 24px; flex-wrap: wrap; }
+.guarded-setup-actions button { min-height: 44px; max-width: 100%; white-space: normal; }
+.guarded-setup-actions button:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+@media (max-width: 480px) { .guarded-setup-actions { align-items: stretch; flex-direction: column; } .guarded-setup-actions button { width: 100%; } }
