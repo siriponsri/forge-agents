@@ -11,15 +11,15 @@ const REPO = fileURLToPath(new URL('../../', import.meta.url));
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const fail = code => { throw Object.assign(new Error(code), {code}); };
 const ENTRY = 'forge-guarded-host.mjs';
-const APPROVED = {t3:'3494a3e4bce00e971a999fe51f5334d471e8d7a220db43e90f50f535314b0bf9',opencode:'309f61f0fc52f849256a9e4e26af55365da32d9ff4773f273bd6a186ae296def',broker:'0c8a796db59f0829ac4b28b97be774523210f5ff99b7e6139e3fc442e8d2e08d'};
+const APPROVED = {t3:'3494a3e4bce00e971a999fe51f5334d471e8d7a220db43e90f50f535314b0bf9',opencode:'33ef775f30afbf7808773e97bc4d70e1dc990155541162c92e5b6e2dc1c18ad3',broker:'0c8a796db59f0829ac4b28b97be774523210f5ff99b7e6139e3fc442e8d2e08d'};
 const COMPILER_HASH = '46809206887326d2d24db1eff1f3064de972c3451abe766b49111450a5e08e00';
 const PIPELINE = {
   "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
   "app/guarded-runtime/native/OPENCODE-LICENSE.txt": "625f0f619133f89bbbb2abe37369613dfa1885eba1e50d02170deb62bb42cb6b",
   "app/guarded-runtime/native/T3-LICENSE.txt": "935d8f2af0c703f9c39517ee57cc4930b19d02d533be930b63f0e82f93614b43",
   "app/guarded-runtime/native/opencode-attest.ts": "d7d3e67c979641705e6ea826b94c19b70e872d169155c831ff0bc5a5d49e7643",
-  "app/guarded-runtime/native/opencode-bootstrap.ts": "cc0ae430802dd2b639597d59de36a3588249dea8971e04e1563bbd4a1d11b370",
-  "app/guarded-runtime/native/opencode-guard.ts": "9bfb97d77b7dbf7e1971fb77fe1ca109fc36d56c6442fa384cf73a9ae0503b13",
+  "app/guarded-runtime/native/opencode-bootstrap.ts": "733c714e30cf6dd5389ec3085639ec6d08123330c09a56c99a86227cc650f1a3",
+  "app/guarded-runtime/native/opencode-guard.ts": "a1f6992ea6c0c17d15e430732da265b31579322f1b3810fa4fcc7952d7c9f470",
   "app/guarded-runtime/native/patch-inputs.json": "cc7e7ca7f1f8f9b34b078876ae1947afa9d666ab70fc95a16aa58f809ea93ab6",
   "app/guarded-runtime/native/t3-guard.ts": "b08a98fb2865752d31d2a4d85cc4ce0a98d397f1286222544b9894771fd52bd4",
   "app/guarded-runtime/native/t3-host-entry.ts": "650621442cbe5165fa65a7aa4b5bcd94f44326a10e3290796acdd717f3cdb9e1",
@@ -36,7 +36,7 @@ const PIPELINE = {
   "tools/guarded-runtime/extract.py": "04dee9c4039ca6deaf783b7cbb7c87fb8250d84b9f897f924288c0d94b5c7517",
   "tools/guarded-runtime/prepare-native.mjs": "c6b9cb2d75211962c78b2aab9f2e1187f1ee008eda43822f4a3fe12f825e8b6b"
 };
-const PATCH_DIGEST = '18ae81444cbb94948c977dd319f675f58433bf6f714412587f2029e67b230479';
+const PATCH_DIGEST = '93dd03f0c868158be340019d8bbaea7a86b3c8681104dfd5d3da5d3d62631582';
 const ARCHIVES = {
   't3.tgz':'6828739be5126583b945e7173e7caef5acaa7ae57ffe566d9db9f65b5ab94ca2',
   'opencode.tgz':'2e6432bb7c27b03b5bffa170360f6b95210213520ba43c1c7f82fd1d9e2f6f28',

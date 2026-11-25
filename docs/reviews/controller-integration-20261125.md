@@ -84,3 +84,30 @@ approval and does not cover subsequent Guarded activation.
 Native all-action
 automation qualification, authoritative billing ingestion, live provider/mobile
 checks and **HOME_UAT_NOT_RUN** remain separate from these corrected defects.
+
+## Bounded route activation review — 2026-11-25
+
+Independent immutable review of `fc8867e` found two P1 corrections required.
+First, a matching first-running native event could adopt an Owner-edited task
+as its new snapshot. `60116c6` seals the exact reservation task and promotes it
+only after comparing unchanged bytes. A blocked Owner task remains blocked;
+current/action admission refuses and a late terminal preserves the Owner edit.
+The regression uses real SQLite, production task.update, matching injected native
+projection and zero counter-only effects. Guarded Stop also shares its private
+in-flight promise to prevent duplicate interrupt requests.
+
+Second, the old five-second private acknowledgment window could report denied
+after a completed file edit under build contention. Native patch `b369790`
+(merged `e2922cb`) uses 30 seconds without extending the canonical deadline or
+retrying. Aborted/lost acknowledgments are outcome unknown; explicit policy403
+remains denied. Exact new-image tests exercised delayed6500ms acknowledgments,
+dropped/31-second acknowledgments after durable completion and no effect replay.
+The original images were preserved. Production installer source/patch/image pins
+are updated to the separately built and checked generation.
+
+Lead production application/native recheck overlapped Vite build and passed in
+112.9 seconds: four loopback protocol requests, three acknowledged receipts and
+real edit, one canonical run, Context and AG-UI. Related installer/DPAPI/policy/
+HTTP/shutdown subset **36 PASS**, no skips. These overlap earlier checks. The
+new image's complete bridge subset and fresh independent correction review remain
+pending. External account/model-quality checks and Home UAT remain NOT_RUN.

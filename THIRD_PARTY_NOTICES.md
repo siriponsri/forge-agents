@@ -38,6 +38,14 @@ commit59651c1761f6c63e9b6056839067066968e6a406. Copied launcher/license and
 modification record are in app/vendor/t3; matching release GUI/server remains an
 unmodified acquired distribution. Keep its bundled notices.
 
+The separate optional Guarded route builds a private derivative of that pinned
+T3 source and OpenCode 2.4.1 at 6f0514052a3c859894ad01bb14cc14dda1e44b96 (MIT).
+Its modification records, original MIT license files and reproducible patches
+are in app/guarded-runtime/native and docs/worker-guarded-runtime.md. It does not
+replace the ordinary acquired T3 distribution. Private installed bundles retain
+T3/OpenCode/Node notices; Node and build-tool distributions retain their own
+licenses. Machine binaries, credentials and toolchain caches are not in Git.
+
 Univer core/presets1.6.1: Apache-2.0 (dream-num/univer). React/react-dom19.2.4,
 AG-UI core1.0.5 and MCP TypeScript SDK1.32.2: MIT. Vite7.3.8: MIT.
 Lucide React0.575.0: ISC, with applicable icon notices. Dependencies are pinned in

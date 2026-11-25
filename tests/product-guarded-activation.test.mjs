@@ -12,7 +12,7 @@ import {entity} from '../app/server/domain.mjs';
 import {digest,source} from '../app/providers/common.mjs';
 import {bytesDigest} from '../app/guarded-runtime/profile.mjs';
 
-const cache=path.join(os.tmpdir(),'forge-guarded-build');
+const cache=process.env.FORGE_GUARDED_TEST_CACHE??path.join(os.tmpdir(),'forge-guarded-timeout30s-20261125');
 test('production Guarded setup drives one approved recipe through actual native tools and AG-UI',{timeout:300000,skip:!existsSync(path.join(cache,'artifact-manifest.json'))&&'compiled native package unavailable'},async t=>{
   const dir=await mkdtemp(path.join(os.tmpdir(),'forge-guarded-product-')),workspace=path.join(dir,'workspace');await mkdir(path.join(workspace,'allowed'),{recursive:true});await writeFile(path.join(workspace,'allowed/a.txt'),'before');
   let requests=0;const requestBodies=[];

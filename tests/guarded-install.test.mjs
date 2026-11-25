@@ -9,7 +9,7 @@ import {createHash} from 'node:crypto';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 import {createGuardedArtifactService} from '../app/guarded-runtime/install.mjs';
 
-const repo=fileURLToPath(new URL('../',import.meta.url)),cache=path.join(os.tmpdir(),'forge-guarded-build');
+const repo=fileURLToPath(new URL('../',import.meta.url)),cache=process.env.FORGE_GUARDED_TEST_CACHE??path.join(os.tmpdir(),'forge-guarded-timeout30s-20261125');
 const available=process.platform==='win32'&&await fs.stat(path.join(cache,'artifact-manifest.json')).then(()=>true,()=>false);
 const owned=new WeakMap();
 async function temp(t){const dir=await fs.mkdtemp(path.join(os.tmpdir(),'forge-guarded-install-test-'));owned.set(t,[]);t.after(async()=>{for(const s of owned.get(t))await s.close();assert.equal(path.dirname(dir),os.tmpdir());assert.ok(path.basename(dir).startsWith('forge-guarded-install-test-'));await fs.rm(dir,{recursive:true,force:true,maxRetries:2,retryDelay:50});});return dir;}
