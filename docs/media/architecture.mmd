@@ -5,11 +5,11 @@ flowchart LR
   Projection --> Views["Chat + Node-Edge Workspace<br/>Two views of the same records"]
   Views --> Forge
   Forge --> Office["Univer Docs + Sheets<br/>Revisioned save and reopen"]
-  Office --> Reports["Saved ReportSpec and source revisions<br/>WordCraft / PdfCraft"]
+  Office --> Reports["Saved report sources<br/>WordCraft / PdfCraft"]
   Reports --> Artifacts["Verified artifacts<br/>Content hashes and provenance"]
   T3 --> Artifacts
   Artifacts --> Review["QA evidence<br/>Owner acceptance"]
-  Forge -.-> Guard["Guarded route<br/>Product activation pending"]
+  Forge -.-> Guard["Bounded native route<br/>Live route and run checks"]
   Forge -.-> Assist["Executor + Asst<br/>Roles within existing execution authority"]
   classDef owner fill:#ff8a33,color:#171717,stroke:#e46c14,stroke-width:2px;
   classDef core fill:#153c58,color:#edf6ff,stroke:#4f9bcc,stroke-width:2px;

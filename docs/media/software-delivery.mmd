@@ -8,7 +8,7 @@ flowchart LR
   Test --> QA[Review evidence and pass QA]
   Preview --> QA
   QA --> Owner[Owner accepts delivery]
-  Owner --> ZIP[Delivery Pack ZIP<br/>Verified files, manifest, tests and limitations]
+  Owner --> ZIP[Delivery Pack ZIP<br/>Files, checks and limitations]
   Unknown[Unknown outcomes or usage] --> Reconcile[Reconcile existing identity<br/>Never replay uncertain effects]
   Reconcile --> QA
   classDef owner fill:#ff8a33,color:#171717,stroke:#e46c14,stroke-width:2px;

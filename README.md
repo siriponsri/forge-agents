@@ -113,8 +113,8 @@ flowchart LR
   Files --> Checks["Local tests + preview"]
   Checks --> Review["QA + Owner acceptance"]
   Review --> Pack["Verified Delivery Pack"]
-  Run -. "difficult or stuck" .-> Asst["Asst advice"]
-  Asst -. "reviewed next action" .-> Run
+  Run -.-> Asst["Asst advice<br/>For difficult or stuck work"]
+  Asst -.-> Run
   classDef decision fill:#ff8a33,color:#171717,stroke:#e46c14;
   classDef work fill:#153c58,color:#edf6ff,stroke:#4f9bcc;
   classDef evidence fill:#203b32,color:#edf9f2,stroke:#76a88e;
@@ -240,7 +240,7 @@ live account access or cloud/mobile behavior.
 
 | Area | Qualification boundary |
 |---|---|
-| Guarded proactive automation | Recipes, Inbox and admission exist; native route activation and all-action enforcement integration are in progress. |
+| Guarded proactive automation | The [bounded native route](docs/guarded-route.md) connects approved recipes to live route/run checks and existing text-file actions. Developer checks use actual native binaries with a loopback model fixture. Transport hardening and final review remain pending; arbitrary tools and resource caps are unavailable. |
 | Usage and budgets | Atomic policy holds and unknown accounting are implemented. Native monetary receipt coverage remains incomplete; completion never means zero cost. |
 | Research Lab | Fixed local CPU/file experiments, independent checks and exports are exercised. Agent component/action/resource qualification and official benchmark execution are separate. |
 | Remote providers, compute and mobile | Adapters and setup flows have scoped developer tests. Account-specific live checks require their own evidence. |
