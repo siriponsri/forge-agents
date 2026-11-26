@@ -1,5 +1,5 @@
 // Host-only setup. Inventory is never live qualification or execution authority.
-import {open, mkdir, readFile, writeFile, rename, lstat, realpath, readdir, copyFile} from 'node:fs/promises';
+import {open, mkdir, mkdtemp, readFile, writeFile, rename, lstat, realpath, readdir, copyFile} from 'node:fs/promises';
 import {createHash, createHmac, randomBytes, randomUUID} from 'node:crypto';
 import {spawn} from 'node:child_process';
 import path from 'node:path';
@@ -335,7 +335,9 @@ export async function createGuardedArtifactService({dataDir,approvedCache=null,w
     return {t3:{entry:path.join(dest,'t3',ENTRY),files},opencode:{path:oc,version:inv.session?.version??inv.frontend?.version??'2.4.1-forge-guarded.0',purposes:PURPOSES.slice(0,inv.session?3:inv.frontend?2:1),proof:null},fileBroker:{path:broker,sha256:inv.broker}};
   }
   async function execute(job,signal) {
-    const build=path.join(root,'builds',job.generation),pipeline=path.join(build,'pipeline'),cache=path.join(build,'cache');
+    // Keep pnpm's long task-state filenames below Windows MAX_PATH. mkdtemp
+    // creates a unique NEW directory under the already protected private root.
+    const build=await mkdtemp(path.join(root,'build-')),pipeline=path.join(build,'pipeline'),cache=path.join(build,'cache');
     const stage=async name=>{signal.throwIfAborted();await exclusive(async()=>{job.stage=name;await save();});};
     try {
       await stage('preflight');if(initError)fail(initError.code);
@@ -360,8 +362,11 @@ export async function createGuardedArtifactService({dataDir,approvedCache=null,w
           const result=commandRunner?await commandRunner({...spec,signal},runner.run):await runner.run(spec);
           signal.throwIfAborted();if(result?.exitCode!==0)fail(result?.exitCode===124?'SETUP_TIMEOUT':'BUILD_STAGE_FAILED');
         };
-        await run('sources',process.execPath,[script('acquire'),cache]);
-        await run('toolchain',process.execPath,[script('acquire-t3-toolchain'),cache]);
+        // Python and tar must retain extended-length Windows paths while
+        // extracting upstream fixtures beneath a user's private data directory.
+        const extractionCache=path.toNamespacedPath(cache);
+        await run('sources',process.execPath,[script('acquire'),extractionCache]);
+        await run('toolchain',process.execPath,[script('acquire-t3-toolchain'),extractionCache]);
         await run('patch',process.execPath,[script('prepare-native'),path.join(cache,'t3'),path.join(cache,'opencode'),path.join(cache,'patch-report.json')]);
         await run('opencode-dependencies',path.join(cache,'bun/bin/bun.exe'),['install','--frozen-lockfile','--ignore-scripts','--filter','@opencode/core','--filter','@opencode/cli'],path.join(cache,'opencode'));
         await run('t3-dependencies',process.execPath,[script('build-t3'),cache,'install']);

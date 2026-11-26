@@ -68,6 +68,7 @@ test('default setup stage fixture selects newest session pipeline with private S
   process.env.FORGE_SESSION_INSTALL_SECRET='never-forward-this';t.after(()=>delete process.env.FORGE_SESSION_INSTALL_SECRET);
   const service=await createGuardedArtifactService({dataDir:path.join(root,'data'),commandRunner:async spec=>{
     seen.push(spec.stage);assert.equal(spec.env.FORGE_SESSION_INSTALL_SECRET,undefined);assert.equal(spec.env.NODE_OPTIONS,undefined);assert.equal(spec.timeoutMs,600000);
+    if(['sources','toolchain'].includes(spec.stage))assert.ok(spec.args[1].startsWith('\\\\?\\'),'Windows extraction must support long upstream fixture paths');
     if(spec.stage==='verify'){
       baseCache=spec.args[1];pipeline=path.join(path.dirname(baseCache),'pipeline');
       const patches=JSON.parse(await fs.readFile(path.join(meta.cache,'patch-report.json'),'utf8')),pins=JSON.parse(await fs.readFile(path.join(repo,'app/proactive-native/source-pins.json'),'utf8'));

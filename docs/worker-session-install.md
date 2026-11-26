@@ -76,7 +76,28 @@ minimal SDK closure, failed-stage safety and manifest forgery. The preexisting
 old-only stage fixture still expects nine pre-frontend stages and fails against
 the extended pipeline; the new scoped fixture covers the complete replacement.
 
-Actual fresh source compile evidence is pending a coordinated heavy build slot.
+Run the explicit heavy reproduction with
+`node tests/guarded-session-install-fresh.mjs`. It creates a NEW private root,
+seeds pinned archives by copy, executes real extraction/base patch/base and session
+compilation plus private SDK npm ci, verifies installed images and reopens them.
+Base dependency install stages explicitly reuse retained package stores read only
+through NEW remapped importer links; they do not claim a clean dependency download.
+It retains private command logs and `fresh-build-evidence.json`, including stage
+results, source/build-report hashes, all45+actualNode/CLI/broker hashes and unchanged
+retained source/image fingerprints. No native/provider turn is part of the run.
+
+The first real source run exposed Python's Windows MAX_PATH failure on an upstream
+fixture under the deep private build directory. Acquisition commands now receive
+Windows extended-length cache paths; ordinary artifact descriptors keep their
+strict normal private paths. A subsequent real pnpm build exposed the same limit
+in its long task-state filenames; each build now uses a short unique `build-*`
+directory directly beneath the existing protected artifact root. Its ACL and
+ownership are inherited without links or a second authority. No source, patch or
+artifact pin was relaxed. The dependency-reuse harness also materializes each NEW
+importer's `node_modules` directory because pnpm refuses a junction at that root;
+the package stores remain read-only links.
+
+Actual fresh source compile evidence is pending completion of the heavy run.
 No live provider/account session, Owner home workflow or product activation is
 claimed. HOME_UAT_NOT_RUN. These external checks are separate from root-owned
 integration and implementation obligations.
