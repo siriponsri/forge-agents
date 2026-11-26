@@ -1,5 +1,16 @@
 # Landing redesign worker handoff
 
+Narrow follow-up from `e82395a`: the SAME independent reviewer resolved original
+findings 2–4 and left finding 1 partial only for a disconnected Inspect right
+branch. Only that path was changed to share the `(300,115)` incoming trunk.
+One rebuild passed; actual SVG stroke checks and desktop/mobile visual checks
+confirmed both curves join. Exactly the two Inspect-state PNGs were refreshed;
+the 17 baseline views and all other evidence remain unchanged. See
+`apps/website/docs/evidence/impeccable-20261126/inspect-connector-check.json`.
+Independent narrow verdict pending; no whole-surface or Owner approval claim.
+No second detector, narrative/polish edit or other source change. Browser/server
+closed and the test slot explicitly released before this documentation/commit.
+
 Correction implemented: root's independent fresh review returned **FIX** at
 root `ab0b5ce`. Exactly four material corrections are being applied: specific
 illustrative brief-to-assignment-to-retained-output structure changes; readable

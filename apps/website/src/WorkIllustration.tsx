@@ -7,7 +7,7 @@ const steps=[
   {th:'ลงมือทำ',en:'Make',titleTh:'แต่ละงานมีผู้รับผิดชอบ ผลลัพธ์กลับสู่โปรเจกต์',titleEn:'Assigned work returns to the same project.',lead:'Assigned work',Icon:GitBranch,
     path:'M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355',work:[['Lead','Outline'],['Builder','Pages'],['Reviewer','Review']]},
   {th:'ตรวจผล',en:'Inspect',titleTh:'เก็บไฟล์ต้นทางและหลักฐานไว้ตรวจร่วมกัน',titleEn:'Keep the files and their evidence together.',lead:'FORGE records',Icon:FileCheck2,
-    path:'M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350',work:[['Source','Site files'],['History','Revisions'],['Evidence','Review notes']]},
+    path:'M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 115Q300 140 325 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350',work:[['Source','Site files'],['History','Revisions'],['Evidence','Review notes']]},
 ];
 export function WorkIllustration({t}:{t:T}) {
   const [step,setStep]=useState(1),s=steps[step],Icon=s.Icon;

@@ -5,7 +5,31 @@ Read surface: the existing localized download route. This packet supersedes
 `DIRECTION.md` and `LANDING_AMBITION.md` **for this new Home composition**; their
 previous design verdicts do not approve this work.
 
-## Independent review correction — disposition FIX, verdict pending
+## Inspect connector follow-up — narrow verdict pending
+
+The same independent reviewer returned **FIX** after the four-finding verdict
+pass: findings 2–4 were **resolved**; finding 1 was **partial only because** the
+Inspect right branch did not join its incoming trunk. The coherent narrative,
+allocations/output, one-line leader and statement spacing were otherwise resolved.
+
+This delta changes only that Inspect path: the right arm starts on the common
+trunk at `(300,115)` and curves to `(325,140)` before continuing right. Exactly
+one TypeScript/production/static rebuild passed. Actual desktop/mobile shared
+preview renders were inspected; SVG stroke checks confirmed the incoming trunk
+and both curve midpoints at 1440px and 375px. Only
+`phase-inspect-1440-en.png` and `phase-inspect-375-th-dark.png` were recaptured and
+visually opened. The mobile capture now includes the complete leader. All 17
+baseline views and the earlier correction's other captures/records remain as
+they were; they are not described as freshly re-audited by this narrow check.
+
+`inspect-connector-check.mjs` and `inspect-connector-check.json` record the exact
+path, actual rendered stroke checks and two capture paths. Existing installed
+Playwright supplied the matching element-frame captures after shared-preview
+verification; no detector ran. Browser/server closed and the serial slot was
+released. The independent disposition remains **FIX pending the requested narrow
+verdict**; the geometry check is not whole-surface or Owner aesthetic acceptance.
+
+## Independent review correction — earlier four-finding batch
 
 Root's fresh reviewer evaluated all 17 valid first-generation captures at root
 `ab0b5ce` and returned **FIX**. This worker is applying exactly its four material
@@ -55,9 +79,8 @@ Supplemental inspected evidence for the four specific fixes:
 - `phase-plan-1440-en.png`, `phase-inspect-1440-en.png`: complete distinct desktop
   illustration states and their different retained output structures.
 - `phase-plan-375-th-dark.png`, `phase-inspect-375-th-dark.png`: mobile state
-  details. The Inspect element capture's upper edge closely crops the leader;
-  use the baseline 375px viewport for leader spacing and the desktop Inspect
-  capture for complete topology. Its retained output and caption remain visible.
+  details. The narrow connector follow-up above replaces the earlier Inspect
+  capture, including its previously cropped upper edge.
 - `mobile-proof-375-th-dark.png`: readable crop, full context, date/fixture
   qualification and visible full-resolution action in one element capture.
 - `download-pending-375-en-dark.png`, `download-unavailable-375-en-dark.png`:

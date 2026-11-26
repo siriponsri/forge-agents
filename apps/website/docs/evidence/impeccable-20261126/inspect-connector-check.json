@@ -1,0 +1,26 @@
+{
+  "status": "PASS at narrow geometric/render check scope",
+  "checks": [
+    {
+      "width": 1440,
+      "lang": "en",
+      "theme": "light",
+      "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 115Q300 140 325 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+      "trunk": true,
+      "leftCurve": true,
+      "rightCurve": true,
+      "capture": "phase-inspect-1440-en.png"
+    },
+    {
+      "width": 375,
+      "lang": "th",
+      "theme": "dark",
+      "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 115Q300 140 325 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+      "trunk": true,
+      "leftCurve": true,
+      "rightCurve": true,
+      "capture": "phase-inspect-375-th-dark.png"
+    }
+  ],
+  "scope": "Inspect incoming trunk joins both branches. Only two Inspect images refreshed; earlier17-view matrix and other findings were not re-audited. Independent reviewer verdict pending."
+}
