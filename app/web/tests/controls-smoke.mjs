@@ -5,6 +5,7 @@ import path from 'node:path';
 import os from 'node:os';
 import {pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
+import {chooseTheme, openRoute, openThemePicker, setLanguage} from '../../../tests/support/app-shell.mjs';
 import {createApplication} from '../../server/main.mjs';
 const temp=await mkdtemp(path.join(os.tmpdir(),'forge-controls-integrated-')),app=await createApplication({dataDir:path.join(temp,'state')});
 const browser=await chromium.launch({headless:true}),page=await browser.newPage({viewport:{width:1500,height:1050}}),errors=[];page.setDefaultTimeout(20000);page.on('pageerror',e=>errors.push(e.message));
@@ -20,8 +21,8 @@ try{
   // A payload claiming to be human cannot create an approval without browser session/CSRF.
   await post('/api/governance/policy',{projectId:project.id,connectionId:connection.id,operationId:crypto.randomUUID(),expectedRevision:0,mode:'allowed',tools:{},actor:{kind:'human',id:'forged'}},403);
   assert.equal(state().events.filter(e=>e.type==='governance.policy').length,0);
-  await page.goto(app.url+'/app');await page.getByLabel('Language',{exact:true}).selectOption('en');
-  await page.getByRole('navigation').getByRole('button',{name:'Settings',exact:true}).click();await button('Providers & models').click();await page.getByRole('heading',{name:'Project accounts & models',exact:true}).waitFor();
+  await page.goto(app.url+'/app');await setLanguage(page,'en');
+  await openRoute(page,'Settings');await button('Providers & models').click();await page.getByRole('heading',{name:'Project accounts & models',exact:true}).waitFor();
   await button('MCP tools').click();await button('Discover actual tools').click();await wait(s=>s.connections.find(c=>c.id===connection.id).lastCheck?.status==='ready');
   await page.getByLabel('Connection policy ceiling',{exact:true}).selectOption('ask');await button('Save policy for this connection').click();await wait(s=>s.events.some(e=>e.type==='governance.policy'&&e.mode==='ask'));
   await page.getByLabel('Discovered tool',{exact:true}).selectOption('record');await page.getByLabel('value *',{exact:true}).fill('ไทย / exact approved operation');await button('Run this exact operation').click();
@@ -30,7 +31,7 @@ try{
   await post('/api/mcp/call',{projectId:project.id,connectionId:connection.id,operationId:call.operationId,name:'record',arguments:{value:'ไทย / exact approved operation'}});
   assert.equal((await readFile(ledger,'utf8')).trim().split('\n').length,1);
   await button('Plugins').click();await page.getByRole('article',{name:'Models',exact:true}).waitFor();
-  await page.getByRole('navigation').getByRole('button',{name:'Strategies & skills',exact:true}).click();await page.getByRole('heading',{level:1}).waitFor();
+  await openRoute(page,'Strategies & skills');await page.getByRole('heading',{level:1}).waitFor();
   await page.getByRole('button',{name:'Skills & verification loop',exact:true}).click();await page.getByRole('heading',{level:1}).waitFor();
   for(const width of [320,375,768]){await page.setViewportSize({width,height:1000});assert.equal(await page.locator('html').evaluate(e=>e.scrollWidth<=innerWidth),true);}
   assert.deepEqual(errors,[]);await page.screenshot({path:path.join(temp,'controls-mobile.png'),fullPage:true});

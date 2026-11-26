@@ -5,6 +5,7 @@ import { mkdtemp } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { chromium } from "playwright";
+import {chooseTheme, openRoute, openThemePicker, setLanguage} from '../../../tests/support/app-shell.mjs';
 import { createApplication } from "../../server/main.mjs";
 
 const temp = await mkdtemp(path.join(os.tmpdir(), "forge-ui-worker-"));
@@ -27,16 +28,7 @@ page.on("pageerror", (error) => {
 const state = async () =>
   (await page.request.get(`${app.url}/api/state`)).json();
 const click = (name) => page.getByRole("button", { name, exact: true }).click();
-const nav = async (name) => {
-  const navigation = page.locator('.sidebar nav');
-  if (!await navigation.isVisible())
-    await page.getByRole('button', {name: 'Menu', exact: true}).click();
-  const route = navigation.getByRole('button', {name, exact: true, includeHidden: true});
-  const group = route.locator('xpath=ancestor::details[1]');
-  if (await group.count() && !await group.evaluate(element => element.open))
-    await group.locator('summary').click();
-  await route.click();
-};
+const nav = (name) => openRoute(page, name);
 const waitState = async (predicate) => {
   for (let i = 0; i < 80; i++) {
     const s = await state();
@@ -47,8 +39,8 @@ const waitState = async (predicate) => {
 };
 try {
   await page.goto(app.url);
-  await page.getByRole('heading',{name:'พื้นที่สำหรับสิ่งที่คุณอยากสร้าง',exact:true}).waitFor();
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByRole('heading',{name:'เริ่มจากไอเดียของคุณ',exact:true}).waitFor();
+  await setLanguage(page,"en");
   await click("Create first project");
   await page.getByLabel("Project name").fill("Disposable UI verification");
   await page

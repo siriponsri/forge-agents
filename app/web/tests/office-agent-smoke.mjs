@@ -5,6 +5,7 @@ import {mkdtemp,readFile,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import {chromium} from 'playwright';
+import {chooseTheme, openRoute, openThemePicker, setLanguage, switchProject} from '../../../tests/support/app-shell.mjs';
 import {Client} from '@modelcontextprotocol/sdk/client/index.js';
 import {StreamableHTTPClientTransport} from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import {createApplication} from '../../server/main.mjs';
@@ -24,7 +25,7 @@ try{
   await app.store.transaction(s=>s.runs.push(run));
   await cmd('settings.update',undefined,{language:'en',activeProjectId:project.id});
   browser=await chromium.launch({headless:true});page=await browser.newPage({viewport:{width:1500,height:1050}});page.setDefaultTimeout(20000);page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(app.url+'/app');await page.getByLabel('Language',{exact:true}).selectOption('en');await page.getByRole('navigation').getByRole('button',{name:'Docs & sheets',exact:true}).click();
+  await page.goto(app.url+'/app');await setLanguage(page,'en');await openRoute(page,'Docs & sheets');
   client=new Client({name:'forge-office-gui-engineering-fixture',version:'1.0.0'});
   const secret=await readFile(path.join(dataDir,'.office-agent-private','mcp-bearer.secret'),'utf8');
   await client.connect(new StreamableHTTPClientTransport(new URL(app.url+'/mcp/office'),{requestInit:{headers:{Authorization:'Bearer '+secret.trim()}}}));
@@ -64,10 +65,10 @@ try{
   for(const doc of restored){const manifest=JSON.parse(doc.snapshot.resources.find(r=>r.name==='FORGE_IMAGE_ASSETS_V1').data);for(const a of manifest.assets){assert.equal(a.projectId,restore.restoredProjectId);assert.equal(a.source,'/api/artifacts/'+a.artifactId+'/download');assert.ok(s.artifacts.some(x=>x.id===a.artifactId&&x.projectId===restore.restoredProjectId));}}
   checks.push('full local bundle remaps image manifest IDs/project IDs and native source URLs');
   const port=app.server.address().port;await app.close();app=await createApplication({dataDir,port});
-  await page.reload();await page.getByRole('navigation').getByRole('button',{name:'Docs & sheets',exact:true}).click();
+  await page.reload();await openRoute(page,'Docs & sheets');
   for(const item of records){const doc=(await state()).documents.find(d=>d.id===item.id);assert.equal(doc.revision,5);assert.equal((await state()).officeAgent.requests.find(r=>r.operationId===item.operationId).status,'completed');}
   // Reopen restored snapshots in the actual native editor: malformed manifests fail here.
-  await page.getByLabel('Current project',{exact:true}).selectOption(restore.restoredProjectId);
+  await switchProject(page,(await state()).projects.find(p=>p.id===restore.restoredProjectId).name);
   for(const doc of restored){await page.getByRole('button',{name:new RegExp('^'+doc.name)}).click();await page.locator('.univer-container canvas').first().waitFor();await page.waitForTimeout(500);assert.equal(await page.getByRole('alert').count(),0);}
   checks.push('service close/reopen retains completion and both restored native image snapshots reopen');
   assert.deepEqual(errors,[]);const evidence={result:'PASSED',fixtureDir:temp,checks,provider:'NOT_RUN; injected run identity',homeUat:'HOME_UAT_NOT_RUN',restoredProjectId:restore.restoredProjectId};await writeFile(path.join(temp,'evidence.json'),JSON.stringify(evidence,null,2));console.log(JSON.stringify(evidence,null,2));

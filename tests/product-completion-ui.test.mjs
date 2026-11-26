@@ -10,6 +10,7 @@ import {createApplication} from '../app/server/main.mjs';
 import {command,entity,changed} from '../app/server/domain.mjs';
 import {validateGoalContext} from '../app/goals/context.mjs';
 import {verifyDeliveryPack} from '../app/missions/package.mjs';
+import {openRoute, setLanguage} from './support/app-shell.mjs';
 
 test('built App Mission journey uses real Owner forms, local tests, preview, QA and ZIP; new surfaces work at desktop and Thai mobile',async t=>{
   const directory=await mkdtemp(path.join(os.tmpdir(),'forge-completion-ui-')),app=await createApplication({dataDir:path.join(directory,'state')});
@@ -24,14 +25,7 @@ test('built App Mission journey uses real Owner forms, local tests, preview, QA 
   app.t3.reconcile=async id=>app.store.read().runs.find(r=>r.id===id);
   browser=await chromium.launch({headless:true});const page=await browser.newPage({viewport:{width:1440,height:1000},acceptDownloads:true});page.setDefaultTimeout(20000);
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
-  const nav=async name=>{
-    const navigation=page.locator('.sidebar nav');
-    if(!await navigation.isVisible())await page.getByRole('button',{name:'Menu',exact:true}).click();
-    const route=navigation.getByRole('button',{name,exact:true,includeHidden:true});
-    const group=route.locator('xpath=ancestor::details[1]');
-    if(await group.count() && !await group.evaluate(element=>element.open))await group.locator('summary').click();
-    await route.click();
-  };
+  const nav=name=>openRoute(page,name);
   await page.addInitScript(({projectId})=>{if(window!==window.top)return;localStorage.setItem('forge.language','en');localStorage.setItem('forge.theme','dark-modern');localStorage.setItem('forge.project',projectId);},{projectId:project.id});
   await page.goto(app.url);await nav('Missions & delivery');
   await page.getByLabel('Mission title',{exact:true}).fill('From brief to verified delivery');
@@ -66,8 +60,8 @@ test('built App Mission journey uses real Owner forms, local tests, preview, QA 
     await page.screenshot({path:path.join(captureDir,file+'-desktop.png'),fullPage:true});
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   }
-  await page.getByLabel('Language',{exact:true}).selectOption('th');await page.setViewportSize({width:375,height:900});
-  for(const [label,title,file] of [['ภารกิจและการส่งมอบ','ภารกิจและชุดส่งมอบ','missions'],['พื้นที่งานแยก','พื้นที่ทำงานคู่ขนาน','parallel'],['เวิร์กโฟลว์อัตโนมัติ','งานเชิงรุก','proactive'],['การใช้งานและงบ','งบประมาณและการใช้งาน','budgets'],['รูปแบบการทำงาน','รูปแบบการทำงาน','workflows'],['ห้องวิจัยและประเมินผล','ห้องวิจัยและประเมินผล','research']]){
+  await setLanguage(page,'th');await page.setViewportSize({width:375,height:900});
+  for(const [label,title,file] of [['ภารกิจและการส่งมอบ','ภารกิจและชุดส่งมอบ','missions'],['งานคู่ขนาน','พื้นที่ทำงานคู่ขนาน','parallel'],['งานอัตโนมัติ','งานเชิงรุก','proactive'],['การใช้งานและงบ','งบประมาณและการใช้งาน','budgets'],['รูปแบบการทำงาน','รูปแบบการทำงาน','workflows'],['ห้องทดลองและวัดผล','ห้องวิจัยและประเมินผล','research']]){
     await nav(label);await page.getByRole('heading',{name:title,exact:true}).waitFor();
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,file+' overflow');
     await page.screenshot({path:path.join(captureDir,file+'-mobile.png'),fullPage:true});

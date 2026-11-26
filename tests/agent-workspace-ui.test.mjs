@@ -6,6 +6,7 @@ import path from 'node:path';
 import {chromium} from 'playwright';
 import {createApplication} from '../app/server/main.mjs';
 import {entity} from '../app/server/domain.mjs';
+import {openRoute, setLanguage} from './support/app-shell.mjs';
 
 test('built Chat transforms into a scoped graph and reuses guarded run controls without dispatch on view changes', async context => {
   const directory = await mkdtemp(path.join(os.tmpdir(), 'forge-agent-workspace-'));
@@ -14,14 +15,7 @@ test('built Chat transforms into a scoped graph and reuses guarded run controls 
   const browser = await chromium.launch({headless: true, ...(process.env.FORGE_TEST_BROWSER ? {executablePath: process.env.FORGE_TEST_BROWSER} : {})});
   context.after(() => browser.close());
   const page = await browser.newPage({viewport: {width: 1600, height: 1100}}), errors = [], writes = [];
-  const nav = async name => {
-    const navigation = page.locator('.sidebar nav');
-    if (!await navigation.isVisible()) await page.getByRole('button', {name: 'Menu', exact: true}).click();
-    const route = navigation.getByRole('button', {name, exact: true, includeHidden: true});
-    const group = route.locator('xpath=ancestor::details[1]');
-    if (await group.count() && !await group.evaluate(element => element.open)) await group.locator('summary').click();
-    await route.click();
-  };
+  const nav = name => openRoute(page, name);
   page.on('pageerror', error => errors.push(error.message));
   page.on('request', request => {if (request.method() === 'POST') writes.push(new URL(request.url()).pathname);});
   const bootstrap = await page.request.get(app.url + '/api/session');
@@ -45,9 +39,9 @@ test('built Chat transforms into a scoped graph and reuses guarded run controls 
     state.runs.push(entity({kind: 'conversation', conversationId: room.id, botId: reviewer.id, parentRunId: record.id, attemptId: crypto.randomUUID(), operationId: crypto.randomUUID(), status: 'running', connection: {status: 'connected'}, selection: {model: 'Recorded reviewer fixture'}, messages: []}, project.id));
   });
   await page.goto(app.url);
-  await page.getByLabel('Language').selectOption('en');
+  await setLanguage(page, 'en');
   await nav('Conversations');
-  await page.getByRole('button', {name: /Software mission · fixture/}).click();
+  await page.getByRole('main').getByRole('button', {name: /Software mission · fixture/}).click();
   await page.getByLabel('Message', {exact: true}).fill('Unsaved conversation draft');
   await page.getByRole('button', {name: 'Workspace', exact: true}).click();
   await page.getByRole('region', {name: 'Visualization Workspace', exact: true}).waitFor();
@@ -98,14 +92,14 @@ test('built Chat transforms into a scoped graph and reuses guarded run controls 
     await page.screenshot({path: path.join(captureDir, name + '.png'), fullPage: true, animations: 'disabled'});
   }
   await page.emulateMedia({reducedMotion: 'reduce'});
-  await page.getByLabel('Language').selectOption('th');
+  await setLanguage(page, 'th');
   await page.getByRole('button', {name: 'ดูรายการ', exact: true}).click();
   await page.getByRole('button', {name: /ไฟล์ที่เปลี่ยน: allowed\/a.txt/}).click();
   await page.locator('.agent-inspector').getByText('ไฟล์ที่เปลี่ยน: allowed/a.txt',{exact:true}).first().waitFor();
   await page.getByRole('button', {name: /สมาชิกที่ถูกเรียก · Executor/}).focus();
   await page.keyboard.press('Enter');
   await page.getByRole('button', {name: 'ขอหยุด', exact: true}).waitFor();
-  await page.getByRole('button', {name: /Empty fixture room/}).click();
+  await page.getByRole('main').getByRole('button', {name: /Empty fixture room/}).click();
   await page.getByRole('heading', {name: 'บทสนทนาจะกลายเป็นภาพการทำงานที่นี่', exact: true}).waitFor();
   assert.deepEqual(writes.filter(route => /runs\/.*\/(stop|approval|reconcile)|conversations\/send|runs\/start/.test(route)), []);
   assert.deepEqual(errors, []);

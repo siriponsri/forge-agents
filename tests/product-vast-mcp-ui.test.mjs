@@ -5,6 +5,7 @@ import path from 'node:path';
 import os from 'node:os';
 import {chromium} from 'playwright';
 import {createApplication} from '../app/server/main.mjs';
+import {openRoute, setLanguage} from './support/app-shell.mjs';
 
 test('production Vast MCP preset uses literal stdio arguments, no keys and no automatic tool launch',async t=>{
   const root=await mkdtemp(path.join(os.tmpdir(),'forge-vast-ui-'));
@@ -14,9 +15,8 @@ test('production Vast MCP preset uses literal stdio arguments, no keys and no au
   const session=await page.request.get(app.url+'/api/session'),csrf=(await session.json()).csrf;
   const response=await page.request.post(app.url+'/api/command',{headers:{'X-Forge-CSRF':csrf},data:{type:'project.create',operationId:crypto.randomUUID(),data:{name:'Vast preset engineering check',workspace:path.join(root,'workspace')}}});
   assert.equal(response.status(),200);
-  await page.goto(app.url);await page.getByLabel('Language').selectOption('en');
-  const navigation=page.locator('.sidebar nav'),target=navigation.getByRole('button',{name:'Settings',exact:true,includeHidden:true}),group=target.locator('xpath=ancestor::details[1]');
-  if(await group.count()&&!await group.evaluate(e=>e.open))await group.locator('summary').click();await target.click();
+  await page.goto(app.url);await setLanguage(page,'en');
+  await page.locator('aside.sidebar').getByRole('button',{name:'Settings',exact:true}).click();
   await page.getByRole('button',{name:'MCP tools',exact:true}).click();await page.getByText('Add MCP server',{exact:true}).click();
   await page.getByLabel('Prepared Vast MCP folder',{exact:true}).fill('relative-folder');await page.getByRole('button',{name:'Use Vast MCP preset',exact:true}).click();await page.getByRole('alert').waitFor();
   const directory='C:\\FORGE-VAST-FIXTURE\\prepared source';await page.getByLabel('Prepared Vast MCP folder',{exact:true}).fill(directory);await page.getByRole('button',{name:'Use Vast MCP preset',exact:true}).click();
@@ -27,7 +27,7 @@ test('production Vast MCP preset uses literal stdio arguments, no keys and no au
   await page.getByLabel('Project MCP connection',{exact:true}).waitFor();
   const state=app.store.read(),connection=state.connections.find(c=>c.kind==='mcp');assert.equal(connection.name,'Vast MCP · synthetic offers');assert.deepEqual(connection.config.envRefs,[]);assert.equal(connection.lastCheck,undefined);
   assert.equal(state.events.some(e=>e.type==='mcp.call'),false);
-  await page.setViewportSize({width:375,height:1000});await page.getByLabel('Language').selectOption('th');
+  await page.setViewportSize({width:375,height:1000});await setLanguage(page,'th');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
   await page.screenshot({path:path.join(root,'vast-preset-th-375.png'),fullPage:true});assert.deepEqual(errors,[]);
   t.diagnostic(JSON.stringify({directory:root,qualification:'ACTUAL_APP_SAVED_CONFIGURATION_ONLY_NO_TOOL_PROCESS',providerCalls:0}));

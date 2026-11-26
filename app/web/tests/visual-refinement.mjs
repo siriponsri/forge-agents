@@ -6,6 +6,7 @@ import {mkdtemp,writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {chromium} from 'playwright';
+import {chooseTheme, openRoute, openThemePicker, setLanguage} from '../../../tests/support/app-shell.mjs';
 import {createApplication} from '../../server/main.mjs';
 import {THEMES} from '../src/themes.mjs';
 
@@ -19,18 +20,12 @@ const cmd = async(type,projectId,data,record) => {
   const r=await page.request.post(app.url+'/api/command',{data:{operationId:crypto.randomUUID(),type,projectId,data,...(record ? {id:record.id,expectedRevision:record.revision} : {})}});
   assert.ok(r.ok(),await r.text()); return (await r.json()).entity;
 };
-const nav = async name => {
-  const navigation=page.locator('.sidebar nav');
-  if(!await navigation.isVisible())await page.getByRole('button',{name:'Menu',exact:true}).click();
-  const route=navigation.getByRole('button',{name,exact:true,includeHidden:true});
-  const group=route.locator('xpath=ancestor::details[1]');
-  if(await group.count() && !await group.evaluate(element=>element.open))await group.locator('summary').click();
-  await route.click();
-};
+const nav = name => openRoute(page, name);
 const shot = name => page.screenshot({path:path.join(temp,name+'.png'),fullPage:true});
+const closePreferences = async () => { const b=page.getByRole('button',{name:'Language & theme',exact:true}); if(await b.getAttribute('aria-expanded')==='true') await b.click(); };
+const newProject = async () => { await page.getByRole('button',{name:/^Switch project:/}).click(); await page.getByRole('menuitem',{name:'New project',exact:true}).click(); };
 const choose = async id => {
-  await page.getByRole('button',{name:/^Choose theme:/}).click();
-  await page.getByRole('radio',{name:THEMES.find(theme => theme.id===id).label,exact:true}).click();
+  await chooseTheme(page,THEMES.find(theme => theme.id===id).label);
   await page.waitForFunction(id => document.documentElement.dataset.theme===id,id);
 };
 async function fits(label) {
@@ -71,15 +66,16 @@ try {
   let release; const gate=new Promise(resolve => release=resolve);
   await page.route('**/api/state',async route => {await gate;await route.continue();});
   await page.goto(app.url+'/app');
-  await page.getByText(/กำลังโหลด FORGE/).waitFor(); await shot('loading-th');
+  await page.getByText(/กำลังเปิด FORGE/).waitFor(); await shot('loading-th');
   release();
-  await page.getByRole('heading',{name:'พื้นที่สำหรับสิ่งที่คุณอยากสร้าง',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'เริ่มจากไอเดียของคุณ',exact:true}).waitFor();
   await page.unroute('**/api/state');
-  await page.getByLabel('Language',{exact:true}).selectOption('en');
+  await setLanguage(page,'en');
   await page.evaluate(() => document.fonts.ready);
   assert.equal(await page.locator('html').getAttribute('data-theme'),'dark-modern');
   await shot('empty-dark-modern');
-  await page.getByRole('button',{name:'Create first project',exact:true}).focus();
+  await page.getByLabel('Describe what you want to do',{exact:true}).focus(); await page.keyboard.press('Tab'); // keyboard focus
+  assert.equal(await page.getByRole('button',{name:'Create first project',exact:true}).evaluate(e => e===document.activeElement),true);
   assert.equal(await page.getByRole('button',{name:'Create first project',exact:true}).evaluate(e => getComputedStyle(e).outlineStyle),'solid');
   await page.keyboard.press('Enter');
   const modal=page.getByRole('dialog'); await modal.waitFor();
@@ -96,8 +92,8 @@ try {
   assert.equal(await submit.isDisabled(),true); await shot('project-saving');
   submitRelease();
   await modal.waitFor({state:'hidden'}); await page.unroute('**/api/command');
-  await page.getByRole('heading',{name:'Workspace overview',exact:true}).waitFor();
-  await page.getByRole('heading',{name:'Start with your plan.',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'What do you want to do?',exact:true}).waitFor();
+  await page.locator('.home-empty').waitFor(); assert.equal(await page.locator('.home-focus').count(),0,'no task focus without tasks');
   await shot('project-without-tasks');
   const s=await (await page.request.get(app.url+'/api/state')).json(); const p=s.projects[0];
   const bot=await cmd('bot.create',p.id,{name:'Reviewer · ผู้ตรวจ',role:'Inspect developer verification evidence',kind:'resident'});
@@ -108,14 +104,13 @@ try {
   const other=await cmd('project.create',null,{name:'Other engineering fixture',workspace:path.join(temp,'other')});
   await cmd('task.create',other.id,{title:'OTHER PROJECT MUST NOT APPEAR',status:'running'});
   await page.getByRole('button',{name:'Refresh state',exact:true}).click();
-  await page.getByRole('heading',{name:'Review themes and responsive layouts',exact:true}).waitFor();
+  await page.locator('.home-focus').getByText('Review themes and responsive layouts',{exact:true}).waitFor();
   assert.equal(await page.getByText('OTHER PROJECT MUST NOT APPEAR').count(),0);
-  assert.equal(await page.locator('.summary-record dd').first().textContent(),'4');
-  assert.equal(await page.locator('.summary-record dd').nth(1).textContent(),'0');
+  assert.ok((await page.locator('.home-head p').innerText()).includes('4 tasks (2 done) · 0 documents'),'exact project-scoped counts');
   await page.evaluate(() => document.fonts.ready); await shot('overview-1440-dark-modern');
   checks.push('real GUI project creation, autofocus, busy/disabled state, empty project; canonical project-scoped task/status/owner and exact counts');
   // A real service validation error; the draft remains available for correction.
-  await page.getByRole('button',{name:'+ Create project',exact:true}).click();
+  await newProject();
   await page.getByLabel('Project name',{exact:true}).fill('Duplicate workspace fixture');
   await page.getByLabel('Workspace directory',{exact:true}).fill(path.join(temp,'workspace'));
   await page.getByRole('dialog').getByRole('button',{name:'Create project',exact:true}).click();
@@ -128,7 +123,7 @@ try {
   for(const theme of THEMES) {
     await choose(theme.id); await fits(theme.id); await auditContrast(theme.id+' overview');
     await page.locator('.quick-action').first().hover(); await auditContrast(theme.id+' hover');
-    await page.getByRole('button',{name:/^Choose theme:/}).click();
+    await openThemePicker(page);
     await page.getByLabel('Search themes',{exact:true}).fill('not-a-theme');
     await page.getByText('No matching themes. Try another name.').waitFor();
     await auditContrast(theme.id+' no results');
@@ -137,18 +132,20 @@ try {
     await auditContrast(theme.id+' picker');
     await page.keyboard.press('Escape');
     assert.equal(await page.getByRole('button',{name:/^Choose theme:/}).evaluate(e => e===document.activeElement),true);
-    await page.getByRole('button',{name:'+ Create project',exact:true}).click();
+    await closePreferences();
+    await newProject();
     await page.getByLabel('Project name',{exact:true}).fill('Theme audit / ???????');
     await auditContrast(theme.id+' form, input and placeholder');
     await page.getByRole('dialog').getByRole('button',{name:'Close',exact:true}).click();
     if(['light-modern','solarized-dark','high-contrast-dark'].includes(theme.id))await shot('overview-'+theme.id);
   }
   await choose('dark-modern');
-  await page.getByRole('button',{name:/^Choose theme:/}).click();
+  await openThemePicker(page);
   await page.getByLabel('Search themes',{exact:true}).fill('Light Modern');
   await page.keyboard.press('ArrowDown'); await page.keyboard.press('Enter');
   await page.waitForFunction(() => document.documentElement.dataset.theme==='light-modern');
-  await page.reload(); await page.getByRole('heading',{name:'Workspace overview',exact:true}).waitFor();
+  await closePreferences();
+  await page.reload(); await page.getByRole('heading',{name:'What do you want to do?',exact:true}).waitFor();
   assert.equal(await page.locator('html').getAttribute('data-theme'),'light-modern');
   await choose('dark-modern');
   checks.push('15 named themes; rendered text contrast in overview/hover/picker/empty search/form; keyboard selection, Escape focus restoration, reload persistence');
@@ -164,18 +161,18 @@ try {
   const longTitle='ตรวจหลักฐานและการเปิดเอกสารอีกครั้ง — Review the saved report, workbook formulas, and verification evidence before proceeding';
   await cmd('task.update',p.id,{title:longTitle,status:'blocked'},created[2]);
   await page.getByRole('button',{name:'Refresh state',exact:true}).click();
-  await page.getByRole('heading',{name:longTitle,exact:true}).waitFor();
+  await page.locator('.home-focus').getByText(longTitle,{exact:true}).waitFor();
   for(const width of [320,375,414,768,1440,1920]) {
     await page.setViewportSize({width,height:1000}); await fits('width '+width);
-    await page.getByRole('button',{name:/^Choose theme:/}).click(); await fits('picker '+width); await page.keyboard.press('Escape');
-    if(width<960) {await page.getByRole('button',{name:'Menu',exact:true}).click(); await page.locator('.sidebar nav').waitFor(); await shot('drawer-'+width); await nav('Overview');}
+    await openThemePicker(page); await fits('picker '+width); await page.keyboard.press('Escape'); await closePreferences();
+    if(width<960) {await page.getByRole('button',{name:'Menu',exact:true}).click(); await page.locator('.sidebar .side-new').waitFor(); await fits('drawer '+width); await shot('drawer-'+width); await page.keyboard.press('Escape'); await page.locator('.sidebar .side-new').waitFor({state:'hidden'});}
     await shot('overview-long-'+width);
-    for(const lang of ['th','en']) {await page.getByLabel('Language',{exact:true}).selectOption(lang); await fits(lang+' '+width);}
+    for(const lang of ['th','en']) {await setLanguage(page,lang); await fits(lang+' '+width);}
   }
   checks.push('320/375/414/768/1440/1920; real long mixed TH/EN task title; native theme dialog bounds; mobile navigation drawer');
   await page.emulateMedia({forcedColors:'active'}); await fits('forced colors'); await shot('forced-colors');
   await page.emulateMedia({forcedColors:'none'});
-  assert.equal(await page.locator('.work-focus').evaluate(e => getComputedStyle(e).animationName),'none');
+  assert.equal(await page.locator('.composer').evaluate(e => getComputedStyle(e).transitionDuration),'0s');
   assert.equal(await page.locator('.quick-action').first().evaluate(e => getComputedStyle(e).transitionDuration),'0s');
   checks.push('visible keyboard focus; forced colors; reduced motion and no page exceptions');
   assert.deepEqual(errors,[]);

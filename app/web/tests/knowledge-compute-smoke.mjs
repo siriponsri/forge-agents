@@ -4,12 +4,13 @@ import {mkdtemp,writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {chromium} from 'playwright';
+import {chooseTheme, openRoute, openThemePicker, setLanguage} from '../../../tests/support/app-shell.mjs';
 import {createApplication} from '../../server/main.mjs';
 const temp=await mkdtemp(path.join(os.tmpdir(),'forge-knowledge-integrated-')),app=await createApplication({dataDir:path.join(temp,'state')});
 const browser=await chromium.launch({headless:true}),page=await browser.newPage({viewport:{width:1440,height:1050}}),errors=[];
 page.setDefaultTimeout(20000);page.on('pageerror',e=>errors.push(e.message));
 const click=name=>page.getByRole('button',{name,exact:true}).click();
-async function nav(name){if(await page.getByLabel('Menu',{exact:true}).isVisible())await page.getByLabel('Menu',{exact:true}).click();await page.getByRole('navigation').getByRole('button',{name,exact:true}).click();}
+const nav=name=>openRoute(page,name);
 async function post(route,data){const session=await(await page.request.get(app.url+'/api/session')).json();const response=await page.request.post(app.url+route,{data,headers:{'X-Forge-CSRF':session.csrf}});const result=await response.json();assert.ok(response.ok(),JSON.stringify(result));return result;}
 const cmd=async(type,projectId,data)=>(await post('/api/command',{type,projectId,data,operationId:crypto.randomUUID()})).entity;
 async function wait(fn){for(let i=0;i<150;i++){const result=fn(app.store.read());if(result)return result;await page.waitForTimeout(80);}throw Error('Production state did not reach expected condition');}
@@ -40,7 +41,7 @@ try{
   await nav('Mobile Inbox');await page.getByRole('heading',{name:'Mobile Inbox',exact:true}).waitFor();await page.getByText(/No Telegram work yet/).waitFor();
   for(const width of [320,375,414,768]){await page.setViewportSize({width,height:1000});assert.ok(await page.locator('html').evaluate(e=>e.scrollWidth<=innerWidth),`Mobile Inbox overflow ${width}`);}
   await page.screenshot({path:path.join(temp,'mobile-inbox-768.png'),fullPage:true});
-  await page.getByLabel('Language',{exact:true}).selectOption('th');await page.getByRole('heading',{name:'กล่องงานจากมือถือ',exact:true}).waitFor();assert.deepEqual(errors,[]);
+  await setLanguage(page,'th');await page.getByRole('heading',{name:'กล่องงานจากมือถือ',exact:true}).waitFor();assert.deepEqual(errors,[]);
   const evidence={result:'PASSED',fixtureDir:temp,checks:['actual production Memory Studio + central Owner sharing by named project','actual session/CSRF authenticated Context budget and reference-only memory composition','central source appears only after explicit grant','production Goals mount','real local Python through production Compute GUI','production Telegram Inbox setup and honest empty/readiness state','TH/EN, 320/375/414/768 no horizontal overflow, no page exceptions'],providerExecution:'NOT_RUN',liveHermes:'NOT_RUN',liveOpenClaw:'NOT_RUN',homeUat:'HOME_UAT_NOT_RUN'};
   await writeFile(path.join(temp,'evidence.json'),JSON.stringify(evidence,null,2));console.log(JSON.stringify(evidence,null,2));
 }catch(e){console.error('FIXTURE_DIR',temp);await page.screenshot({path:path.join(temp,'failure.png'),fullPage:true}).catch(()=>{});throw e;}

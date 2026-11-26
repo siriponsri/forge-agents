@@ -4,6 +4,7 @@ import {mkdtemp,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import {chromium} from 'playwright';
+import {chooseTheme, openRoute, openThemePicker, setLanguage} from '../../../tests/support/app-shell.mjs';
 import {createApplication} from '../../server/main.mjs';
 const temp=await mkdtemp(path.join(os.tmpdir(),'forge-serving-gui-'));
 const app=await createApplication({dataDir:path.join(temp,'state')});
@@ -13,12 +14,12 @@ const state=async()=>(await page.request.get(app.url+'/api/state')).json();
 const button=name=>page.getByRole('button',{name,exact:true});
 async function wait(predicate){for(let i=0;i<600;i++){const snapshot=await state();if(predicate(snapshot))return snapshot;await page.waitForTimeout(100);}throw new Error('Serving state timeout');}
 try{
-  await page.goto(app.url+'/app');await page.getByLabel('Language',{exact:true}).selectOption('en');await button('Create first project').click();
+  await page.goto(app.url+'/app');await setLanguage(page,'en');await button('Create first project').click();
   await page.getByLabel('Project name',{exact:true}).fill('Disposable serving engineering fixture');await page.getByLabel('Workspace directory').fill(path.join(temp,'workspace'));await page.getByRole('dialog').getByRole('button',{name:'Create project',exact:true}).click();await wait(s=>s.projects.length===1);
-  await page.getByRole('navigation').getByRole('button',{name:'Artifacts',exact:true}).click();
+  await openRoute(page,'Artifacts');
   const source=[['weights.json','model',{format:'forge.linear.v1',weights:[2,-1],bias:0.5,engineeringFixture:true}],['preprocessor.json','preprocessor',{format:'forge.standardize.v1',mean:[1,2],scale:[2,4]}]];
   for(const [name,kind,json]of source){await page.getByLabel('Upload a file (up to 16 MB)',{exact:true}).setInputFiles({name,mimeType:'application/json',buffer:Buffer.from(JSON.stringify(json))});await page.getByLabel('Uploaded artifact kind',{exact:true}).selectOption(kind);await button('Upload & verify').click();await wait(s=>s.artifacts.some(a=>a.name===name));}
-  await page.getByRole('navigation').getByRole('button',{name:'Models & serving',exact:true}).click();
+  await openRoute(page,'Models & serving');
   let s=await state();await page.getByLabel('Model artifact revision',{exact:true}).selectOption(s.artifacts.find(a=>a.kind==='model').id);await page.getByLabel('Preprocessor artifact revision',{exact:true}).selectOption(s.artifacts.find(a=>a.kind==='preprocessor').id);
   await button('Save artifact binding').click();await wait(s=>s.projects[0].profile.serving?.adapter==='litserve');
   const started=page.waitForResponse(r=>r.url().endsWith('/api/serving/start')&&r.request().method()==='POST',{timeout:300000});await button('Set up & start LitServe').click();const startResponse=await started;assert.equal(startResponse.status(),200);const deployment=await startResponse.json();assert.equal(deployment.status,'running',JSON.stringify(deployment.error));

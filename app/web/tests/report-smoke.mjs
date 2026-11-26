@@ -4,6 +4,7 @@ import { mkdtemp,writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { chromium } from 'playwright';
+import {chooseTheme, openRoute, openThemePicker, setLanguage} from '../../../tests/support/app-shell.mjs';
 import { createApplication } from '../../server/main.mjs';
 import {newSnapshot} from '../src/univer.mjs';
 if(process.env.FORGE_REPORT_GUI!=='1')throw new Error('Set FORGE_REPORT_GUI=1 to run native report GUI qualification.');
@@ -15,14 +16,14 @@ const state=async()=>(await page.request.get(app.url+'/api/state')).json();
 const click=name=>page.getByRole('button',{name,exact:true}).click();
 async function wait(predicate){for(let n=0;n<160;n++){const s=await state();if(predicate(s))return s;await new Promise(r=>setTimeout(r,100));}throw new Error('Timed out waiting for real report state');}
 try{
-  await page.goto(app.url);await page.getByLabel('Language',{exact:true}).selectOption('en');await click('Create first project');
+  await page.goto(app.url);await setLanguage(page,'en');await click('Create first project');
   await page.getByLabel('Project name',{exact:true}).fill('Disposable report GUI qualification');await page.getByLabel('Workspace directory').fill(path.join(temp,'workspace'));await page.getByRole('dialog').getByRole('button',{name:'Create project',exact:true}).click();await wait(s=>s.projects.length===1);
   const projectId=(await state()).projects[0].id;
   const snapshot=newSnapshot('sheet','รายงานจากตาราง');snapshot.sheets.sheet1.cellData={0:{0:{v:'รายการ'},1:{v:'จำนวน'}},1:{0:{v:'Engineering value'},1:{f:'=2+3',v:5}}};
   const created=await page.request.post(app.url+'/api/command',{data:{type:'document.create',operationId:crypto.randomUUID(),projectId,data:{name:'รายงานจากตาราง',kind:'sheet',snapshot,packageVersion:'1.6.1'}}});assert.equal(created.status(),200);
-  await page.getByRole('navigation').getByRole('button',{name:'Artifacts',exact:true}).click();
+  await openRoute(page,'Artifacts');
   await page.getByLabel('Upload a file (up to 16 MB)',{exact:true}).setInputFiles('app/web/public/forge-workbench-preview.png');await page.getByLabel('Uploaded artifact kind',{exact:true}).selectOption('figure');await click('Upload & verify');await wait(s=>s.artifacts.some(a=>a.kind==='png'&&a.source?.kind==='browser-upload'));
-  await page.getByRole('navigation').getByRole('button',{name:'Report Studio',exact:true}).click();
+  await openRoute(page,'Report Studio');
   await click('Engines & fonts');
   const cache=path.join(process.env.LOCALAPPDATA,'FORGE','report-engine-research');
   await page.getByLabel('WordCraft executable',{exact:true}).fill(path.join(cache,'wordcraft-0.18.1','wordcraft-0.18.1-windows-x64-portable','wordcraft-cli.exe'));

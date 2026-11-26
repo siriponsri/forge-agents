@@ -9,8 +9,10 @@ import path from 'node:path';
 import { chromium } from 'playwright';
 import { createApplication } from '../app/server/main.mjs';
 import { THEMES } from '../app/web/src/themes.mjs';
+import { PINNED_PAGES } from '../app/web/src/shell-routes.mjs';
+import { chooseTheme, openPalette, openRoute, setLanguage } from './support/app-shell.mjs';
 
-test('production navigation: every route, bilingual discovery, disclosures, Office guard, themes and narrow drawers', { timeout: 240000 }, async t => {
+test('production shell: every route via palette in TH/EN, sidebar threads, composer, tabs, Office guard, themes and narrow drawers', { timeout: 300000 }, async t => {
   const directory = await mkdtemp(path.join(os.tmpdir(), 'forge-navigation-ui-'));
   t.diagnostic('Evidence: ' + directory);
   const app = await createApplication({ dataDir: path.join(directory, 'state'), machineSecretDir: path.join(directory, 'vault') });
@@ -29,161 +31,216 @@ test('production navigation: every route, bilingual discovery, disclosures, Offi
   const navSource = source.slice(source.indexOf('  const nav = ['), source.indexOf('  const startT3'));
   const routes = [...navSource.matchAll(/\[['"]([^'"]+)['"],\s*\w+,\s*['"]([^'"]+)['"],\s*['"]([^'"]+)['"]\]/g)]
     .map(([, id, th, en]) => ({ id, th, en }));
-  assert.equal(routes.length, 23);
-  const navigation = page.locator('.sidebar nav');
+  assert.equal(routes.length, 24);
+  const sidebar = page.locator('aside.sidebar');
   const click = name => page.getByRole('button', { name, exact: true }).click();
   const showNav = async () => {
-    if (!await navigation.isVisible()) await click('Menu');
-  };
-  const nav = async name => {
-    await showNav();
-    const route = navigation.getByRole('button', { name, exact: true, includeHidden: true });
-    const group = route.locator('xpath=ancestor::details[1]');
-    if (await group.count() && !await group.evaluate(element => element.open)) await group.locator('summary').click();
-    await route.click();
+    if (!await sidebar.locator('.side-new').isVisible()) await click('Menu');
+    await sidebar.locator('.side-new').waitFor();
   };
   const shot = async name => {
     await page.evaluate(() => document.fonts.ready);
     const file = path.join(directory, name + '.png');
     await page.screenshot({ path: file, fullPage: false }); captures.push(file);
   };
-  const current = async name => {
-    await navigation.getByRole('button', { name, exact: true, includeHidden: true }).and(page.locator('[aria-current="page"]')).waitFor({ state: 'attached' });
-    assert.equal(await navigation.locator('[aria-current="page"]').count(), 1);
+  // The breadcrumb names the shown page; a pinned route is also current in the sidebar
+  // and every non-home route is the current tab. Never more than one current item each.
+  const current = async (route, lang) => {
+    const label = route[lang];
+    await page.locator('.crumb-page').filter({ hasText: new RegExp(`^${label.replace(/[.*+?^${}()|[\]\\&]/g, '\\$&')}$`) }).waitFor();
+    assert.ok(await sidebar.locator('[aria-current="page"]').count() <= 1, route.id + ' single sidebar current');
+    if (PINNED_PAGES.includes(route.id) || route.id === 'settings')
+      assert.equal(await sidebar.getByRole('button', { name: label, exact: true, includeHidden: true }).getAttribute('aria-current'), 'page', route.id + ' sidebar current');
+    if (route.id !== 'overview') {
+      const tab = page.getByRole('navigation', { name: lang === 'en' ? 'Open pages' : 'หน้าที่เปิดอยู่' }).locator('[aria-current="page"]');
+      assert.equal(await tab.count(), 1, route.id + ' single current tab');
+      assert.equal((await tab.innerText()).trim(), label, route.id + ' current tab label');
+    }
   };
   const fits = async label => {
     assert.equal(await page.locator('html').evaluate(e => e.scrollWidth <= innerWidth), true, label + ' document overflow');
-    const bad = await page.locator('.sidebar').evaluate(sidebar => {
-      const bounds = sidebar.getBoundingClientRect();
-      return [...sidebar.querySelectorAll('button,input,summary,.nav-label')].filter(e => {
+    const bad = await sidebar.evaluate(aside => {
+      const bounds = aside.getBoundingClientRect();
+      return [...aside.querySelectorAll('button,a,.side-label,.thread-title')].filter(e => {
         const r = e.getBoundingClientRect();
         return e.checkVisibility() && r.width && r.height && (r.left < bounds.left - 1 || r.right > bounds.right + 1);
       }).map(e => e.textContent);
     });
     assert.deepEqual(bad, [], label + ' sidebar bounds');
   };
-  const auditContrast = async label => {
-    const result = await navigation.evaluate(nav => {
+  const auditContrast = async (label, root, selector) => {
+    const result = await root.evaluate((node, selector) => {
       const rgb = s => s.match(/[\d.]+/g).map(Number);
       const lum = a => a.slice(0, 3).map(c => (c /= 255) <= .04045 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4).reduce((v, c, i) => v + c * [.2126, .7152, .0722][i], 0);
       const results = [];
-      for (const e of nav.querySelectorAll('summary,input,.nav-label,.workspace-nav-status')) {
-        if (!e.checkVisibility() || !e.getBoundingClientRect().height) continue;
+      for (const e of node.querySelectorAll(selector)) {
+        if (!e.checkVisibility() || !e.getBoundingClientRect().height || !(e.textContent || e.placeholder)) continue;
         const cs = getComputedStyle(e), placeholder = e.tagName === 'INPUT' && !e.value;
         let bg;
         for (let p = e; p; p = p.parentElement) { const c = rgb(getComputedStyle(p).backgroundColor); if (c.length === 3 || c[3] === 1) { bg = c; break; } }
+        bg ??= rgb(getComputedStyle(document.body).backgroundColor);
         const a = lum(rgb(placeholder ? getComputedStyle(e, '::placeholder').color : cs.color)), b = lum(bg);
-        results.push({ text: e.textContent || e.placeholder || e.value, ratio: (Math.max(a, b) + .05) / (Math.min(a, b) + .05) });
+        results.push({ text: (e.textContent || e.placeholder).trim().slice(0, 40), ratio: (Math.max(a, b) + .05) / (Math.min(a, b) + .05) });
       }
       return results;
-    });
+    }, selector);
     assert.ok(result.length > 0, label + ' visible text audited');
     assert.deepEqual(result.filter(row => row.ratio < 4.485), [], label + ' text contrast');
     contrast.push({ label, minimum: Math.min(...result.map(row => row.ratio)), elements: result.length });
   };
+  const SHELL_TEXT = '.side-label,.thread-title,.thread-time,.side-heading span,.side-empty,.project-switcher-name,.brand-word,.crumb-project,.crumb-page,.page-tab-open span';
+  const PALETTE_TEXT = '.palette-label,.palette-hint,.palette-group-label,.palette-empty,.palette-foot span,input';
 
+  // First run: no project. Quiet sidebar, composer-style empty state.
   await page.goto(app.url + '/app');
-  await navigation.getByRole('button', { name: 'ภาพรวม', exact: true }).waitFor();
+  await page.getByRole('heading', { level: 1, name: 'เริ่มจากไอเดียของคุณ', exact: true }).waitFor();
   assert.equal(app.store.read().projects.length, 0);
-  assert.deepEqual(await navigation.locator('details').evaluateAll(nodes => nodes.map(e => e.open)), [true, false, false, false]);
-  assert.equal(await navigation.getByRole('button').count(), 5, 'five initial route choices');
+  assert.equal(await sidebar.locator('.side-section').last().getByRole('button').count(), PINNED_PAGES.length + 1, 'six pinned surfaces and All tools');
+  assert.equal(await sidebar.getByRole('button', { name: 'ทีมผู้ช่วย AI' }).count() + await sidebar.getByRole('button', { name: 'ความจำของ AI' }).count(), 0, 'unpinned routes stay in the palette');
   await shot('empty-th-1440-dark-modern');
-  await page.getByLabel('Language', { exact: true }).selectOption('en');
+  await setLanguage(page, 'en');
 
-  const createGroup = navigation.locator('details').nth(1), summary = createGroup.locator('summary');
-  await summary.focus(); await page.keyboard.press('Enter');
-  assert.equal(await createGroup.evaluate(e => e.open), true);
-  await page.keyboard.press('Space');
-  assert.equal(await createGroup.evaluate(e => e.open), false);
-  assert.equal(await summary.evaluate(e => e === document.activeElement && e.matches(':focus-visible') && getComputedStyle(e).outlineStyle !== 'none'), true);
-  await shot('summary-keyboard-focus');
+  // Keyboard: Ctrl+K opens a modal combobox, arrows move the active option, Escape restores focus.
+  await sidebar.getByRole('button', { name: 'New AI product', exact: true }).focus();
+  await page.keyboard.press('Control+K');
+  const combo = page.getByRole('dialog', { name: 'Search and commands' }).getByRole('combobox');
+  await combo.waitFor();
+  assert.equal(await combo.evaluate(e => e === document.activeElement), true, 'palette focuses its input');
+  const firstActive = await combo.getAttribute('aria-activedescendant');
+  await page.keyboard.press('ArrowDown');
+  assert.notEqual(await combo.getAttribute('aria-activedescendant'), firstActive, 'ArrowDown moves the active option');
+  await page.keyboard.press('Tab');
+  assert.equal(await combo.evaluate(e => e === document.activeElement), true, 'Tab stays inside the palette');
+  assert.equal(await page.getByRole('listbox').getByRole('option').and(page.locator('[data-kind="page"]')).count(), routes.length, 'All tools lists every route');
+  await shot('palette-all-tools');
+  await page.keyboard.press('Escape');
+  await combo.waitFor({ state: 'detached' });
+  assert.equal(await sidebar.getByRole('button', { name: 'New AI product', exact: true }).evaluate(e => e === document.activeElement && e.matches(':focus-visible') && getComputedStyle(e).outlineStyle !== 'none'), true, 'focus restored with a visible ring');
 
-  await click('+ Create project');
+  // Create the project from the project switcher.
+  await sidebar.getByRole('button', { name: /^Switch project:/ }).click();
+  await page.getByRole('menuitem', { name: 'New project', exact: true }).click();
   await page.getByLabel('Project name', { exact: true }).fill('Navigation engineering fixture · ทดสอบ');
   await page.getByLabel('Workspace directory', { exact: true }).fill(path.join(directory, 'workspace'));
   await click('Create project');
-  await page.getByRole('heading', { level: 1, name: 'Workspace overview', exact: true }).waitFor();
+  await page.getByRole('heading', { level: 1, name: 'What do you want to do?', exact: true }).waitFor();
   assert.equal(app.store.read().projects.length, 1);
 
-  // All existing accessible names survive, in both languages, with native disclosure.
-  for (const lang of ['en', 'th']) {
-    await page.getByLabel('Language', { exact: true }).selectOption(lang);
-    for (const route of routes) {
-      await nav(route[lang]); await current(route[lang]);
-      const activeGroup = navigation.locator('details').filter({ has: navigation.getByRole('button', { name: route[lang], exact: true }) });
-      if (await activeGroup.count()) assert.equal(await activeGroup.evaluate(e => e.open), true, route.id);
-      assert.ok((await page.locator('.topbar-title').innerText()).includes(route.en));
-    }
-  }
-  await page.getByLabel('Language', { exact: true }).selectOption('en');
-  await nav('Overview');
-  await page.getByRole('main').getByRole('button', { name: /Docs & sheets/ }).click();
-  await current('Docs & sheets');
-  assert.equal(await createGroup.evaluate(e => e.open), true, 'Overview quick action reopens active group');
-
-  // Search works across TH/EN and returns the unchanged ordinary route buttons.
-  for (const route of routes) {
-    await navigation.getByRole('searchbox', { name: 'Find a tool', exact: true }).fill(route.en.toUpperCase());
-    await navigation.getByRole('button', { name: route.en, exact: true }).click(); await current(route.en);
-  }
-  await navigation.getByRole('searchbox').fill('ความจำและความรู้');
-  await navigation.getByRole('searchbox').press('Tab'); // clear search
-  await page.keyboard.press('Tab'); // the ordinary result button
-  assert.equal(await navigation.getByRole('button', { name: 'Memory Studio', exact: true }).evaluate(e => e === document.activeElement), true);
+  // Required palette path: Ctrl+K → "report" → Enter opens Report Studio.
+  await page.keyboard.press('Control+K');
+  await combo.fill('report');
   await page.keyboard.press('Enter');
-  await current('Memory Studio');
-  await navigation.getByRole('searchbox').fill('no-such-tool-xyz');
-  assert.ok(await page.getByRole('button', { name: 'Clear tool search', exact: true }).evaluate(e => e.getBoundingClientRect().width <= 44), 'clear is a compact end control');
-  await navigation.getByRole('searchbox').click({ position: { x: 55, y: 20 } });
-  assert.equal(await navigation.getByRole('searchbox').evaluate(e => e === document.activeElement), true, 'clear does not cover the search field');
-  await navigation.getByRole('status').filter({ hasText: 'No tools found' }).waitFor();
-  await shot('search-no-results');
-  await navigation.getByRole('searchbox').press('Escape');
-  assert.equal(await navigation.getByRole('searchbox').inputValue(), '');
-  assert.equal(await navigation.getByRole('searchbox').evaluate(e => e === document.activeElement), true);
-  assert.equal(await navigation.locator('details').nth(2).evaluate(e => e.open), true, 'clear reopens active route group');
-  await navigation.getByRole('searchbox').fill('plan'); await click('Clear tool search');
-  assert.equal(await navigation.getByRole('searchbox').evaluate(e => e === document.activeElement), true);
+  await current(routes.find(r => r.id === 'reports'), 'en');
+  await page.getByRole('heading', { level: 1, name: /Report Studio/ }).waitFor();
 
-  await nav('Overview');
-  await shot('default-project-en-1440-dark-modern');
-  // Theme switching uses the real chooser and settings update, not token injection.
-  assert.equal(THEMES.length, 15);
-  for (const theme of THEMES) {
-    await page.getByRole('button', { name: /^Choose theme:/ }).click();
-    await page.getByRole('radio', { name: theme.label, exact: true }).click();
-    await page.waitForFunction(id => document.documentElement.dataset.theme === id, theme.id);
-    await auditContrast(theme.id + ' default');
-    await navigation.locator('summary').nth(1).hover(); await auditContrast(theme.id + ' summary hover');
-    await navigation.getByRole('button', { name: 'Overview', exact: true }).hover(); await auditContrast(theme.id + ' active hover');
-    await navigation.getByRole('searchbox').fill('zz-no-tool'); await auditContrast(theme.id + ' no results');
-    await click('Clear tool search');
-    if (['light-modern', 'high-contrast-dark'].includes(theme.id)) await shot('navigation-' + theme.id);
-  }
-  await page.getByRole('button', { name: /^Choose theme:/ }).click();
-  await page.getByRole('radio', { name: 'Dark Modern', exact: true }).click();
-
+  // Every route by its visible name, in both languages.
   for (const lang of ['en', 'th']) {
-    await page.getByLabel('Language', { exact: true }).selectOption(lang);
-    const label = routes.find(r => r.id === 'settings')[lang];
+    await setLanguage(page, lang);
+    for (const route of routes) { await openRoute(page, route[lang]); await current(route, lang); }
+  }
+  await setLanguage(page, 'en');
+  // Ranked search: an upper-case English name and a Thai name both resolve with Enter.
+  for (const route of routes) {
+    const box = await openPalette(page);
+    await box.fill(route.en.toUpperCase()); await page.keyboard.press('Enter'); await current(route, 'en');
+  }
+  let box = await openPalette(page);
+  await box.fill('ความจำของ AI'); await page.keyboard.press('Enter');
+  await current(routes.find(r => r.id === 'memory'), 'en');
+  box = await openPalette(page);
+  await box.fill('no-such-tool-xyz');
+  await page.getByRole('status').filter({ hasText: '0 results' }).waitFor();
+  await page.getByText('Nothing matches “no-such-tool-xyz”. Try another word or the Thai name.', { exact: true }).waitFor();
+  await shot('palette-no-results');
+  await auditContrast('dark-modern palette empty', page.locator('.palette'), PALETTE_TEXT);
+  await page.keyboard.press('Escape');
+  assert.equal(await page.getByRole('button', { name: 'Search and commands' }).evaluate(e => e === document.activeElement), true, 'Escape returns focus to the trigger');
+
+  // Home composer: chips route through the guard; "Start building" hands the prompt to
+  // AI Product Studio; "Just chat" creates a real conversation with the message.
+  await sidebar.getByRole('button', { name: 'FORGE home' }).click();
+  await page.getByRole('main').getByRole('button', { name: 'Write a doc or sheet', exact: true }).click();
+  await current(routes.find(r => r.id === 'office'), 'en');
+  await sidebar.getByRole('button', { name: 'New AI product', exact: true }).click();
+  const composer = page.getByLabel('Describe what you want to do', { exact: true });
+  await page.waitForFunction(() => document.activeElement?.matches('.composer textarea'));
+  assert.equal(await page.getByRole('button', { name: 'Start building', exact: true }).isDisabled(), true, 'empty prompt cannot start');
+  await composer.fill('Forecast weekly orders from the fixture CSV');
+  await composer.press('Enter');
+  await current(routes.find(r => r.id === 'studio'), 'en');
+  await page.getByText('Forecast weekly orders from the fixture CSV', { exact: true }).waitFor();
+  assert.equal(app.store.read().conversations.length, 0, 'building does not create a conversation');
+  await sidebar.getByRole('button', { name: 'FORGE home' }).click();
+  await composer.fill('Summarise the fixture records');
+  await page.getByRole('button', { name: 'Just chat', exact: true }).click();
+  await page.locator('.conversation h2').filter({ hasText: 'Summarise the fixture records' }).waitFor();
+  let saved = app.store.read().conversations;
+  assert.equal(saved.length, 1);
+  assert.equal(saved[0].messages[0].text, 'Summarise the fixture records');
+  assert.equal(await sidebar.locator('.thread-row[aria-current="page"]').innerText().then(s => s.includes('Summarise the fixture records')), true);
+
+  // Sidebar threads open the chosen conversation in Chat.
+  const csrf = (await (await page.request.get(app.url + '/api/session')).json()).csrf;
+  const projectId = app.store.read().projects[0].id;
+  await page.request.post(app.url + '/api/command', { headers: { 'X-Forge-CSRF': csrf }, data: { operationId: crypto.randomUUID(), type: 'conversation.create', projectId, data: { name: 'Second fixture thread', kind: 'team' } } });
+  await sidebar.getByRole('button', { name: /Second fixture thread/ }).click();
+  await page.locator('.conversation h2').filter({ hasText: 'Second fixture thread' }).waitFor();
+  assert.equal(await sidebar.getByRole('button', { name: /Second fixture thread/ }).getAttribute('aria-current'), 'page');
+  await shot('chat-from-sidebar-thread');
+
+  // Collapse to the icon rail with Ctrl+B; rail and tabs survive a reload.
+  await page.keyboard.press('Control+B');
+  await page.waitForFunction(() => document.querySelector('aside.sidebar').getBoundingClientRect().width <= 60);
+  const tabsBefore = await page.locator('.page-tab-open').allInnerTexts();
+  await page.reload();
+  await page.getByRole('heading', { level: 1, name: 'What do you want to do?' }).waitFor();
+  assert.ok((await sidebar.boundingBox()).width <= 60, 'collapsed rail persists');
+  assert.deepEqual(await page.locator('.page-tab-open').allInnerTexts(), tabsBefore, 'open tabs persist');
+  await shot('rail-collapsed');
+  await page.keyboard.press('Control+B');
+  await page.waitForFunction(() => document.querySelector('aside.sidebar').getBoundingClientRect().width >= 250);
+
+  // Theme switching uses the real chooser and settings update; audit chrome and palette text.
+  assert.equal(THEMES.length, 15);
+  await openRoute(page, 'Plan & tasks');
+  for (const theme of THEMES) {
+    await chooseTheme(page, theme.label);
+    await page.waitForFunction(id => document.documentElement.dataset.theme === id, theme.id);
+    await auditContrast(theme.id + ' shell', page.locator('.workbench'), SHELL_TEXT);
+    await sidebar.getByRole('button', { name: 'Docs & sheets', exact: true }).hover(); await auditContrast(theme.id + ' row hover', sidebar, SHELL_TEXT);
+    await sidebar.getByRole('button', { name: 'Plan & tasks', exact: true }).hover(); await auditContrast(theme.id + ' current hover', sidebar, SHELL_TEXT);
+    const search = await openPalette(page);
+    await auditContrast(theme.id + ' palette', page.locator('.palette'), PALETTE_TEXT);
+    await search.fill('doc'); await auditContrast(theme.id + ' palette results', page.locator('.palette'), PALETTE_TEXT);
+    await search.fill('zz-no-tool'); await auditContrast(theme.id + ' palette empty', page.locator('.palette'), PALETTE_TEXT);
+    await page.keyboard.press('Escape');
+    if (['light-modern', 'high-contrast-dark'].includes(theme.id)) await shot('shell-' + theme.id);
+  }
+  await chooseTheme(page, 'Dark Modern');
+
+  // Narrow widths: the sidebar is a drawer that fits, and choosing a route closes it.
+  for (const lang of ['en', 'th']) {
+    await setLanguage(page, lang);
+    const settings = routes.find(r => r.id === 'settings');
     for (const width of [320, 375, 768, 1440]) {
       await page.setViewportSize({ width, height: 1000 });
       await showNav(); await fits(lang + width);
       await shot(`drawer-${lang}-${width}`);
-      await navigation.getByRole('searchbox').fill(lang === 'en' ? 'Settings' : 'ตั้งค่า');
-      await navigation.getByRole('button', { name: label, exact: true }).click();
-      if (width < 960) assert.equal(await navigation.isVisible(), false, 'route closes drawer');
-      await showNav();
-      await click(lang === 'en' ? 'Clear tool search' : 'ล้างการค้นหาเครื่องมือ');
-      await current(label); await fits('active settings ' + lang + width);
-      assert.equal(await navigation.locator('details').last().evaluate(e => e.open), true);
-      await nav(lang === 'en' ? 'Overview' : 'ภาพรวม');
+      if (width < 960) for (const target of await sidebar.locator('.side-row:visible, .thread-row:visible, .side-new').all())
+        assert.ok((await target.boundingBox()).height >= 43.5, 'touch target height ' + width);
+      await sidebar.getByRole('button', { name: settings[lang], exact: true }).click();
+      if (width < 960) assert.equal(await sidebar.locator('.side-new').isVisible(), false, 'route closes drawer');
+      await current(settings, lang); await fits('active settings ' + lang + width);
+      const search = await openPalette(page);
+      const usable = (await page.locator('.palette-backdrop').boundingBox()).width;
+      assert.ok((await page.locator('.palette').boundingBox()).width >= Math.min(usable - 20, 600), 'palette uses the available width ' + width);
+      await search.fill(lang === 'en' ? 'Overview' : 'หน้าแรก'); await page.keyboard.press('Enter');
     }
   }
 
   // Real Office rename creates dirty state while the actual Univer editor is mounted.
-  await page.getByLabel('Language', { exact: true }).selectOption('en');
-  await nav('Docs & sheets'); await click('+ Create document');
+  await setLanguage(page, 'en');
+  await openRoute(page, 'Docs & sheets'); await click('+ Create document');
   await page.getByLabel('Document name', { exact: true }).fill('Unsaved navigation guard fixture');
   await click('Create & open');
   const nameBox = page.locator('[data-u-comp="defined-name"] input');
@@ -191,17 +248,24 @@ test('production navigation: every route, bilingual discovery, disclosures, Offi
   await page.waitForFunction(() => [...document.querySelectorAll('button')].some(button => button.textContent === 'Bounded agent edit' && !button.disabled));
   await page.getByLabel('Rename document', { exact: true }).fill('Unsaved local document name');
   await page.locator('.editor-toolbar').getByText('unsaved', { exact: true }).waitFor();
-  await navigation.getByRole('searchbox').fill('Settings');
-  await navigation.getByRole('button', { name: 'Settings', exact: true }).click();
   const guard = page.getByRole('alertdialog', { name: 'Unsaved document' });
+  const office = routes.find(r => r.id === 'office');
+  // Palette navigation is guarded.
+  await openRoute(page, 'Settings').catch(() => {});
   await guard.waitFor();
-  assert.ok((await page.locator('.topbar-title').innerText()).includes('Docs & sheets'));
+  assert.equal((await page.locator('.crumb-page').innerText()).trim(), 'Docs & sheets');
   await guard.getByRole('button', { name: 'Return to editor', exact: true }).click();
-  await click('Clear tool search'); await current('Docs & sheets');
-  await nav('Plan & tasks'); await guard.waitFor();
+  await current(office, 'en');
+  // Closing the active Office tab is guarded.
+  await page.getByRole('button', { name: 'Close Docs & sheets tab', exact: true }).click();
+  await guard.waitFor();
+  await guard.getByRole('button', { name: 'Return to editor', exact: true }).click();
+  await current(office, 'en');
+  // Sidebar navigation is guarded; discarding leaves without saving.
+  await sidebar.getByRole('button', { name: 'Plan & tasks', exact: true }).click(); await guard.waitFor();
   await shot('unsaved-office-navigation-guard');
   await guard.getByRole('button', { name: 'Discard and leave', exact: true }).click();
-  await current('Plan & tasks');
+  await current(routes.find(r => r.id === 'plan'), 'en');
   assert.equal(app.store.read().documents[0].name, 'Unsaved navigation guard fixture', 'discard does not save unsaved document name');
   assert.equal(app.store.read().runs.length, 0);
   assert.deepEqual(errors, []);

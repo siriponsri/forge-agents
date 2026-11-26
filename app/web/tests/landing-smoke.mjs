@@ -5,6 +5,7 @@ import {createHash} from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import {chromium} from 'playwright';
+import {chooseTheme, openRoute, openThemePicker, setLanguage} from '../../../tests/support/app-shell.mjs';
 import {createApplication} from '../../server/main.mjs';
 import {unzip} from '../../reports/files.mjs';
 const temp=await mkdtemp(path.join(os.tmpdir(),'forge-landing-'));
@@ -50,7 +51,7 @@ try{
   }
   await page.setViewportSize({width:1440,height:1000});
   await page.getByRole('link',{name:'Open workbench',exact:true}).first().click();
-  await page.getByRole('heading',{name:'พื้นที่สำหรับสิ่งที่คุณอยากสร้าง',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'เริ่มจากไอเดียของคุณ',exact:true}).waitFor();
   assert.equal(new URL(page.url()).pathname,'/app');
   assert.equal(await page.locator('html').getAttribute('data-theme'),'dark-modern');
   assert.deepEqual(errors,[]);
