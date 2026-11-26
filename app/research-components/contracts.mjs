@@ -60,7 +60,12 @@ export function validateResearchComponentContext(s,input,clock=Date.now){
   if(digest(researchContextPolicy(s,{projectId:t.projectId,components:t.manifest.components}))!==t.manifest.contextPolicyDigest)fail('RESEARCH_CONTEXT_POLICY','Pinned context policy changed',409);
   const slot=c.slots.find(x=>x.workspaceId===w.id);validateSkills(s,c,slot);
   validateCohortRoute(s,c,clock);
-  const decision=s.events.find(e=>e.type==='adaptive.decision'&&e.id===slot.decisionId&&e.projectId===c.projectId);if(!decision||digest(decision)!==slot.decisionDigest)fail('RESEARCH_COMPONENT_DECISION','Pinned Adaptive selection changed',409);validateDecision(s,decision,c.projectId);
+  const decision=s.events.find(e=>e.type==='adaptive.decision'&&e.id===slot.decisionId&&e.projectId===c.projectId);if(!decision||digest(decision)!==slot.decisionDigest)fail('RESEARCH_COMPONENT_DECISION','Pinned Adaptive selection changed',409);
+  // The fixed cohort already claimed its exact fresh route at approval. Check
+  // that decision's age at the SAME approval instant, while task/skill/route
+  // bytes and all current native account/Stop/deadline gates still revalidate.
+  // Ordinary Adaptive decisions retain their normal fifteen-minute lifetime.
+  validateDecision(s,decision,c.projectId,()=>Date.parse(c.createdAt));
   assertNoMixedControllers(s,c.projectId,{taskId:a.taskId});
   return structuredClone(context);
 }

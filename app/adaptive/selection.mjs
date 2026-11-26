@@ -67,9 +67,10 @@ export function selectFromState(s, input, inventory, t3, connectionService) {
     method:'configured T3 route, observed capabilities and explicit/name relevance filtering; not learned optimization'};
 }
 
-export function validateDecision(s, decision, projectId) {
+export function validateDecision(s, decision, projectId, clock = Date.now) {
+  const observedAt=clock();
   if (decision.status !== 'selected' || !decision.harness) fail('NEEDS_SETUP', 'Selection requires setup before execution', 409);
-  if (!decision.inventory?.observedAt || Date.now() - Date.parse(decision.inventory.observedAt) >= 15*60*1000) fail('STALE_DECISION', 'T3 catalog observation expired; select again', 409);
+  if (!decision.inventory?.observedAt || observedAt - Date.parse(decision.inventory.observedAt) >= 15*60*1000) fail('STALE_DECISION', 'T3 catalog observation expired; select again', 409);
   const task = find(s, 'tasks', decision.taskId, projectId), project = find(s, 'projects', projectId);
   if (decision.taskSignature !== taskSignature(task) || decision.routeSignature !== routeSignature(project)) fail('STALE_DECISION', 'Task or configured route changed; select again', 409);
   for (const skill of decision.skills) {
@@ -78,7 +79,7 @@ export function validateDecision(s, decision, projectId) {
   }
   for (const saved of decision.inventory.connectionRevisions) {
     const c = find(s, 'connections', saved.id, projectId);
-    if (c.revision !== saved.revision || !c.enabled || c.lastCheck?.status !== 'ready' || Date.now() - Date.parse(c.lastCheck.checkedAt) >= 15*60*1000) fail('STALE_DECISION', 'Capability observation changed or expired; discover and select again', 409);
+    if (c.revision !== saved.revision || !c.enabled || c.lastCheck?.status !== 'ready' || observedAt - Date.parse(c.lastCheck.checkedAt) >= 15*60*1000) fail('STALE_DECISION', 'Capability observation changed or expired; discover and select again', 409);
   }
   return {task, project};
 }
