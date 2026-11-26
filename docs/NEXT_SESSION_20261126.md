@@ -1,5 +1,58 @@
 # Resumed work and continuation map
 
+## Latest executable continuation — 26 November, landing finish and native return transport
+
+This section supersedes the older continuation table below. Current branch is
+`fix/research-attestation-check-work`; resumed work is not pushed. Public main
+remains `d928e9c`. Do not mark the complete-product goal achieved.
+
+- Six GUI modes are integrated through canonical owners (`77e6ac0`): 13 service
+  checks, 3 production-owner checks and 42 affected checks passed with disclosed
+  injected native transport. Independent P2 checked-predecessor drift is fixed
+  by `2a34a9e`; independent recheck accepted it (4/4 focused checks). No filesystem
+  locking or native/external-model qualification is inferred.
+- Landing `170274d` was rejected by the Owner. Replacement `ab0b5ce` uses the
+  current model plus Impeccable, explicitly approved after Claude CLI was absent.
+  Fresh reviewer `/root/impeccable_finish_reviewer_landing` issued **fix**, not
+  ship: improve illustrative brief/work/artifact output transitions, readable
+  mobile crop/full-resolution action, truthful pending download states and SVG
+  arrow. Builder thread `470f9d31-9351-4a59-a3fb-ee6565ffa19b` is applying exactly
+  that batch; after its recaptures, send the SAME reviewer a four-fix verdict pass.
+  Original packet: `apps/website/docs/IMPECCABLE_LANDING.md`; initial review:
+  `apps/website/docs/evidence/impeccable-20261126/finish-review-1.json`.
+- Actual source-launcher downloads are committed under website public/downloads.
+  They pin source `02a888c`, contain 420 source files including ALL private setup
+  pipeline tools, and pass source/hash validation. Packaging boundary fix
+  `f3343a1` corrected the earlier omission of those tools. Regenerate after final
+  app changes; the generator refuses existing output, so stage and verify a NEW
+  directory, then switch the owned publication directory. Preserve old artifacts.
+- The native SDK tool payload is valid. New engineering-only image diagnostics
+  narrowed the assembled failure to `session-return` /
+  `FORGE_CURRENT_AUTHORITY_UNAVAILABLE`: first child listing completed; a later
+  child prompt returned valid gateway data, then the return fence failed. It is
+  fetch or response-read uncertainty, NOT a demonstrated SDK result-shape error.
+  HTTP tracing records response finish only, so lack of a finished return does
+  not prove no incoming request. Diagnose request arrival/close/abort next.
+- Engineering source and both images are retained under TEMP
+  `forge-session-native-diagnosis-2FeleD`. Its `engineering-outcome.json` and
+  `engineering-native-test-http.log` hold the safe evidence. CLI
+  `ba1678911ce682b7441870580fce70ec586b58829958ba70b8dccd524791a1d4`,
+  T3+actual Node aggregate
+  `c98c5f6dd3f77563c0191274fd9399b1f6826eeb3a0a2f30f02e0f2aa3a30b80`.
+  Worker branch commits `fc09113`, `0417246`, `007d599`, `4e26264` add only
+  diagnostics and engineering reproduction. They are NOT yet merged/pinned as
+  production fixes; copied installer pin overlays are not production proof.
+  Handoff is in the worker checkout
+  `C:/Users/siripon.sri/.t3/worktrees/forge-agents/t3-a68b403d-0ff40e7d9718b1cd/docs/worker-session-native-diagnosis.md`.
+- Root safe collector (`bb12dce`, `02a888c`) retains only bounded enums in private
+  snapshots, never raw stderr/keys/prompts. Native errors, deadlines and authority
+  checks remain unchanged; do not widen timeouts or invent success/replay.
+- Rebuild integrated App/site, refresh final media/README proofs, complete serial
+  developer checks and reconcile acceptance/handoff after these corrections.
+  Earlier native all-ON Research proof remains limited to frozen `def855d` and
+  its prior image. Real-product/external-server journeys are explicitly deferred
+  to home due work-machine administrator/network restrictions. HOME_UAT_NOT_RUN.
+
 ## Current continuation — 26 November 2026
 
 The Owner explicitly resumed the full goal and authorized subagents. The pause
