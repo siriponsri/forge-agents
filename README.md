@@ -22,8 +22,8 @@ The interface defaults to Thai and supports English. The local core is
 
 > **Development checkpoint — implementation incomplete.** Published `main`
 > checkpoint `d928e9c` is source for continued development and home testing.
-> Complete-product acceptance, newer native integrations and final review remain
-> pending. **Live account checks and Home UAT have not run.** No signed desktop
+> Complete-product acceptance and final release verification remain pending.
+> **Live account checks and Home UAT have not run.** No signed desktop
 > installer is published.
 > [Checkpoint scope and home instructions](docs/CHECKPOINT_HOME_20261125.md) ·
 > [Continuation handoff](docs/NEXT_SESSION_20261126.md).
@@ -259,7 +259,7 @@ live account access or cloud/mobile behavior.
 | Area | Qualification boundary |
 |---|---|
 | Guarded automation and private native setup | The [bounded native route](docs/guarded-route.md) has actual Windows native evidence with a loopback model fixture. Fresh source setup reached READY with documented dependency reuse. Arbitrary tools and unsupported resource caps remain unavailable; installation is not route qualification. |
-| Role sessions and Strategist | Canonical role/approval/Stop and Strategist handoffs are integrated and fixture-tested. The assembled native Orchestrator currently returns `OUTCOME_UNKNOWN` after its first successful SDK response; it is not production-qualified. External model quality is unestablished. |
+| Role sessions and Strategist | Canonical role/approval/Stop and Strategist handoffs are integrated and fixture-tested. The assembled native parent passed on `246daac` with the original approved image: three loopback model requests, one child dispatch, same-turn results, completed parent and replay without duplicate dispatch. Account/catalog/model protocol and ordinary child transport are injected; the parent runtime, SDK and canonical owners are actual. [Exact evidence](docs/evidence/session-control-transport-20261126.json). External model quality is unestablished. |
 | Six strategy modes | GUI and canonical Workspace/T3/Conversation hooks are connected. Real Git/SQLite/service checks use labelled injected native transport. The checked-predecessor race correction passed independent recheck; external product journeys remain unrun. |
 | Usage and budgets | Atomic policy holds and unknown accounting are implemented. Native monetary finality remains unsupported (`cost:null`, `final:false`); this is an implementation gap, independent of credentials. Completion never means zero cost. |
 | Research Lab | Fixed local CPU/file experiments and independent checks/exports are exercised. Static native Research and an all-ON primary/helper/revision cohort passed on frozen `def855d` with loopback model responses and real file effects. This does not qualify later images or external model quality; official benchmarks are separate. |
