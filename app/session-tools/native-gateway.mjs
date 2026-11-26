@@ -17,7 +17,10 @@ export async function openSessionNativeGateway({assertCurrent,bindingProvider,at
     if(p?.purpose!==PURPOSE||!Number.isSafeInteger(p.expiresAt)||p.expiresAt<=Date.now()||p.manifestDigest!==digest(toolManifest()))throw Error('SESSION_NATIVE_AUTHORITY');return p;
   }
   const server=createServer(async(req,res)=>{
-    const reply=(status,value)=>{if(res.destroyed||res.writableEnded)return;res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(value));};
+    // A role-tool round trip can outlive this listener's idle socket lease.
+    // End each control acknowledgement's connection instead of depending on
+    // native connection reuse across that gap. Uncertain POSTs are never retried.
+    const reply=(status,value)=>{if(res.destroyed||res.writableEnded)return;res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Connection':'close'});res.end(JSON.stringify(value));};
     try{
       if(req.socket.remoteAddress!=='127.0.0.1'||req.headers.host!==new URL(url).host||req.headers.origin!==undefined||!equal(req.headers.authorization,'Bearer '+key.toString('hex')))return reply(401,{ok:false,error:'SESSION_NATIVE_AUTH'});
       current();

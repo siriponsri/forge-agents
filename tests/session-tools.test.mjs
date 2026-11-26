@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHmac} from 'node:crypto';
+import {Agent,request} from 'node:http';
 import {digest,checkProfile} from '../app/guarded-runtime/profile.mjs';
 import {PURPOSE,NATIVE_NAMES,argumentsFor,toolManifest,resultFor} from '../app/session-tools/contract.mjs';
 import {openSessionNativeGateway} from '../app/session-tools/native-gateway.mjs';
@@ -44,6 +45,27 @@ test('singleton tool selection is bound to the exact handle purpose',()=>{
   for(const handle of profiles.keys())host.resolve(handle,{});
   assert.deepEqual(host.toolNames(orchestrator),NATIVE_NAMES);assert.equal(host.toolNames(guarded),undefined);assert.deepEqual(host.toolNames(frontend),['forge_frontend_selection_read']);
   wrong=true;assert.throws(()=>host.toolNames(frontend));assert.throws(()=>host.toolNames(guarded));assert.throws(()=>host.toolNames({}));
+});
+test('native control acknowledgements release pooled connections and still recheck Stop',async()=>{
+  let stopped=false,admissions=0;
+  const p={purpose:PURPOSE,projectId:'p',runId:'r',attemptId:'a',threadId:'t',expiresAt:Date.now()+60000,manifestDigest:digest(toolManifest())};
+  const gateway=await openSessionNativeGateway({assertCurrent:()=>{if(stopped)throw Error('SESSION_NATIVE_STOPPED');return p;},bindingProvider:()=>binding,attachmentProvider:()=>{throw Error('unexpected attachment');},authorizePhase:()=>{admissions++;return true;},withFence:fn=>fn()});
+  const agent=new Agent({keepAlive:true,maxSockets:1}),sockets=new Set();
+  const {key,brokerUrl}=gateway.bootstrap();
+  const call=phase=>new Promise((resolve,reject)=>{
+    const raw=JSON.stringify({profileDigest:digest(p),phase,sessionID:'s'});
+    const req=request(brokerUrl+'/fence',{method:'POST',agent,headers:{'Content-Type':'application/json','Content-Length':Buffer.byteLength(raw),Authorization:'Bearer '+key,'X-Forge-Mac':createHmac('sha256',Buffer.from(key,'hex')).update(raw).digest('hex')}},res=>{
+      const chunks=[];res.on('data',chunk=>chunks.push(chunk));res.once('error',reject);res.once('end',()=>{try{resolve({status:res.statusCode,connection:res.headers.connection,body:JSON.parse(Buffer.concat(chunks))});}catch(error){reject(error);}});
+    });
+    req.once('socket',socket=>sockets.add(socket));req.once('error',reject);req.end(raw);
+  });
+  try{
+    for(const phase of ['session-dispatch','session-return']){
+      const result=await call(phase);assert.equal(result.status,200);assert.equal(result.connection,'close');assert.equal(result.body.result.profileDigest,digest(p));
+    }
+    assert.equal(sockets.size,2);assert.equal(admissions,2);
+    stopped=true;const denied=await call('session-return');assert.equal(denied.status,403);assert.equal(denied.connection,'close');assert.equal(admissions,2);
+  }finally{agent.destroy();await gateway.close();}
 });
 test('native hook supplies real context metadata and a revoked awaited result fails',async()=>{
   // Minimal deterministic Effect interpreter verifies hook contract only. The
