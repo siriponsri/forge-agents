@@ -1,78 +1,174 @@
-import React from 'react';
-import { ArrowRight, ArrowUpRight, FolderPlus, Workflow, Code2, FileSpreadsheet, FileText, Layers3, CheckCircle2, Circle, FolderOpen, Activity, Users, Clock3, CircleAlert } from 'lucide-react';
+import React, { useEffect, useId, useRef, useState } from 'react';
+import { ArrowRight, Code2, FileSpreadsheet, FileText, ListChecks, LoaderCircle, MessageSquare, MessagesSquare, FolderPlus, CircleAlert, Clock3, Layers3, Sparkles, Users } from 'lucide-react';
+import { recentThreads, relativeTime, threadActivity, threadTitle } from './shell-routes.mjs';
 
-// Canonical records only. Opening a task routes to the existing plan; Overview
-// neither starts a run nor introduces another task owner.
-export default function Overview({t,state,project,projectId,onCreate,onNavigate}) {
+const THREAD_NAME_LIMIT = 60;
+
+// Composer-first home. The main action hands the prompt to AI Product Studio.
+// "Just chat" uses the same canonical commands as Chat (conversation.create,
+// then message.send). Nothing here starts a run.
+export default function Overview({ t, lang, state, project, projectId, busy, mutate, onCreate, onNavigate, onOpenThread, onStartProduct, focusToken }) {
+  const [draft, setDraft] = useState('');
+  const [sending, setSending] = useState(false);
+  const composer = useRef(null);
+  const hintId = useId();
   const records = key => (state?.[key] ?? []).filter(record => record.projectId === projectId);
-  const tasks = records('tasks'), runs = records('runs'), documents = records('documents'), bots = records('bots');
+  const tasks = records('tasks'), bots = records('bots');
+  const threads = project ? recentThreads(state?.conversations, projectId).slice(0, 6) : [];
   const completed = tasks.filter(task => task.status === 'done').length;
-  const active = runs.filter(run => ['running','starting','submitting'].includes(run.status)).length;
+  const documents = records('documents').length;
+  const text = draft.trim();
+
+  // The sidebar's primary action lands here and puts the caret in the composer.
+  useEffect(() => { if (focusToken) composer.current?.focus({ preventScroll: true }); }, [focusToken]);
+
   const statusLabel = status => ({
-    backlog: t('รอจัดลำดับ','Backlog'), ready: t('พร้อมเริ่ม','Ready'),
-    running: t('กำลังทำงาน','Running'), blocked: t('ติดขัด','Blocked'),
-    review: t('รอตรวจ','In review'), done: t('เสร็จแล้ว','Done'),
+    backlog: t('รอจัดลำดับ', 'Backlog'), ready: t('พร้อมเริ่ม', 'Ready'),
+    running: t('กำลังทำงาน', 'Running'), blocked: t('ติดขัด', 'Blocked'),
+    review: t('รอตรวจ', 'In review'), done: t('เสร็จแล้ว', 'Done'),
   }[status] ?? status);
-  // Ongoing work, blockers, then reviews. Within a state use the most recently
-  // recorded task. Never infer a live run from a task's status.
-  const focus = ['running','blocked','review','ready','backlog'].flatMap(status => tasks.filter(task => task.status === status).slice(-1))[0];
+  // Ongoing work, blockers, then reviews; the most recently recorded task wins
+  // within a status. A task's status never implies a live run.
+  const focus = ['running', 'blocked', 'review', 'ready', 'backlog'].flatMap(status => tasks.filter(task => task.status === status).slice(-1))[0];
   const owner = bots.find(bot => bot.id === focus?.botId);
   const FocusIcon = focus?.status === 'blocked' ? CircleAlert : focus?.status === 'review' ? Clock3 : Layers3;
-  const actions = [
-    ['plan',Workflow,t('วางแผนงาน','Plan your work'),t('จากเป้าหมาย สู่ขั้นตอนที่ชัดเจน','Turn a goal into clear steps')],
-    ['office',FileSpreadsheet,t('เอกสารและตาราง','Docs & sheets'),t('เปิดไอเดียในรูปแบบที่แก้ต่อได้','Write, calculate and keep editing')],
-    ['reports',FileText,t('สร้างรายงาน','Create a report'),t('จากแหล่งข้อมูล สู่ DOCX และ PDF','From saved sources to DOCX and PDF')],
-    ['notebooks',Code2,t('สมุดงาน Python','Python notebooks'),t('รันงานและติดตามผลในพื้นที่ของคุณ','Run work and inspect real output')],
+
+  const suggestions = [
+    ['plan', ListChecks, t('วางแผนงาน', 'Plan your work')],
+    ['office', FileSpreadsheet, t('เขียนเอกสารหรือตาราง', 'Write a doc or sheet')],
+    ['reports', FileText, t('สร้างรายงาน', 'Create a report')],
+    ['notebooks', Code2, t('รันโค้ด Python', 'Run Python')],
   ];
-  return <div className="overview">
-    <header className="overview-head">
-      <div><h1>{project ? t('ภาพรวมพื้นที่ทำงาน','Workspace overview') : t('พื้นที่สำหรับสิ่งที่คุณอยากสร้าง','A place for what comes next')}</h1>
-        {project && <p>{project.name}</p>}</div>
-      <span className="environment-tag">{t('ทำงานบนเครื่องคุณ','Local workspace')}</span>
-    </header>
-    <section className={`work-focus ${project ? '' : 'work-focus-first'}`} aria-label={t('ทำงานต่อ','Continue your work')}>
-      <div className="focus-content">
-        {project ? <>
-          <h2 className="focus-title">{focus?.title ?? (tasks.length ? t('พร้อมสำหรับสิ่งถัดไป','Ready for what comes next.') : t('เริ่มจากแผนงานของคุณ','Start with your plan.'))}</h2>
-          <div className="focus-context"><FocusIcon size={17} aria-hidden="true"/><span>{focus ? t('ทำงานต่อ','Continue your work') : t('เริ่มงานชิ้นถัดไป','Your next piece of work')}</span>{focus && <span className={`focus-status status-${focus.status}`} data-status={focus.status}>{statusLabel(focus.status)}</span>}</div>
-          <p className="focus-description">{focus ? (focus.description || (focus.status === 'blocked' ? t('เปิดแผนงานเพื่อตรวจสิ่งที่ติดขัดและกำหนดขั้นตอนต่อไป','Open your plan to inspect the blocker and decide the next step.') : focus.status === 'review' ? t('เปิดแผนงานเพื่อตรวจผลงานและหลักฐานก่อนทำต่อ','Open your plan to review the work and its evidence.') : t('เปิดแผนงานเพื่อตรวจรายละเอียด เจ้าของงาน และขั้นตอนถัดไป','Open your plan for details, ownership and the next step.'))) : t('จากเป้าหมาย สู่ขั้นตอนที่ชัดเจน แบ่งงานและเลือกทีมที่เหมาะกับงานของคุณ','Turn a goal into clear steps. Give each task an owner and build at your own pace.')}</p>
-          <div className="focus-footer"><button type="button" className="primary" onClick={() => onNavigate('plan')}>{t('ไปที่แผนงาน','Open your plan')}<ArrowRight size={17} aria-hidden="true"/></button>
-            {focus && <span className="focus-owner"><Users size={15} aria-hidden="true"/>{owner?.name ?? t('ยังไม่มอบหมาย','Unassigned')}</span>}</div>
-        </> : <>
-          <h2 className="focus-title">{t('เริ่มจากไอเดีย','Start with an idea.')}<br/>{t('สร้างในแบบของคุณ','Make it yours.')}</h2>
-          <p className="focus-description">{t('รวมทีม AI แผนงาน โค้ด เอกสาร และรายงานไว้ในพื้นที่เดียว คุณเป็นคนกำหนดทิศทาง','Bring your AI team, plans, code, documents and reports into one workspace. You set the direction.')}</p>
-          <button type="button" className="primary" onClick={onCreate}>{t('สร้างโครงการแรก','Create first project')}<ArrowRight size={17} aria-hidden="true"/></button>
-          <p className="focus-local-note">{t('บันทึกในเครื่อง · เชื่อมต่อบัญชีเมื่อพร้อม','Saved locally · connect accounts when ready')}</p>
-        </>}
+
+  const build = event => {
+    event?.preventDefault();
+    if (!project) { onCreate(); return; }
+    if (!text) return;
+    setDraft('');
+    onStartProduct(text);
+  };
+  const chat = async () => {
+    if (!text || sending || !project) return;
+    setSending(true);
+    try {
+      const oneLine = text.replace(/\s+/g, ' ');
+      const name = oneLine.length > THREAD_NAME_LIMIT ? `${oneLine.slice(0, THREAD_NAME_LIMIT - 1)}…` : oneLine;
+      const created = await mutate('conversation.create', { name, kind: 'team', messages: [] });
+      if (!created) return; // the shell shows the error; the draft stays here
+      const sent = await mutate('message.send', { conversationId: created.entity.id, text, role: 'user' }, created.entity);
+      setDraft('');
+      // If saving the message failed, carry the text into the new conversation.
+      onOpenThread(created.entity.id, sent ? '' : text);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="home">
+      <header className="home-head">
+        <h1>{project ? t('วันนี้อยากทำอะไร', 'What do you want to do?') : t('เริ่มจากไอเดียของคุณ', 'Start with an idea')}</h1>
+        <p>
+          {project
+            ? <>{project.name}<span aria-hidden="true"> · </span>{t(`${tasks.length} งานย่อย (เสร็จ ${completed}) · ${documents} เอกสาร`, `${tasks.length} tasks (${completed} done) · ${documents} documents`)}</>
+            : t('บอกสิ่งที่อยากให้ AI ทำ ผู้ช่วย AI จะช่วยวางแผน เทรนโมเดล และเปิดใช้งานให้ ข้อมูลทั้งหมดอยู่ในเครื่องคุณ', 'Describe what you want AI to do. FORGE helps you plan, train and deploy it. Everything stays on this computer.')}
+        </p>
+      </header>
+
+      <form className="composer" onSubmit={build} aria-busy={sending || undefined}>
+        <label className="visually-hidden" htmlFor={`${hintId}-input`}>
+          {t('อธิบายสิ่งที่อยากให้ AI ทำ', 'Describe what you want to do')}
+        </label>
+        <textarea id={`${hintId}-input`} ref={composer} rows={4} value={draft}
+          placeholder={project
+            ? t('อยากให้ AI ช่วยทำนาย จัดหมวด หรือวิเคราะห์อะไร เช่น “ทำนายยอดขายสัปดาห์หน้าจากไฟล์ CSV”', 'What should AI predict, sort or analyse? For example, “Forecast next week’s sales from a CSV file”')
+            : t('พิมพ์ไอเดียแรกของคุณ แล้วสร้างโปรเจกต์เพื่อเริ่ม', 'Type your first idea, then create a project to begin')}
+          aria-describedby={hintId}
+          onChange={event => setDraft(event.target.value)}
+          onKeyDown={event => {
+            if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); build(); }
+          }} />
+        <div className="composer-bar">
+          <small id={hintId}>
+            {project
+              ? t('Enter เพื่อเริ่มสร้าง · Shift+Enter ขึ้นบรรทัดใหม่', 'Enter starts building · Shift+Enter adds a line')
+              : t('ต้องสร้างโปรเจกต์ก่อน ข้อความนี้จะรออยู่ที่นี่', 'A project comes first. Your text waits here.')}
+          </small>
+          {project
+            ? <div className="composer-actions">
+                <button type="button" className="composer-chat" disabled={!text || sending || busy} aria-busy={sending || undefined} onClick={chat}>
+                  {sending ? <LoaderCircle size={15} aria-hidden="true" className="spin" /> : <MessagesSquare size={15} aria-hidden="true" />}
+                  {t('แค่คุยกัน', 'Just chat')}
+                </button>
+                <button type="submit" className="primary composer-send" disabled={!text || sending}>
+                  <Sparkles size={16} aria-hidden="true" />
+                  {t('เริ่มสร้าง', 'Start building')}
+                </button>
+              </div>
+            : <button type="button" className="primary composer-send" onClick={onCreate}>
+                <FolderPlus size={16} aria-hidden="true" />
+                {t('สร้างโปรเจกต์แรก', 'Create first project')}
+              </button>}
+        </div>
+      </form>
+
+      <div className="home-suggestions" role="group" aria-label={t('เริ่มจากเครื่องมือ', 'Start from a tool')}>
+        {suggestions.map(([id, Icon, label]) => (
+          <button key={id} type="button" className="quick-action" onClick={() => project ? onNavigate(id) : onCreate()}>
+            <Icon size={15} aria-hidden="true" />{label}
+          </button>
+        ))}
       </div>
-      <aside className="focus-project">
-        <FolderOpen size={22} aria-hidden="true"/>
-        <h3>{project?.name ?? t('พื้นที่ทำงานของคุณ','Your workspace')}</h3>
-        <p>{project?.description || t('งานทั้งหมดเชื่อมกับโครงการนี้ เอกสาร แผน และผลลัพธ์จะอยู่ให้คุณกลับมาทำต่อ','Your plans, documents and results stay connected to this project, ready when you return.')}</p>
-        {project ? <button type="button" className="text-button" onClick={() => onNavigate('settings')}>{t('ตั้งค่าพื้นที่ทำงาน','Workspace settings')}<ArrowUpRight size={15} aria-hidden="true"/></button> : <p className="focus-setup-note">{t('เลือกชื่อและโฟลเดอร์ของโครงการ แล้วเริ่มทำงานได้เลย','Choose a project name and folder to make this workspace your own.')}</p>}
-      </aside>
-    </section>
-    {project && <dl className="workspace-summary" aria-label={t('ข้อมูลโครงการ','Project records')}>
-      {[[Layers3,t('งานทั้งหมด','Total tasks'),tasks.length,`${completed} ${t('เสร็จแล้ว','completed')}`],
-        [Activity,t('กำลังทำงาน','Active runs'),active,`${runs.length} ${t('รันที่บันทึก','recorded runs')}`],
-        [FileSpreadsheet,t('เอกสาร','Documents'),documents.length,t('เอกสารและตารางที่บันทึก','Saved docs and workbooks')],
-        [Users,t('สมาชิกทีม','Team members'),bots.length,t('บอทในโครงการนี้','Bots in this project')]].map(([Icon,label,value,note]) => <div className="summary-record" key={label}>
-          <dt><Icon size={15} aria-hidden="true"/>{label}</dt><dd>{value}</dd><small>{note}</small>
-        </div>)}
-    </dl>}
-    <div className={`overview-work ${!project ? 'overview-work-first' : ''}`}>
-      {project && <section className="overview-recent" aria-label={t('งานล่าสุด','Recent work')}>
-        <div className="section-head"><h2>{t('งานล่าสุด','Recent work')}</h2><button type="button" className="text-button" onClick={() => onNavigate('plan')}>{t('ดูทั้งหมด','View all')}<ArrowRight size={14} aria-hidden="true"/></button></div>
-        {tasks.length ? <div className="activity-list">{tasks.slice(-5).reverse().map(task => <button type="button" key={task.id} className="activity-row" onClick={() => onNavigate('plan')}>
-          <span className={`activity-icon status-${task.status}`} aria-hidden="true">{task.status === 'done' ? <CheckCircle2 size={17}/> : task.status === 'blocked' ? <CircleAlert size={17}/> : <Circle size={17}/>}</span>
-          <span className="activity-copy"><strong>{task.title}</strong><small>{bots.find(bot => bot.id === task.botId)?.name ?? t('ยังไม่มอบหมาย','Unassigned')}</small></span>
-          <span className={`status status-${task.status}`}>{statusLabel(task.status)}</span>
-        </button>)}</div> : <div className="overview-empty"><FolderPlus size={22} aria-hidden="true"/><h3>{t('พื้นที่ว่างสำหรับงานชิ้นถัดไป','Room for your next task')}</h3><p>{t('เริ่มจากแผน แล้วแตกเป็นงานที่ทีมช่วยกันทำได้','Start with a plan, then give each task an owner.')}</p><button type="button" onClick={() => onNavigate('plan')}>{t('สร้างแผนงาน','Create a plan')}<ArrowRight size={15} aria-hidden="true"/></button></div>}
-      </section>}
-      <section className="overview-actions" aria-label={t('เครื่องมือในพื้นที่ทำงาน','Workspace tools')}>
-        <div className="section-head"><h2>{t('วันนี้อยากสร้างอะไร','What are you working on?')}</h2></div>
-        <div className="quick-actions-list">{actions.map(([id,Icon,title,description]) => <button type="button" className="quick-action" key={id} onClick={() => project ? onNavigate(id) : onCreate()}><Icon size={18} aria-hidden="true"/><span><strong>{title}</strong><small>{description}</small></span><ArrowUpRight size={15} aria-hidden="true"/></button>)}</div>
-      </section>
+
+      {project && focus && (
+        <section className="home-section" aria-labelledby="home-continue">
+          <h2 id="home-continue">{t('ทำงานต่อ', 'Continue your work')}</h2>
+          <div className="home-focus">
+            <FocusIcon size={16} aria-hidden="true" className={`status-${focus.status}`} />
+            <div className="home-focus-copy">
+              <strong>{focus.title}</strong>
+              <small>
+                <span className={`status-${focus.status}`}>{statusLabel(focus.status)}</span>
+                <span aria-hidden="true"> · </span>
+                <Users size={12} aria-hidden="true" /> {owner?.name ?? t('ยังไม่มอบหมาย', 'Unassigned')}
+              </small>
+            </div>
+            <button type="button" onClick={() => onNavigate('plan')}>
+              {t('เปิดแผนงาน', 'Open your plan')}<ArrowRight size={15} aria-hidden="true" />
+            </button>
+          </div>
+        </section>
+      )}
+
+      {project && (
+        <section className="home-section" aria-labelledby="home-threads">
+          <h2 id="home-threads">{t('แชตล่าสุด', 'Recent conversations')}</h2>
+          {threads.length ? (
+            <ul className="home-threads">
+              {threads.map(room => {
+                const last = room.messages?.[room.messages.length - 1];
+                const at = threadActivity(room);
+                return (
+                  <li key={room.id}>
+                    <button type="button" className="home-thread" onClick={() => onOpenThread(room.id)}>
+                      <MessageSquare size={15} aria-hidden="true" />
+                      <span className="home-thread-copy">
+                        <strong>{threadTitle(room, bots, t)}</strong>
+                        <small>{last ? (last.text || last.content) : t('ยังไม่มีข้อความ', 'No messages yet')}</small>
+                      </span>
+                      {at > 0 && <time dateTime={new Date(at).toISOString()}>{relativeTime(at, lang)}</time>}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className="home-empty">
+              {t('ยังไม่มีแชต พิมพ์ข้อความด้านบนแล้วกด “แค่คุยกัน” เพื่อเริ่มแชตแรก', 'No conversations yet. Type above and choose “Just chat” to start one.')}
+            </p>
+          )}
+        </section>
+      )}
     </div>
-  </div>;
+  );
 }

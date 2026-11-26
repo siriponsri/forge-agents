@@ -121,15 +121,22 @@ export function Team({ t, state, projectId, mutate, busy }) {
   );
 }
 
-export function Chat({ t, state, projectId, mutate, busy,run, connected }) {
+export function Chat({ t, state, projectId, mutate, busy,run, connected, focusRoom, onRoomChange }) {
   const rooms = scoped(state, "conversations", projectId),
     bots = scoped(state, "bots", projectId);
-  const [selected, setSelected] = useState(""),
-    [draft, setDraft] = useState(""),[replyBot,setReplyBot]=useState(''),
+  const [selected, setSelected] = useState(focusRoom?.id || ""),
+    [draft, setDraft] = useState(focusRoom?.draft || ""),[replyBot,setReplyBot]=useState(''),
     [providerReply,setProviderReply]=useState(!!state.projects.find(p=>p.id===projectId)?.profile?.provider?.connectionId);
   const [view,setView]=useState('chat');
   const pendingMessage=useRef(null);
   const room = rooms.find((r) => r.id === selected) || rooms[0];
+  // The shell's thread list and home composer open a specific conversation.
+  useEffect(() => {
+    if (!focusRoom?.id) return;
+    setSelected(focusRoom.id);
+    setDraft(focusRoom.draft || "");
+  }, [focusRoom?.n]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { onRoomChange?.(room?.id || ""); }, [room?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <>
       <Heading
