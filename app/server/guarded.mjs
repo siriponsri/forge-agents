@@ -72,8 +72,12 @@ export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeO
     if(!same(run.selection&&{instanceId:run.selection.instanceId,model:run.selection.model,options:run.selection.options??[]},e.selection))fail('GUARDED_SELECTION_CHANGED');
     if(e.dispatchReady&&(!run.guardedLaunch||run.guardedLaunch.messageDigest!==e.messageDigest||run.guardedLaunch.attemptId!==run.attemptId||run.guardedLaunch.contextId!==(run.contextId??null)||run.guardedLaunch.contextReceiptDigest!==digest(run.contextReceipt??null)))fail('GUARDED_FINAL_CONTEXT_CHANGED');
     if(physical(run.workspace??'')!==e.workspace||physical(s.projects.find(p=>p.id===run.projectId)?.workspace??'')!==e.sourceWorkspace)fail('GUARDED_WORKSPACE_CHANGED');
-    privatePaths(s);initial(e,s);owner(s,{stage,input:clone(e.input),run});
+    privatePaths(s);initial(e,s);
     const detail={input:clone(e.input),stage,workspace:e.workspace,profile:clone(c.profile),routeProof:clone(e.routeProof),...extra,run};
+    // Both pure gates inspect the same normalized action and actual native
+    // attestation. Omitting these fields from the Owner gate denies valid
+    // Research actions before the detailed canonical admission can run.
+    owner(s,detail);
     if(sync(validateAdmission,s,detail)!==true)fail('GUARDED_ADMISSION_DENIED');return run;
   }
   // All async native/broker operations acquire the authoritative store fence.

@@ -35,7 +35,16 @@ test('canonical guarded bridge with actual compiled native ownership', {skip:!ex
   });await new Promise(r=>model.listen(0,'127.0.0.1',r));
   const store=await openStore(dataDir);await store.transaction(s=>{s.projects.push({id:'project',workspace,profile:{original:true}});});
   const bridge=createGuardedExecutionBridge({store,dataDir,artifacts:async()=>artifacts,
-    authorizeOwner:()=>ownerAllowed,
+    authorizeOwner:(s,detail)=>{
+      assert.equal(s.runs.find(r=>r.id===detail.run?.id)??null,detail.run??null);
+      if(detail.stage==='action'){
+        assert.equal(detail.path,'allowed/a.txt');
+        assert.ok(['read','propose','workspace.write'].includes(detail.capability));
+        assert.ok(detail.attestation,'the Owner gate receives the actual action attestation');
+        assert.equal(detail.profile.runId,detail.run.id);
+      }
+      return ownerAllowed;
+    },
     observeSelectedRoute:(_s,input)=>{assert.equal(input.projectId,'project');return structuredClone(selected);},
     resolveProvider:async()=>{await resolveHook?.();return {provider:{id:'openai',model:'forge-fixture',compatibility:{streamUsage:true},settings:{baseURL:`http://127.0.0.1:${model.address().port}/v1`,apiKey:'PRIVATE_FIXTURE_KEY',transport:'http'}},credentialRef:'fixture-ref',accountGeneration:'no-account'};},
     validateAdmission:(s,{run,stage,attestation,capability,path:actionPath})=>{

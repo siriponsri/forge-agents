@@ -1,5 +1,22 @@
 # Task Assignments
 
+## Resumed work — 2026-11-26
+
+The Owner explicitly resumed the full goal and authorized subagents. The pause
+below is historical. Requirements include SESSION_ROLES_ADDENDUM.md,
+README-PRO and LOGO-MIN. Production completion remains unqualified until the
+assembled native/cohort and shared session-role paths pass verification.
+
+| Owner | Scope | State |
+|---|---|---|
+| Lead | Native Research action detail correction, shared admission/lifecycle/HTTP/UI, integration and evidence | Active on fix/research-attestation-check-work |
+| Session-role worker | New session-role service/component/tests and own handoff | Isolated dependent checkout at 4c944bd; active |
+| Strategist worker | Assistance selection/context/loop/UI and scoped tests | Isolated dependent checkout at 4c944bd; active |
+| README/brand worker | README.md and new docs/brand assets, own handoff | Isolated dependent checkout at 4c944bd; active |
+
+Workers use inherited codex/gpt-6.1-sol with reasoningEffort xhigh. No push,
+public deployment, paid compute or credential migration is part of their scope.
+
 ## Current assignments ? 2026-11-25, 532353f checkpoint
 
 Lead owns shared runtime, safety corrections, central progress and release.
