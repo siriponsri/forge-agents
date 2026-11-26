@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "scope": "Actual local static shipping output and archive bytes; no browser/platform runtime or external provider qualification.",
+  "platforms": [
+    {
+      "id": "windows",
+      "filename": "FORGE-Windows.zip",
+      "httpStatus": 200,
+      "bytes": 1375209,
+      "sha256": "8f200d0d08be886ecb7721936a909de2fbd70f1b7a7feff42e9669585460e96e",
+      "sourceFiles": 420,
+      "contentType": "application/octet-stream"
+    },
+    {
+      "id": "macos",
+      "filename": "FORGE-macOS.zip",
+      "httpStatus": 200,
+      "bytes": 1375196,
+      "sha256": "60d8e56245b46cf2727791d9fc6f38bc978a93e42c9b098036e2bb879ca8989b",
+      "sourceFiles": 420,
+      "contentType": "application/octet-stream"
+    }
+  ],
+  "commit": "be617db3b42108f8b0a1ab7623bf719776151bb8",
+  "platformRuntime": "NOT_RUN",
+  "nativeMacos": "NOT_RUN",
+  "homeUat": "NOT_RUN"
+}

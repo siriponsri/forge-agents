@@ -17,6 +17,14 @@
     "reviewerObservation": "Both Inspect recaptures show a continuous incoming trunk branching left and right.",
     "otherCapturesRefreshedInLastCorrection": false
   },
+  "platformCopyFollowUp": {
+    "reviewedRevision": "be617db",
+    "disposition": "ship",
+    "finding": "No material layout or truth regression in the Windows-x64 setup qualification.",
+    "evidence": "platform-scope-check.json and its five actual captures",
+    "reviewerObservation": "Qualification wraps cleanly at 320/375px beside the download actions; the coded Windows restriction is separate from macOS launcher NOT_RUN.",
+    "scope": "This copy change only; original four-finding verdict unchanged. No native qualification or Owner acceptance implied."
+  },
   "limitations": [
     "Owner aesthetic acceptance is not asserted.",
     "Product completion, native qualification and release approval are not asserted.",

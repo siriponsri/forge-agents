@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "product": "FORGE",
   "version": "1.1.0-alpha.3",
-  "commit": "02a888c27fe7df81cc9e390cee7e1498c2da0bd8",
+  "commit": "be617db3b42108f8b0a1ab7623bf719776151bb8",
   "status": "alpha",
   "packageKind": "unsigned-development-source-launchers",
   "signed": false,
@@ -14,6 +14,7 @@
   "limitations": [
     "Unsigned development source launcher packages; no bundled Node.js or native runtime",
     "Packaging checks do not qualify Windows/macOS execution or complete the product release",
+    "Bounded FORGE Guarded, native Orchestrator and selection-tool setup currently requires Windows x64",
     "Native report-engine acquisition is currently qualified only on Windows x64; macOS qualification pending"
   ],
   "qualification": {
@@ -32,8 +33,8 @@
       "path": "FORGE-Windows.zip",
       "url": "/downloads/FORGE-Windows.zip",
       "contentType": "application/zip",
-      "sha256": "5978a7a338a6249344c85dc7dbb5b5c5f83b6890a72e00ce374df68509b3c972",
-      "bytes": 1374563,
+      "sha256": "8f200d0d08be886ecb7721936a909de2fbd70f1b7a7feff42e9669585460e96e",
+      "bytes": 1375209,
       "sourceFiles": 420,
       "embeddedQualification": "developer-verified-local-core",
       "qualification": {
@@ -52,8 +53,8 @@
       "path": "FORGE-macOS.zip",
       "url": "/downloads/FORGE-macOS.zip",
       "contentType": "application/zip",
-      "sha256": "5c085968762d4360587bd35ab36dcc52d9fdea1d0603cc0740421191bf1e4120",
-      "bytes": 1374551,
+      "sha256": "60d8e56245b46cf2727791d9fc6f38bc978a93e42c9b098036e2bb879ca8989b",
+      "bytes": 1375196,
       "sourceFiles": 420,
       "embeddedQualification": "NOT_RUN",
       "qualification": {

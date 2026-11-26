@@ -1,0 +1,428 @@
+{
+  "scope": "New platform-qualification copy only. Original four-finding design verdict retained separately; no Owner aesthetic or native macOS qualification.",
+  "layouts": [
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 320,
+      "documentWidth": 320,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        },
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 375,
+      "documentWidth": 375,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        },
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 414,
+      "documentWidth": 414,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        },
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 768,
+      "documentWidth": 768,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        },
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 1280,
+      "documentWidth": 1280,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        },
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 1440,
+      "documentWidth": 1440,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        },
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 320,
+      "documentWidth": 320,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        },
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 375,
+      "documentWidth": 375,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        },
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 414,
+      "documentWidth": 414,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        },
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 768,
+      "documentWidth": 768,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        },
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 1280,
+      "documentWidth": 1280,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        },
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 1440,
+      "documentWidth": 1440,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        },
+        {
+          "fits": true,
+          "text": "Development source ZIPs · UnsignedRequires Node.js 24.13+ · Internet to install dependencies on first startFORGE Guarded and native Orchestrator: Windows x64 only"
+        }
+      ]
+    },
+    {
+      "lang": "th",
+      "theme": "light",
+      "width": 320,
+      "documentWidth": 320,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        },
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        }
+      ]
+    },
+    {
+      "lang": "th",
+      "theme": "light",
+      "width": 375,
+      "documentWidth": 375,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        },
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        }
+      ]
+    },
+    {
+      "lang": "th",
+      "theme": "light",
+      "width": 414,
+      "documentWidth": 414,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        },
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        }
+      ]
+    },
+    {
+      "lang": "th",
+      "theme": "light",
+      "width": 768,
+      "documentWidth": 768,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        },
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        }
+      ]
+    },
+    {
+      "lang": "th",
+      "theme": "light",
+      "width": 1280,
+      "documentWidth": 1280,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        },
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        }
+      ]
+    },
+    {
+      "lang": "th",
+      "theme": "light",
+      "width": 1440,
+      "documentWidth": 1440,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        },
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        }
+      ]
+    },
+    {
+      "lang": "th",
+      "theme": "dark",
+      "width": 320,
+      "documentWidth": 320,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        },
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        }
+      ]
+    },
+    {
+      "lang": "th",
+      "theme": "dark",
+      "width": 375,
+      "documentWidth": 375,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        },
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        }
+      ]
+    },
+    {
+      "lang": "th",
+      "theme": "dark",
+      "width": 414,
+      "documentWidth": 414,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        },
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        }
+      ]
+    },
+    {
+      "lang": "th",
+      "theme": "dark",
+      "width": 768,
+      "documentWidth": 768,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        },
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        }
+      ]
+    },
+    {
+      "lang": "th",
+      "theme": "dark",
+      "width": 1280,
+      "documentWidth": 1280,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        },
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        }
+      ]
+    },
+    {
+      "lang": "th",
+      "theme": "dark",
+      "width": 1440,
+      "documentWidth": 1440,
+      "requirements": [
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        },
+        {
+          "fits": true,
+          "text": "ZIP จาก source รุ่นพัฒนา · ไม่ได้เซ็นดิจิทัลต้องมี Node.js 24.13+ · ครั้งแรกใช้อินเทอร์เน็ตติดตั้ง dependencyFORGE Guarded และ native Orchestrator: Windows x64 เท่านั้น"
+        }
+      ]
+    }
+  ],
+  "audits": [
+    {
+      "page": "home",
+      "lang": "en",
+      "theme": "light",
+      "width": 1440,
+      "violations": 0
+    },
+    {
+      "page": "download",
+      "lang": "en",
+      "theme": "light",
+      "width": 1440,
+      "violations": 0
+    },
+    {
+      "page": "home",
+      "lang": "th",
+      "theme": "dark",
+      "width": 375,
+      "violations": 0
+    },
+    {
+      "page": "download",
+      "lang": "th",
+      "theme": "dark",
+      "width": 375,
+      "violations": 0
+    }
+  ],
+  "captures": [
+    "platform-scope-home-en-light-1440.png",
+    "platform-scope-download-en-light-1440.png",
+    "platform-scope-home-th-dark-320.png",
+    "platform-scope-home-th-dark-375.png",
+    "platform-scope-download-th-dark-375.png"
+  ],
+  "errors": [],
+  "status": "PASS"
+}

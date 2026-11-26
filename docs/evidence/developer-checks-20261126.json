@@ -1,0 +1,50 @@
+{
+  "status": "LOCAL_DEVELOPER_VERIFICATION; NOT_COMPLETE_PRODUCT_RELEASE",
+  "runtimeCorrection": "246daac",
+  "serialRun": {
+    "command": "node --test --test-concurrency=1 tests/*.test.mjs app/web/tests/boundaries.test.mjs",
+    "tests": 917,
+    "passed": 905,
+    "failed": 1,
+    "skipped": 11,
+    "cancelled": 0,
+    "durationMs": 1958132.2722,
+    "logNameInLocalTemp": "forge-final-serial-20261126.log",
+    "failure": "Old generation fixture omitted the session-tools/strategies directories and failed ENOENT before policy validation.",
+    "correction": {"commit": "cc60da3", "testFile": "tests/guarded-unified.test.mjs", "passed": 3, "failed": 0},
+    "qualification": "The aggregate run itself is not reported as all green. Its sole fixture failure was corrected and the complete affected file passed separately. Runtime enforcement sources were unchanged by that correction."
+  },
+  "additionalChecks": [
+    {"check": "mounted native parent on original approved session image", "passed": 1, "durationMs": 180622.8729, "evidence": "session-control-transport-20261126.json"},
+    {"check": "session control pooled connections, contracts and Stop", "passed": 6, "failed": 0},
+    {"check": "launcher publication after platform-limit clarification", "passed": 9, "failed": 0},
+    {"check": "website release policy", "passed": 2, "failed": 0},
+    {"check": "website static source/license/CSP verification", "pages": 12, "status": "PASS"},
+    {"check": "new platform-copy layout follow-up", "layouts": 24, "axeAudits": 4, "violations": 0, "status": "PASS"}
+  ],
+  "builds": {
+    "app": {"status": "PASS", "viteSeconds": 16.13, "vite": "7.3.8", "node": "24.19.0", "note": "Existing bundle-size/use-client advisories remain; explicit npm exit code was zero."},
+    "website": {"status": "PASS", "checks": ["TypeScript", "Vite", "12 localized prerenders", "noindex until explicit publication"]}
+  },
+  "landing": {
+    "originalFourFindings": "resolved; same-reviewer scoped ship at ddfe465",
+    "platformCopy": "no material layout/truth regression; scoped ship at be617db",
+    "ownerAestheticAcceptance": "NOT_ASSERTED"
+  },
+  "currentPackages": {
+    "source": "be617db3b42108f8b0a1ab7623bf719776151bb8",
+    "sourceFilesPerPlatform": 420,
+    "qualification": "unsigned development source launchers; exact committed-source/ZIP validation and actual local HTTP hashes passed",
+    "manifest": "apps/website/public/downloads/manifest.json",
+    "httpEvidence": "apps/website/docs/evidence/impeccable-20261126/final-download-http.json"
+  },
+  "sameImageGuardedFrontendRegression": {"status": "RUNNING", "image": "original approved session-capable generation", "logNameInLocalTemp": "forge-session-image-all-purposes-20261126.log"},
+  "mediaRefresh": "PENDING",
+  "limits": [
+    "Controlled native fixtures use deterministic loopback model responses, not external model quality or live child-provider qualification.",
+    "Private Guarded/native Orchestrator/selection-tool setup is currently Windows x64 only; macOS launcher execution remains NOT_RUN.",
+    "Native monetary billing finality remains unsupported, with null cost and false finality preserved.",
+    "Real-product creation, external-server journeys and Home UAT are deferred by the Owner and remain NOT_RUN.",
+    "No public deployment, resumed push, purchased compute, credential migration or prototype activation."
+  ]
+}

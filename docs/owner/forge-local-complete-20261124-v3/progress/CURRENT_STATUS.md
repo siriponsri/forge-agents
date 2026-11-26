@@ -27,7 +27,12 @@ Conversation boundary, same-turn results and completed parent. Exact replay
 does not dispatch another child. Account/catalog/model protocol and child
 transport are injected; parent T3/OpenCode, SDK, authority and mounted lifecycle
 are actual. Worker module proofs remain distinct from this production-owner
-qualification. Final app/site builds, broad regression and media are in progress.
+qualification. App/site builds and static checks pass. The serial run covered
+917 checks: 905 PASS, 11 skipped, one old generation-fixture ENOENT. That fixture
+was corrected (`cc60da3`) and its complete three-test file passes separately;
+the aggregate is not relabelled all green. Same-image Guarded/frontend regression
+and final README/media refresh are in progress. See
+`docs/evidence/developer-checks-20261126.json`.
 
 The installer now authenticates inventory/capability metadata and supports the
 session-capable derivative. The fresh-source pipeline reached READY and passed
@@ -59,13 +64,18 @@ correction at exact `2a34a9e`, with four focused checks passed. Filesystem
 inspection is point-in-time; no filesystem lock or OS sandbox is inferred.
 
 Real Windows/macOS source-launcher ZIPs, manifest and checksums are now generated
-and committed under `apps/website/public/downloads` (current source `02a888c`).
+under `apps/website/public/downloads` (prepared current source `be617db`).
 Each archive contains 420 committed files, including all private setup tools;
 `f3343a1` corrected the earlier omission of those tools from source packaging.
 They are unsigned development source packages, require Node.js 24.13+ and initial
 dependency connectivity, and are not signed native installers. Regenerate from
 the final app source before final delivery. Native macOS/platform execution and
-Home UAT are explicitly unrun. This does not imply public deployment.
+Home UAT are explicitly unrun. Bounded private Guarded/native Orchestrator and
+selection-tool setup currently requires Windows x64; this coded restriction is
+separate from macOS launcher execution being NOT_RUN. It is stated beside the
+download actions, in the manifest and the packaged quickstart. The same reviewer
+found no material copy/layout regression; 24 layouts and four axe audits passed.
+This does not imply public deployment.
 
 **Corrected native return transport:** `246daac` ends each private JSON control
 acknowledgement's connection. The copied-source diagnostic-image experiment
