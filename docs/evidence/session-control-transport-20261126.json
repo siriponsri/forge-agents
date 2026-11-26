@@ -1,0 +1,60 @@
+{
+  "sourceCorrection": "246daac",
+  "change": "Connection: close on per-attempt native session gateway JSON replies; no effect retry or deadline change.",
+  "scopeReview": {"reviewer": "/root/session_return_transport_review", "disposition": "accept", "findings": [], "unitChecks": {"passed": 6, "failed": 0}},
+  "before": {
+    "durationMs": 167235.2376,
+    "parentStatus": "running",
+    "completedTools": 1,
+    "failure": {"stage": "session-return", "errorCode": "FORGE_CURRENT_AUTHORITY_UNAVAILABLE", "errorName": "Error"},
+    "secondPromptGatewayResult": "HTTP 200, valid result; acknowledged child must not be replayed",
+    "observation": "Passive trace did not observe the second return request at application ingress. This is not evidence about TCP arrival or parser rejection."
+  },
+  "engineeringExperiment": {
+    "status": "PASS",
+    "durationMs": 183961.3807,
+    "frozenApplicationSource": "c1c5810 plus private diagnostic overlays and the response header",
+    "nativeCliSha256": "ba1678911ce682b7441870580fce70ec586b58829958ba70b8dccd524791a1d4",
+    "t3AllModulesAndActualNodeSha256": "c98c5f6dd3f77563c0191274fd9399b1f6826eeb3a0a2f30f02e0f2aa3a30b80",
+    "modelProtocolRequests": 3,
+    "externalProviderRequests": 0,
+    "childDispatches": 1,
+    "parentTerminal": "completed",
+    "sameTurnToolReplies": 2,
+    "childTransport": "INJECTED_NOT_LIVE",
+    "qualification": "Engineering copied-source diagnostic-image experiment; not production-image qualification."
+  },
+  "standaloneExclusion": {
+    "bun": "1.4.4",
+    "node": "24.19.0",
+    "requests": 3,
+    "tcpConnections": 2,
+    "idleDelaysMs": [0, 5200, 7000],
+    "status": "PASS",
+    "meaning": "Crossing the default idle boundary alone did not reproduce under substituted fixture conditions."
+  },
+  "primaryQualification": {
+    "status": "PASS",
+    "source": "246daac",
+    "test": "tests/product-session-route-native.test.mjs",
+    "durationMs": 180622.8729,
+    "nativeCliSha256": "2224d7edb8a06f241c5ec764b506607af110bfec5300e91a03e00421854aef17",
+    "t3AllModulesAndActualNodeSha256": "1435d81ad72b5838dd6f8b413bfda3576a4878f0845ec40e474758c333ba538e",
+    "image": "original approved session-capable generation; no native source or pin changes",
+    "nativeParentProtocolRequests": 3,
+    "externalProviderRequests": 0,
+    "childTransport": "INJECTED_NOT_LIVE",
+    "childDispatches": 1,
+    "parentTerminal": "completed",
+    "sameTurnToolReplies": 2,
+    "replayChildDispatches": 0,
+    "fileEffects": 0,
+    "realOwners": ["mounted application", "private compiled T3/OpenCode parent", "session role service", "MCP SDK", "Conversation reservation", "Context", "Owner HTTP/CSRF"],
+    "injectedBoundaries": ["selected account/catalog", "deterministic loopback model protocol", "ordinary child transport"]
+  },
+  "limitations": [
+    "The precise original TCP/parser failure mechanism is not proven.",
+    "No model quality, external child provider, billing finality or home UAT qualification.",
+    "No private authorization headers, descriptors, prompt payloads or native identities are retained here."
+  ]
+}

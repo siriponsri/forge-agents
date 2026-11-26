@@ -20,9 +20,14 @@ Shared Owner HTTP/CSRF, canonical T3/Conversation role snapshots and final fence
 private SDK attachment, restore retention and Chat controls are now mounted.
 The parent has only child-list/prompt tools; an exact attested parent may coexist
 with one child while unrelated writable work remains blocked. Scoped root
-backend checks: 38 PASS; production build PASS. Assembled native Orchestrator
-verification, current-image route regression and final UI/media review remain
-pending. Worker module proofs are recorded separately from production proofs.
+backend checks: 38 PASS. Assembled native Orchestrator verification now passes
+at `246daac` on the original approved session-capable image: three deterministic
+loopback model requests, one accepted running child through the actual canonical
+Conversation boundary, same-turn results and completed parent. Exact replay
+does not dispatch another child. Account/catalog/model protocol and child
+transport are injected; parent T3/OpenCode, SDK, authority and mounted lifecycle
+are actual. Worker module proofs remain distinct from this production-owner
+qualification. Final app/site builds, broad regression and media are in progress.
 
 The installer now authenticates inventory/capability metadata and supports the
 session-capable derivative. The fresh-source pipeline reached READY and passed
@@ -62,17 +67,15 @@ dependency connectivity, and are not signed native installers. Regenerate from
 the final app source before final delivery. Native macOS/platform execution and
 Home UAT are explicitly unrun. This does not imply public deployment.
 
-**Open implementation defect:** engineering native diagnostics identify
-`session-return` / `FORGE_CURRENT_AUTHORITY_UNAVAILABLE`. The first child listing
-completed; the subsequent prompt returned valid SDK data and accepted one child
-through the canonical owner, then its return fence failed. Treat that child as
-acknowledged work; never replay it to recover the parent. Passive request-arrival
-tracing saw no second return request in that reproduction. The bootstrap catch
-covers fetch or response-read failure; its underlying transport cause remains
-under investigation. Standalone SDK/compiled-tool checks pass but do not resolve
-the assembled failure. A fresh-connection experiment is confined to copied
-engineering source and is not yet production qualification. Missing credentials
-and home UAT do not explain or close this implementation defect.
+**Corrected native return transport:** `246daac` ends each private JSON control
+acknowledgement's connection. The copied-source diagnostic-image experiment
+passed, then primary source with the original approved native image passed in
+180.623 seconds. Six focused tests and an independent scoped review also pass.
+The change adds no retry, authority exemption or deadline extension. The exact
+original TCP/parser mechanism remains unproven; idle-boundary crossing alone
+did not reproduce in a substituted standalone fixture. The earlier acknowledged
+child remains retained and is never replayed. See
+`docs/evidence/session-control-transport-20261126.json` for precise boundaries.
 
 On 26 November the Owner explicitly deferred real-product creation journeys and
 external-server connectivity tests to the home machine because the work machine
