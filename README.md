@@ -18,6 +18,7 @@ The interface defaults to Thai and supports English. The local core is
 [Get started](#run-locally) · [See the workflow](#idea-to-delivery) ·
 [Explore the screenshots](docs/media/README.md) ·
 [Thai setup guide](docs/FORGE_LOCAL_QUICKSTART_TH.md) ·
+[Home test checklist](docs/HOME_HANDOFF_20261126_TH.md) ·
 [Development status](docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md)
 
 > **Development checkpoint — implementation incomplete.** Published `main`

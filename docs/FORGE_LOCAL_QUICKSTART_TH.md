@@ -35,6 +35,9 @@ source+launcher ZIP ของ commit ที่แสดง พร้อม SHA25
 `~/Library/Application Support/FORGE/workbench`.
 **macOS live qualification NOT_RUN**; native report-engine binaries ในรอบนี้
 ตรวจจริงเฉพาะ Windows x64 ส่วน GUI/native snapshot editing ไม่ต้องพึ่ง engine.
+ตัวติดตั้ง private FORGE Guarded รวม native Orchestrator และ selection tools
+รองรับ **Windows x64 เท่านั้นใน source ปัจจุบัน**; เป็นข้อจำกัด implementation
+แยกจากการยังไม่ทดสอบเปิด workbench บน macOS ไม่ใช่ความสามารถที่รับรองบน macOS.
 
 Windows clean-package check: source ZIP จาก d23560b แตกลง temp directory ใหม่
 ที่มีช่องว่าง ไม่มี node_modules/build เดิม ตัวช่วย npm ci/build/start/restart/stop

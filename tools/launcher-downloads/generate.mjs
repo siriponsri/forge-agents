@@ -25,6 +25,7 @@ const requirements = ['Node.js 24.13+', 'Internet on first launch for npm ci and
   'Extract the entire FORGE folder before using Start/Stop/Restart'];
 const limitations = ['Unsigned development source launcher packages; no bundled Node.js or native runtime',
   'Packaging checks do not qualify Windows/macOS execution or complete the product release',
+  'Bounded FORGE Guarded, native Orchestrator and selection-tool setup currently requires Windows x64',
   'Native report-engine acquisition is currently qualified only on Windows x64; macOS qualification pending'];
 
 async function git(root, args, encoding = 'utf8') {
