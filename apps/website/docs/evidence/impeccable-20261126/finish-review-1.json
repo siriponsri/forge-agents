@@ -1,0 +1,18 @@
+{
+  "recordKind": "conversation-review-handoff",
+  "reviewedCommit": "ab0b5ce",
+  "reviewer": "/root/impeccable_finish_reviewer_landing",
+  "disposition": "fix",
+  "scope": "Independent code-led landing finish review; no approved comp, native qualification or Owner acceptance",
+  "persistence": "Direction contract and quality bar present; all 17 named captures valid",
+  "fidelity": "Type, geometric material, orange/yellow ground, F mark, desktop/mobile arrangement, proof and ready ZIP actions match; output interaction, mobile proof access and pending-download action need correction",
+  "ceiling": "Not reached; finish within the existing geometric world with a more FORGE-specific brief, assigned work and retained artifact mechanism",
+  "materialFixes": [
+    {"id": "hero-specificity", "files": ["WorkIllustration.tsx", "home.css"], "required": "Plan/Make/Inspect change output content and visual structure in an explicit illustrative brief-to-owned-work-to-retained-artifact sequence; keep leader label on one line at 320px and give the output statement space"},
+    {"id": "mobile-proof", "files": ["App.tsx", "home.css"], "required": "Readable mobile detail from the same actual dated workbench capture, provenance retained, visible full-resolution action"},
+    {"id": "download-states", "files": ["SourceDownloads.tsx"], "required": "Pending Home navigation says package details; detail route shows checking/unavailable state without self-linking download buttons; retain verified ZIP anchors, Retry and no-JavaScript links"},
+    {"id": "icon-system", "files": ["App.tsx"], "required": "Replace Unicode down-arrow with the existing SVG icon system"}
+  ],
+  "keep": ["orange/yellow hierarchy", "original F mark", "restrained typography", "proof-before-detail", "bilingual responsive controls", "explicit source-package qualification"],
+  "next": "One builder correction batch, same-matrix recaptures, then the same independent reviewer scores these four fixes resolved/partial/unresolved"
+}
