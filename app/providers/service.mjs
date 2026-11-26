@@ -7,7 +7,7 @@ import { createConversationService } from './conversations.mjs';
 import { createMcpService } from './mcp.mjs';
 import {compileKobApiConfig,discoverKobModels} from './kob-api.mjs';
 
-export function createProviderService({dataDir,store,t3,clock=Date.now,catalogTimeoutMs=1500,authorizeTool,validateAdmission,mcpTransportOptions,resolveEnv,mcpCredentialVersion,checkCapabilities,prepareCapabilities,onNotDispatched}){
+export function createProviderService({dataDir,store,t3,clock=Date.now,catalogTimeoutMs=1500,authorizeTool,validateAdmission,mcpTransportOptions,resolveEnv,mcpCredentialVersion,checkCapabilities,prepareCapabilities,onNotDispatched,getSessionRoles}){
   if(!dataDir||!store||!t3)throw new Error('dataDir, store and the owned T3 service are required');
   const catalogs=createProviderCatalog({store,t3,clock,timeoutMs:catalogTimeoutMs});
   const scoped=({projectId,connectionId},s=store.read())=>{find(s,'projects',required(projectId,'projectId'));const c=find(s,'connections',connectionId,projectId);if(c.kind!=='provider')fail('SCOPE','Expected provider connection',409);return c;};
@@ -119,7 +119,7 @@ export function createProviderService({dataDir,store,t3,clock=Date.now,catalogTi
     },
     settle:()=>catalogs.settle(),
   };
-  api.conversations=createConversationService({store,t3,providers:api,checkCapabilities,prepareCapabilities,onNotDispatched});
+  api.conversations=createConversationService({store,t3,providers:api,checkCapabilities,prepareCapabilities,onNotDispatched,getSessionRoles});
   api.mcp=createMcpService({store,authorizeTool,validateAdmission,transportOptions:mcpTransportOptions,resolveCredential:resolveEnv,credentialVersion:mcpCredentialVersion,checkCapability:input=>checkCapabilities?.(store.read(),input,['mcp'])});
   api.close=async()=>{await api.settle();await api.conversations.close();await api.mcp.close();};
   return api;

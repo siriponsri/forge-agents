@@ -86,7 +86,7 @@ test('Budget remains canonical: policy change at final fence prevents dispatch',
 
 test('real conversation owner refuses active parent in shared writable workspace without a provider call',async t=>{
   const f=await fixture(t);let called=0;
-  const real=createConversationService({store:f.store,t3:{providers:{ensureProject(){called++;throw new Error('must not run');}}},providers:{validateSelection:()=>f.selection}});t.after(()=>real.close());
+  const real=createConversationService({store:f.store,t3:{providers:{ensureProject(){called++;throw new Error('must not run');}}},providers:{validateSelection:()=>f.selection},getSessionRoles:()=>f.roles});t.after(()=>real.close());
   const service=createSessionRoleService({store:f.store,conversations:real,authorize:f.authorize});t.after(()=>service.close());
   const result=await service.prompt(f.input,f.owner);assert.equal(result.status,'unknown');assert.equal(result.error.code,'WORKSPACE_BUSY');assert.equal(called,0);assert.equal(f.store.read().runs.length,1);
 });

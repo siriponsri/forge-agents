@@ -5,7 +5,7 @@ import {href, repo, publicBaseline, publicCheckpoint, titles, type Lang, type Pa
 import {releases, windows} from './releases';
 
 type T = (th:string,en:string) => string;
-const Mark = () => <svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="11" fill="currentColor"/><path d="M11 10h20v6H17v5h11v6H17v5h-6zM28 29h4v4h-4z" className="mark-cut"/></svg>;
+const Mark = () => <svg viewBox="0 0 64 64" aria-hidden="true"><path fill="#f97316" d="M8 8H56L44 20H20V28H48L36 40H20V56H8Z"/><path fill="#f2c94c" d="M44 8H56L44 20H32Z"/><path fill="#8b9199" d="M40 28H48L36 40H28Z"/></svg>;
 const Arrow = () => <ArrowRight size={17} aria-hidden="true"/>;
 function Action({children,to,secondary=false}:{children:ReactNode;to:string;secondary?:boolean}) {
   return <a className={`action ${secondary?'secondary':''}`} href={to}>{children}<Arrow/></a>;

@@ -203,7 +203,7 @@ export default function App() {
     <div className={`workbench ${navOpen ? "nav-open" : ""}`}>
       <aside className="sidebar">
         <div className="brand">
-          <svg className="brand-symbol" width="35" height="35" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="13" fill="var(--brand)"/><path d="M14 12H35V19H22V24H32V31H22V38H14Z" fill="var(--brand-ink)"/><rect x="33" y="31" width="6" height="6" rx="2" fill="var(--brand-ink)" opacity=".65"/></svg>
+          <svg className="brand-symbol" width="35" height="35" viewBox="0 0 64 64" aria-hidden="true"><path fill="#f97316" d="M8 8H56L44 20H20V28H48L36 40H20V56H8Z"/><path fill="#f2c94c" d="M44 8H56L44 20H32Z"/><path fill="#8b9199" d="M40 28H48L36 40H28Z"/></svg>
           <div>
             FORGE<small>{t('พื้นที่สำหรับทุกไอเดีย','Your creative workspace')}</small>
           </div>

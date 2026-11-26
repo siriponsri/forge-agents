@@ -12,6 +12,8 @@ import {assertResearchRestoreAvailable,mergeResearchSafety} from '../research/co
 import {mergeMemoryMcpSafety} from './memory-mcp.mjs';
 import {mergeGuardedSafety} from './guarded-recovery.mjs';
 import {mergeFrontendRouteSafety} from './frontend-route.mjs';
+import {mergeSessionRoleSafety} from './session-roles.mjs';
+import {mergeSessionRouteSafety} from './session-route.mjs';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 export function createArtifactService({store,dataDir}){
   return {
@@ -68,7 +70,7 @@ export function createArtifactService({store,dataDir}){
       return store.transaction(s=>{
         if(s.revision!==expectedRevision)fail('REVISION_CONFLICT','Data changed before restore. Reload and retry.',409);
         assertWorkspaceRestoreAvailable(s);assertResearchRestoreAvailable(s);const revision=s.revision;
-        mergeMemoryTombstones(restored,s);mergeOwnerMemorySafety(restored,s);mergeMemoryMcpSafety(restored,s);mergeWorkspaceSafety(restored,s);mergeBudgetSafety(restored,s);mergeProactiveSafety(restored,s);mergeGuardedSafety(restored,s);mergeFrontendRouteSafety(restored,s);Object.assign(restored,mergeResearchSafety(restored,s));assertBudgetLedger(restored);
+        mergeMemoryTombstones(restored,s);mergeOwnerMemorySafety(restored,s);mergeMemoryMcpSafety(restored,s);mergeWorkspaceSafety(restored,s);mergeBudgetSafety(restored,s);mergeProactiveSafety(restored,s);mergeGuardedSafety(restored,s);mergeFrontendRouteSafety(restored,s);mergeSessionRoleSafety(restored,s);mergeSessionRouteSafety(restored,s);Object.assign(restored,mergeResearchSafety(restored,s));assertBudgetLedger(restored);
         restored.relay=structuredClone(s.relay);Object.assign(s,restored,{revision});
         for(const r of s.runs)if(['running','submitting'].includes(r.status))r.status='unknown';
         for(const j of s.jobs)if(['queued','running','rendering','preparing','validating'].includes(j.status))j.status='interrupted';

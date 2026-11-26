@@ -29,7 +29,7 @@ function moduleGeneration(){
     if(stat.isDirectory())walk(target);
     else if(/\.(mjs|ts|json|cs)$/.test(name)){if(!stat.isFile()||stat.nlink!==1)fail('GUARDED_MODULE_LINK');files.push({name:path.relative(appRoot,target).replaceAll('\\','/'),sha256:fileDigest(target)});}
   }}
-  for(const directory of ['guarded-runtime','research-native','research-components','frontend-tools','server'])walk(path.join(appRoot,directory));
+  for(const directory of ['guarded-runtime','research-native','research-components','frontend-tools','session-tools','server'])walk(path.join(appRoot,directory));
   return digest(files);
 }
 function regular(file){

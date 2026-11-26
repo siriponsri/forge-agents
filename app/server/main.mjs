@@ -58,6 +58,9 @@ import {applyGuardedObservation} from '../protocol/observations.mjs';
 import {createResearchRoute} from './research-route.mjs';
 import {createResearchComponentService,runResearchComposition} from '../research-components/index.mjs';
 import {createFrontendRoute} from './frontend-route.mjs';
+import {createSessionRoleService,dispatchSessionRoleRequest} from './session-roles.mjs';
+import {createSessionRoleMcpGateway} from './session-roles-mcp.mjs';
+import {createSessionRoute} from './session-route.mjs';
 export {defaultDataDir};
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const manifest=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
@@ -66,7 +69,7 @@ async function body(req){let size=0;const parts=[];for await(const b of req){siz
 function json(res,data,status=200){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(data));}
 export async function createApplication({dataDir=defaultDataDir(),port=0,machineSecretDir,guardedArtifactOptions}={}){
   await mkdir(dataDir,{recursive:true});const store=await openStore(dataDir);
-  let providers,oauth,capabilities,compute,prepareContext,secrets,budgets,researchBridge,researchRoute,researchComponents,frontend,nativeUsage,memoryMcp,guarded,guardedArtifacts,guardedArtifactsPromise,guardedPolicy;
+  let providers,oauth,capabilities,compute,prepareContext,secrets,budgets,researchBridge,researchRoute,researchComponents,frontend,nativeUsage,memoryMcp,guarded,guardedArtifacts,guardedArtifactsPromise,guardedPolicy,sessionRoles,sessionMcp,sessionRoute;
   const authority=createLocalAuthority();
   secrets=await createSecretService({store,dataDir,...(machineSecretDir?{machineDir:machineSecretDir}:{})});
   const resolveProviderEnvironment=async c=>{const names=[...new Set([...(c.config?.envRefs??[]),...(c.config?.apiKeyEnv?[c.config.apiKeyEnv]:[])])],values={};for(const name of names)values[name]=await secrets.resolveEnv({projectId:c.projectId,name,purpose:'provider'});return values;};
@@ -76,10 +79,10 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
   const prepareCapabilities=projectId=>capabilities?.defaults(projectId);
   const admitCompute=(s,input,{jobId}={})=>{assertWorkspaceAvailable(s,input.projectId,{jobId});checkCapabilities(s,input,['environment']);};
   const onNotDispatched=input=>budgets?.confirmNotDispatched(input);
-  const jobs=createJobService({store,dataDir,admit:admitCompute}),t3=createT3Service({store,dataDir,resolveProviderEnvironment,onNotDispatched,onNativeUsage:input=>nativeUsage?.feed(input),getGuarded:()=>guarded,getResearchRoute:()=>researchRoute,getFrontendRoute:()=>frontend,validateProviderSelection:async input=>{const c=find(store.read(),'connections',input.connectionId,input.projectId);if(!input.guarded)await t3.providers.assertEnvironment(c);return providers.validateSelection(input);},checkCapabilities,prepareCapabilities,prepareContext:input=>prepareContext(input),prepareResearch:input=>researchBridge.prepare(input),validatePreparedResearch:(s,r,options)=>researchBridge.validatePrepared(s,r,options)}),connections=createConnectionService({store});
+  const jobs=createJobService({store,dataDir,admit:admitCompute}),t3=createT3Service({store,dataDir,resolveProviderEnvironment,onNotDispatched,onNativeUsage:input=>nativeUsage?.feed(input),getGuarded:()=>guarded,getResearchRoute:()=>researchRoute,getFrontendRoute:()=>frontend,getSessionRoute:()=>sessionRoute,getSessionRoles:()=>sessionRoles,validateProviderSelection:async input=>{const c=find(store.read(),'connections',input.connectionId,input.projectId);if(!input.guarded)await t3.providers.assertEnvironment(c);return providers.validateSelection(input);},checkCapabilities,prepareCapabilities,prepareContext:input=>prepareContext(input),prepareResearch:input=>researchBridge.prepare(input),validatePreparedResearch:(s,r,options)=>researchBridge.validatePrepared(s,r,options)}),connections=createConnectionService({store});
   budgets=createBudgetService({store,t3,authorize:authority.goalAuthorize});
   nativeUsage=createNativeUsageBridge({store,budgets});
-  providers=createProviderService({store,dataDir,t3,onNotDispatched,authorizeTool:input=>governance.authorizeTool(input),validateAdmission:input=>governance.validateAdmission(input),mcpTransportOptions:c=>oauth?.transportOptions(c)??{},resolveEnv:(name,c)=>secrets.resolveEnv({projectId:c.projectId,name,purpose:c.kind==='mcp'?'mcp':'provider'}),mcpCredentialVersion,checkCapabilities,prepareCapabilities});
+  providers=createProviderService({store,dataDir,t3,onNotDispatched,getSessionRoles:()=>sessionRoles,authorizeTool:input=>governance.authorizeTool(input),validateAdmission:input=>governance.validateAdmission(input),mcpTransportOptions:c=>oauth?.transportOptions(c)??{},resolveEnv:(name,c)=>secrets.resolveEnv({projectId:c.projectId,name,purpose:c.kind==='mcp'?'mcp':'provider'}),mcpCredentialVersion,checkCapabilities,prepareCapabilities});
   async function artifactService(){
     // Host-only test/build options are never read from HTTP or canonical state.
     guardedArtifactsPromise??=createGuardedArtifactService({dataDir,workspaceRoots:store.read().projects.map(p=>p.workspace).filter(Boolean),...guardedArtifactOptions}).then(value=>(guardedArtifacts=value)).catch(e=>{guardedArtifactsPromise=null;throw e;});
@@ -87,8 +90,8 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
   }
   const getArtifacts=async()=>{const service=await artifactService();return service.artifacts();};
   guardedPolicy=createGuardedPolicy({store,dataDir,secrets,providers,artifacts:getArtifacts});
-  function privateOwner(s,detail){if(detail.input?.researchContext||detail.run?.researchContext)return researchRoute.validate(s,detail);if(detail.input?.frontendContext||detail.run?.frontendContext)return frontend.validate(s,detail);return assertGuardedOwner(s,detail);}
-  function ensureGuarded(){return guarded??=createGuardedExecutionBridge({store,dataDir,artifacts:getArtifacts,authorizeOwner:privateOwner,resolveProvider:(input,options)=>input.researchContext?researchRoute.resolveProvider(input,options):guardedPolicy.resolve(input,options),observeSelectedRoute:(s,input)=>guardedPolicy.observe(s,input),validateAdmission:(s,detail)=>{if(closed||restoring)fail('APPLICATION_BUSY','Native admission is suspended',409);return t3.validateGuardedAdmission(s,detail);},onNativePhase:(s,detail)=>detail.run?.researchContext?researchRoute.onNativePhase(s,detail):true,onBeforeAction:(s,detail)=>{if(detail.run?.researchContext)researchRoute.onBeforeAction(s,detail);},onReceipt:(s,detail)=>{if(detail.run?.researchContext)researchRoute.onReceipt(s,detail);},createFrontendGateway:args=>frontend.createFrontendGateway(args),onEvent:(s,{run,projection})=>applyGuardedObservation(s,run,projection)});}
+  function privateOwner(s,detail){if(detail.input?.sessionContext||detail.run?.sessionContext)return sessionRoute.validate(s,detail);if(detail.input?.researchContext||detail.run?.researchContext)return researchRoute.validate(s,detail);if(detail.input?.frontendContext||detail.run?.frontendContext)return frontend.validate(s,detail);return assertGuardedOwner(s,detail);}
+  function ensureGuarded(){return guarded??=createGuardedExecutionBridge({store,dataDir,artifacts:getArtifacts,authorizeOwner:privateOwner,resolveProvider:(input,options)=>input.researchContext?researchRoute.resolveProvider(input,options):guardedPolicy.resolve(input,options),observeSelectedRoute:(s,input)=>guardedPolicy.observe(s,input),validateAdmission:(s,detail)=>{if(closed||restoring)fail('APPLICATION_BUSY','Native admission is suspended',409);return t3.validateGuardedAdmission(s,detail);},onNativePhase:(s,detail)=>detail.run?.researchContext?researchRoute.onNativePhase(s,detail):true,onBeforeAction:(s,detail)=>{if(detail.run?.researchContext)researchRoute.onBeforeAction(s,detail);},onReceipt:(s,detail)=>{if(detail.run?.researchContext)researchRoute.onReceipt(s,detail);},createFrontendGateway:args=>frontend.createFrontendGateway(args),createSessionGateway:args=>sessionRoute.createSessionGateway(args),onEvent:(s,detail)=>{applyGuardedObservation(s,detail.run,detail.projection);sessionRoute?.onEvent(s,detail);}});}
   const adaptive=createAdaptiveService({store,t3,connections}),assistance=createAssistanceService({store,providers,t3});
   const memory=await createMemoryService({store,dataDir,authorize:authority.authorize,adaptive});
   const ownerMemory=await createOwnerMemoryService({store,dataDir,authorize:authority.authorize});
@@ -114,6 +117,8 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
   researchBridge=createResearchExecutionBridge({store,dataDir,workspaces,t3,authorizeOwner:authority.goalAuthorize,components:researchComponents,qualification:(s,r)=>researchRoute.qualification(s,r),prepareAdmission:input=>store.transaction(s=>researchRoute.retainInput(s,input)),stopExistingWorkspace});
   const research=createResearchService({store,dataDir,executionOwner:{...researchBridge.executionOwner,cohortState:researchBridge.cohortState,exportComposition:researchBridge.exportComposition},authorizeOwner:authority.goalAuthorize});await research.recover();
   frontend=createFrontendRoute({store,authorizeOwner:authority.goalAuthorize,policy:guardedPolicy,getGuarded:()=>guarded,getT3:()=>t3});await frontend.recover();
+  sessionRoles=createSessionRoleService({store,conversations:providers.conversations,authorize:authority.sessionAuthorize,qualifyRun:(s,r)=>sessionRoute?.qualifyRun(s,r)});
+  sessionRoute=createSessionRoute({store,authorizeOwner:authority.goalAuthorize,policy:guardedPolicy,getGuarded:()=>guarded,getT3:()=>t3,getRoles:()=>sessionRoles,getMcp:()=>sessionMcp});await sessionRoute.recover();await sessionRoles.recover();
   compute=createComputeRouter({store,dataDir,jobs,artifacts,admit:admitCompute,secrets,resolveBearer:({vaultRef,projectId})=>secrets.resolveRef({projectId,reference:vaultRef,purpose:'compute'}),resolveEnvironment:({projectId,name})=>secrets.resolveEnv({projectId,name,purpose:'compute'})});
   const catalog=createCatalogService({load:()=>t3.catalog()});
   const gitStorage=createGitStorageService({store});
@@ -142,7 +147,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
     return session;
   }
   function humanSession(req,res){const s=browserSession(req,res);if(!s||req.headers['x-forge-csrf']!==s.csrf)fail('BROWSER_SESSION_REQUIRED','Refresh the FORGE page and perform this Owner action in the GUI',403);return s;}
-  const app={store,t3,jobs,compute,connections,providers,governance,adaptive,assistance,memory,ownerMemory,context,goals,missions,playbooks,proactive,workspaces,research,researchComponents,researchBridge,frontend,budgets,relay,secrets,plugins:capabilities.service,reports,serving,storage,desktop,officeAgent,server:null,url:null,async close(){
+  const app={store,t3,jobs,compute,connections,providers,governance,adaptive,assistance,memory,ownerMemory,context,goals,missions,playbooks,proactive,workspaces,research,researchComponents,researchBridge,frontend,sessionRoles,sessionRoute,budgets,relay,secrets,plugins:capabilities.service,reports,serving,storage,desktop,officeAgent,server:null,url:null,async close(){
     if(closingPromise)return closingPromise;closed=true;
     closingPromise=(async()=>{
     offProjection();await projectionPromise;
@@ -155,7 +160,8 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
     // effect. Keep its services and canonical store alive until the handler's
     // finally releases admission. Restore drains ordinary writes, but shutdown
     // must also wait for the restore operation itself.
-    await Promise.allSettled([...admittedPosts,...admittedRestores,memoryMcp?.close(),frontend.close()]);
+    await sessionRoute.close();
+    await Promise.allSettled([...admittedPosts,...admittedRestores,memoryMcp?.close(),sessionMcp?.close(),frontend.close()]);await sessionRoles.close();
     await guarded?.close();await guardedArtifacts?.close();await research.close();await researchComponents.close();await researchBridge.close();await researchRoute.close();await proactive.close();await playbooks.close();await missions.close();await workspaces.close();adaptive.shutdown();await assistance.close();await goals.close();await Promise.allSettled([...relayWork]);relay.close();await oauth?.close();await providers.close();
     await officeMcpHandler?.close();await desktop.shutdown();await storage.shutdown();await compute.shutdown();await jobs.shutdown();await t3.shutdown();await serving.shutdown();await connections.close();await reports?.shutdown?.();
     const pluginClose=await capabilities.service.close();if(pluginClose.status==='draining')throw new Error('Native plugin operations remain active; retain the store for reconciliation');
@@ -186,6 +192,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
       if(officeMcpHandler&&p==='/mcp/office'){finishAdmission=admitPost();if(await officeMcpHandler(req,res))return;finishAdmission();finishAdmission=undefined;}
       if(memoryMcp&&p==='/mcp/memory'){finishAdmission=admitPost();if(await memoryMcp.handler(req,res))return;finishAdmission();finishAdmission=undefined;}
       if(frontendHttp&&p==='/mcp/frontend-tools'){finishAdmission=admitPost();if(await frontendHttp.handler(req,res))return;finishAdmission();finishAdmission=undefined;}
+      if(sessionMcp&&p==='/mcp/session-roles'){finishAdmission=admitPost();if(await sessionMcp.handler(req,res))return;finishAdmission();finishAdmission=undefined;}
       if(method==='GET'&&p==='/api/frontend-tools/pending'){const owner=authority.owner(humanSession(req,res));return json(res,await frontend.pending(Object.fromEntries(url.searchParams),owner));}
       if(method==='OPTIONS')return json(res,{error:{code:'ORIGIN',message:'CORS is disabled'}},403);
       if(method==='GET'&&p==='/api/session'){const session=browserSession(req,res,{create:true});return json(res,{csrf:session.csrf});}
@@ -255,7 +262,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
         if(closed||restoring)fail('APPLICATION_BUSY','Application is shutting down or restoring metadata; retry after readiness',409);
         finishAdmission=admitPost({restore:p==='/api/storage/restore'});
         let owner;
-        if(/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/mcp\/(configure|enable|discover|call|stop)$|^\/api\/mcp\/[^/]+\/(discover|call)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|plugins|memory|owner-memory|memory-mcp|context|goals|compute|relay|secrets|missions|proactive|workspaces|budgets|playbooks|research|research-components|frontend-tools|guarded)\//.test(p))owner=humanSession(req,res);
+        if(/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/mcp\/(configure|enable|discover|call|stop)$|^\/api\/mcp\/[^/]+\/(discover|call)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|plugins|memory|owner-memory|memory-mcp|context|goals|compute|relay|secrets|missions|proactive|workspaces|budgets|playbooks|research|research-components|frontend-tools|session-roles|session-orchestrator|guarded)\//.test(p))owner=humanSession(req,res);
         if(p==='/api/command'){value=await command(store,input);if(input.type==='project.create')await capabilities.defaults(value.entity.id);}
         else if(p.startsWith('/api/guarded/')){
           const method=p.slice('/api/guarded/'.length),keys=method==='state'?['projectId']:method==='check'?['projectId','operationId','leaseMs']:['projectId','operationId'];
@@ -271,6 +278,8 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
           if(method==='check'){await guardedPolicy.refresh(input);await ensureGuarded().check({projectId:input.projectId,...(input.leaseMs===undefined?{}:{leaseMs:input.leaseMs})});}
           value={installation:await installer.state(),readiness:guarded?.readiness({projectId:input.projectId})??null};
         }
+        else if(p.startsWith('/api/session-roles/'))value=await dispatchSessionRoleRequest(sessionRoles,p.slice('/api/session-roles/'.length),input,authority.owner(owner));
+        else if(p.startsWith('/api/session-orchestrator/')){const method=p.slice('/api/session-orchestrator/'.length);if(!['intent','start','cancel'].includes(method))fail('NOT_FOUND','Session orchestration operation not found',404);value=await sessionRoute[method==='intent'?'createIntent':method](input,authority.owner(owner));}
         else if(p.startsWith('/api/memory-mcp/')){const method=p.slice('/api/memory-mcp/'.length);if(!['issue','state','revoke'].includes(method))fail('NOT_FOUND','Memory MCP Owner operation not found',404);value=await memoryMcp[method](input,authority.owner(owner));}
         else if(p.startsWith('/api/plugins/'))value=await dispatchPluginRequest(capabilities.service,p.slice('/api/plugins/'.length),input);
         else if(p.startsWith('/api/research/'))value=await dispatchResearchRequest(research,p.slice('/api/research/'.length),input,authority.owner(owner));
@@ -347,14 +356,14 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
           if(store.read().runs.some(r=>!['completed','failed','cancelled','interrupted','rolled_back','stopped'].includes(r.status))||store.read().jobs.some(j=>['submitting','queued','running','starting','stopping','unknown','preparing','rendering','validating','publishing'].includes(j.status)))fail('RESTORE_BUSY','Stop and reconcile active runs/jobs before restoring metadata',409);
           restoring=true;
           guardedPolicy.invalidate();
-          memoryMcp.invalidateForRestore();
+          memoryMcp.invalidateForRestore();sessionMcp.invalidateForRestore();await sessionRoute.invalidateForRestore();
           await frontend.invalidateForRestore();
           try{
             await research.suspendForRestore();await proactive.suspendForRestore();await playbooks.suspendForRestore();await missions.suspendForRestore();await goals.suspendForRestore();
             await Promise.allSettled([...admittedPosts,...relayWork]);
             assertWorkspaceRestoreAvailable(store.read());assertResearchRestoreAvailable(store.read());
             if(store.read().runs.some(r=>!['completed','failed','cancelled','interrupted','rolled_back','stopped'].includes(r.status))||store.read().jobs.some(j=>['submitting','queued','running','starting','stopping','unknown','preparing','rendering','validating','publishing'].includes(j.status)))fail('RESTORE_BUSY','Previously admitted work became active; reconcile it before restoring',409);
-            value=await artifacts.restore(input);await memory.afterRestore();await ownerMemory.afterRestore();await goals.afterRestore();await missions.afterRestore();await playbooks.afterRestore();await proactive.afterRestore();await research.afterRestore();await governance.recover({invalidateUnconsumed:true});await officeAgent.recover();await providers.mcp.recover();await providers.conversations.recover();
+            value=await artifacts.restore(input);await sessionRoute.recover();await sessionRoles.recover();await memory.afterRestore();await ownerMemory.afterRestore();await goals.afterRestore();await missions.afterRestore();await playbooks.afterRestore();await proactive.afterRestore();await research.afterRestore();await governance.recover({invalidateUnconsumed:true});await officeAgent.recover();await providers.mcp.recover();await providers.conversations.recover();
           }finally{goals.cancelRestore();missions.cancelRestore();playbooks.cancelRestore();proactive.cancelRestore();research.cancelRestore();restoring=false;}
         }
         else if(p==='/api/storage/configure')value=await storage.configure(input);
@@ -403,6 +412,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
   app.server=server;await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',resolve);});app.url=`http://127.0.0.1:${server.address().port}`;
   oauth=createMcpOAuthService({store,dataDir,callbackOrigin:app.url});
   memoryMcp=createRunMemoryMcpGateway({store,memory,endpoint:app.url+'/mcp/memory',authorizeOwner:authority.goalAuthorize,callerForRun:(run,options)=>authority.forRun(run,options)});app.memoryMcp=memoryMcp;
+  sessionMcp=createSessionRoleMcpGateway({store,service:sessionRoles,endpoint:app.url+'/mcp/session-roles',callerForRun:(run,options)=>authority.forRun(run,options),qualifyRun:(s,r)=>sessionRoute.qualifyRun(s,r)});app.sessionMcp=sessionMcp;
   officeMcpHandler=await createOfficeAgentMcpHandler({service:officeAgent,dataDir,endpoint:app.url+'/mcp/office'});
   frontendHttp=frontend.createHttpHandler({endpoint:app.url+'/mcp/frontend-tools',authenticateOwner:(req,res)=>authority.owner(humanSession(req,res))});
   offProjection=store.subscribe(()=>{

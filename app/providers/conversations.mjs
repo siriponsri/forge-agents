@@ -2,9 +2,16 @@ import { randomUUID } from 'node:crypto';
 import { busy, changed, digest, entity, fail, find, required, safeError, terminal } from './common.mjs';
 import {assertWorkspaceAvailable} from '../server/admission.mjs';
 import {reserveBudget,validateBudgetAdmission} from '../budgets/index.mjs';
+import {sessionRoleInstruction} from '../server/session-roles.mjs';
 
-export function createConversationService({store,t3,providers,checkCapabilities,prepareCapabilities,onNotDispatched}){
+export function createConversationService({store,t3,providers,checkCapabilities,prepareCapabilities,onNotDispatched,getSessionRoles}){
   const pending=new Set();let closing=false;
+  function roleAdmission(s,input,run){
+    const service=getSessionRoles?.();
+    if(!service){if(input.sessionRoleContext||run?.sessionRoleContext||run?.sessionRole)fail('SESSION_ROLE_OWNER_UNAVAILABLE','Session-role admission is not mounted',409);return {};}
+    if(run){service.validateDispatch(s,run);service.validateRole(s,run);return {};}
+    return {sessionRoleContext:service.validateDispatch(s,input),sessionRole:service.captureRole(s,input)};
+  }
   function scope(input,s=store.read()){
     const project=find(s,'projects',required(input.projectId,'projectId'));
     const conversation=find(s,'conversations',required(input.conversationId,'conversationId'),project.id);
@@ -81,10 +88,13 @@ export function createConversationService({store,t3,providers,checkCapabilities,
         const {project:currentProject,conversation:c}=scope(input,s);const currentBot=botScope(s,project.id,bot.id);
         if(currentProject.revision!==project.revision||digest(currentProject)!==digest(project)||digest(currentBot)!==digest(bot)||digest(c)!==digest(conversation))fail('REVISION_CONFLICT','Chat context changed before reservation; review the current conversation',409);
         if(s.receipts.some(x=>x.operationId===input.operationId))fail('OPERATION_REUSE','Operation belongs to a different command',409);
-        assertWorkspaceAvailable(s,project.id);
+        const roles=roleAdmission(s,{...input,botId:bot.id});
+        const parent=roles.sessionRoleContext?.parentRunId,privateParent=parent&&s.runs.find(r=>r.id===parent)?.guardedContext?.profile?.purpose==='supervised-orchestrator-v1'?parent:undefined;
+        assertWorkspaceAvailable(s,project.id,{orchestratorRunId:privateParent});
         const harnessSelection=checkCapabilities?.(s,{projectId:project.id,conversationId:c.id,botId:bot.id},['provider']);
         const chatAdmission={botDigest:digest(bot),conversationRevision:c.revision,kind:c.kind,botId:c.botId??null,bindingDigest:digest(binding??null),workspace:project.workspace};
         const r=entity({kind:'conversation',fingerprint,operationId:input.operationId,attemptId:randomUUID(),botId:bot.id,helperTaskId:bot.kind==='helper'?bot.taskId:null,conversationId:c.id,...(harnessSelection?{harnessSelection}:{}),chatAdmission,status:'submitting',providerInstanceId:selection.instanceId,selection,profileRevision:project.revision,profile:structuredClone(project.profile),inputText:input.text,messages:[],protocolEvents:[],clientRequestId:`forge-chat-${digest(input.operationId)}`,...(binding?{threadId:binding.threadId,inheritedThreadId:binding.threadId,t3ProjectId:binding.t3ProjectId}:{})},project.id);
+        if(roles.sessionRoleContext)r.sessionRoleContext=roles.sessionRoleContext;if(roles.sessionRole)r.sessionRole=roles.sessionRole;
         const user=entity({role:'user',text:input.text,botId:bot.id,conversationId:c.id,runId:r.id,attemptId:r.attemptId,operationId:r.operationId,status:'submitting'},project.id);r.userMessageId=user.id;c.messages.push(user);s.runs.push(r);reserveBudget(s,{run:r,input});changed(c);return r;
       });if(replay)return run;
       let dispatched=false;
@@ -100,10 +110,13 @@ export function createConversationService({store,t3,providers,checkCapabilities,
         const admission=reserved.chatAdmission;
         if(latest.project.revision!==reserved.profileRevision||latest.project.workspace!==admission.workspace||digest(latest.project.profile)!==digest(reserved.profile)||digest(latestBot)!==admission.botDigest||latest.conversation.revision!==admission.conversationRevision+1||latest.conversation.kind!==admission.kind||(latest.conversation.botId??null)!==admission.botId||digest(latest.conversation.bindings?.[bot.id]??null)!==admission.bindingDigest)fail('REVISION_CONFLICT','Bot, workspace or conversation changed during setup; review before a new attempt',409);
         providers.validateSelection({projectId:project.id,connectionId:selection.connectionId,selection});
-        assertWorkspaceAvailable(current,project.id,{runId:run.id});
+        roleAdmission(current,input,reserved);
+        const parent=reserved.sessionRoleContext?.parentRunId,privateParent=parent&&current.runs.find(r=>r.id===parent)?.guardedContext?.profile?.purpose==='supervised-orchestrator-v1'?parent:undefined;
+        assertWorkspaceAvailable(current,project.id,{runId:run.id,orchestratorRunId:privateParent});
         const currentHarness=checkCapabilities?.(current,{projectId:project.id,conversationId:conversation.id,botId:bot.id},['provider']);
         if(run.harnessSelection&&digest(currentHarness?.plugins)!==digest(run.harnessSelection.plugins))fail('CONNECTION_CHANGED','Scoped capabilities changed before dispatch',409);
-        const text=prompt(run,project,conversation,bot,binding);if(text.length>120000)fail('MESSAGE_LIMIT','Bot instructions and visible context exceed the T3 prompt limit');validateBudgetAdmission(store.read(),{run:find(store.read(),'runs',run.id),input});dispatched=true;
+        const role=reserved.sessionRole?'\n'+sessionRoleInstruction(reserved)+'\n':'';
+        const text=prompt(run,project,conversation,bot,binding)+role;if(text.length>120000)fail('MESSAGE_LIMIT','Bot instructions and visible context exceed the T3 prompt limit');const final=store.read(),finalRun=find(final,'runs',run.id);validateBudgetAdmission(final,{run:finalRun,input});roleAdmission(final,input,finalRun);dispatched=true;
         const response=await t3.providers.call(binding?'t3_thread_send':'t3_thread_launch',binding?{threadId:binding.threadId,message:text,mode:'auto',clientRequestId:run.clientRequestId}:{projectId:t3ProjectId,clientRequestId:run.clientRequestId,title:`FORGE ${bot.name} chat ${run.id}`,message:text,runtimeMode:'approval-required',interactionMode:'default',modelSelection:{instanceId:selection.instanceId,model:selection.model,options:selection.options},workspaceStrategy:{type:'root'}});
         if(!response.threadId||!response.runId||binding&&response.threadId!==binding.threadId||response.projectId&&response.projectId!==t3ProjectId)fail('T3_IDENTITY','T3 returned incomplete or mismatched execution identity',502);
         await store.transaction(s=>{const r=find(s,'runs',run.id),c=find(s,'conversations',r.conversationId,r.projectId);r.threadId=response.threadId;r.providerRunId=response.runId;r.status=response.status??'unknown';changed(r);

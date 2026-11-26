@@ -33,7 +33,8 @@ test('Guarded setup TH/EN rendered states, keyboard, narrow layout and exact act
     if(status==='preparing'){await page.getByRole('button',{name:lang==='th'?'ยกเลิกการตั้งค่า':'Cancel setup',exact:true}).click();const c=await page.evaluate(()=>window.__calls.find(c=>c.url==='/api/guarded/cancel'));assert.equal(c.body.operationId,'existing-setup-0001');}
   }
   for(const lang of ['th','en']){await render('loading',lang);await page.getByRole('status').filter({hasText:lang==='th'?'กำลังอ่านสถานะ':'Loading setup'}).waitFor();await render('no-project',lang);await page.getByRole('status').filter({hasText:lang==='th'?'เลือกโครงการ':'Choose a project'}).waitFor();await render('network-error',lang);await page.getByRole('alert').waitFor();}
-  await render('ready','en',1100);await page.keyboard.press('Tab');assert.equal(await page.locator(':focus').getAttribute('type'),'button');
+  await render('ready','en',1100);await page.keyboard.press('Tab');assert.equal(await page.locator(':focus').evaluate(e=>e.tagName),'SELECT');
+  for(const leaseMs of [900000,3600000]){await page.getByRole('combobox',{name:'Route check lifetime'}).selectOption(String(leaseMs));await page.getByRole('button',{name:'Check installed route',exact:true}).click();const c=await page.evaluate(()=>window.__calls.filter(c=>c.url==='/api/guarded/check').at(-1));assert.equal(c.body.leaseMs,leaseMs);assert.deepEqual(Object.keys(c.body).sort(),['leaseMs','operationId','projectId']);}
   if(screenshots)await page.screenshot({path:path.join(path.resolve(screenshots),'ready-en-1100.png'),fullPage:true});
   await render('missing','en');await page.getByRole('button',{name:'Install Guarded',exact:true}).click();calls.push(...await page.evaluate(()=>window.__calls));
   const install=calls.find(c=>c.url==='/api/guarded/install');assert.equal(install.body.projectId,'fixture-project');assert.match(install.body.operationId,/^[a-f0-9-]{36}$/);

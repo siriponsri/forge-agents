@@ -40,8 +40,12 @@ it did not claim live agent runs. No mutable state, database or secret was copie
 - Screenshot content belongs to FORGE and follows the repository license. No
   upstream product screenshot is included.
 
-`public/favicon.svg` and the React `Mark` are original code-native FORGE letterform
-geometry, matching the orange brand identity without an external logo asset.
+`public/favicon.svg` and the React `Mark` use the original minimal cut-ended F
+from repository `docs/brand/`. The same font-free silhouette is used in the app
+and README. Orange stays primary; yellow and gray are secondary decorative
+facets, as requested by the Owner. They do not replace semantic text colors.
+No upstream logo or third-party artwork is embedded. Source geometry,
+small-size exports, Apache-2.0 provenance and proofs are in `docs/brand/README.md`.
 
 Bundled fonts: Manrope and IBM Plex Sans Thai from the pinned `@fontsource`
 packages (SIL Open Font License 1.1). Their licenses and required notices are

@@ -11,6 +11,7 @@ import {inspectGuardedReceipt,inspectGuardedOperations} from '../guarded-runtime
 import {checkProfile,canonical,digest,exact,fail} from '../guarded-runtime/profile.mjs';
 import {FRONTEND_TOOL} from '../frontend-tools/contract.mjs';
 import {purposeSeparatedToolNames} from '../frontend-tools/root-host-tools.mjs';
+import {PURPOSE as SESSION_PURPOSE,NATIVE_NAMES as SESSION_NAMES,toolManifest as sessionManifest} from '../session-tools/contract.mjs';
 
 const clone=structuredClone;
 const sync=(fn,...args)=>{if(typeof fn!=='function')fail('GUARDED_HOST_CALLBACK_REQUIRED');const r=fn(...args);if(r?.then)fail('GUARDED_SYNCHRONOUS_CALLBACK_REQUIRED');return r;};
@@ -28,7 +29,7 @@ function physical(file){let p=path.resolve(file);for(;;){try{return path.resolve
  * native events into its existing domain/AG-UI via onEvent. No ordinary T3
  * controller, provider registry, credentials or legacy launcher is modified.
  */
-export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeOwner,resolveProvider,observeSelectedRoute,validateAdmission,onEvent,onReceipt,onNativePhase,onBeforeAction,createFrontendGateway,clock=Date.now}={}){
+export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeOwner,resolveProvider,observeSelectedRoute,validateAdmission,onEvent,onReceipt,onNativePhase,onBeforeAction,createFrontendGateway,createSessionGateway,clock=Date.now}={}){
   if(!store||typeof store.read!=='function'||typeof store.transaction!=='function'||!path.isAbsolute(dataDir??''))fail('GUARDED_STORE_REQUIRED');
   const privateRoot=path.join(dataDir,'guarded-private'),installedArtifacts={},checks=new Map(),entries=new Map(),preparedValues=new WeakMap(),fenced=new AsyncLocalStorage();
   let closed=false,artifactIdentity,artifactPromise,reservation=null;
@@ -40,7 +41,7 @@ export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeO
   function owner(s,detail){if(closed||sync(authorizeOwner,s,detail)!==true)fail('GUARDED_OWNER_DENIED');}
   function privatePaths(s){
     const editable=[...s.projects.map(p=>p.workspace),...s.runs.map(r=>r.workspace)].filter(Boolean).map(physical);
-    const protectedDirectories=[privateRoot,...['guarded-runtime','research-native','research-components','frontend-tools','server'].map(n=>fileURLToPath(new URL('../'+n,import.meta.url)))];
+    const protectedDirectories=[privateRoot,...['guarded-runtime','research-native','research-components','frontend-tools','session-tools','server'].map(n=>fileURLToPath(new URL('../'+n,import.meta.url)))];
     if(protectedDirectories.some(dir=>editable.some(root=>inside(root,physical(dir))||inside(physical(dir),root))))fail('GUARDED_PRIVATE_PATH_OVERLAP');
     for(const file of [fileURLToPath(import.meta.url),...Object.values(installedArtifacts).flatMap(a=>(a.files??[{path:a.path}]).map(f=>f.path))]){
       if(!path.isAbsolute(file??'')||editable.some(root=>inside(root,physical(file))))fail('GUARDED_PRIVATE_PATH_OVERLAP');
@@ -59,7 +60,7 @@ export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeO
     const check=checks.get(request?.projectId);if(!check?.handle)return null;
     // Qualifier observes current canonical route, never a cached supported flag.
     const now=selected(s,{projectId:request.projectId});if(!same(now,check.selected))return null;
-    return request.purpose==='supervised-frontend-v1'?check.host.qualifyFrontendRoute(check.handle,request):check.host.qualifyRoute(check.handle,request);
+    return request.purpose===SESSION_PURPOSE?check.host.qualifySessionRoute(check.handle,request):request.purpose==='supervised-frontend-v1'?check.host.qualifyFrontendRoute(check.handle,request):check.host.qualifyRoute(check.handle,request);
   }
   function initial(e,s){
     const p=proof(s,e.request);if(!p||!same({...p,expiresAt:null},{...e.routeProof,expiresAt:null})||e.routeProof.expiresAt<=clock())fail('GUARDED_ROUTE_PROOF_CHANGED');return p;
@@ -86,13 +87,13 @@ export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeO
   const fence=(_runId,fn)=>store.transaction(async s=>{const token={state:s,active:true};try{return await fenced.run(token,fn);}finally{token.active=false;}});
   let runtimeHost;
   const t3Host=installT3GuardedHost({
-    toolNames:purposeSeparatedToolNames,
+    toolNames:(handle,profile)=>profile?.purpose===SESSION_PURPOSE?[...SESSION_NAMES]:purposeSeparatedToolNames(handle,profile),
     resolveThread(thread,selection){const e=[...entries.values()].find(e=>e.context.threadId===thread.id&&!e.revoked);if(!e||!same(selection,e.selection))fail('GUARDED_THREAD_DENIED');current(e,snapshot(),'current');return e.lease;},
     assertCurrent(lease){return runtimeHost.assertCurrent(lease);},
     runtimeDirectory(lease){return runtimeHost.runtimeDirectory(lease);},
     resolveConnection(input){return [...entries.values()].some(e=>{const c=e.connection;if(!c||e.revoked)return false;return input.serverUrl===c.url&&input.serverPassword===c.password&&input.binaryPath===c.binaryPath&&input.directory===c.runtimeDirectory&&same(input.environment??{},{})&&(current(e,snapshot(),'current'),true);});},
   });
-  runtimeHost=createGuardedRuntimeHost({t3Host,artifacts:installedArtifacts,clock,createFrontendGateway,
+  runtimeHost=createGuardedRuntimeHost({t3Host,artifacts:installedArtifacts,clock,createFrontendGateway,createSessionGateway,
     readRun(id){const r=snapshot().runs.find(r=>r.id===id),e=entries.get(id);return r?{...r,profile:r.guardedContext?.profile,revoked:r.revoked||!e||e.revoked,stopRequested:!!(r.stopRequest||r.stopRequested)}:null;},
     validateReservation(input){if(!reservation||reservation.profile!==input.profile)return false;current(reservation.entry,reservation.state,'reservation');return true;},
     authorizeCurrent({profile,workspace}){
@@ -149,7 +150,7 @@ export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeO
         if(!key||v.runId!==run.id||v.threadId!==e.context.threadId||v.providerThreadId&&v.providerThreadId!==e.providerThread?.id||v.providerTurnId&&v.providerTurnId!==p.providerTurn?.id)return;
         if(v.type==='reasoning'||v.kind==='reasoning')return;upsert(key,clone(v));
       }
-      if(onEvent)sync(onEvent,s,{run,event:clone(event),projection:clone(p)});
+      if(onEvent){const token={state:s,active:true};try{fenced.run(token,()=>sync(onEvent,s,{run,event:clone(event),projection:clone(p)}));}finally{token.active=false;}}
       if(p.terminal)e.resolveTerminal?.(clone(p.terminal));
       return clone(p);
     });
@@ -197,6 +198,7 @@ export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeO
     readiness({projectId}={}){const c=checks.get(projectId);return c?.handle?c.host.readiness(c.handle):null;},
     qualifyProactive(s,request){try{return request?.purpose===undefined?proof(s,request):null;}catch{return null;}},
     qualifyFrontend(s,request){try{return request?.purpose==='supervised-frontend-v1'?proof(s,request):null;}catch{return null;}},
+    qualifySession(s,request){try{return request?.purpose===SESSION_PURPOSE?proof(s,request):null;}catch{return null;}},
     privateSnapshot(runId){
       const e=entries.get(runId);if(!e)return null;
       const runtime=e.lease?runtimeHost.privateSnapshot(e.lease):{profile:e.context.profile,attestation:null,phases:[],phase:'reserved',live:false};
@@ -218,7 +220,7 @@ export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeO
       if(!artifactIdentity)fail('GUARDED_SETUP_REQUIRED');privatePaths(before);
       if(!input||input.projectId!==input.request?.projectId||input.taskId!==input.request?.taskId||typeof input.operationId!=='string'||!input.operationId||typeof input.message!=='string'||!input.message||Buffer.byteLength(input.message)>65536||!path.isAbsolute(input.workspace??''))fail('GUARDED_PREPARATION_INVALID');
       const request=clone(input.request);exact(request.limits,['maxRunMs','maxTokens','maxCost']);
-      if(Object.hasOwn(request,'purpose')&&request.purpose!=='supervised-frontend-v1')fail('PROFILE_PURPOSE_DENIED');
+      if(Object.hasOwn(request,'purpose')&&!['supervised-frontend-v1',SESSION_PURPOSE].includes(request.purpose))fail('PROFILE_PURPOSE_DENIED');
       if(Object.hasOwn(request,'deadlineAt')&&(!Number.isSafeInteger(request.deadlineAt)||request.deadlineAt<=clock()))fail('PROFILE_EXPIRED');
       if(Object.hasOwn(request,'maxBytes')&&(!Number.isSafeInteger(request.maxBytes)||request.maxBytes<1||request.maxBytes>65536))fail('SCOPE_INVALID');
       if(request.limits.maxTokens!==null||request.limits.maxCost!==null||!Number.isSafeInteger(request.limits.maxRunMs)||request.limits.maxRunMs<1000||request.limits.maxRunMs>3600000)fail('UNENFORCEABLE_LIMIT');
@@ -237,8 +239,8 @@ export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeO
       // Fail options/profile shape before any canonical allocation or side effect.
       const workspace=physical(input.workspace),sourceWorkspace=physical(after.projects.find(p=>p.id===input.projectId)?.workspace??'');
       const runtimeDirectory=path.join(privateRoot,'runs',randomUUID(),'runtime'),homeDirectory=path.join(path.dirname(runtimeDirectory),'home'),receiptPath=path.join(path.dirname(runtimeDirectory),'effects','effects.sqlite');
-      const manifest=request.purpose==='supervised-frontend-v1'?frontendManifest:toolManifest;
-      const profile={version:1,...(request.purpose?{purpose:request.purpose}:{}),projectId:input.projectId,taskId:input.taskId,runId:'preparation',threadId:'preparation',envelopeDigest:request.envelopeDigest,identitySnapshot:request.identitySnapshot,scope:{...request.scope,maxBytes:request.maxBytes??65536},route:choice.route,policyGeneration:choice.policyGeneration,toolGeneration:choice.toolGeneration,manifestDigest:digest(manifest),contextDigest:digest({provider,runtimeDirectory,toolManifest:manifest}),expiresAt:Math.min(routeProof.expiresAt,request.deadlineAt??Infinity,clock()+request.limits.maxRunMs)};checkProfile(profile,clock());
+      const manifest=request.purpose===SESSION_PURPOSE?sessionManifest():request.purpose==='supervised-frontend-v1'?frontendManifest:toolManifest;
+      const profile={version:1,...(request.purpose?{purpose:request.purpose}:{}),...(request.purpose===SESSION_PURPOSE?{attemptId:'preparation'}:{}),projectId:input.projectId,taskId:input.taskId,runId:'preparation',threadId:'preparation',envelopeDigest:request.envelopeDigest,identitySnapshot:request.identitySnapshot,scope:{...request.scope,maxBytes:request.maxBytes??65536},route:choice.route,policyGeneration:choice.policyGeneration,toolGeneration:choice.toolGeneration,manifestDigest:digest(manifest),contextDigest:digest({provider,runtimeDirectory,toolManifest:manifest}),expiresAt:Math.min(routeProof.expiresAt,request.deadlineAt??Infinity,clock()+request.limits.maxRunMs)};checkProfile(profile,clock());
       const handle=Object.freeze({}),p={providerLifecycle,input:clone(input),selected:choice,provider,credentialRef:resolved.credentialRef,request,routeProof,workspace,sourceWorkspace,runtimeDirectory,homeDirectory,receiptPath,profile,toolManifest:manifest};preparedValues.set(handle,p);preparations.add(p);return handle;
       }catch(error){await releaseProvider(pending);throw error;}
     },
@@ -248,7 +250,7 @@ export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeO
       if(p.providerLifecycle.closed||!same(input,p.input))fail('GUARDED_PREPARED_REQUIRED');
       if(s.runs.find(r=>r.id===run.id)!==run||s.runs.some(r=>r.id!==run.id&&r.operationId===run.operationId)||entries.has(run.id)||s.runs.some(r=>r.id!==run.id&&r.guardedContext?.threadId===run.threadId))fail('GUARDED_RESERVATION_COLLISION');
       for(const key of ['id','attemptId','threadId','rootNodeId'])if(typeof run[key]!=='string'||!run[key])fail('GUARDED_CANONICAL_IDENTITIES_REQUIRED');
-      const profile=checkProfile({...p.profile,runId:run.id,threadId:run.threadId},clock());
+      const profile=checkProfile({...p.profile,runId:run.id,threadId:run.threadId,...(p.profile.purpose===SESSION_PURPOSE?{attemptId:run.attemptId}:{})},clock());
       const context={version:1,profile,attemptId:run.attemptId,threadId:run.threadId,rootNodeId:run.rootNodeId,runOrdinal:run.runOrdinal??1,providerTurnOrdinal:run.providerTurnOrdinal??1,providerSessionId:run.providerSessionId??'guarded-session:'+run.id,storageId:path.basename(path.dirname(p.runtimeDirectory)),credentialRef:p.credentialRef,routeProof:clone(p.routeProof),inputDigest:digest(input)};
       const e={...p,context,runId:run.id,selection:{instanceId:profile.route.providerInstanceId,model:profile.route.modelId,options:profile.route.options},title:run.title??'FORGE guarded task',providerSessionId:context.providerSessionId,revoked:false};
       run.guardedContext=context;entries.set(run.id,e);p.reservedEntry=e;
@@ -269,7 +271,7 @@ export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeO
           current(e,store.read(),'current');e.connection=await runtimeHost.bind(e.lease);await openNative(e);
           e.attestation=await runtimeHost.attest(e.lease,{nativeSessionId:e.providerThread.nativeThreadRef.nativeId,threadId:e.context.threadId,modelSelection:e.selection});
           if(!e.context.profile.purpose&&!runtimeHost.qualify(e.lease,e.request))fail('GUARDED_RUN_ATTESTATION_REQUIRED');
-          await store.transaction(s=>{const r=current(e,s,'current');r.guardedReceipt={version:1,owner:e.context.profile.purpose?'supervised-frontend-native-session':'guarded-native-session',profileDigest:digest(e.context.profile),routeEvidenceId:e.routeProof.evidenceId,providerThread:clone(e.providerThread),attestation:clone(e.attestation)};});
+          await store.transaction(s=>{const r=current(e,s,'current');r.guardedReceipt={version:1,owner:e.context.profile.purpose===SESSION_PURPOSE?'supervised-orchestrator-native-session':e.context.profile.purpose?'supervised-frontend-native-session':'guarded-native-session',profileDigest:digest(e.context.profile),routeEvidenceId:e.routeProof.evidenceId,providerThread:clone(e.providerThread),attestation:clone(e.attestation)};});
           e.terminalPromise=new Promise(resolve=>{e.resolveTerminal=resolve;});
           let messageId;
           await fence(runId,()=>{

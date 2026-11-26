@@ -6,6 +6,14 @@ export const busy = run => !terminal.has(run.status);
 // Provider failures can contain tokens, URLs, environment dumps or native output.
 // Only classified codes cross the public/persistence boundary.
 export function safeError(error) {
+  const sessionErrors={
+    SESSION_ROLE_STALE:'The session role or approved child link changed. Review a new attempt.',
+    SESSION_ROLE_STOPPED:'This child prompt was stopped before dispatch. Reconcile the original command.',
+    SESSION_ROLE_CONTEXT:'The child prompt differs from its canonical reservation. Inspect the retained command.',
+    SESSION_ROLE_PARENT_INACTIVE:'The parent attempt is no longer active. Review a new parent attempt.',
+    SESSION_ROLE_OWNER_UNAVAILABLE:'Session-role admission is unavailable. Restart FORGE and reconcile the retained command.',
+  };
+  if(Object.hasOwn(sessionErrors,error?.code??''))return {code:error.code,message:sessionErrors[error.code]};
   const raw = `${error?.code ?? ''} ${error?.message ?? ''}`;
   const code = /auth|401|403|login|credential/i.test(raw) ? 'AUTH_REQUIRED'
     : /timeout|abort|pending/i.test(raw) ? 'TIMEOUT'

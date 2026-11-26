@@ -37,5 +37,14 @@ export function createLocalAuthority(){
     const id=handles.get(caller);if(id?.kind!=='owner'||id.session.expiresAt<Date.now())return null;
     return {kind:'human',subject:id.subject,role:request.action==='qa'?'qa':'owner',independent:true};
   }
-  return {owner,forRun,authorize,goalAuthorize};
+  function sessionAuthorize(request,caller){
+    const id=handles.get(caller),state=request.state;
+    if(id?.kind==='owner')return id.session.expiresAt>Date.now()?{kind:'owner'}:null;
+    if(id?.kind!=='run'||!['session-role.children','session-role.prompt'].includes(request.action)||!state)return null;
+    try{if(id.active&&id.active(state)!==true)return null;}catch{return null;}
+    const r=state.runs.find(r=>r.id===id.runId&&r.attemptId===id.attemptId&&r.projectId===id.projectId);
+    if(!r||r.projectId!==request.projectId||request.parentRunId&&request.parentRunId!==r.id||!r.conversationId||r.stopRequest||r.stopRequested||!['starting','running','waiting'].includes(r.status))return null;
+    return {kind:'run',runId:r.id,attemptId:r.attemptId,projectId:r.projectId,conversationId:r.conversationId};
+  }
+  return {owner,forRun,authorize,goalAuthorize,sessionAuthorize};
 }

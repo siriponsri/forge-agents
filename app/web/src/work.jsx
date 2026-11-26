@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Play, Square, ExternalLink, MessagesSquare, Network } from "lucide-react";
 import AgentWorkspace from './AgentWorkspace.jsx';
+import SessionRoles from './SessionRoles.jsx';
+import SessionOrchestrator from './SessionOrchestrator.jsx';
 import { date, operationId, request, runEvents, scoped } from "./api.mjs";
 import {
   Badge,
@@ -189,7 +191,8 @@ export function Chat({ t, state, projectId, mutate, busy,run, connected }) {
         </section>
         <section className="panel conversation">
           <h2>{room?.name || t("เลือกห้องสนทนา", "Choose a conversation")}</h2>
-          {room&&<div className="conversation-view-switch" role="group" aria-label={t('รูปแบบห้องสนทนา','Conversation view')}><button type="button" aria-pressed={view==='chat'} onClick={()=>setView('chat')}><MessagesSquare size={15}/>{t('แชต','Chat')}</button><button type="button" aria-pressed={view==='workspace'} onClick={()=>setView('workspace')}><Network size={15}/>{t('Workspace','Workspace')}</button></div>}
+          {room&&<div className="conversation-view-switch" role="group" aria-label={t('รูปแบบห้องสนทนา','Conversation view')}><button type="button" aria-pressed={view==='chat'} onClick={()=>setView('chat')}><MessagesSquare size={15}/>{t('แชต','Chat')}</button><button type="button" aria-pressed={view==='workspace'} onClick={()=>setView('workspace')}><Network size={15}/>{t('Workspace','Workspace')}</button><button type="button" aria-pressed={view==='sessions'} onClick={()=>setView('sessions')}>{t('บทบาทและเซสชัน','Roles and sessions')}</button></div>}
+          {room&&view==='sessions'&&<><SessionRoles {...{t,state,projectId,run,busy}}/><SessionOrchestrator {...{t,state,projectId,run,busy}} renderRun={record=><Run key={record.id} runRecord={record} {...{t,run,busy}}/>}/></>}
           {room&&view==='workspace'&&<AgentWorkspace key={`${projectId}:${room.id}`} {...{state,projectId,room,t,connected}} renderRun={record=><Run key={record.id} runRecord={record} {...{t,run,busy}}/>}/>}
           <div hidden={view!=='chat'}>
           <div className="messages" aria-live="polite">

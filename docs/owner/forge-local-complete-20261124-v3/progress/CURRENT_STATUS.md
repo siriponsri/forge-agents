@@ -1,5 +1,42 @@
 # Current Status — Complete Local FORGE
 
+## Resumed integration — 2026-11-26
+
+**IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN.** The Owner resumed the full
+goal, authorized workers, and added session roles, native parent-to-child
+orchestration, selectable Strategist and a professional README/minimal identity.
+The default identity now uses orange with secondary yellow and gray. Existing
+theme semantics remain unchanged. This branch has not been published to main.
+
+The earlier assembled Research defect is corrected. Actual application/native
+verification passed for static Research, then for the all-ON primary/helper/
+revision cohort (six deterministic loopback model requests, three actual file
+effects/receipts, independent output validation and real skill/Memory/Context
+consumption). That cohort qualified frozen `def855d` with the prior unified
+image. It does not qualify the newer session-capable image by inference.
+
+Strategist, roles and the two-tool native Orchestrator modules are integrated.
+Shared Owner HTTP/CSRF, canonical T3/Conversation role snapshots and final fences,
+private SDK attachment, restore retention and Chat controls are now mounted.
+The parent has only child-list/prompt tools; an exact attested parent may coexist
+with one child while unrelated writable work remains blocked. Scoped root
+backend checks: 38 PASS; production build PASS. Assembled native Orchestrator
+verification, current-image route regression and final UI/media review remain
+pending. Worker module proofs are recorded separately from production proofs.
+
+The installer now authenticates inventory/capability metadata and supports the
+session-capable derivative. A full fresh-source pipeline is actively being
+verified in a separate owned build directory; actual cache copy/tamper/restart
+and Windows process-tree safety checks passed. Windows long-path failures found
+by that run have been corrected without relaxing source/image pins.
+
+Ordinary Adaptive decision expiry remains fifteen minutes. An already claimed
+Research cohort validates its unchanged pinned decision at original approval,
+within its fixed absolute trial envelope; current task/skill/route/account/Stop
+checks still apply. The one-hour elapsed-time regression passed; this is a
+canonical fixture check, not a one-hour live-provider qualification. Monetary
+finality remains unsupported. External provider quality and home UAT are unrun.
+
 ## Owner-requested early main checkpoint — 2026-11-25
 
 **IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN.** The Owner shortened the

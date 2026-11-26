@@ -1,0 +1,7 @@
+.session-orchestrator{min-width:0;overflow-wrap:anywhere}
+.session-orchestrator>summary{display:flex;align-items:center;gap:.65rem;cursor:pointer;font-weight:700}
+.session-orchestrator>summary svg{color:#f2c94c;flex:none}
+.session-orchestrator .session-child{border:1px solid #8b9199;border-radius:6px;padding:.55rem .75rem;margin:.5rem 0;align-items:flex-start}
+.session-orchestrator select{width:100%;min-width:0}
+.session-orchestrator fieldset{min-width:0}
+@media(max-width:600px){.session-orchestrator .form-grid{grid-template-columns:minmax(0,1fr)}}
