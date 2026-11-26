@@ -104,14 +104,19 @@ export function createSessionRoleService({store,conversations,authorize,qualifyR
       return store.transaction(s=>{identity(s,'assign',input,caller,true);const old=prior(s,'assign',input);if(old)return old.result;session(s,input.projectId,input.conversationId,input.botId);const previous=assignment(s,input.projectId,input.conversationId,input.botId);if(input.expectedRevision!==(previous?.roleRevision??0))fail('REVISION_CONFLICT','Role changed; reload before saving',409);
         const a=entity({type:prefix+'assignment',conversationId:input.conversationId,botId:input.botId,role:input.role,roleRevision:(previous?.roleRevision??0)+1},input.projectId);s.events.push(a);return receipt(s,'assign',input,roleView(a));});
     },
-    async bind(raw,caller){
+    // HOST ONLY: invoked by the lead's canonical native-running event writer
+    // with the SAME opaque Owner retained from its reviewed intent. Never mount
+    // this method in HTTP/MCP dispatch and never acquire a second writer here.
+    bindInTransaction(s,raw,caller){
+      if(closing)fail('SHUTTING_DOWN','Session roles are shutting down',409);
       const input=exact(raw,['projectId','operationId','parentRunId','childConversationId','childBotId']);required(input.operationId,'operationId');
-      return store.transaction(s=>{identity(s,'bind',input,caller,true);const old=prior(s,'bind',input);if(old)return old.result;const p=getParent(s,input.parentRunId,input.projectId),b=bound(s,input.projectId,input.childConversationId,input.childBotId),a=roleView(assignment(s,input.projectId,input.childConversationId,input.childBotId));
+      identity(s,'bind',input,caller,true);const old=prior(s,'bind',input);if(old)return structuredClone(membership(s,old.result.id,input.projectId));const p=getParent(s,input.parentRunId,input.projectId),b=bound(s,input.projectId,input.childConversationId,input.childBotId),a=roleView(assignment(s,input.projectId,input.childConversationId,input.childBotId));
         if(!a)fail('SESSION_ROLE_REQUIRED','Assign a working role to the child first',409);
         if(p.run.conversationId===input.childConversationId||p.run.threadId===b.threadId)fail('SESSION_ROLE_CYCLE','Parent and child must be different sessions and native threads',409);
         const m=entity({type:prefix+'membership',parentRunId:p.run.id,parentAttemptId:p.run.attemptId,parentConversationId:p.run.conversationId,parentBotId:p.run.botId,parentDigest:sessionRoleRunDigest(p.run),parentRole:p.role,childConversationId:input.childConversationId,childBotId:input.childBotId,childRole:a,childBindingHash:bindingHash(b),status:'approved',approvedBy:'human-owner'},input.projectId);
-        s.events.push(m);return receipt(s,'bind',input,m);});
+        s.events.push(m);return receipt(s,'bind',input,m);
     },
+    async bind(raw,caller){return store.transaction(s=>api.bindInTransaction(s,raw,caller));},
     async revoke(raw,caller){const input=exact(raw,['projectId','operationId','membershipId','expectedRevision']);required(input.operationId,'operationId');return store.transaction(s=>{identity(s,'revoke',input,caller,true);const old=prior(s,'revoke',input);if(old)return old.result;const m=membership(s,input.membershipId,input.projectId);revision(m,input.expectedRevision);m.status='revoked';changed(m);return receipt(s,'revoke',input,m);});},
     children(raw,caller){const input=exact(raw,['projectId','parentRunId']),s=store.read();identity(s,'children',input,caller);getParent(s,input.parentRunId,input.projectId);return {projectId:input.projectId,parentRunId:input.parentRunId,children:events(s,'membership').filter(m=>m.projectId===input.projectId&&m.parentRunId===input.parentRunId).flatMap(m=>{try{checkLink(s,m);return [{membershipId:m.id,conversationId:m.childConversationId,botId:m.childBotId,role:m.childRole.role}];}catch{return [];}})};},
     async prompt(raw,caller){

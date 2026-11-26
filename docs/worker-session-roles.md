@@ -88,6 +88,17 @@ Thai is the fallback. Mount it under Team or Strategies. It uses the existing
 uncertain operation inputs, and clears drafts when project scope changes.
 Parent task selection/start is owned by the lead's native orchestrator surface.
 
+Host-only `sessionRoles.bindInTransaction(state,input,opaqueOwner)` runs the EXACT
+public `bind` validation and receipt logic synchronously inside the existing
+canonical writer. Public async `bind` delegates to it. The lead may retain the
+same opaque human Owner from an intent that reviewed exact child session/bot/
+role/binding, then invoke this hook after committing the ACTUAL attested native
+parent `running` observation, before its first model tool call. Use one stable
+operation ID per intent+child. No callback awaits and no second writer is opened.
+Replay returns current canonical membership, so revocation cannot be revived.
+Do not expose this hook in HTTP/MCP method lists or treat an intent JSON actor
+as its retained Owner. Owner expiry/current role/attempt/native proof all recheck.
+
 Construct `createSessionRoleMcpGateway({store,service,callerForRun,qualifyRun,
 endpoint,clock,ttlMs})` only after loopback URL is known. Route its `handler`
 at the exact endpoint through existing request admission/draining. Host-only
@@ -134,7 +145,7 @@ conversation owner/store. No new listener is created by either factory.
 
 ## Verification and genuine limitations
 
-Scoped checks: **16 PASS** (10 SQLite/Budget/domain lifecycle, 5 actual SDK over
+Scoped checks: **17 PASS** (11 SQLite/Budget/domain lifecycle, 5 actual SDK over
 loopback, 1 real React/Playwright UI). The owner lifecycle for successful sends
 is explicitly INJECTED in tests; it uses real canonical runs and Budget reserve/
 final fences. Private observation/attestation is explicitly injected in worker

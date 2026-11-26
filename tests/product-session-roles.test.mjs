@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {fixture,gate} from './product-session-roles-fixture.mjs';
 import {createConversationService} from '../app/providers/conversations.mjs';
-import {createSessionRoleService,mergeSessionRoleSafety} from '../app/server/session-roles.mjs';
+import {createSessionRoleService,mergeSessionRoleSafety,dispatchSessionRoleRequest} from '../app/server/session-roles.mjs';
 import {createBudgetService} from '../app/budgets/index.mjs';
 import {command} from '../app/server/domain.mjs';
 
@@ -89,4 +89,16 @@ test('real conversation owner refuses active parent in shared writable workspace
   const real=createConversationService({store:f.store,t3:{providers:{ensureProject(){called++;throw new Error('must not run');}}},providers:{validateSelection:()=>f.selection}});t.after(()=>real.close());
   const service=createSessionRoleService({store:f.store,conversations:real,authorize:f.authorize});t.after(()=>service.close());
   const result=await service.prompt(f.input,f.owner);assert.equal(result.status,'unknown');assert.equal(result.error.code,'WORKSPACE_BUSY');assert.equal(called,0);assert.equal(f.store.read().runs.length,1);
+});
+
+test('host-only bind shares the Owner boundary/receipt in the existing native writer and replay never revives revocation',async t=>{
+  const f=await fixture(t),input={projectId:f.p.id,operationId:'attested-native-running-child',parentRunId:f.parent.id,childConversationId:f.child.id,childBotId:f.childBot.id};
+  const linked=await f.store.transaction(s=>{const value=f.roles.bindInTransaction(s,input,f.owner);assert.equal(value?.then,undefined,'host hook is fully synchronous');return value;});
+  const replay=await f.roles.bind(input,f.owner);assert.equal(replay.id,linked.id);assert.equal(f.store.read().events.filter(e=>e.type==='session-role.membership').length,2);
+  await f.roles.revoke({projectId:f.p.id,operationId:'revoke-native-link',membershipId:linked.id,expectedRevision:1},f.owner);
+  const revoked=await f.store.transaction(s=>f.roles.bindInTransaction(s,input,f.owner));assert.equal(revoked.status,'revoked');assert.equal(f.store.read().events.filter(e=>e.type==='session-role.membership').length,2);
+  await assert.rejects(f.store.transaction(s=>f.roles.bindInTransaction(s,{...input,operationId:'wrong-project',projectId:f.q.id},f.owner)),{code:'NOT_FOUND'});
+  await assert.rejects(f.store.transaction(s=>f.roles.bindInTransaction(s,{...input,operationId:'fake-owner'},{})),{code:'SESSION_ROLE_FORBIDDEN'});
+  await assert.rejects(f.store.transaction(s=>f.roles.bindInTransaction(s,{...input,operationId:'agent-bind'},f.callerForRun(f.parent))),{code:'SESSION_ROLE_OWNER_REQUIRED'});
+  assert.throws(()=>dispatchSessionRoleRequest(f.roles,'bindInTransaction',input,f.owner),{code:'NOT_FOUND'});
 });
