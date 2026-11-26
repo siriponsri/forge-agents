@@ -204,7 +204,7 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
     const harness=checkCapabilities?.(current,{...input,botId:task.botId},['provider',...(run.adaptiveContext?['skills']:[])]);
     if(run.harnessSelection&&contextDigest(harness?.plugins)!==contextDigest(run.harnessSelection.plugins))fail('REVISION_CONFLICT','Scoped capabilities changed',409);
     if(run.workspaceContext)assertIsolatedWorkspaceAvailable(current,p.id,{...input,runId:run.id});
-    else assertWorkspaceAvailable(current,p.id,{runId:run.id,adaptiveLoopId:run.adaptiveContext?.loopId,assistanceLoopId:run.assistanceContext?.loopId,goalClaimId:run.goalContext?.claimId,proactiveOccurrenceId:run.proactiveContext?.occurrenceId});
+    else assertWorkspaceAvailable(current,p.id,{runId:run.id,...(reserved.sessionContext&&reserved.status==='running'?{sessionParentRunId:reserved.id}:{}),adaptiveLoopId:run.adaptiveContext?.loopId,assistanceLoopId:run.assistanceContext?.loopId,goalClaimId:run.goalContext?.claimId,proactiveOccurrenceId:run.proactiveContext?.occurrenceId});
     if(contextDigest(p.profile)!==contextDigest(run.profile)||p.workspace!==(run.sourceWorkspace??run.workspace))fail('REVISION_CONFLICT','Execution settings changed',409);
     return true;
   }

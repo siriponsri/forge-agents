@@ -22,7 +22,7 @@ test('mounted Owner-approved orchestrator calls an existing child through the re
     const replies=body.messages.filter(m=>m.role==='tool');let call;
     if(!replies.length)call={name:'forge_sessions_session_children',args:{}};
     else if(replies.length===1){const value=JSON.parse(replies[0].content);assert.equal(value.children.length,1);call={name:'forge_sessions_session_prompt',args:{membershipId:value.children[0].membershipId,operationId:'native-parent-child-once',text:'Review this bounded engineering fixture and report evidence.'}};}
-    else {const value=JSON.parse(replies.at(-1).content);assert.equal(value.childRun.status,'completed');assert.ok(value.childRun.providerRunId);}
+    else {const value=JSON.parse(replies.at(-1).content);assert.equal(value.childRun.status,'running');assert.ok(value.childRun.providerRunId);}
     const delta=call?{role:'assistant',tool_calls:[{index:0,id:`native-session-call-${requests}`,type:'function',function:{name:call.name,arguments:JSON.stringify(call.args)}}]}:{role:'assistant',content:'Child review received through the canonical session owner.'};
     res.writeHead(200,{'Content-Type':'text/event-stream'});for(const chunk of [{delta,finish_reason:null},{delta:{},finish_reason:call?'tool_calls':'stop'}])res.write('data: '+JSON.stringify({id:'fixture',object:'chat.completion.chunk',created:1,model:'fixture-model',choices:[{index:0,...chunk}]})+'\n\n');res.end('data: [DONE]\n\n');
   }catch(e){res.writeHead(500,{'Content-Type':'application/json'});res.end(JSON.stringify({error:e.message}));}});
@@ -42,7 +42,7 @@ test('mounted Owner-approved orchestrator calls an existing child through the re
   app.t3.providers.assertEnvironment=async()=>{};app.t3.providers.ensureProject=async()=>({id:'injected-child-project'});
   app.t3.providers.call=async(tag,input)=>{
     if(tag==='t3_thread_read')return {thread:{threadId:'injected-child-thread',projectId:'injected-child-project',providerInstanceId:c.providerInstanceId,runtimeMode:'approval-required'},items:[]};
-    assert.equal(tag,'t3_thread_send');assert.equal(input.threadId,'injected-child-thread');childSends++;childPrompt=input.message;return {threadId:input.threadId,runId:'injected-child-native-run',status:'completed'};
+    assert.equal(tag,'t3_thread_send');assert.equal(input.threadId,'injected-child-thread');childSends++;childPrompt=input.message;return {threadId:input.threadId,runId:'injected-child-native-run',status:'running'};
   };
   app.t3.observe=async()=>{};
   const response=await fetch(app.url+'/api/session'),session=await response.json(),cookie=response.headers.get('set-cookie').split(';')[0];

@@ -7,6 +7,7 @@ import {digest as taskDigest} from '../app/server/agui.mjs';
 import {createConversationService} from '../app/providers/conversations.mjs';
 import {assertWorkspaceAvailable} from '../app/server/admission.mjs';
 import {applyGuardedObservation} from '../app/protocol/observations.mjs';
+import {sessionRoleRunDigest} from '../app/server/session-roles.mjs';
 
 // Canonical SQLite, role/Owner boundary and reservation hooks are real. Only
 // native setup/observations are injected here; this is not live qualification.
@@ -98,4 +99,23 @@ test('real Conversation final fence rechecks role after asynchronous native setu
   const sending=real.send({projectId:f.p.id,conversationId:f.child.id,botId:f.childBot.id,text:'Bounded role test',operationId:crypto.randomUUID()});await hold.entered;
   const r=f.store.read().runs.at(-1),captured=structuredClone(r.sessionRole);await f.assign(f.child.id,f.childBot.id,'reviewer',1);hold.release();
   const result=await sending;assert.equal(result.status,'failed');assert.equal(effects,0);assert.equal(result.error.code,'SESSION_ROLE_STALE');assert.deepEqual(result.sessionRole,captured);
+});
+
+test('a parent without file tools can receive its one canonical active child while foreign or forged work still blocks',async t=>{
+  const f=await fixture(t);await f.store.transaction(s=>{
+    const p=find(s,'runs',f.parent.id);p.sessionContext={intentId:'INJECTED_NATIVE_ADMISSION_FIXTURE'};p.guardedContext={profile:{purpose:'supervised-orchestrator-v1',attemptId:p.attemptId,scope:{capabilities:['session_children','session_prompt']}}};p.guardedReceipt={owner:'supervised-orchestrator-native-session'};p.nativeProviderTurnId='fixture-native-turn';p.guardedProjection={providerTurn:{id:'fixture-native-turn',status:'running'}};
+    const m=entity({type:'session-role.membership',parentRunId:p.id,parentAttemptId:p.attemptId,parentDigest:sessionRoleRunDigest(p),status:'approved'},f.p.id),c=entity({type:'session-role.prompt',parentRunId:p.id,membershipId:m.id,status:'dispatching'},f.p.id);
+    c.context={commandId:c.id,membershipId:m.id,membershipRevision:m.revision,parentRunId:p.id,parentAttemptId:p.attemptId,parentDigest:m.parentDigest};
+    c.dispatchInput={operationId:'approved-active-child',conversationId:f.child.id,botId:f.childBot.id,text:'Bounded canonical child'};
+    const r=entity({kind:'conversation',...c.dispatchInput,inputText:c.dispatchInput.text,attemptId:'fixture-child-attempt',sessionRoleContext:c.context,status:'running'},f.p.id);delete r.text;c.childRunId=r.id;c.childAttemptId=r.attemptId;s.events.push(m,c);s.runs.push(r);
+  });
+  const state=f.store.read(),options={runId:f.parent.id,sessionParentRunId:f.parent.id};assert.doesNotThrow(()=>assertWorkspaceAvailable(state,f.p.id,options));
+  assert.throws(()=>assertWorkspaceAvailable(state,f.p.id,{runId:f.parent.id}),{code:'WORKSPACE_BUSY'},'ordinary admission gets no exemption');
+  for(const [name,mutate,code] of [
+    ['foreign attempt',s=>{s.runs.at(-1).sessionRoleContext.parentAttemptId='foreign';},'SESSION_ORCHESTRATOR_SCOPE'],
+    ['stripped command',s=>{s.events=s.events.filter(e=>e.id!==s.runs.at(-1).sessionRoleContext.commandId);},'SESSION_ORCHESTRATOR_SCOPE'],
+    ['revoked membership',s=>{s.events.find(e=>e.id===s.runs.at(-1).sessionRoleContext.membershipId).status='revoked';},'SESSION_ORCHESTRATOR_SCOPE'],
+    ['foreign writable work',s=>{s.runs.push(entity({status:'running'},f.p.id));},'WORKSPACE_BUSY'],
+    ['second writable child',s=>{s.runs.push({...structuredClone(s.runs.at(-1)),id:crypto.randomUUID()});},'SESSION_ORCHESTRATOR_SCOPE'],
+  ]){const changed=structuredClone(state);mutate(changed);assert.throws(()=>assertWorkspaceAvailable(changed,f.p.id,options),{code},name);}
 });

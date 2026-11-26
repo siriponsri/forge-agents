@@ -35,7 +35,8 @@
 .agent-graph-empty p { max-width: 60ch; margin: 10px auto 0; color: var(--muted); }
 .agent-node-list { display: grid; gap: 7px; padding: 0; list-style: none; }
 .agent-node-list button { white-space: normal; text-align: left; justify-content: flex-start; width: 100%; }
-.conversation-view-switch { display: flex; align-items: center; gap: 6px; margin-bottom: 18px; }
+.conversation-view-switch { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 18px; }
+.conversation-view-switch button { min-width: 0; max-width: 100%; white-space: normal; }
 .conversation-view-switch button[aria-pressed="true"] { color: var(--selected-fg); background: var(--selected-bg); border-color: var(--link); }
 .chat-layout:has(.agent-workspace) { grid-template-columns: minmax(200px, 260px) minmax(0, 1fr); }
 @media (max-width: 900px) { .chat-layout:has(.agent-workspace) { grid-template-columns: 1fr; } }
