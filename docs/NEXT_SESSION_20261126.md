@@ -1,5 +1,41 @@
 # Resumed work and continuation map
 
+## Latest verified state — native return correction and landing review
+
+This supersedes the earlier diagnosis and pending-review instructions below.
+
+- Landing fixes are integrated through `ddfe465`. The SAME independent reviewer
+  resolved all four findings and returned scoped **ship**. Final record:
+  `apps/website/docs/evidence/impeccable-20261126/finish-review-final.json`.
+  Owner aesthetic acceptance and product/release approval are not inferred.
+- The native return defect has a tested bounded mitigation at `246daac`:
+  private JSON control replies end their connection, without retry or changed
+  authority/deadlines. Copied-source diagnostic-image flow passed, then actual
+  primary source with the ORIGINAL approved session image passed in 180.623s.
+  Three loopback model requests, one canonical running child dispatch, both
+  same-turn results, completed parent and replay without duplicate dispatch.
+  Account/catalog/model protocol and child transport remain explicitly injected.
+  The exact original TCP/parser failure mechanism is not proven. Exact evidence:
+  `docs/evidence/session-control-transport-20261126.json`. Do not rebuild or promote
+  diagnostic CLI images as a supposed semantic fix; current production pins
+  and native source are unchanged.
+- App build passed (16.13s); site TypeScript/Vite/prerender passed (12 pages,
+  2.73s Vite); static CSP/license/source verifier and release-policy2 passed.
+  The static verifier now accepts attributes on the single semantic h1.
+- A full serial developer regression is running; it includes actual native
+  fixtures when the reviewed local cache is present. Do not run a second heavy
+  build/browser/native job concurrently. Log: TEMP
+  `forge-final-serial-20261126.log`.
+- Refresh genuine README media/proofs after that suite. Actual current published
+  local ZIP assets still pin `02a888c`; regenerate and verify a NEW directory
+  containing the `246daac` fix before switching the owned static download set.
+  Two fresh TEMP generation attempts encountered Windows `EBUSY` at atomic
+  directory rename and left the existing publication unchanged. Recheck once
+  heavy native activity ends; preserve atomic, no-overwrite publication semantics.
+- No resumed source push/public deployment. Real-product/external-server journeys
+  and Home UAT remain deferred by the Owner's workplace admin/network constraint.
+  Native monetary finality remains a distinct unsupported implementation boundary.
+
 ## Latest executable continuation — 26 November, landing finish and native return transport
 
 This section supersedes the older continuation table below. Current branch is
