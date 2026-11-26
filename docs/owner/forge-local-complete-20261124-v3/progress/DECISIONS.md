@@ -1,5 +1,35 @@
 # Decisions
 
+## STR-06 / WEB-02 — Explicit six-mode GUI and real launcher downloads — 2026-11-26
+
+The Owner explicitly selected all six orchestration patterns as usable GUI modes,
+not only architectural inspiration. Reuse canonical Workspace/T3/Conversation,
+role, approval and Budget owners. Pattern libraries are design inputs; no CrewAI,
+LangGraph or second provider-turn runtime is introduced. Roles remain advisory;
+independent checks and explicit Owner selection/acceptance retain their authority.
+
+The first landing redesign was rejected aesthetically. The replacement uses
+Impeccable with orange primary and secondary yellow/gray, real dated product
+evidence and an expressly illustrative orchestration mechanism. A fresh finish
+review issued four material fixes; automated accessibility/build passes do not
+supersede that review or Owner acceptance. The requested Claude 5.5 High route
+reported an absent CLI; the Owner explicitly approved the current model instead.
+No Claude execution is claimed and no provider accounts are migrated.
+
+Real Windows/macOS downloads may be unsigned development source launcher ZIPs
+with exact source/hash/size and complete setup sources. Distinguish them from
+signed native installers and GitHub Releases, without substituting fake buttons
+or withholding actual source archives. Node and first-install network requirements
+remain visible; native macOS and real-product qualification are NOT_RUN.
+
+## UAT-26 — External real-product journeys deferred by Owner — 2026-11-26
+
+The Owner deferred creating a real product and connecting external servers to
+the home machine because of work-machine administrator/network restrictions.
+Continue feasible local developer checks and fix reproducible code defects.
+Keep that explicit deferral separate from missing implementation and unsupported
+contracts; do not activate a prototype, buy compute or expose a public service.
+
 ## DOC-D02 — Horizontal editorial flows — 2026-11-25
 
 Owner requested clearer horizontal flows, then explicitly selected
