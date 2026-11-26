@@ -101,7 +101,9 @@ export function createSessionRoute({store,authorizeOwner,policy,getGuarded,getT3
   function closeRun(id){revoked.add(store.read().runs.find(r=>r.id===id)?.sessionContext?.intentId);return gateways.get(id)?.close()??Promise.resolve();}
   async function invalidateForRestore(){for(const id of approvals.keys())revoked.add(id);approvals.clear();await Promise.allSettled([...gateways.values()].map(g=>g.close()));}
   async function recover(){approvals.clear();await store.transaction(s=>{for(const row of s.events.filter(e=>e.type===TYPE)){row.status='unknown';row.restoreReviewRequired=true;}});}
-  return Object.freeze({validateContext,validate,requestForInput,reserve,qualifyRun,onEvent,createSessionGateway,createIntent,start,cancel,closeRun,invalidateForRestore,recover,async close(){closed=true;await invalidateForRestore();}});
+  function inspectNativeDiagnostics(runId){const r=find(store.read(),'runs',runId);return r.sessionContext?structuredClone(getGuarded()?.privateSnapshot(runId)?.diagnostics??[]):[];}
+  // Host-only observations. The explicit HTTP/MCP method lists exclude this.
+  return Object.freeze({validateContext,validate,requestForInput,reserve,qualifyRun,onEvent,createSessionGateway,createIntent,start,cancel,closeRun,invalidateForRestore,recover,inspectNativeDiagnostics,async close(){closed=true;await invalidateForRestore();}});
 }
 
 export function mergeSessionRouteSafety(restored,previous){

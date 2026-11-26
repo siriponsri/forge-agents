@@ -9,6 +9,7 @@ import {assertInstalledT3Host,observeInstalledT3Host} from './t3-host.mjs';
 import {createBoundedBroker} from './broker.mjs';
 import {openConfinedText} from './windows-client.mjs';
 import {openLocalGateway} from './local-gateway.mjs';
+import {createNativeSessionDiagnostics} from './native-diagnostics.mjs';
 
 /** Private prepared-route lifecycle; T3 alone creates canonical run/turn records
  * and sends prompts. `reserve` is synchronous and memory-only. `bind` never
@@ -52,7 +53,7 @@ export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,aut
     // Observation only: never calls current(), root admission, or a qualifier.
     privateSnapshot(lease){const s=state(lease);let live=s.phase==='attested'&&!!s.attestation&&!!s.child&&s.child.exitCode===null&&!s.child.signalCode&&clock()<s.profile.expiresAt;
       if(live)try{artifact('t3',s.profile.route.t3BinarySha256);artifact('opencode',s.profile.route.opencodeBinarySha256);}catch{live=false;}
-      return structuredClone({profile:s.profile,attestation:s.attestation??null,phase:s.phase,phases:observeInstalledT3Host(t3Host,lease)?.phases??[],live});},
+      return structuredClone({profile:s.profile,attestation:s.attestation??null,phase:s.phase,phases:observeInstalledT3Host(t3Host,lease)?.phases??[],live,diagnostics:s.diagnostics.snapshot()});},
     assertCurrent(lease){return current(state(lease)).profile;},
     runtimeDirectory(lease){return state(lease).runtimeDirectory;},
     reserve(input){
@@ -62,7 +63,7 @@ export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,aut
       if(!['workspace','runtimeDirectory','homeDirectory','receiptPath'].every(k=>typeof input[k]==='string'&&path.isAbsolute(input[k])))fail('ABSOLUTE_PRIVATE_PATHS_REQUIRED');
       if(typeof input.operationId!=='string'||!input.operationId||input.limits?.maxTokens!==null||input.limits?.maxCost!==null||!Number.isSafeInteger(input.limits?.maxRunMs)||input.limits.maxRunMs<1000||input.limits.maxRunMs>3600000)fail('UNENFORCEABLE_LIMIT');
       artifact('t3',profile.route.t3BinarySha256);artifact('opencode',profile.route.opencodeBinarySha256);
-      const lease=Object.freeze({});leases.set(lease,{...structuredClone(input),profile,phase:'reserved',key:randomBytes(32),password:randomBytes(32).toString('base64url'),nativeSessionId:null});return lease;
+      const lease=Object.freeze({});leases.set(lease,{...structuredClone(input),profile,phase:'reserved',key:randomBytes(32),password:randomBytes(32).toString('base64url'),nativeSessionId:null,diagnostics:createNativeSessionDiagnostics()});return lease;
     },
     async bind(lease){
       const s=state(lease);if(s.phase!=='reserved')fail('ROUTE_ALREADY_BOUND');current(s);
@@ -105,6 +106,7 @@ export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,aut
         }
         const env={SystemRoot:process.env.SystemRoot,TEMP:s.homeDirectory,TMP:s.homeDirectory,HOME:s.homeDirectory,USERPROFILE:s.homeDirectory,APPDATA:s.homeDirectory,LOCALAPPDATA:s.homeDirectory,XDG_CONFIG_HOME:s.homeDirectory,XDG_DATA_HOME:s.homeDirectory,XDG_CACHE_HOME:s.homeDirectory,FORGE_GUARDED_BOOTSTRAP_FD:'3',OPENCODE_PASSWORD:s.password,OPENCODE_DISABLE_AUTOUPDATE:'1',OPENCODE_DISABLE_MODELS_FETCH:'1',OPENCODE_DISABLE_FILEWATCHER:'1',OPENCODE_DISABLE_FFF:'1',GIT_CONFIG_NOSYSTEM:'1',GIT_CONFIG_GLOBAL:'NUL'};
         s.child=spawn(artifacts.opencode.path,['serve','--hostname','127.0.0.1','--port','0'],{cwd:s.runtimeDirectory,env,windowsHide:true,stdio:['ignore','pipe','pipe','pipe']});
+        s.child.stderr.on('data',chunk=>s.diagnostics.push(chunk));
         s.childDone=new Promise(resolve=>s.child.once('close',resolve));
         s.child.once('exit',()=>{void close(lease,'native-exit');});
         s.timer=setTimeout(()=>void close(lease,'expiry'),Math.max(1,Math.min(s.profile.expiresAt-clock(),s.limits.maxRunMs)));
