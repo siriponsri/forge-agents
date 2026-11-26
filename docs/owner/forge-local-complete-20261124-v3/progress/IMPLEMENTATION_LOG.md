@@ -1,5 +1,31 @@
 # Implementation Log
 
+## Six-mode integration and Owner landing correction — 2026-11-26
+
+Integrated source-pattern mappings (`4fc3d31`), six bounded strategy modes
+(`b404bb4`, `77e6ac0`) and deterministic Windows/macOS launcher publication
+(`5e4156a`, actual assets `50ed3b2`). Workspace host-only context, canonical T3/
+Conversation reservation/final/replay checks, exact roles, Owner/CSRF, restore and
+Stop stay with the existing owners. Checks: 13 strategy cases, three production
+owner/HTTP cases and 42 existing affected checks passed, with injected native
+transport explicitly disclosed. These are not external-provider quality tests.
+
+Independent review identified checked predecessor drift during async setup.
+Correction `2a34a9e` re-inspects exact dependency Workspaces after preparation;
+the real Git/SQLite/canonical-owner race regression passed. Separate recheck is
+pending. No filesystem locking or OS sandbox guarantee is inferred.
+
+The Owner rejected landing `170274d`; a fresh Impeccable redesign is in progress.
+The Owner approved the current model after the requested Claude provider reported
+its CLI absent. Real download bytes exist and pass exact-source/checksum checks;
+they remain unsigned source launchers requiring Node and first-start networking.
+
+The assembled native parent still fails its first SDK tool before session-return,
+despite a successful HTTP result. Safe private diagnostics were added (`bb12dce`)
+and a new immutable diagnostic image is pending. Existing images remain intact.
+This is an implementation defect, separate from the Owner's explicitly deferred
+real-product/external-server/Home UAT work. No complete-product release is claimed.
+
 ## Native observation corrections and editorial review ? 2026-11-25
 
 Committed12ff52a closes three independent bc17a09 P2 findings. Real HTTP and

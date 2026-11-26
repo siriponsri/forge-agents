@@ -39,6 +39,34 @@ qualifications. Worker verification passed 120 layout/mode combinations and 20
 axe AA audits. Functional six-mode strategy composition is still being connected
 to the canonical owners; the website illustration is not execution evidence.
 
+**Later Owner correction:** `170274d` was rejected aesthetically. A replacement
+using Impeccable is being reviewed; the earlier automated passes are not design
+acceptance. Claude 5.5 High was catalogued but its CLI/provider was unavailable;
+the Owner explicitly approved the current model plus Impeccable instead.
+
+All six functional GUI strategies are mounted through the canonical owners at
+`77e6ac0`. Thirteen real Git/SQLite/service checks and three production-owner/
+HTTP checks passed with labelled injected native transport; 42 affected existing
+admission/role/route checks also passed. Independent review found one P2: checked
+predecessor files could change during asynchronous verifier setup. `2a34a9e`
+adds final filesystem inspection followed by pure canonical admission; the actual
+Git/SQLite/T3-owner race regression passed. Separate recheck remains pending.
+
+Real Windows/macOS source-launcher ZIPs, manifest and checksums are now generated
+and committed under `apps/website/public/downloads` (`50ed3b2`, source `77e6ac0`).
+They are unsigned development source packages, require Node.js 24.13+ and initial
+dependency connectivity, and are not signed native installers. Regenerate from
+the final app source before final delivery. Native macOS/platform execution and
+Home UAT are explicitly unrun. This does not imply public deployment.
+
+**Open implementation defect:** the assembled native parent is running and its
+approved membership is bound; real SDK `session_children` returns one child over
+HTTP 200, but the compiled native item becomes `SESSION_NATIVE_OUTCOME_UNKNOWN`
+before `session-return`. No child prompt/effect has occurred in those failed
+attempts. Standalone SDK/compiled-tool checks passed and do not resolve this
+assembled failure. A bounded private stage-telemetry derivative is being built;
+do not attribute the defect to live credentials or claim production qualification.
+
 On 26 November the Owner explicitly deferred real-product creation journeys and
 external-server connectivity tests to the home machine because the work machine
 has administrator/network restrictions. Keep these as HOME_UAT_NOT_RUN and

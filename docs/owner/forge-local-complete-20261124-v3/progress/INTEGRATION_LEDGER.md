@@ -1,5 +1,20 @@
 # Integration Ledger
 
+## Current integrated delta — 2026-11-26
+
+| Integration | Exact evidence and limit |
+|---|---|
+| Six strategy modes / shared canonical owners | `77e6ac0`: Workspace third host-only context, T3 and Conversation derive/save/final/replay, role-safe prompts, Owner HTTP/CSRF, restore and private source protection; 13 service + 3 production-owner + 42 affected checks PASS, injected native transport |
+| Checked predecessor final admission | Independent P2 reproduced on `77e6ac0`; `2a34a9e` final actual Git/Workspace inspection + pure guard, one race regression PASS; independent recheck pending |
+| Actual static launcher downloads | `50ed3b2`, source `77e6ac0`; Windows/macOS ZIPs + manifest/SHA256SUMS, exact Git/source/checksum validation PASS; unsigned source packages, Node required, runtime/Home UAT NOT_RUN |
+| Landing replacement | `170274d` automated checks passed but Owner rejected appearance; replacement uses approved current model + Impeccable; independent visual finish review pending |
+| Native orchestrator assembly | Real running/binding + HTTP children result, then compiled item UNKNOWN before return fence; private telemetry `bb12dce`, new immutable diagnostic build pending; NOT_QUALIFIED |
+
+Earlier rows retain historical source/image qualifications only. Real-product
+and external-server testing is explicitly deferred to home, while local code
+defects remain implementation work. Protected legacy paths remain unchanged;
+there is no resumed source push, credential migration or public deployment.
+
 ## Native observation corrections and editorial review ? 2026-11-25
 
 Committed12ff52a closes three independent bc17a09 P2 findings. Real HTTP and

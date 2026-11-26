@@ -1,5 +1,27 @@
 # Task Assignments
 
+## Current execution — 26 November, six modes and landing correction
+
+This table supersedes the historical active labels below. All writers have
+isolated worktrees and use inherited `gpt-6.1-sol / xhigh`. Claude 5.5 High was
+requested, unavailable due to missing CLI, and explicitly replaced by the Owner
+with the current model plus Impeccable for this design round.
+
+| Owner | Scope | State |
+|---|---|---|
+| Lead | Shared strategy/native owners, final admission, HTTP/CSRF/restore, integration, packages, progress and handoff | Active; six modes mounted, final predecessor race corrected |
+| Six-strategy worker | app/strategies, Strategies component, focused tests/handoff | Delivered `0b0cb36`, integrated as `b404bb4` |
+| Source-pattern research worker | Two pinned primary-source mapping files | Delivered and integrated `4fc3d31` |
+| First landing worker | Static Home formation story, evidence and rationale | Delivered `f0f7fec`; integrated `170274d`, later rejected by Owner |
+| Replacement landing worker | Website source/docs only, Impeccable, actual launch-download CTAs | Active; root owns download bytes and independent finish review |
+| Launcher packaging worker | New deterministic source ZIP publication/verification tool and tests | Delivered `9ee76e3`, integrated `5e4156a`; real assets generated |
+| Native telemetry worker | Narrow native-tool diagnostics and NEW immutable derivative | Active; unknown cause remains unresolved, no production fix claimed |
+| Independent strategy reviewers | Exact read-only integration and correction checks | First found one P2; correction recheck active |
+
+Real-product creation and external-server tests are deferred to the home machine
+at the Owner's explicit request. Feasible local developer verification continues.
+No public deployment, credential migration, compute purchase or resumed push.
+
 ## Resumed work — 2026-11-26
 
 The Owner explicitly resumed the full goal and authorized subagents. The pause
