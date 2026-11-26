@@ -1,0 +1,435 @@
+{
+  "scope": "Local Markdown layout fixture. Not actual GitHub CSS/sanitization.",
+  "readmeSHA256": "4dfc630db12b42860e4fdcdf5d8c3387c0c4342388b88ed3c72b8e7ab01e2f9d",
+  "variants": [
+    {
+      "theme": "light",
+      "viewport": 900,
+      "documentWidth": 900,
+      "visibleLogoCount": 1,
+      "images": [
+        {
+          "src": "forge-lockup-for-light.svg#gh-light-mode-only",
+          "decoded": true,
+          "displayWidth": 314
+        },
+        {
+          "src": "forge-lockup-for-dark.svg#gh-dark-mode-only",
+          "decoded": true,
+          "displayWidth": 314
+        },
+        {
+          "src": "mission-preview.png",
+          "decoded": true,
+          "displayWidth": 836
+        },
+        {
+          "src": "software-mission.gif",
+          "decoded": true,
+          "displayWidth": 836
+        },
+        {
+          "src": "software-delivery.svg",
+          "decoded": true,
+          "displayWidth": 836
+        },
+        {
+          "src": "start-forge.gif",
+          "decoded": true,
+          "displayWidth": 836
+        },
+        {
+          "src": "chat-workspace.gif",
+          "decoded": true,
+          "displayWidth": 836
+        },
+        {
+          "src": "office-report.gif",
+          "decoded": true,
+          "displayWidth": 836
+        },
+        {
+          "src": "architecture.svg",
+          "decoded": true,
+          "displayWidth": 836
+        }
+      ],
+      "headings": [
+        {
+          "text": "FORGE",
+          "fits": true
+        },
+        {
+          "text": "A workspace that follows the work",
+          "fits": true
+        },
+        {
+          "text": "Run locally",
+          "fits": true
+        },
+        {
+          "text": "Idea to delivery",
+          "fits": true
+        },
+        {
+          "text": "More walkthroughs",
+          "fits": true
+        },
+        {
+          "text": "How the system fits together",
+          "fits": true
+        },
+        {
+          "text": "Data, credentials and recovery",
+          "fits": true
+        },
+        {
+          "text": "Verification and current limits",
+          "fits": true
+        },
+        {
+          "text": "Source layout and ownership",
+          "fits": true
+        },
+        {
+          "text": "Development and contribution",
+          "fits": true
+        },
+        {
+          "text": "License",
+          "fits": true
+        }
+      ],
+      "externalRequests": [],
+      "pageErrors": [],
+      "capture": "readme-light-900.png"
+    },
+    {
+      "theme": "light",
+      "viewport": 375,
+      "documentWidth": 375,
+      "visibleLogoCount": 1,
+      "images": [
+        {
+          "src": "forge-lockup-for-light.svg#gh-light-mode-only",
+          "decoded": true,
+          "displayWidth": 314
+        },
+        {
+          "src": "forge-lockup-for-dark.svg#gh-dark-mode-only",
+          "decoded": true,
+          "displayWidth": 314
+        },
+        {
+          "src": "mission-preview.png",
+          "decoded": true,
+          "displayWidth": 343
+        },
+        {
+          "src": "software-mission.gif",
+          "decoded": true,
+          "displayWidth": 343
+        },
+        {
+          "src": "software-delivery.svg",
+          "decoded": true,
+          "displayWidth": 343
+        },
+        {
+          "src": "start-forge.gif",
+          "decoded": true,
+          "displayWidth": 343
+        },
+        {
+          "src": "chat-workspace.gif",
+          "decoded": true,
+          "displayWidth": 343
+        },
+        {
+          "src": "office-report.gif",
+          "decoded": true,
+          "displayWidth": 343
+        },
+        {
+          "src": "architecture.svg",
+          "decoded": true,
+          "displayWidth": 343
+        }
+      ],
+      "headings": [
+        {
+          "text": "FORGE",
+          "fits": true
+        },
+        {
+          "text": "A workspace that follows the work",
+          "fits": true
+        },
+        {
+          "text": "Run locally",
+          "fits": true
+        },
+        {
+          "text": "Idea to delivery",
+          "fits": true
+        },
+        {
+          "text": "More walkthroughs",
+          "fits": true
+        },
+        {
+          "text": "How the system fits together",
+          "fits": true
+        },
+        {
+          "text": "Data, credentials and recovery",
+          "fits": true
+        },
+        {
+          "text": "Verification and current limits",
+          "fits": true
+        },
+        {
+          "text": "Source layout and ownership",
+          "fits": true
+        },
+        {
+          "text": "Development and contribution",
+          "fits": true
+        },
+        {
+          "text": "License",
+          "fits": true
+        }
+      ],
+      "externalRequests": [],
+      "pageErrors": [],
+      "capture": "readme-light-375.png"
+    },
+    {
+      "theme": "dark",
+      "viewport": 900,
+      "documentWidth": 900,
+      "visibleLogoCount": 1,
+      "images": [
+        {
+          "src": "forge-lockup-for-light.svg#gh-light-mode-only",
+          "decoded": true,
+          "displayWidth": 314
+        },
+        {
+          "src": "forge-lockup-for-dark.svg#gh-dark-mode-only",
+          "decoded": true,
+          "displayWidth": 314
+        },
+        {
+          "src": "mission-preview.png",
+          "decoded": true,
+          "displayWidth": 836
+        },
+        {
+          "src": "software-mission.gif",
+          "decoded": true,
+          "displayWidth": 836
+        },
+        {
+          "src": "software-delivery-dark.svg",
+          "decoded": true,
+          "displayWidth": 836
+        },
+        {
+          "src": "start-forge.gif",
+          "decoded": true,
+          "displayWidth": 836
+        },
+        {
+          "src": "chat-workspace.gif",
+          "decoded": true,
+          "displayWidth": 836
+        },
+        {
+          "src": "office-report.gif",
+          "decoded": true,
+          "displayWidth": 836
+        },
+        {
+          "src": "architecture-dark.svg",
+          "decoded": true,
+          "displayWidth": 836
+        }
+      ],
+      "headings": [
+        {
+          "text": "FORGE",
+          "fits": true
+        },
+        {
+          "text": "A workspace that follows the work",
+          "fits": true
+        },
+        {
+          "text": "Run locally",
+          "fits": true
+        },
+        {
+          "text": "Idea to delivery",
+          "fits": true
+        },
+        {
+          "text": "More walkthroughs",
+          "fits": true
+        },
+        {
+          "text": "How the system fits together",
+          "fits": true
+        },
+        {
+          "text": "Data, credentials and recovery",
+          "fits": true
+        },
+        {
+          "text": "Verification and current limits",
+          "fits": true
+        },
+        {
+          "text": "Source layout and ownership",
+          "fits": true
+        },
+        {
+          "text": "Development and contribution",
+          "fits": true
+        },
+        {
+          "text": "License",
+          "fits": true
+        }
+      ],
+      "externalRequests": [],
+      "pageErrors": [],
+      "capture": "readme-dark-900.png"
+    },
+    {
+      "theme": "dark",
+      "viewport": 375,
+      "documentWidth": 375,
+      "visibleLogoCount": 1,
+      "images": [
+        {
+          "src": "forge-lockup-for-light.svg#gh-light-mode-only",
+          "decoded": true,
+          "displayWidth": 314
+        },
+        {
+          "src": "forge-lockup-for-dark.svg#gh-dark-mode-only",
+          "decoded": true,
+          "displayWidth": 314
+        },
+        {
+          "src": "mission-preview.png",
+          "decoded": true,
+          "displayWidth": 343
+        },
+        {
+          "src": "software-mission.gif",
+          "decoded": true,
+          "displayWidth": 343
+        },
+        {
+          "src": "software-delivery-dark.svg",
+          "decoded": true,
+          "displayWidth": 343
+        },
+        {
+          "src": "start-forge.gif",
+          "decoded": true,
+          "displayWidth": 343
+        },
+        {
+          "src": "chat-workspace.gif",
+          "decoded": true,
+          "displayWidth": 343
+        },
+        {
+          "src": "office-report.gif",
+          "decoded": true,
+          "displayWidth": 343
+        },
+        {
+          "src": "architecture-dark.svg",
+          "decoded": true,
+          "displayWidth": 343
+        }
+      ],
+      "headings": [
+        {
+          "text": "FORGE",
+          "fits": true
+        },
+        {
+          "text": "A workspace that follows the work",
+          "fits": true
+        },
+        {
+          "text": "Run locally",
+          "fits": true
+        },
+        {
+          "text": "Idea to delivery",
+          "fits": true
+        },
+        {
+          "text": "More walkthroughs",
+          "fits": true
+        },
+        {
+          "text": "How the system fits together",
+          "fits": true
+        },
+        {
+          "text": "Data, credentials and recovery",
+          "fits": true
+        },
+        {
+          "text": "Verification and current limits",
+          "fits": true
+        },
+        {
+          "text": "Source layout and ownership",
+          "fits": true
+        },
+        {
+          "text": "Development and contribution",
+          "fits": true
+        },
+        {
+          "text": "License",
+          "fits": true
+        }
+      ],
+      "externalRequests": [],
+      "pageErrors": [],
+      "capture": "readme-dark-375.png"
+    }
+  ],
+  "browser": "159.0.8154.6",
+  "playwright": "1.65.1",
+  "markdownIt": "14.1.0",
+  "files": [
+    {
+      "file": "readme-light-900.png",
+      "sha256": "c4104b24e1007c22dad493320a62b867a11cd4ef33a7ca7fa678f3735d5a414e"
+    },
+    {
+      "file": "readme-light-375.png",
+      "sha256": "3b26079d494b2365e180cc1b6182a5d75cdbcf3846ecf7eee10d330abd467d21"
+    },
+    {
+      "file": "readme-dark-900.png",
+      "sha256": "ec6831c8a42ed750db04a479f4dac37c3b12c42454c1bbf9b0bd84969faceb5a"
+    },
+    {
+      "file": "readme-dark-375.png",
+      "sha256": "9358a8edcf37388253df5da4ebe2f69407d7800648e07ae645745f4c261d6119"
+    }
+  ]
+}

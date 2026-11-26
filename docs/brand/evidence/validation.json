@@ -1,0 +1,861 @@
+{
+  "baseline": "4c944bd",
+  "files": [
+    {
+      "file": "exports/forge-mark-for-light.svg",
+      "sha256": "230a59f17fc59ee7d6921ca875b7ce2bb85de35f20f27acd9e109a8dff7cc485",
+      "accessible_font_free_vector": true
+    },
+    {
+      "file": "exports/forge-mark-for-light.png",
+      "sha256": "499311c7f898e3901f43962f609671f4eb457a3851b747ac3dd93d61119e0ca5",
+      "size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        32,
+        32,
+        224,
+        224
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-mark-for-dark.svg",
+      "sha256": "bb1c8f253aba03135ccdce366a104e1cb36ae6729109b70dd51f04c9dfb25d28",
+      "accessible_font_free_vector": true
+    },
+    {
+      "file": "exports/forge-mark-for-dark.png",
+      "sha256": "1eb5dccd8154990ee871aa40a71550e836c4afb807aa97c628411b4fa9ce3477",
+      "size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        32,
+        32,
+        224,
+        224
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-mark-black.svg",
+      "sha256": "525cf58cf188ded1cd6fe056a10feb757ff8030aadd053e24ded3720a5d56acf",
+      "accessible_font_free_vector": true
+    },
+    {
+      "file": "exports/forge-mark-black.png",
+      "sha256": "78221fc16e5fa411354943c69a99293661b48bf46dfac03dfca812748c9d15ac",
+      "size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        32,
+        32,
+        224,
+        224
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-mark-white.svg",
+      "sha256": "01f62d1396e35a3c785739c93e93967712e39918111c86b0fa9fbf78d181c789",
+      "accessible_font_free_vector": true
+    },
+    {
+      "file": "exports/forge-mark-white.png",
+      "sha256": "cd4644624b3731144db4407c933a36b7c7dc4359721eed6eac118857dc56c493",
+      "size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        32,
+        32,
+        224,
+        224
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-wordmark-for-light.svg",
+      "sha256": "1c42bebd35031f973491ad9d9af6d7974307fe7efb2c6367d2bda0c817d7ff25",
+      "accessible_font_free_vector": true
+    },
+    {
+      "file": "exports/forge-wordmark-for-light.png",
+      "sha256": "60b7b06c59f943aeba3ad015f5d1b9caa3fa3e7f834377af4267171b76d88d41",
+      "size": [
+        1032,
+        256
+      ],
+      "alpha_bounds": [
+        64,
+        32,
+        968,
+        224
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-wordmark-for-dark.svg",
+      "sha256": "f07cbf43e961649f1398a9847fd9e61c9bc2be54b239ffadccfa482b7f0b538c",
+      "accessible_font_free_vector": true
+    },
+    {
+      "file": "exports/forge-wordmark-for-dark.png",
+      "sha256": "895bdc7fdf9234a5bf642bba450c046dc39047c6e81108a15d18367ebebdcbb2",
+      "size": [
+        1032,
+        256
+      ],
+      "alpha_bounds": [
+        64,
+        32,
+        968,
+        224
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-wordmark-black.svg",
+      "sha256": "9f273d4ffdf32e9e0afd1267620715e52e247f45e9a29b02a0b6c531fb424d2a",
+      "accessible_font_free_vector": true
+    },
+    {
+      "file": "exports/forge-wordmark-black.png",
+      "sha256": "1d19a666a023030a4c8f9773d065c5d7256203759ca42e3db0c195a27da71b93",
+      "size": [
+        1032,
+        256
+      ],
+      "alpha_bounds": [
+        64,
+        32,
+        968,
+        224
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-wordmark-white.svg",
+      "sha256": "2ea6399b36362732d0e48d18544bda0ca2f742135783d83549f93fb74950ff69",
+      "accessible_font_free_vector": true
+    },
+    {
+      "file": "exports/forge-wordmark-white.png",
+      "sha256": "f1e3504a3a5e15f447c42f96b58ea72a75fc6cab678e9b246c79a315830ff36a",
+      "size": [
+        1032,
+        256
+      ],
+      "alpha_bounds": [
+        64,
+        32,
+        968,
+        224
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-lockup-for-light.svg",
+      "sha256": "aae24f70ada31ba32a94ad0445e9874da35b6f2eab0110273409978658972a9c",
+      "accessible_font_free_vector": true
+    },
+    {
+      "file": "exports/forge-lockup-for-light.png",
+      "sha256": "8c504dc86d135b5d48a97f3ff3b7c09c330b6e9b5056c0e118f3f58ca807e7ef",
+      "size": [
+        1256,
+        256
+      ],
+      "alpha_bounds": [
+        32,
+        32,
+        1224,
+        224
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-lockup-for-dark.svg",
+      "sha256": "37d6ba6067bd255b5ccc83f81fc5587e91e42e7ac608ba2d3b12d4e7d0d19592",
+      "accessible_font_free_vector": true
+    },
+    {
+      "file": "exports/forge-lockup-for-dark.png",
+      "sha256": "e696b89b5e42ef0fa72e74f8c87a043e2809e9c3750adccf6b41570d27efd1cb",
+      "size": [
+        1256,
+        256
+      ],
+      "alpha_bounds": [
+        32,
+        32,
+        1224,
+        224
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-lockup-black.svg",
+      "sha256": "6cb51f3785f63eab70a75e1dd68ea265d003d91f8ddc0db5d3fc2075fae16033",
+      "accessible_font_free_vector": true
+    },
+    {
+      "file": "exports/forge-lockup-black.png",
+      "sha256": "37b163b35ce2908f42d754e436028cda326f878fd8a1db7b6601996e7ee3a3aa",
+      "size": [
+        1256,
+        256
+      ],
+      "alpha_bounds": [
+        32,
+        32,
+        1224,
+        224
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-lockup-white.svg",
+      "sha256": "b930e93237985fb0a6bdb2309f16e421f2f2f294d488865e6bc870e2f6e77cd2",
+      "accessible_font_free_vector": true
+    },
+    {
+      "file": "exports/forge-lockup-white.png",
+      "sha256": "7f8567f55ef7846d3e6b6d42fe3c855390e0a556750ebe46d2e6c08b22a0929f",
+      "size": [
+        1256,
+        256
+      ],
+      "alpha_bounds": [
+        32,
+        32,
+        1224,
+        224
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-mark-for-light-16.png",
+      "sha256": "280066b5cedd6198082bb406b112c8739bd288666473c7e82eea89d44458924c",
+      "size": [
+        16,
+        16
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        14,
+        14
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-mark-for-light-24.png",
+      "sha256": "b7b7bc65627cba6a3e141db32954982276f66bd118d405874c473e9ffca00f85",
+      "size": [
+        24,
+        24
+      ],
+      "alpha_bounds": [
+        3,
+        3,
+        21,
+        21
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-mark-for-light-32.png",
+      "sha256": "347251330e147374cc959eddd7cd4f033b0a0259e55e6689cd4406254d43ccf0",
+      "size": [
+        32,
+        32
+      ],
+      "alpha_bounds": [
+        4,
+        4,
+        28,
+        28
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-mark-for-light-48.png",
+      "sha256": "4f5ef43c9cf4b38729c714f99844f3c1c1b3b11f2d0cd818edfde3fdc330f40c",
+      "size": [
+        48,
+        48
+      ],
+      "alpha_bounds": [
+        6,
+        6,
+        42,
+        42
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-mark-for-light-64.png",
+      "sha256": "118b36d46345dda2093ef1c88fa42079b2b5f0200fa052a84316009987a87c6f",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        8,
+        8,
+        56,
+        56
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-mark-for-dark-16.png",
+      "sha256": "67e6afa3c153db2f2179e88b9268dc4fe8364cae9b9aec03cefcc882face89a2",
+      "size": [
+        16,
+        16
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        14,
+        14
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-mark-for-dark-24.png",
+      "sha256": "2a4140ff3f06accc9674f26082e15a68ea61bf792c9da65e7c7f0165fd1a27d7",
+      "size": [
+        24,
+        24
+      ],
+      "alpha_bounds": [
+        3,
+        3,
+        21,
+        21
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-mark-for-dark-32.png",
+      "sha256": "7687b56f79fa2bd79780249f7cf3fe6f614dc990b0b53d4cd16278f08bc6db17",
+      "size": [
+        32,
+        32
+      ],
+      "alpha_bounds": [
+        4,
+        4,
+        28,
+        28
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-mark-for-dark-48.png",
+      "sha256": "ca8214d4b875d354a1c69814afeef686102556c3ec8ae20757754372b664137e",
+      "size": [
+        48,
+        48
+      ],
+      "alpha_bounds": [
+        6,
+        6,
+        42,
+        42
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "exports/forge-mark-for-dark-64.png",
+      "sha256": "fa315abb69ccd11a28fbaf4567911814a005613ea8acd00a3ca096af49fb1b39",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        8,
+        8,
+        56,
+        56
+      ],
+      "transparent_padding": true
+    },
+    {
+      "file": "evidence/contact-sheet.svg",
+      "sha256": "97ed30a8e26f7f7befc7324481f4863e922a779da6e2c4fc93461a52ed92d827"
+    },
+    {
+      "file": "evidence/contact-sheet.png",
+      "sha256": "a123d65c24c39549e133f0eb25c8dda170fb66a90893fc7bf0ccf4a05a3ce6e7",
+      "size": [
+        1040,
+        840
+      ]
+    }
+  ],
+  "links": [
+    {
+      "document": "README.md",
+      "target": "LICENSE"
+    },
+    {
+      "document": "README.md",
+      "target": "#run-locally"
+    },
+    {
+      "document": "README.md",
+      "target": "#idea-to-delivery"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/media/README.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/FORGE_LOCAL_QUICKSTART_TH.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/CHECKPOINT_HOME_20261125.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/NEXT_SESSION_20261126.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/media/screenshots/mission-preview.png"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/media/manifest.json"
+    },
+    {
+      "document": "README.md",
+      "target": "#verification-and-current-limits"
+    },
+    {
+      "document": "README.md",
+      "target": "Start-FORGE.cmd"
+    },
+    {
+      "document": "README.md",
+      "target": "Stop-FORGE.cmd"
+    },
+    {
+      "document": "README.md",
+      "target": "Restart-FORGE.cmd"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/FORGE_LOCAL_QUICKSTART_TH.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/media/software-mission.gif"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/media/screenshots/mission-preview.png"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/media/README.md#software-mission"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/diagrams/software-delivery.svg"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/diagrams/software-delivery.png"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/diagrams/README.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/media/start-forge.gif"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/media/screenshots/overview.png"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/media/chat-workspace.gif"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/media/screenshots/workspace.png"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/media/office-report.gif"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/media/screenshots/report-preview.png"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/media/README.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/diagrams/architecture.svg"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/diagrams/architecture.png"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/diagrams/README.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/LOCAL_JOB_RECOVERY_TH.md"
+    },
+    {
+      "document": "README.md",
+      "target": "SECURITY.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/guarded-route.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/owner/forge-local-complete-20261124-v3/progress/ACCEPTANCE_EVIDENCE.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/owner/forge-local-complete-20261124-v3/progress/INTEGRATION_LEDGER.md"
+    },
+    {
+      "document": "README.md",
+      "target": "app/"
+    },
+    {
+      "document": "README.md",
+      "target": "tests/"
+    },
+    {
+      "document": "README.md",
+      "target": "apps/website/README.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/"
+    },
+    {
+      "document": "README.md",
+      "target": "bootstrap/"
+    },
+    {
+      "document": "README.md",
+      "target": "runtime/"
+    },
+    {
+      "document": "README.md",
+      "target": "adapters/ao/"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/FORGE_ARCHITECTURE.md"
+    },
+    {
+      "document": "README.md",
+      "target": "THIRD_PARTY_NOTICES.md"
+    },
+    {
+      "document": "README.md",
+      "target": "apps/website/README.md"
+    },
+    {
+      "document": "README.md",
+      "target": "AGENTS.md"
+    },
+    {
+      "document": "README.md",
+      "target": "SECURITY.md"
+    },
+    {
+      "document": "README.md",
+      "target": "LICENSE"
+    },
+    {
+      "document": "README.md",
+      "target": "NOTICE"
+    },
+    {
+      "document": "README.md",
+      "target": "THIRD_PARTY_NOTICES.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/brand/README.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/legacy/README_P11_HISTORY.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/brand/README.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/brand/exports/forge-lockup-for-light.svg#gh-light-mode-only"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/brand/exports/forge-lockup-for-dark.svg#gh-dark-mode-only"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/diagrams/software-delivery-dark.svg"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/diagrams/software-delivery.svg"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/diagrams/software-delivery.png"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/diagrams/architecture-dark.svg"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/diagrams/architecture.svg"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/diagrams/architecture.png"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "evidence/contact-sheet.png"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-mark-for-light.svg"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-mark-for-light.png"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-mark-for-dark.svg"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-mark-for-dark.png"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-mark-black.svg"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-mark-black.png"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-mark-white.svg"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-mark-white.png"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-wordmark-for-light.svg"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-wordmark-for-light.png"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-wordmark-for-dark.svg"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-wordmark-for-dark.png"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-wordmark-black.svg"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-wordmark-black.png"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-wordmark-white.svg"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-wordmark-white.png"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-lockup-for-light.svg"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-lockup-for-light.png"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-lockup-for-dark.svg"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-lockup-for-dark.png"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-lockup-black.svg"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-lockup-black.png"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-lockup-white.svg"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "exports/forge-lockup-white.png"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "../../tools/brand/build.mjs"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "../../LICENSE"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "evidence/exports.json"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "evidence/validation.json"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "evidence/contact-sheet.svg"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "evidence/readme-layout.json"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "evidence/readme-light-900.png"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "evidence/readme-dark-900.png"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "evidence/readme-light-375.png"
+    },
+    {
+      "document": "docs/brand/README.md",
+      "target": "evidence/readme-dark-375.png"
+    },
+    {
+      "document": "docs/worker-readme-brand.md",
+      "target": "brand/README.md"
+    },
+    {
+      "document": "docs/worker-readme-brand.md",
+      "target": "brand/evidence/exports.json"
+    },
+    {
+      "document": "docs/worker-readme-brand.md",
+      "target": "brand/evidence/validation.json"
+    },
+    {
+      "document": "docs/worker-readme-brand.md",
+      "target": "brand/evidence/readme-layout.json"
+    }
+  ],
+  "preserved": {
+    "diagram_picture_blocks_byte_identical": true,
+    "existing_media_paths_and_alt_labels_identical": true
+  },
+  "contrast": [
+    {
+      "foreground": "#20252b",
+      "background": "#ffffff",
+      "ratio": 15.43067007971108
+    },
+    {
+      "foreground": "#20252b",
+      "background": "#f5f5f5",
+      "ratio": 14.153578619084563
+    },
+    {
+      "foreground": "#f5f5f5",
+      "background": "#1f1f1f",
+      "ratio": 15.118793699076623
+    },
+    {
+      "foreground": "#f5f5f5",
+      "background": "#0d1117",
+      "ratio": 17.358367773735836
+    },
+    {
+      "foreground": "#000000",
+      "background": "#ffffff",
+      "ratio": 21
+    },
+    {
+      "foreground": "#ffffff",
+      "background": "#000000",
+      "ratio": 21
+    }
+  ],
+  "readme_sha256": "4dfc630db12b42860e4fdcdf5d8c3387c0c4342388b88ed3c72b8e7ab01e2f9d",
+  "readme_layout_variants": 4,
+  "source_sha256": {
+    "tools/brand/build.mjs": "322d0bbbd3ea65e8b7104bb78d117b2c77740d7d956b62aed79ecff52c9bb4e1",
+    "tools/brand/verify.py": "bdd44e1ffcecc8035afc4a52c39e97ccf430b8bade87dc3f82023103171fac2e",
+    "tools/brand/readme-proof.mjs": "214093cd376e1282c43b49c633598fdd8857ba4a21efdaaa9acdbfdd4638024f"
+  },
+  "result": "PASS"
+}

@@ -1,0 +1,301 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="../../../"><title>FORGE README light layout proof</title><style>
+      *{box-sizing:border-box}body{margin:0;background:#ffffff;color:#20252b;font:16px/1.6 'Segoe UI',sans-serif}main{max-width:980px;padding:24px 32px;margin:auto;min-width:0}h1,h2{line-height:1.3;margin:28px 0 16px}h1{font-size:32px;margin-top:0}h2{font-size:24px;border-bottom:1px solid #d1d9e0;padding-bottom:8px}p,ul,ol,blockquote,table,details{margin:16px 0}a{color:#0969da;text-underline-offset:3px}img{max-width:100%;height:auto}img[src$="#gh-dark-mode-only"]{display:none}blockquote{border-left:3px solid #d1d9e0;padding:0 16px;color:#59636e}pre{padding:16px;overflow:auto;border:1px solid #d1d9e0;border-radius:6px}code{font-family:Consolas,monospace;font-size:14px}table{display:block;width:max-content;max-width:100%;overflow:auto;border-collapse:collapse}td,th{border:1px solid #d1d9e0;padding:8px 12px;min-width:130px}th{text-align:left}summary{cursor:pointer}li+li{margin-top:6px}em{color:#59636e}:focus-visible{outline:2px solid #0969da;outline-offset:3px}@media(max-width:500px){main{padding:16px}td,th{min-width:120px}}
+      </style></head><body><main><h1>FORGE</h1>
+<a href="docs/brand/README.md">
+  <img src="docs/brand/exports/forge-lockup-for-light.svg#gh-light-mode-only" alt="FORGE" width="314" height="64">
+  <img src="docs/brand/exports/forge-lockup-for-dark.svg#gh-dark-mode-only" alt="FORGE" width="314" height="64">
+</a>
+<p><strong>Plan the work. Coordinate agents. Review the evidence.</strong></p>
+<p>FORGE is a local-first workspace for taking an idea through planning, execution
+and delivery. Conversations, agent runs, task dependencies, code, documents and
+verification evidence stay connected to one project, with explicit Owner
+approval for plans and controlled actions.</p>
+<p>The interface defaults to Thai and supports English. The local core is
+<a href="LICENSE">Apache-2.0</a>; optional remote and team services remain a future direction.</p>
+<p><a href="#run-locally">Get started</a> · <a href="#idea-to-delivery">See the workflow</a> ·
+<a href="docs/media/README.md">Explore the screenshots</a> ·
+<a href="docs/FORGE_LOCAL_QUICKSTART_TH.md">Thai setup guide</a> ·
+<a href="docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md">Development status</a></p>
+<blockquote>
+<p><strong>Development checkpoint — implementation incomplete.</strong> Published <code>main</code>
+checkpoint <code>d928e9c</code> is source for continued development and home testing.
+Complete-product acceptance, newer native integrations and final review remain
+pending. <strong>Live account checks and Home UAT have not run.</strong> No signed desktop
+installer is published.
+<a href="docs/CHECKPOINT_HOME_20261125.md">Checkpoint scope and home instructions</a> ·
+<a href="docs/NEXT_SESSION_20261126.md">Continuation handoff</a>.</p>
+</blockquote>
+<p><img src="docs/media/screenshots/mission-preview.png" alt="FORGE Mission showing a registered HTML preview and local test evidence. Engineering fixture with injected provider observations; actual local files, tests and preview."></p>
+<p><em>Actual production App with disposable engineering data. Provider observations
+are injected; local tests, file preview and delivery artifacts are real.
+<a href="docs/media/manifest.json">Capture provenance and limitations</a>.</em></p>
+<p><em>Media was captured from <code>758af58</code> and awaits a refresh on the final integrated
+tree. It documents the labelled flows below, not qualification of newer changes.</em></p>
+<h2>A workspace that follows the work</h2>
+<ul>
+<li><strong>Plan and deliver.</strong> Turn a brief into a reviewed Mission, canonical tasks and
+measurable acceptance criteria. Register actual output files, run reviewed
+local tests, preview supported static output and produce a verified Delivery Pack.</li>
+<li><strong>See who is doing what.</strong> Switch a team conversation into a Node-Edge Workspace
+to inspect agents, runs, tools and artifacts. Both views use the same records
+and existing permission-checked controls.</li>
+<li><strong>Work in isolated checkouts.</strong> Give independent tasks separate Git worktrees,
+check their actual changes and review the integration queue. The original
+workspace and its uncommitted work stay under their existing owner.</li>
+<li><strong>Choose models deliberately.</strong> Inspect connected provider catalogs and exact
+model options. Configure Executor/Asst routing under an explicit policy;
+role-session and Strategist integration remain pending final qualification.</li>
+<li><strong>Keep useful knowledge.</strong> Search scoped local memory and retain provenance.
+Central Owner Memory is private until the Owner shares an exact revision with
+a named project. Editing or revoking that source invalidates the old grant.</li>
+<li><strong>Create documents and reports.</strong> Edit real Univer Docs and Sheets, save and
+reopen revisions, then generate validated DOCX/PDF from saved report sources.</li>
+<li><strong>Operate from the same project.</strong> Run Python jobs, inspect artifacts, configure
+compute and serving targets, review MCP permissions and monitor outcomes.
+Unknown results and unreported costs remain visible as unknown.</li>
+</ul>
+<p>The workbench includes 15 semantic themes. Read the
+<a href="#verification-and-current-limits">qualification limits</a> before relying on a flow.</p>
+<h2>Run locally</h2>
+<p>Windows is the primary development platform. Install <strong>Node.js 24.13+</strong> and
+<strong>Git</strong>; local notebook and Python job execution also need <strong>Python</strong>. The first
+launch needs internet access to obtain dependencies pinned by the lockfile and
+build the workbench. This is a source installation.</p>
+<ol>
+<li>Clone the complete repository, or extract its complete source archive.</li>
+<li>Double-click <strong><a href="Start-FORGE.cmd">Start-FORGE.cmd</a></strong> in the repository root.</li>
+<li>Wait for readiness and the browser to open. The default address is
+<strong>http://127.0.0.1:4317</strong>; the launcher can select another available local port.</li>
+<li>Create a project with its own workspace folder, separate from FORGE's source
+repository. Configure a provider and exact model in project Settings.</li>
+<li>Use <strong><a href="Stop-FORGE.cmd">Stop-FORGE.cmd</a></strong> to stop the service, or
+<strong><a href="Restart-FORGE.cmd">Restart-FORGE.cmd</a></strong> to restart it.</li>
+</ol>
+<p>Closing the browser does not stop FORGE. Provider sign-in belongs to FORGE's
+isolated matching T3 runtime; your development application's sessions are not
+copied into it. API keys use the machine vault and explicit references.</p>
+<p>To install and start from a terminal:</p>
+<pre><code class="language-powershell">git clone https://github.com/siriponsri/forge-agents.git
+cd forge-agents
+npm ci --include=dev
+npm run build
+npm start
+</code></pre>
+<p>For an existing clone, preserve local changes before updating. Use
+<code>git pull --ff-only origin main</code> only when the branch is clean and has not
+diverged; then start through the launcher so dependencies and the build are
+checked. See the <a href="docs/FORGE_LOCAL_QUICKSTART_TH.md">Thai quickstart</a> for setup,
+logs and recovery.</p>
+<p>Optional private native runtimes and report engines have separate installation
+and configuration flows in Settings. Their compiled images, fonts and machine
+credentials are not bundled in Git. A fresh full build of the latest private
+runtime setup pipeline remains unqualified; ordinary workbench flows should
+remain usable while that setup is investigated.</p>
+<p>macOS launcher sources are included as <code>.command</code> files. Native macOS operation
+and secure credential entry are not yet qualified; see the current status before
+choosing that platform.</p>
+<h2>Idea to delivery</h2>
+<ol>
+<li><strong>Write the brief.</strong> Define the outcome, inputs, acceptance criteria,
+dependencies and unresolved decisions. Workflow presets help structure it.</li>
+<li><strong>Review the plan.</strong> Choose the team and task dependencies, then approve the
+concrete plan before execution.</li>
+<li><strong>Inspect the work.</strong> Follow the task's real run and registered output files.
+Chat and Workspace provide conversation and graph views of the same evidence.</li>
+<li><strong>Verify the output.</strong> Review the test command and source hashes, run supported
+local checks and open the immutable static preview.</li>
+<li><strong>Accept the delivery.</strong> Review QA evidence, record Owner acceptance and build
+the Delivery Pack with its files, manifest, test results and limitations.</li>
+</ol>
+<p><img src="docs/media/software-mission.gif" alt="Step-by-step software Mission: brief, reviewed plan, injected run observation, actual local tests, preview and verified ZIP."></p>
+<p><em>Real screen recording at 2x speed. Mission source files are predetermined
+engineering input; no model authored them in this recording. Local effects are
+real. <a href="docs/media/screenshots/mission-preview.png">Static alternative</a> ·
+<a href="docs/media/README.md#software-mission">Full steps and source recording</a>.</em></p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/software-delivery-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/diagrams/software-delivery.svg">
+  <img src="docs/diagrams/software-delivery.png" alt="Five stages, left to right: Idea / Mission → Owner-approved Plan → Build with T3 Executor and Asst advice when needed → Verify actual outputs, local tests, registered static preview, QA and Owner acceptance → Delivery Pack with selected files, evidence and limitations." width="1040" height="492">
+</picture>
+<p><em>Read left to right. <a href="docs/diagrams/software-delivery.svg">Open full size</a> for zoom ·
+<a href="docs/diagrams/software-delivery.png">PNG alternative</a> ·
+<a href="docs/diagrams/README.md">Editable sources and visual credits</a>.</em></p>
+<p>Unknown execution outcomes are reconciled using their existing identities.
+Reconnection and page reload do not mean an uncertain action should run again.</p>
+<h2>More walkthroughs</h2>
+<details>
+<summary>Open the local workspace</summary>
+<ol>
+<li>Open the ready local App and create a project.</li>
+<li>Select the saved project and open its workspace.</li>
+</ol>
+<p><img src="docs/media/start-forge.gif" alt="Real local readiness, project creation and project selection. The Windows launcher and clean installation are not recorded."></p>
+<p><a href="docs/media/screenshots/overview.png">Static alternative</a>. This clip begins after
+the localhost service is ready; it does not film installation or the launcher.</p>
+</details>
+<details>
+<summary>Switch Chat to a Node-Edge Workspace</summary>
+<ol>
+<li>Select a team room and keep a conversation draft.</li>
+<li>Switch to Workspace and inspect the selected Executor run.</li>
+<li>Inspect persisted recovery and the tool's unconfirmed outcome.</li>
+<li>Return to Chat with the draft preserved.</li>
+</ol>
+<p><img src="docs/media/chat-workspace.gif" alt="Chat-to-Workspace recording with explicitly injected agent, run and tool observations. Canonical IDs and draft preservation are real; no live model or Stop effect is claimed."></p>
+<p><a href="docs/media/screenshots/workspace.png">Static alternative</a>. The graph's provider
+observations are injected. An unconfirmed tool result stays unconfirmed.</p>
+</details>
+<details>
+<summary>Edit a document and generate a report</summary>
+<ol>
+<li>Apply a bounded edit in the actual Sheets editor, save and reopen it.</li>
+<li>Edit, save and reopen a document in the actual Docs editor.</li>
+<li>Save a ReportSpec from the saved Sheets source.</li>
+<li>Generate DOCX/PDF, inspect the rendered PDF and verify the downloads.</li>
+</ol>
+<p><img src="docs/media/office-report.gif" alt="Actual Univer editing, revisioned saves and reopens, followed by native WordCraft and PdfCraft output generation and preview. Edits are manually requested; no model call."></p>
+<p><a href="docs/media/screenshots/report-preview.png">Static alternative</a>. These are actual
+Windows native engine outputs. Report engines and local fonts are configured
+separately; the recording does not redistribute them.</p>
+</details>
+<p>All clips are real Chromium recordings with numbered documentation captions,
+selected contiguous intervals and disclosed 2x speed. No synthetic frames are
+used. <a href="docs/media/README.md">All 21 screenshots, static alternatives and provenance</a>.</p>
+<h2>How the system fits together</h2>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/architecture-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/diagrams/architecture.svg">
+  <img src="docs/diagrams/architecture.png" alt="Owner → FORGE canonical domain authority → matching T3 provider-turn owner → observed Chat and Node-Edge views. Supporting paths show scoped Context / Memory, Univer Office and reports, compute and targets, and registered artifacts. Unknown outcomes and costs stay unknown." width="1040" height="676">
+</picture>
+<p><em>The main path runs left to right; supporting paths sit below it.
+<a href="docs/diagrams/architecture.svg">Open full size</a> for zoom ·
+<a href="docs/diagrams/architecture.png">PNG alternative</a> ·
+<a href="docs/diagrams/README.md">Editable sources and visual credits</a>.</em></p>
+<p>FORGE owns project, plan, task, approval and evidence records. T3 owns provider
+execution. AG-UI projects state and events into the interface. Executor/Asst
+roles use those boundaries; role-session and Strategist work remains pending
+and does not establish a second planner or approval authority.
+MCP selection does not itself grant permission:
+Allowed/Ask/Off policies and exact-operation checks apply at dispatch.</p>
+<p>Telegram is the first supported mobile bridge channel through Hermes Agent or
+OpenClaw. New work enters an Inbox, is linked to a reviewed task and requires
+Owner approval in the originating channel. Live mobile qualification is tracked
+separately from the bridge's developer fixtures.</p>
+<h2>Data, credentials and recovery</h2>
+<p>Windows data defaults to <code>%LOCALAPPDATA%/FORGE/workbench</code>, outside the source
+checkout. Machine credentials, provider sessions and browser profiles are not
+portable project data and do not belong in Git.</p>
+<p>Use the in-App storage and backup tools with their stated scope. Metadata backups
+and portable project bundles have different contents; neither should be treated
+as a copy of machine credentials or installed engines. Restoring older metadata
+preserves deletion, approval-revocation and execution-deduplication safeguards.</p>
+<p>For an interrupted local Python attempt, use explicit Compute reconciliation.
+FORGE can recover a verified cleanup receipt without executing Python again.
+Missing or tampered proof remains interrupted. See the
+<a href="docs/LOCAL_JOB_RECOVERY_TH.md">local job recovery guide</a> and
+<a href="SECURITY.md">security policy</a>.</p>
+<h2>Verification and current limits</h2>
+<p>Developer checks exercise real SQLite, Git, HTTP/session/CSRF, mounted Univer,
+native Windows report engines, Python process cleanup, actual local tests,
+previews and verified archives. Provider/native observations are injected only
+where the evidence explicitly says so. They do not establish model quality,
+live account access or cloud/mobile behavior.</p>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Qualification boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Guarded automation and private native setup</td>
+<td>The <a href="docs/guarded-route.md">bounded native route</a> has actual Windows native evidence with a loopback model fixture. Arbitrary tools and hard resource caps are unavailable. Fresh full source-build verification of the latest setup pipeline and final integration review remain open.</td>
+</tr>
+<tr>
+<td>Role sessions and Strategist</td>
+<td>Integration is in progress. Persistent role sessions and Strategist behavior must not be treated as completed or qualified features.</td>
+</tr>
+<tr>
+<td>Usage and budgets</td>
+<td>Atomic policy holds and unknown accounting are implemented. Native monetary finality remains unsupported (<code>cost:null</code>, <code>final:false</code>); this is an implementation gap, independent of credentials. Completion never means zero cost.</td>
+</tr>
+<tr>
+<td>Research Lab</td>
+<td>Fixed local CPU/file experiments, independent checks and exports are exercised. Assembled native action/cohort/GUI qualification remains open; service fixtures and resumed local changes do not establish completion. Official benchmark execution is separate.</td>
+</tr>
+<tr>
+<td>Remote providers, compute and mobile</td>
+<td>Adapters and setup flows have scoped developer tests. Missing live credentials, account-specific checks and actual cloud/mobile use require separate evidence.</td>
+</tr>
+<tr>
+<td>macOS and Home UAT</td>
+<td>Native qualification and Owner home acceptance remain not run.</td>
+</tr>
+</tbody>
+</table>
+<p>Read the <a href="docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md">current status</a>,
+<a href="docs/owner/forge-local-complete-20261124-v3/progress/ACCEPTANCE_EVIDENCE.md">acceptance evidence</a>
+and <a href="docs/owner/forge-local-complete-20261124-v3/progress/INTEGRATION_LEDGER.md">integration ledger</a>
+for exact revisions, commands, results and remaining implementation work. Earlier
+passing suites and dated media do not qualify subsequent integrations.</p>
+<h2>Source layout and ownership</h2>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="app/"><code>app/</code></a></td>
+<td>Current local product: workbench UI, server, canonical state and integrations.</td>
+</tr>
+<tr>
+<td><a href="tests/"><code>tests/</code></a></td>
+<td>Developer verification; individual fixtures disclose injected observations and opt-in live/native requirements.</td>
+</tr>
+<tr>
+<td><a href="apps/website/README.md"><code>apps/website/</code></a></td>
+<td>Independent public website package and publication checks.</td>
+</tr>
+<tr>
+<td><a href="docs/"><code>docs/</code></a></td>
+<td>Owner requirements, acceptance records, guides and documentation media.</td>
+</tr>
+<tr>
+<td><a href="bootstrap/"><code>bootstrap/</code></a>, <a href="runtime/"><code>runtime/</code></a>, <a href="adapters/ao/"><code>adapters/ao/</code></a></td>
+<td>Preserved portable/runtime history and limited adapter boundaries. Legacy launchers retain their original meaning; use <code>Start-FORGE.cmd</code> for the current workbench.</td>
+</tr>
+</tbody>
+</table>
+<p>The <a href="docs/FORGE_ARCHITECTURE.md">architecture guide</a> describes product authority
+and integration boundaries. Component ownership, source pins and separate
+licenses are recorded in <a href="THIRD_PARTY_NOTICES.md">third-party notices</a>.</p>
+<h2>Development and contribution</h2>
+<pre><code class="language-powershell">npm ci --include=dev
+npm run check
+npm run build
+npm test
+npm run test:browser
+</code></pre>
+<p>The public website is an independent package under <a href="apps/website/README.md">apps/website</a>.
+Its build, release-availability checks and Cloudflare guide do not start the
+workbench or deploy it automatically.</p>
+<p>Use isolated branches/worktrees, preserve existing authority boundaries and
+include the scope of your verification. See <a href="AGENTS.md">AGENTS.md</a> for the active
+requirements and protected legacy paths. Report bugs through
+<a href="https://github.com/siriponsri/forge-agents/issues">GitHub Issues</a>, excluding
+credentials, private workspace data and exploit details. Security issues should
+be reported privately as described in <a href="SECURITY.md">SECURITY.md</a>.</p>
+<h2>License</h2>
+<p>Original FORGE code and documentation are licensed under
+<a href="LICENSE">Apache-2.0</a>. See <a href="NOTICE">NOTICE</a> and
+<a href="THIRD_PARTY_NOTICES.md">third-party notices</a> for separately licensed components.
+The original <a href="docs/brand/README.md">FORGE logo and reusable assets</a> include
+editable vector source, transparent PNG exports and provenance.
+The <a href="docs/legacy/README_P11_HISTORY.md">archived P11 and machine-transfer README</a>
+preserves earlier portable-release documentation; it is not the current workbench
+acceptance status.</p>
+</main></body></html>

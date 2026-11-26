@@ -1,21 +1,32 @@
 # FORGE
 
-> **25 Nov development checkpoint:** source is being handed off through `main`
-> for continuation on the home machine. The complete-product goal remains open;
-> assembled Research native attestation and final integration review are pending.
-> [Checkpoint status, verified scope and home instructions](docs/CHECKPOINT_HOME_20261125.md).
+<a href="docs/brand/README.md">
+  <img src="docs/brand/exports/forge-lockup-for-light.svg#gh-light-mode-only" alt="FORGE" width="314" height="64">
+  <img src="docs/brand/exports/forge-lockup-for-dark.svg#gh-dark-mode-only" alt="FORGE" width="314" height="64">
+</a>
 
-**From an idea to a plan, working files, a preview and verified delivery.**
+**Plan the work. Coordinate agents. Review the evidence.**
 
-FORGE is a local-first workspace for coordinating AI agents and reviewing their
-work. Keep conversations, task dependencies, documents, code, test evidence and
-deliverables in one project, with explicit Owner approval at the boundaries that
-matter.
+FORGE is a local-first workspace for taking an idea through planning, execution
+and delivery. Conversations, agent runs, task dependencies, code, documents and
+verification evidence stay connected to one project, with explicit Owner
+approval for plans and controlled actions.
+
+The interface defaults to Thai and supports English. The local core is
+[Apache-2.0](LICENSE); optional remote and team services remain a future direction.
 
 [Get started](#run-locally) · [See the workflow](#idea-to-delivery) ·
 [Explore the screenshots](docs/media/README.md) ·
 [Thai setup guide](docs/FORGE_LOCAL_QUICKSTART_TH.md) ·
 [Development status](docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md)
+
+> **Development checkpoint — implementation incomplete.** Published `main`
+> checkpoint `d928e9c` is source for continued development and home testing.
+> Complete-product acceptance, newer native integrations and final review remain
+> pending. **Live account checks and Home UAT have not run.** No signed desktop
+> installer is published.
+> [Checkpoint scope and home instructions](docs/CHECKPOINT_HOME_20261125.md) ·
+> [Continuation handoff](docs/NEXT_SESSION_20261126.md).
 
 ![FORGE Mission showing a registered HTML preview and local test evidence. Engineering fixture with injected provider observations; actual local files, tests and preview.](docs/media/screenshots/mission-preview.png)
 
@@ -23,11 +34,8 @@ matter.
 are injected; local tests, file preview and delivery artifacts are real.
 [Capture provenance and limitations](docs/media/manifest.json).*
 
-> **Development preview.** The local workbench is under active integration.
-> Native Guarded automation, native accounting coverage and final release checks
-> remain in progress. Live account checks and Home UAT are tracked separately.
-> There is no published signed desktop installer. Screenshots and recordings are
-> prepared documentation media, pending a refresh on the final integrated tree.
+*Media was captured from `758af58` and awaits a refresh on the final integrated
+tree. It documents the labelled flows below, not qualification of newer changes.*
 
 ## A workspace that follows the work
 
@@ -40,9 +48,9 @@ are injected; local tests, file preview and delivery artifacts are real.
 - **Work in isolated checkouts.** Give independent tasks separate Git worktrees,
   check their actual changes and review the integration queue. The original
   workspace and its uncommitted work stay under their existing owner.
-- **Choose models deliberately.** Read connected provider catalogs and exact
-  model options. Assistance starts with a suitable Executor and brings in a
-  larger Asst for difficult or stuck work, under an explicit routing policy.
+- **Choose models deliberately.** Inspect connected provider catalogs and exact
+  model options. Configure Executor/Asst routing under an explicit policy;
+  role-session and Strategist integration remain pending final qualification.
 - **Keep useful knowledge.** Search scoped local memory and retain provenance.
   Central Owner Memory is private until the Owner shares an exact revision with
   a named project. Editing or revoking that source invalidates the old grant.
@@ -52,23 +60,22 @@ are injected; local tests, file preview and delivery artifacts are real.
   compute and serving targets, review MCP permissions and monitor outcomes.
   Unknown results and unreported costs remain visible as unknown.
 
-The interface defaults to Thai, supports English and includes 15 semantic themes.
-The local core is [Apache-2.0](LICENSE). Optional remote and team services are a
-future direction, not a dependency of the local workbench.
+The workbench includes 15 semantic themes. Read the
+[qualification limits](#verification-and-current-limits) before relying on a flow.
 
 ## Run locally
 
-Windows is the currently developer-qualified platform. Install **Node.js 24.13+**
-and **Git** for coding and worktree features. Python is needed for local notebook
-and job execution. The first launch needs internet access to obtain the pinned
-dependencies and build the App.
+Windows is the primary development platform. Install **Node.js 24.13+** and
+**Git**; local notebook and Python job execution also need **Python**. The first
+launch needs internet access to obtain dependencies pinned by the lockfile and
+build the workbench. This is a source installation.
 
 1. Clone the complete repository, or extract its complete source archive.
 2. Double-click **[Start-FORGE.cmd](Start-FORGE.cmd)** in the repository root.
 3. Wait for readiness and the browser to open. The default address is
    **http://127.0.0.1:4317**; the launcher can select another available local port.
-4. Create a project with its own workspace folder. Keep it separate from FORGE's
-   source repository, then configure a provider in project Settings.
+4. Create a project with its own workspace folder, separate from FORGE's source
+   repository. Configure a provider and exact model in project Settings.
 5. Use **[Stop-FORGE.cmd](Stop-FORGE.cmd)** to stop the service, or
    **[Restart-FORGE.cmd](Restart-FORGE.cmd)** to restart it.
 
@@ -76,7 +83,7 @@ Closing the browser does not stop FORGE. Provider sign-in belongs to FORGE's
 isolated matching T3 runtime; your development application's sessions are not
 copied into it. API keys use the machine vault and explicit references.
 
-For a terminal-based start:
+To install and start from a terminal:
 
 ```powershell
 git clone https://github.com/siriponsri/forge-agents.git
@@ -85,6 +92,18 @@ npm ci --include=dev
 npm run build
 npm start
 ```
+
+For an existing clone, preserve local changes before updating. Use
+`git pull --ff-only origin main` only when the branch is clean and has not
+diverged; then start through the launcher so dependencies and the build are
+checked. See the [Thai quickstart](docs/FORGE_LOCAL_QUICKSTART_TH.md) for setup,
+logs and recovery.
+
+Optional private native runtimes and report engines have separate installation
+and configuration flows in Settings. Their compiled images, fonts and machine
+credentials are not bundled in Git. A fresh full build of the latest private
+runtime setup pipeline remains unqualified; ordinary workbench flows should
+remain usable while that setup is investigated.
 
 macOS launcher sources are included as `.command` files. Native macOS operation
 and secure credential entry are not yet qualified; see the current status before
@@ -187,8 +206,10 @@ used. [All 21 screenshots, static alternatives and provenance](docs/media/README
 [Editable sources and visual credits](docs/diagrams/README.md).*
 
 FORGE owns project, plan, task, approval and evidence records. T3 owns provider
-execution. Executor/Asst are execution roles; they do not introduce another
-planner or override approval. MCP selection does not itself grant permission:
+execution. AG-UI projects state and events into the interface. Executor/Asst
+roles use those boundaries; role-session and Strategist work remains pending
+and does not establish a second planner or approval authority.
+MCP selection does not itself grant permission:
 Allowed/Ask/Off policies and exact-operation checks apply at dispatch.
 
 Telegram is the first supported mobile bridge channel through Hermes Agent or
@@ -223,16 +244,32 @@ live account access or cloud/mobile behavior.
 
 | Area | Qualification boundary |
 |---|---|
-| Guarded proactive automation | The [bounded native route](docs/guarded-route.md) connects approved recipes to live route/run checks and existing text-file actions. Developer checks use actual native binaries with a loopback model fixture. Transport hardening and final review remain pending; arbitrary tools and resource caps are unavailable. |
-| Usage and budgets | Atomic policy holds and unknown accounting are implemented. Native monetary receipt coverage remains incomplete; completion never means zero cost. |
-| Research Lab | Fixed local CPU/file experiments, independent checks and exports are exercised. Agent component/action/resource qualification and official benchmark execution are separate. |
-| Remote providers, compute and mobile | Adapters and setup flows have scoped developer tests. Account-specific live checks require their own evidence. |
+| Guarded automation and private native setup | The [bounded native route](docs/guarded-route.md) has actual Windows native evidence with a loopback model fixture. Arbitrary tools and hard resource caps are unavailable. Fresh full source-build verification of the latest setup pipeline and final integration review remain open. |
+| Role sessions and Strategist | Integration is in progress. Persistent role sessions and Strategist behavior must not be treated as completed or qualified features. |
+| Usage and budgets | Atomic policy holds and unknown accounting are implemented. Native monetary finality remains unsupported (`cost:null`, `final:false`); this is an implementation gap, independent of credentials. Completion never means zero cost. |
+| Research Lab | Fixed local CPU/file experiments, independent checks and exports are exercised. Assembled native action/cohort/GUI qualification remains open; service fixtures and resumed local changes do not establish completion. Official benchmark execution is separate. |
+| Remote providers, compute and mobile | Adapters and setup flows have scoped developer tests. Missing live credentials, account-specific checks and actual cloud/mobile use require separate evidence. |
 | macOS and Home UAT | Native qualification and Owner home acceptance remain not run. |
 
 Read the [current status](docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md),
 [acceptance evidence](docs/owner/forge-local-complete-20261124-v3/progress/ACCEPTANCE_EVIDENCE.md)
 and [integration ledger](docs/owner/forge-local-complete-20261124-v3/progress/INTEGRATION_LEDGER.md)
-for exact revisions, commands, results and remaining implementation work.
+for exact revisions, commands, results and remaining implementation work. Earlier
+passing suites and dated media do not qualify subsequent integrations.
+
+## Source layout and ownership
+
+| Path | Responsibility |
+|---|---|
+| [`app/`](app/) | Current local product: workbench UI, server, canonical state and integrations. |
+| [`tests/`](tests/) | Developer verification; individual fixtures disclose injected observations and opt-in live/native requirements. |
+| [`apps/website/`](apps/website/README.md) | Independent public website package and publication checks. |
+| [`docs/`](docs/) | Owner requirements, acceptance records, guides and documentation media. |
+| [`bootstrap/`](bootstrap/), [`runtime/`](runtime/), [`adapters/ao/`](adapters/ao/) | Preserved portable/runtime history and limited adapter boundaries. Legacy launchers retain their original meaning; use `Start-FORGE.cmd` for the current workbench. |
+
+The [architecture guide](docs/FORGE_ARCHITECTURE.md) describes product authority
+and integration boundaries. Component ownership, source pins and separate
+licenses are recorded in [third-party notices](THIRD_PARTY_NOTICES.md).
 
 ## Development and contribution
 
@@ -255,16 +292,13 @@ requirements and protected legacy paths. Report bugs through
 credentials, private workspace data and exploit details. Security issues should
 be reported privately as described in [SECURITY.md](SECURITY.md).
 
-The README's information hierarchy was informed by the public
-[n8n](https://github.com/n8n-io/n8n), [Supabase](https://github.com/supabase/supabase)
-and [Dify](https://github.com/langgenius/dify) repositories. Their brands,
-screenshots, popularity and licensing are not FORGE claims.
-
 ## License
 
 Original FORGE code and documentation are licensed under
 [Apache-2.0](LICENSE). See [NOTICE](NOTICE) and
 [third-party notices](THIRD_PARTY_NOTICES.md) for separately licensed components.
+The original [FORGE logo and reusable assets](docs/brand/README.md) include
+editable vector source, transparent PNG exports and provenance.
 The [archived P11 and machine-transfer README](docs/legacy/README_P11_HISTORY.md)
 preserves earlier portable-release documentation; it is not the current workbench
 acceptance status.
