@@ -17,16 +17,19 @@ import {digest,bytesDigest} from '../app/guarded-runtime/profile.mjs';
 
 const cache=process.env.FORGE_GUARDED_TEST_CACHE??path.join(os.tmpdir(),'forge-frontend-generation-VD6puQ');
 const entry=path.join(cache,'t3/apps/server/dist/forge-guarded-host.mjs');
+const sessions=existsSync(path.join(cache,'session-patches.json'));
 test('unified private bridge with actual matched native image and purpose isolation', {skip:!existsSync(entry)&&'qualified native cache not installed',timeout:600000},async t=>{
   const subtest=(name,fn)=>t.test(name,{skip:!!process.env.FORGE_UNIFIED_FRONTEND_ONLY&&!name.startsWith('real machine')&&!name.startsWith('explicit frontend')},fn);
   const root=await mkdtemp(path.join(os.tmpdir(),'forge-bridge-test-')),workspace=path.join(root,'workspace'),dataDir=path.join(root,'data');
   await mkdir(path.join(workspace,'allowed'),{recursive:true});await writeFile(path.join(workspace,'allowed/a.txt'),'before');await writeFile(path.join(root,'outside.txt'),'OUTSIDE');
   const files=(await readdir(path.dirname(entry))).filter(n=>n.endsWith('.mjs')).map(name=>({name,path:path.join(path.dirname(entry),name)}));files.push({name:'node.exe',path:process.execPath});
   const base=JSON.parse(await readFile(path.join(cache,'generation.json'),'utf8')).cache;
-  const artifacts={t3:{entry,files},opencode:{path:path.join(cache,'opencode/forge-frontend-cli-build/cli-windows-x64/bin/opencode.exe')},fileBroker:{path:path.join(base,'windows/ConfinedText.exe'),sha256:bytesDigest(readFileSync(path.join(base,'windows/ConfinedText.exe')))}};
+  const artifacts={t3:{entry,files},opencode:{path:path.join(cache,`opencode/forge-${sessions?'session':'frontend'}-cli-build/cli-windows-x64/bin/opencode.exe`)},fileBroker:{path:path.join(base,'windows/ConfinedText.exe'),sha256:bytesDigest(readFileSync(path.join(base,'windows/ConfinedText.exe')))}};
   const selected={route:{providerInstanceId:'fixture',apiProviderId:'openai',providerImplementation:'opencode2-api',accountGeneration:'no-account',modelId:'openai/forge-fixture',options:[{id:'variant',value:'default'}],t3Revision:'59651c1761f6c63e9b6056839067066968e6a406',opencodeRevision:'6f0514052a3c859894ad01bb14cc14dda1e44b96',t3BinarySha256:digest(files.map(f=>({name:f.name,sha256:bytesDigest(readFileSync(f.path))})).sort((a,b)=>a.name.localeCompare(b.name))),opencodeBinarySha256:bytesDigest(readFileSync(artifacts.opencode.path))},policyGeneration:'1',toolGeneration:'1'};
-  assert.equal(selected.route.t3BinarySha256,'715c5c8657db3f2910b031e740f9391f04649914569a8c2a0da155d5f73179a5');
-  assert.equal(selected.route.opencodeBinarySha256,'edde02f4107862e229cbe5436fde8b3a28d94195dd6fba85e9f716acaf6cf934');
+  // Both generations retain exact independent image pins. Cache metadata alone
+  // cannot approve a different binary or silently substitute the older image.
+  assert.equal(selected.route.t3BinarySha256,sessions?'1435d81ad72b5838dd6f8b413bfda3576a4878f0845ec40e474758c333ba538e':'715c5c8657db3f2910b031e740f9391f04649914569a8c2a0da155d5f73179a5');
+  assert.equal(selected.route.opencodeBinarySha256,sessions?'2224d7edb8a06f241c5ec764b506607af110bfec5300e91a03e00421854aef17':'edde02f4107862e229cbe5436fde8b3a28d94195dd6fba85e9f716acaf6cf934');
   let mode='complete',deniedStage=null,ownerAllowed=true,resolveHook,requests=[],observedActions=[],receiptCallbacks=0,holdObserved;
   const realFetch=globalThis.fetch;globalThis.fetch=(url,options)=>{assert.equal(new URL(url).hostname,'127.0.0.1','all external requests blocked');return realFetch(url,options);};
   const model=createServer(async(req,res)=>{
