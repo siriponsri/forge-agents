@@ -33,6 +33,9 @@ async function dependencies(tree,target){
   assert.ok(inside(root,target));
   const source=path.join(retained,tree),oldRoots=[source];
   if(tree==='t3')oldRoots.push(path.dirname(path.dirname(await fs.realpath(path.join(source,'node_modules/.pnpm')))));
+  // The portable prepared cache omits some importer links; their complete
+  // reviewed layout lives beside its retained physical .pnpm store.
+  const moduleSource=tree==='t3'?oldRoots[1]:source;
   function remap(actual){
     for(const old of oldRoots){const rel=path.relative(old,actual);if(inside(old,actual)&&(rel.startsWith('packages'+path.sep)||rel.startsWith('apps'+path.sep)))return path.join(target,rel);}
     return actual;
@@ -45,11 +48,11 @@ async function dependencies(tree,target){
       await fs.mkdir(to,{recursive:true});for(const file of await fs.readdir(from))await clone(path.join(from,file),path.join(to,file));
     }else if(stat.isFile())await fs.copyFile(from,to);
   }
-  const importers=[''];for(const group of ['packages','apps'])for(const name of await fs.readdir(path.join(source,group)).catch(()=>[]))importers.push(path.join(group,name));
+  const importers=[''];for(const group of ['packages','apps'])for(const name of await fs.readdir(path.join(moduleSource,group)).catch(()=>[]))importers.push(path.join(group,name));
   for(const importer of importers){
-    const from=path.join(source,importer,'node_modules');if(!await fs.lstat(from).then(()=>true,()=>false))continue;
+    const from=path.join(moduleSource,importer,'node_modules');if(!await fs.lstat(from).then(()=>true,()=>false))continue;
     const manifest=path.join(importer,'package.json');
-    assert.equal(await fs.readFile(path.join(source,manifest),'utf8'),await fs.readFile(path.join(target,manifest),'utf8'),'dependency importer manifest differs');
+    assert.equal(await fs.readFile(path.join(moduleSource,manifest),'utf8'),await fs.readFile(path.join(target,manifest),'utf8'),'dependency importer manifest differs');
     // pnpm requires a real importer node_modules directory. Materialize that
     // directory even when the retained packaged importer is itself a junction.
     await clone(await fs.realpath(from),path.join(target,importer,'node_modules'));
@@ -69,7 +72,20 @@ try{
     if(spec.stage==='opencode-dependencies'||spec.stage==='t3-dependencies'){
       const tree=spec.stage.startsWith('opencode')?'opencode':'t3';const target=tree==='opencode'?spec.cwd:path.join(spec.args[1],'t3');
       await dependencies(tree,target);entry.reusedReadOnlyDependencyStores=true;result={exitCode:0};
-    }else result=await runOwned({...spec,command:process.execPath,args:[capture,JSON.stringify({command:spec.command,args:spec.args}),path.join(root,spec.stage+'.log')]});
+    }else{
+      let command=spec.command,args=spec.args,cwd=spec.cwd;
+      if(spec.stage==='t3-build'){
+        // HARNESS ONLY: pnpm's pre-run verification would reinstall into the
+        // reused store. Execute the exact build:bundle script (vp pack) directly.
+        const cache=spec.args[1];command=path.join(cache,'node/node.exe');args=[path.join(cache,'t3/node_modules/vite-plus/bin/vp'),'pack'];cwd=path.join(cache,'t3/apps/server');
+        entry.directPinnedCompilerForReadOnlyDependencyReuse=true;
+      }
+      result=await runOwned({...spec,cwd,command:process.execPath,args:[capture,JSON.stringify({command,args}),path.join(root,spec.stage+'.log')]});
+      if(spec.stage==='t3-build'){
+        const cache=spec.args[1],patches=JSON.parse(await fs.readFile(path.join(cache,'patch-report.json'),'utf8'));
+        await fs.writeFile(path.join(cache,'t3-build-report.json'),JSON.stringify({version:1,patchDigest:digest(patches.changes.filter(p=>p.source==='t3')),exitCode:result.exitCode,proof:null,scope:'HARNESS ONLY actual pinned build:bundle compiler, bypass pnpm pre-run reinstall for READONLY dependency reuse'}));
+      }
+    }
     entry.exitCode=result.exitCode;entry.finishedAt=new Date().toISOString();console.log('END',spec.stage,result.exitCode);return result;
   }});
   await service.install({operationId:'fresh-source-pipeline-20261126'});
@@ -86,7 +102,8 @@ try{
   const {generation}=JSON.parse(await fs.readFile(path.join(build,reportDir,'generation.json'),'utf8'));assert.ok(inside(root,generation));
   const sourceFiles=[];for(const file of ['patch-report.json','cli-build-report.json','t3-build-report.json','windows/build.json'])sourceFiles.push({file:path.join(build,'cache',file),sha256:fileDigest(path.join(build,'cache',file))});
   for(const file of ['frontend-patches.json','session-patches.json','opencode-session-build.json','t3-session-build.json'])sourceFiles.push({file:path.join(generation,file),sha256:fileDigest(path.join(generation,file))});
-  outcome={status:'PASS',generation,artifacts,images:{opencodeSha256:fileDigest(artifacts.opencode.path),t3All45AndActualNodeSha256:digest(actual),files:actual,brokerSha256:fileDigest(artifacts.fileBroker.path),currentNodeSha256:fileDigest(process.execPath)},sourceFiles,pipeline,proof:null};
+  const notices=(await fs.readdir(path.join(path.dirname(artifacts.opencode.path),'notices'))).sort().map(name=>({name,sha256:fileDigest(path.join(path.dirname(artifacts.opencode.path),'notices',name))}));
+  outcome={status:'PASS',generation,artifacts,images:{opencodeSha256:fileDigest(artifacts.opencode.path),t3All45AndActualNodeSha256:digest(actual),files:actual,brokerSha256:fileDigest(artifacts.fileBroker.path),currentNodeSha256:fileDigest(process.execPath)},verifiedInventory:job.inventory,notices,sourceFiles,pipeline,proof:null};
 }catch(error){outcome={status:'FAIL',error:{message:error.message,stack:error.stack},proof:null};process.exitCode=1;}
 finally{
   await service?.close();const after=await retainedFingerprint();assert.equal(after,before,'retained source/image fingerprint changed');

@@ -72,9 +72,11 @@ compile claim.
 
 Relevant existing installer checks include actual Windows descendant cancellation
 and app-crash recovery with no provider turns, old/unified private copies,
-minimal SDK closure, failed-stage safety and manifest forgery. The preexisting
-old-only stage fixture still expects nine pre-frontend stages and fails against
-the extended pipeline; the new scoped fixture covers the complete replacement.
+minimal SDK closure, failed-stage safety and manifest forgery. The new scoped
+fixture supersedes the earlier nine-stage fixture and preserves its exact Bun
+dependency arguments, T3 install/build modes and actual-Node verify assertions,
+alongside the complete15-stage sequence. Lead owns removal of the superseded
+fixture from the older test file; all existing safety tests remain.
 
 Run the explicit heavy reproduction with
 `node tests/guarded-session-install-fresh.mjs`. It creates a NEW private root,
@@ -82,6 +84,13 @@ seeds pinned archives by copy, executes real extraction/base patch/base and sess
 compilation plus private SDK npm ci, verifies installed images and reopens them.
 Base dependency install stages explicitly reuse retained package stores read only
 through NEW remapped importer links; they do not claim a clean dependency download.
+For that reuse run only, the base T3 stage directly executes the exact
+`build:bundle` compiler (`pinned Node` + `vite-plus/bin/vp pack`), recording its
+observed exit code and patch digest in an explicitly labeled harness build report.
+This avoids pnpm's automatic pre-run reinstall against reused stores. The pinned
+production `build-t3.mjs`, package-manager stages, source checks and output checks
+are unchanged. One earlier reuse attempt was stopped at pnpm's pre-run dependency
+verification; it is not a successful compile claim.
 It retains private command logs and `fresh-build-evidence.json`, including stage
 results, source/build-report hashes, all45+actualNode/CLI/broker hashes and unchanged
 retained source/image fingerprints. No native/provider turn is part of the run.
@@ -96,6 +105,13 @@ ownership are inherited without links or a second authority. No source, patch or
 artifact pin was relaxed. The dependency-reuse harness also materializes each NEW
 importer's `node_modules` directory because pnpm refuses a junction at that root;
 the package stores remain read-only links.
+
+Fresh extraction, base CLI/T3/broker builds and the complete45-module base
+verification subsequently passed. The actual SDK npm ci then exposed a separate
+production prerequisite bug: npm rejects double-loading the same empty file as
+both user and global config. Setup now creates two distinct empty private config
+files. The full stage fixture checks this alongside its existing scrubbed-env and
+command assertions; no lock, source, patch or image trust check was relaxed.
 
 Actual fresh source compile evidence is pending completion of the heavy run.
 No live provider/account session, Owner home workflow or product activation is

@@ -354,8 +354,8 @@ export async function createGuardedArtifactService({dataDir,approvedCache=null,w
         try {await checked(python);}catch{fail('PYTHON_REQUIRED');}
         for(const workspace of [REPO,process.cwd(),...workspaceRoots].map(absolute))if(inside(workspace,path.resolve(python)))fail('PRIVATE_WORKSPACE_OVERLAP');
         const home=path.join(build,'home');await mkdir(home,{recursive:true});
-        const env={SystemRoot:process.env.SystemRoot??'C:/Windows',TEMP:home,TMP:home,HOME:home,USERPROFILE:home,APPDATA:home,LOCALAPPDATA:home,XDG_CONFIG_HOME:home,XDG_DATA_HOME:home,XDG_CACHE_HOME:home,CI:'1',PATH:[path.dirname(python),path.join(cache,'node'),path.join(cache,'bun/bin'),path.join(process.env.SystemRoot??'C:/Windows','System32')].join(path.delimiter),PYTHONNOUSERSITE:'1',BUN_INSTALL_CACHE_DIR:path.join(cache,'bun-cache'),NPM_CONFIG_USERCONFIG:path.join(home,'empty.npmrc'),NPM_CONFIG_GLOBALCONFIG:path.join(home,'empty.npmrc')};
-        await writeFile(env.NPM_CONFIG_USERCONFIG,'');
+        const env={SystemRoot:process.env.SystemRoot??'C:/Windows',TEMP:home,TMP:home,HOME:home,USERPROFILE:home,APPDATA:home,LOCALAPPDATA:home,XDG_CONFIG_HOME:home,XDG_DATA_HOME:home,XDG_CACHE_HOME:home,CI:'1',PATH:[path.dirname(python),path.join(cache,'node'),path.join(cache,'bun/bin'),path.join(process.env.SystemRoot??'C:/Windows','System32')].join(path.delimiter),PYTHONNOUSERSITE:'1',BUN_INSTALL_CACHE_DIR:path.join(cache,'bun-cache'),NPM_CONFIG_USERCONFIG:path.join(home,'empty-user.npmrc'),NPM_CONFIG_GLOBALCONFIG:path.join(home,'empty-global.npmrc')};
+        await writeFile(env.NPM_CONFIG_USERCONFIG,'');await writeFile(env.NPM_CONFIG_GLOBALCONFIG,'');
         const script=name=>path.join(pipeline,'tools/guarded-runtime',name+'.mjs');
         const run=async(name,command,args,cwd=build)=>{
           await stage(name);const spec={stage:name,command,args,cwd,env,timeoutMs:600000};

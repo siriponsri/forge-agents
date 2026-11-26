@@ -69,6 +69,16 @@ test('default setup stage fixture selects newest session pipeline with private S
   const service=await createGuardedArtifactService({dataDir:path.join(root,'data'),commandRunner:async spec=>{
     seen.push(spec.stage);assert.equal(spec.env.FORGE_SESSION_INSTALL_SECRET,undefined);assert.equal(spec.env.NODE_OPTIONS,undefined);assert.equal(spec.timeoutMs,600000);
     if(['sources','toolchain'].includes(spec.stage))assert.ok(spec.args[1].startsWith('\\\\?\\'),'Windows extraction must support long upstream fixture paths');
+    if(spec.stage==='sources'){
+      assert.notEqual(spec.env.NPM_CONFIG_USERCONFIG,spec.env.NPM_CONFIG_GLOBALCONFIG,'npm rejects double-loading one file as user and global config');
+      assert.equal(await fs.readFile(spec.env.NPM_CONFIG_USERCONFIG,'utf8'),'');assert.equal(await fs.readFile(spec.env.NPM_CONFIG_GLOBALCONFIG,'utf8'),'');
+    }
+    if(spec.stage==='opencode-dependencies'){
+      assert.deepEqual(spec.args,['install','--frozen-lockfile','--ignore-scripts','--filter','@opencode/core','--filter','@opencode/cli']);assert.ok(spec.command.endsWith('bun.exe'));
+    }
+    if(spec.stage==='t3-dependencies')assert.equal(spec.args.at(-1),'install');
+    if(spec.stage==='t3-build')assert.equal(spec.args.at(-1),'build');
+    if(spec.stage==='verify')assert.equal(spec.args.at(-1),process.execPath);
     if(spec.stage==='verify'){
       baseCache=spec.args[1];pipeline=path.join(path.dirname(baseCache),'pipeline');
       const patches=JSON.parse(await fs.readFile(path.join(meta.cache,'patch-report.json'),'utf8')),pins=JSON.parse(await fs.readFile(path.join(repo,'app/proactive-native/source-pins.json'),'utf8'));
@@ -129,6 +139,14 @@ test('actual cache negatives: exact session/frontend patch chain, additions, SDK
     const target=path.join(source,file),original=await fs.readFile(target);await fs.writeFile(target,mutate(original.toString('utf8')));
     try{const service=await install(t,path.join(root,'data-'+code+'-'+mutations.findIndex(x=>x[0]===file)),source);const state=await settled(service);assert.equal(state.status,'failed',file);assert.equal(state.error.code,code,file);assert.equal(await service.artifacts(),null);await service.close();}finally{await fs.writeFile(target,original);}
   }
+  // A forged engineering report cannot bless a changed SDK import either.
+  const runtime=path.join(source,'opencode/packages/core/src/forge-sessions-runtime.ts'),patchFile=path.join(source,'session-patches.json');
+  const originalRuntime=await fs.readFile(runtime),originalPatches=await fs.readFile(patchFile);
+  try{
+    await fs.writeFile(runtime,originalRuntime.toString('utf8').replace('/node_modules/@modelcontextprotocol/','/node_modules/other/'));
+    const patches=JSON.parse(originalPatches);patches.additions.find(p=>p.file.endsWith('forge-sessions-runtime.ts')).sha256=fileDigest(runtime);await fs.writeFile(patchFile,JSON.stringify(patches));
+    const service=await install(t,path.join(root,'forged-sdk-report'),source);assert.equal((await settled(service)).error.code,'SDK_SOURCE_CHANGED');await service.close();
+  }finally{await fs.writeFile(runtime,originalRuntime);await fs.writeFile(patchFile,originalPatches);}
 });
 test('pipeline/source drift is rejected before using approved files or dispatching commands',{skip:!available,timeout:120000},async t=>{
   const root=await temp(t),isolated=path.join(root,'isolated-repo');
