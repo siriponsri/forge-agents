@@ -4,7 +4,7 @@ import {fixture,gate} from './product-session-roles-fixture.mjs';
 import {createConversationService} from '../app/providers/conversations.mjs';
 import {createSessionRoleService,mergeSessionRoleSafety,dispatchSessionRoleRequest} from '../app/server/session-roles.mjs';
 import {createBudgetService} from '../app/budgets/index.mjs';
-import {command} from '../app/server/domain.mjs';
+import {command,entity} from '../app/server/domain.mjs';
 
 test('private authority, exact parent attempt and explicit Owner membership; no role authorizes plans/tools',async t=>{
   const f=await fixture(t),runCaller=f.callerForRun(f.parent);
@@ -101,4 +101,15 @@ test('host-only bind shares the Owner boundary/receipt in the existing native wr
   await assert.rejects(f.store.transaction(s=>f.roles.bindInTransaction(s,{...input,operationId:'fake-owner'},{})),{code:'SESSION_ROLE_FORBIDDEN'});
   await assert.rejects(f.store.transaction(s=>f.roles.bindInTransaction(s,{...input,operationId:'agent-bind'},f.callerForRun(f.parent))),{code:'SESSION_ROLE_OWNER_REQUIRED'});
   assert.throws(()=>dispatchSessionRoleRequest(f.roles,'bindInTransaction',input,f.owner),{code:'NOT_FOUND'});
+});
+
+test('same retained command projects only bounded exact child assistant results without another send or independent-success claim',async t=>{
+  const f=await fixture(t),first=await f.roles.prompt(f.input,f.owner);assert.equal(first.childRun.result.status,'pending');
+  await f.store.transaction(s=>{const r=s.runs.find(r=>r.id===first.childRun.id);r.status='completed';r.messages=[
+    {type:'assistant_message',runId:'foreign-run',text:'FOREIGN RESULT'},
+    {type:'reasoning',runId:r.providerRunId,text:'PRIVATE REASONING'},
+    {type:'assistant_message',runId:r.providerRunId,itemId:'exact-observed-message',text:'Observed review evidence. '+ 'x'.repeat(5000),status:'completed'},
+  ];r.artifactIds=['foreign-artifact','exact-artifact'];s.artifacts.push(entity({name:'foreign',runId:'foreign-run',attemptId:r.attemptId},f.p.id));s.artifacts.at(-1).id='foreign-artifact';s.artifacts.push({...entity({runId:r.id,attemptId:r.attemptId,sha256:'a'.repeat(64),bytes:12},f.p.id),id:'exact-artifact'});});
+  const replay=await f.roles.prompt(f.input,f.owner);assert.equal(f.ownerLifecycle.calls,1);assert.equal(replay.childRun.result.status,'observed');assert.equal(replay.childRun.result.independent,false);assert.equal(replay.childRun.result.requiresReview,true);assert.equal(replay.childRun.result.truncated,true);
+  assert.equal(replay.childRun.result.messages[0].id,'exact-observed-message');assert.equal(replay.childRun.result.messages[0].text.length,4096);assert.deepEqual(replay.childRun.result.artifacts.map(a=>a.id),['exact-artifact']);assert.equal(JSON.stringify(replay).includes('FOREIGN RESULT'),false);assert.equal(JSON.stringify(replay).includes('PRIVATE REASONING'),false);
 });
