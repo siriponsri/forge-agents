@@ -4,7 +4,7 @@ import {buildResearchContext,researchContextPolicy} from '../research/context.mj
 import {approvedTask,contextFor,taskSignature,planSignature,terminal,assertNoMixedControllers} from '../workspaces/contracts.mjs';
 import {snapshotSkill} from '../adaptive/records.mjs';
 import {validateDecision} from '../adaptive/selection.mjs';
-import {validateRoutePin} from './routes.mjs';
+import {validateCohortRoute} from './routes.mjs';
 export {digest,bytesDigest,fail,exact,terminal,records};
 
 export function seal(state,kind,data,projectId,clock=Date.now){
@@ -59,7 +59,7 @@ export function validateResearchComponentContext(s,input,clock=Date.now){
   if(t.stopRequested||t.restoreReviewRequired||stopped(s,c)||w.stopRequested||w.restoreReviewRequired||!['dispatching','running'].includes(t.status)||!Number.isSafeInteger(t.deadlineAt)||clock()>=t.deadlineAt||s.runs.find(r=>r.operationId===a.operationId)?.stopRequest)fail('RESEARCH_COMPONENT_STOP','Trial or allocation is stopped, expired or awaiting recovery',409);
   if(digest(researchContextPolicy(s,{projectId:t.projectId,components:t.manifest.components}))!==t.manifest.contextPolicyDigest)fail('RESEARCH_CONTEXT_POLICY','Pinned context policy changed',409);
   const slot=c.slots.find(x=>x.workspaceId===w.id);validateSkills(s,c,slot);
-  validateRoutePin(s,c.projectId,c.routePin,clock);
+  validateCohortRoute(s,c,clock);
   const decision=s.events.find(e=>e.type==='adaptive.decision'&&e.id===slot.decisionId&&e.projectId===c.projectId);if(!decision||digest(decision)!==slot.decisionDigest)fail('RESEARCH_COMPONENT_DECISION','Pinned Adaptive selection changed',409);validateDecision(s,decision,c.projectId);
   assertNoMixedControllers(s,c.projectId,{taskId:a.taskId});
   return structuredClone(context);

@@ -39,7 +39,7 @@ export default function GuardedSetup(props) {
 }
 function GuardedProject({t, state, projectId, run, busy}) {
   const initial=state?.guarded??(state?.installation?state:null);
-  const [value,setValue]=useState(initial),[error,setError]=useState(''),[pending,setPending]=useState('');
+  const [value,setValue]=useState(initial),[error,setError]=useState(''),[pending,setPending]=useState(''),[leaseMs,setLeaseMs]=useState(300000);
   const alive=useRef(true),working=useRef(false),title=useId(),progressLabel=useId();
   const apply=result=>{if(alive.current)setValue(result);};
   useEffect(()=>{
@@ -60,7 +60,7 @@ function GuardedProject({t, state, projectId, run, busy}) {
   },[preparing,projectId]);
   const perform=action=>{
     if(working.current)return;working.current=true;setPending(action);setError('');
-    const body={projectId,...(action==='install'||action==='check'?{operationId:operationId()}:action==='cancel'?{operationId:installation.operationId}:{})};
+    const body={projectId,...(action==='install'||action==='check'?{operationId:operationId()}:action==='cancel'?{operationId:installation.operationId}:{}),...(action==='check'&&leaseMs!==300000?{leaseMs}:{})};
     return run(async()=>{
       try {const result=await request(`/api/guarded/${action}`,body);apply(result);return result;}
       catch(error) {if(alive.current)setError(routeIssues[error.code]?t(...routeIssues[error.code]):t('คำขอไม่สำเร็จ กดรีเฟรชสถานะเพื่อตรวจผลก่อนลองอีกครั้ง','The request did not finish. Refresh status to inspect its result before trying again.'));}
@@ -86,6 +86,7 @@ function GuardedProject({t, state, projectId, run, busy}) {
       {value?.readiness&&<p role="status">{t('อ่านผลตรวจเส้นทางล่าสุดได้แล้ว สิทธิ์ใช้งานยังขึ้นกับบัญชีและนโยบายปัจจุบัน','The latest route check is available. Use still depends on the current account and policy.')}</p>}
     </>}
     {error&&<p role="alert" className="error-text">{error}</p>}
+    {status==='ready'&&<label>{t('อายุผลตรวจเส้นทาง','Route check lifetime')}<select disabled={blocked} value={leaseMs} onChange={e=>setLeaseMs(Number(e.target.value))}><option value={300000}>{t('5 นาที','5 minutes')}</option><option value={900000}>{t('15 นาที','15 minutes')}</option><option value={3600000}>{t('1 ชั่วโมง','1 hour')}</option></select><small className="help">{t('เลือกให้ครอบคลุม trial ก่อนเริ่ม ผลตรวจนี้ไม่ขยาย deadline ของงานและยังตรวจไฟล์ บัญชี และ Stop ทุกครั้ง','Choose enough time for the trial before starting. This does not extend a run deadline; image, account and Stop checks remain current.')}</small></label>}
     <div className="actions guarded-setup-actions">
       {preparing?<button type="button" disabled={blocked} aria-busy={pending==='cancel'||undefined} onClick={()=>perform('cancel')}>{t('ยกเลิกการตั้งค่า','Cancel setup')}</button>:<button type="button" className={status==='ready'?'':'primary'} disabled={blocked||!installation} aria-busy={pending==='install'||undefined} onClick={()=>perform('install')}>{status==='ready'?t('ติดตั้งใหม่','Reinstall Guarded'):t('ติดตั้ง Guarded','Install Guarded')}</button>}
       {status==='ready'&&<button type="button" className="primary" disabled={blocked} aria-busy={pending==='check'||undefined} onClick={()=>perform('check')}>{t('ตรวจเส้นทางที่ติดตั้ง','Check installed route')}</button>}

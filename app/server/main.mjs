@@ -258,16 +258,17 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
         if(/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/mcp\/(configure|enable|discover|call|stop)$|^\/api\/mcp\/[^/]+\/(discover|call)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|plugins|memory|owner-memory|memory-mcp|context|goals|compute|relay|secrets|missions|proactive|workspaces|budgets|playbooks|research|research-components|frontend-tools|guarded)\//.test(p))owner=humanSession(req,res);
         if(p==='/api/command'){value=await command(store,input);if(input.type==='project.create')await capabilities.defaults(value.entity.id);}
         else if(p.startsWith('/api/guarded/')){
-          const method=p.slice('/api/guarded/'.length),keys=method==='state'?['projectId']:['projectId','operationId'];
+          const method=p.slice('/api/guarded/'.length),keys=method==='state'?['projectId']:method==='check'?['projectId','operationId','leaseMs']:['projectId','operationId'];
           if(!['state','install','cancel','check'].includes(method))fail('NOT_FOUND','Guarded setup operation not found',404);
           if(!input||Object.keys(input).some(k=>!keys.includes(k)))fail('GUARDED_INPUT','Use only the displayed setup action fields',400);
           find(store.read(),'projects',input.projectId);
           if(method!=='state'&&(typeof input.operationId!=='string'||!/^[a-f0-9-]{36}$/i.test(input.operationId)))fail('GUARDED_INPUT','Use an explicit operation ID',400);
+          if(method==='check'&&input.leaseMs!==undefined&&(!Number.isSafeInteger(input.leaseMs)||input.leaseMs<10000||input.leaseMs>3600000))fail('GUARDED_INPUT','Choose a check lifetime of 10 seconds to one hour',400);
           if(method==='install'&&store.read().runs.some(r=>r.guardedContext&&!['completed','failed','cancelled','interrupted','rolled_back'].includes(r.status)))fail('GUARDED_BUSY','Stop and reconcile bounded runs before changing installed artifacts',409);
           const installer=await artifactService();
           if(method==='install')await installer.install({operationId:input.operationId});
           if(method==='cancel')await installer.cancel({operationId:input.operationId});
-          if(method==='check'){await guardedPolicy.refresh(input);await ensureGuarded().check({projectId:input.projectId});}
+          if(method==='check'){await guardedPolicy.refresh(input);await ensureGuarded().check({projectId:input.projectId,...(input.leaseMs===undefined?{}:{leaseMs:input.leaseMs})});}
           value={installation:await installer.state(),readiness:guarded?.readiness({projectId:input.projectId})??null};
         }
         else if(p.startsWith('/api/memory-mcp/')){const method=p.slice('/api/memory-mcp/'.length);if(!['issue','state','revoke'].includes(method))fail('NOT_FOUND','Memory MCP Owner operation not found',404);value=await memoryMcp[method](input,authority.owner(owner));}

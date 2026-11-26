@@ -1,7 +1,7 @@
 import {performance} from 'node:perf_hooks';
 import {buildResearchContext} from '../research/context.mjs';
 import {approvedTask,taskSignature,planSignature,assertNoMixedControllers} from '../workspaces/contracts.mjs';
-import {routePin,validateRoutePin} from './routes.mjs';
+import {routePin,validateRoutePin,validateCohortRoute} from './routes.mjs';
 import {componentUsage,assertContinuation} from './accounting.mjs';
 import {createComponentArtifacts} from './artifacts.mjs';
 import {seal,intact,trialFor,compositionFor,allocationsFor,stopped,workspaceFor,workspacePin,runFor,contextForAllocation,evidenceFor,validateSkills,records,digest,fail,exact,terminal} from './contracts.mjs';
@@ -38,11 +38,11 @@ export function createResearchComponentService({store,workspaces,adaptive,provid
   function fence(s,c){
     const t=trialFor(s,c.projectId,c.trialId);
     if(t.manifestDigest!==c.manifestDigest||stopped(s,c)||t.stopRequested||t.restoreReviewRequired||!['reserved','dispatching','running'].includes(t.status)||t.deadlineAt!==null&&clock()>=t.deadlineAt)fail('RESEARCH_COMPONENT_STOP','Trial is stopped, expired or awaiting recovery',409);
-    validateRoutePin(s,c.projectId,c.routePin,clock);assertNoMixedControllers(s,c.projectId,{taskId:t.manifest.taskId});return t;
+    validateCohortRoute(s,c,clock);assertNoMixedControllers(s,c.projectId,{taskId:t.manifest.taskId});return t;
   }
   function checkProvider(s,c){
-    const pin=validateRoutePin(s,c.projectId,c.routePin,clock),observed=providers.catalog({projectId:c.projectId,connectionId:pin.connectionId});
-    if(observed.stale||observed.error)fail('RESEARCH_COMPONENT_ROUTE','Exact provider catalog expired',409);
+    const pin=validateCohortRoute(s,c,clock),observed=providers.catalog({projectId:c.projectId,connectionId:pin.connectionId});
+    if(observed.error||observed.catalog?.stale===true)fail('RESEARCH_COMPONENT_ROUTE','Exact provider catalog is unavailable or invalidated',409);
     const actual=providers.validateSelection({projectId:c.projectId,connectionId:pin.connectionId,selection:pin.selection});
     if(digest(actual)!==digest(c.slots[0].selection))fail('RESEARCH_COMPONENT_ROUTE','Actual owner selection no longer matches the pinned route',409);
   }

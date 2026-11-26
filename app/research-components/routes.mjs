@@ -10,3 +10,20 @@ export function routePin(state,projectId,clock=Date.now){
   return {connectionId:c.id,signature:digest({id:c.id,enabled:c.enabled,config:c.config,catalog,check}),selection:{instanceId:c.providerInstanceId,model:selection.model,options}};
 }
 export function validateRoutePin(state,projectId,pin,clock=Date.now){const current=routePin(state,projectId,clock);if(digest(current)!==digest(pin))fail('RESEARCH_COMPONENT_ROUTE','Pinned provider catalog/account/options changed',409);return current;}
+
+// An approved cohort pins all slots while the catalog/authentication observation
+// is fresh. Once its first allocation is claimed, those SAME bytes remain the
+// admission identity for its fixed absolute trial envelope. They do not become
+// a fresh catalog for another cohort. Account/config/catalog changes still deny;
+// native image/current-account/Stop/deadline checks remain separate and current.
+export function validateCohortRoute(state,composition,clock=Date.now){
+  const c=state.events.find(e=>e.type==='research.composition'&&e.id===composition.id&&e.projectId===composition.projectId);
+  if(!c||digest(c)!==digest(composition)||c.digest!==digest({...c,digest:undefined}))fail('RESEARCH_COMPONENT_ROUTE','Exact immutable approved cohort required',409);
+  const allocations=state.events.filter(e=>e.type==='research.allocation'&&e.compositionId===c.id),first=allocations[0];
+  if(!first)return validateRoutePin(state,c.projectId,c.routePin,clock);
+  const acceptedAt=Date.parse(c.createdAt),claimedAt=Date.parse(first.createdAt),now=clock(),t=state.events.find(e=>e.type==='research.trial'&&e.id===c.trialId&&e.projectId===c.projectId);
+  if(!Number.isSafeInteger(acceptedAt)||!Number.isSafeInteger(claimedAt)||claimedAt<acceptedAt||claimedAt-acceptedAt>=300000||now<claimedAt||!t||t.manifestDigest!==c.manifestDigest||!Number.isSafeInteger(t.startedAt)||t.deadlineAt!==t.startedAt+c.limits.maxMs)fail('RESEARCH_COMPONENT_ROUTE','Cohort freshness claim or absolute envelope changed',409);
+  // Recompute and compare the full original pin, including authentication and
+  // catalog bytes. Only its age is evaluated at its recorded approval instant.
+  return validateRoutePin(state,c.projectId,c.routePin,()=>acceptedAt);
+}
