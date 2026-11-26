@@ -25,6 +25,11 @@
 
 หน้าแนะนำผลิตภัณฑ์อยู่ที่ `/welcome` และ workbench ที่ `/app` ปุ่มดาวน์โหลดเป็น
 source+launcher ZIP ของ commit ที่แสดง พร้อม SHA256 ไม่ใช่ signed EXE/DMG.
+ไฟล์ดาวน์โหลดจริงอยู่ที่ [Windows ZIP](../apps/website/public/downloads/FORGE-Windows.zip)
+และ [macOS ZIP](../apps/website/public/downloads/FORGE-macOS.zip) พร้อม
+[manifest](../apps/website/public/downloads/manifest.json) และ
+[SHA256SUMS](../apps/website/public/downloads/SHA256SUMS) ต้องแตกทั้งโฟลเดอร์
+แพ็กเกจรวม source และเครื่องมือ setup runtime แต่ไม่รวม Node.js หรือบัญชีผู้ใช้
 สำหรับ macOS เปิด `Start-FORGE.command`, ปิด/เริ่มใหม่ด้วยไฟล์ .command คู่กัน
 ติดตั้ง Node.js24.13+ ก่อนใช้งาน ข้อมูลอยู่ที่
 `~/Library/Application Support/FORGE/workbench`.
@@ -35,6 +40,11 @@ Windows clean-package check: source ZIP จาก d23560b แตกลง temp d
 ที่มีช่องว่าง ไม่มี node_modules/build เดิม ตัวช่วย npm ci/build/start/restart/stop
 ผ่านบน Node24.19.0. Browser auto-open ถูกปิดไว้สำหรับ engineering fixture;
 browser UI ตรวจด้วย Preview/Playwright แยก. ต้องตรวจซ้ำกับ UI/theme revision ใหม่.
+
+ตามคำขอเจ้าของวันที่ 26 พ.ย. การทดสอบสร้าง product จริงและเชื่อมต่อ server
+ภายนอกจะรอทำที่บ้าน เนื่องจากข้อจำกัดสิทธิ์ admin/เครือข่ายของเครื่องทำงาน
+สถานะส่วนนี้ยังเป็น NOT_RUN ไม่แทนด้วย fixture และไม่ใช้ปิดงาน implementation
+ที่ยังมี defect แยกต่างหาก ดูสถานะปัจจุบันก่อนทดสอบ native Orchestrator
 
 ข้อมูลถาวรค่าเริ่มต้นอยู่ที่ `%LOCALAPPDATA%/FORGE/workbench` แยกจาก source/build
 และจาก legacy portable package. มี SQLite, report settings, engines, outputs และ

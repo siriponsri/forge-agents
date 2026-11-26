@@ -49,8 +49,12 @@ tree. It documents the labelled flows below, not qualification of newer changes.
   check their actual changes and review the integration queue. The original
   workspace and its uncommitted work stay under their existing owner.
 - **Choose models deliberately.** Inspect connected provider catalogs and exact
-  model options. Configure Executor/Asst routing under an explicit policy;
-  role-session and Strategist integration remain pending final qualification.
+  model options. Select Executor, optional Asst and reviewed Strategist handoffs.
+  Assign scoped session roles; a role never grants tools or plan authority.
+- **Choose how the team works.** The GUI offers Supervisor/Workers, parallel
+  fan-out/fan-in, Router/Specialists, Generator/Verifier, DAG and independent
+  candidates with explicit selection. Existing owners retain execution, checks,
+  budgets and Stop; see the [mode contracts](docs/worker-agent-strategies.md).
 - **Keep useful knowledge.** Search scoped local memory and retain provenance.
   Central Owner Memory is private until the Owner shares an exact revision with
   a named project. Editing or revoking that source invalidates the old grant.
@@ -64,6 +68,15 @@ The workbench includes 15 semantic themes. Read the
 [qualification limits](#verification-and-current-limits) before relying on a flow.
 
 ## Run locally
+
+Development source launcher packages are available for
+**[Windows](apps/website/public/downloads/FORGE-Windows.zip)** and
+**[macOS](apps/website/public/downloads/FORGE-macOS.zip)**.
+[Exact source revision, requirements and limitations](apps/website/public/downloads/manifest.json)
+· [SHA-256 checksums](apps/website/public/downloads/SHA256SUMS).
+Extract the entire ZIP before starting. These unsigned packages include the
+launcher and source, including private-runtime setup tools; they do not bundle
+Node.js, provider accounts or machine runtimes. Native macOS verification is unrun.
 
 Windows is the primary development platform. Install **Node.js 24.13+** and
 **Git**; local notebook and Python job execution also need **Python**. The first
@@ -102,8 +115,9 @@ logs and recovery.
 Optional private native runtimes and report engines have separate installation
 and configuration flows in Settings. Their compiled images, fonts and machine
 credentials are not bundled in Git. A fresh full build of the latest private
-runtime setup pipeline remains unqualified; ordinary workbench flows should
-remain usable while that setup is investigated.
+runtime setup pipeline reached READY and reopened in a documented engineering
+run with read-only dependency-store reuse. Installation proof does not qualify
+every native route; the assembled Orchestrator path still has an open defect.
 
 macOS launcher sources are included as `.command` files. Native macOS operation
 and secure credential entry are not yet qualified; see the current status before
@@ -206,9 +220,9 @@ used. [All 21 screenshots, static alternatives and provenance](docs/media/README
 [Editable sources and visual credits](docs/diagrams/README.md).*
 
 FORGE owns project, plan, task, approval and evidence records. T3 owns provider
-execution. AG-UI projects state and events into the interface. Executor/Asst
-roles use those boundaries; role-session and Strategist work remains pending
-and does not establish a second planner or approval authority.
+execution. AG-UI projects state and events into the interface. Executor, Asst,
+Strategist and scoped session roles use those boundaries; they do not establish
+a second execution or approval authority.
 MCP selection does not itself grant permission:
 Allowed/Ask/Off policies and exact-operation checks apply at dispatch.
 
@@ -244,12 +258,13 @@ live account access or cloud/mobile behavior.
 
 | Area | Qualification boundary |
 |---|---|
-| Guarded automation and private native setup | The [bounded native route](docs/guarded-route.md) has actual Windows native evidence with a loopback model fixture. Arbitrary tools and hard resource caps are unavailable. Fresh full source-build verification of the latest setup pipeline and final integration review remain open. |
-| Role sessions and Strategist | Integration is in progress. Persistent role sessions and Strategist behavior must not be treated as completed or qualified features. |
+| Guarded automation and private native setup | The [bounded native route](docs/guarded-route.md) has actual Windows native evidence with a loopback model fixture. Fresh source setup reached READY with documented dependency reuse. Arbitrary tools and unsupported resource caps remain unavailable; installation is not route qualification. |
+| Role sessions and Strategist | Canonical role/approval/Stop and Strategist handoffs are integrated and fixture-tested. The assembled native Orchestrator currently returns `OUTCOME_UNKNOWN` after its first successful SDK response; it is not production-qualified. External model quality is unestablished. |
+| Six strategy modes | GUI and canonical Workspace/T3/Conversation hooks are connected. Real Git/SQLite/service checks use labelled injected native transport. The checked-predecessor race correction passed independent recheck; external product journeys remain unrun. |
 | Usage and budgets | Atomic policy holds and unknown accounting are implemented. Native monetary finality remains unsupported (`cost:null`, `final:false`); this is an implementation gap, independent of credentials. Completion never means zero cost. |
-| Research Lab | Fixed local CPU/file experiments, independent checks and exports are exercised. Assembled native action/cohort/GUI qualification remains open; service fixtures and resumed local changes do not establish completion. Official benchmark execution is separate. |
+| Research Lab | Fixed local CPU/file experiments and independent checks/exports are exercised. Static native Research and an all-ON primary/helper/revision cohort passed on frozen `def855d` with loopback model responses and real file effects. This does not qualify later images or external model quality; official benchmarks are separate. |
 | Remote providers, compute and mobile | Adapters and setup flows have scoped developer tests. Missing live credentials, account-specific checks and actual cloud/mobile use require separate evidence. |
-| macOS and Home UAT | Native qualification and Owner home acceptance remain not run. |
+| macOS and Home UAT | Native qualification and Owner home acceptance remain not run. The Owner deferred real-product creation and external-server checks to home because of work-machine administrator/network restrictions. |
 
 Read the [current status](docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md),
 [acceptance evidence](docs/owner/forge-local-complete-20261124-v3/progress/ACCEPTANCE_EVIDENCE.md)
