@@ -2,3 +2,4 @@ export {createStrategyService,dispatchStrategyRequest,STRATEGY_METHODS} from './
 export {validateStrategyContext,assertStrategySourceAvailable,strategyPrompt} from './context.mjs';
 export {MODES} from './contracts.mjs';
 export {mergeStrategySafety} from './recovery.mjs';
+export {validateStrategyFiles} from './files.mjs';

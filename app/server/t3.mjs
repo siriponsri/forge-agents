@@ -27,7 +27,7 @@ import {validateProactiveAction} from '../proactive/context.mjs';
 import {digest as observationDigest} from './agui.mjs';
 import {validateResearchComponentContext} from '../research-components/contracts.mjs';
 import {sessionRoleInstruction} from './session-roles.mjs';
-import {validateStrategyContext,strategyPrompt} from '../strategies/index.mjs';
+import {validateStrategyContext,validateStrategyFiles,strategyPrompt} from '../strategies/index.mjs';
 
 const launcher=fileURLToPath(new URL('../vendor/t3/bin/t3.mjs',import.meta.url));
 // app/server -> repo root is two parent directories.
@@ -317,6 +317,7 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
         if(run.researchContext){if(!prepareResearch||!validatePreparedResearch||!prepareContext)fail('RESEARCH_OWNER_INTEGRATION','The canonical Research execution bridge and actual Context preparation are required',409);const prepared=await prepareResearch({run:find(store.read(),'runs',run.id,p.id),baseMessage:message});if(typeof prepared?.message!=='string'||!prepared.message)fail('RESEARCH_CONTEXT','Research preparation did not return a verified prompt',409);message=prepared.message;}
         if(prepareContext){const prepared=await prepareContext({run:find(store.read(),'runs',run.id,p.id),project:find(store.read(),'projects',p.id),baseMessage:message});if(typeof prepared?.message!=='string'||!prepared.message)fail('CONTEXT_INVALID','Dispatch context did not return a verified message',409);message=prepared.message;await store.transaction(s=>{const r=find(s,'runs',run.id,p.id);r.contextId=prepared.contextId;r.contextReceipt=structuredClone(prepared.receipt);r.contextMode=prepared.mode??'forge-prefix';if(r.researchContext)r.researchReceipt=structuredClone(researchReceipt(s,r,{message}));changed(r);});}
         if(run.workspaceContext){const latest=await resolveWorkspaceForRun({store,input,dataDir});if(contextDigest(latest)!==contextDigest(resolved))fail('WORKSPACE_CHANGED','Isolated checkout identity changed during setup',409);}
+        if(run.strategyContext)await validateStrategyFiles({store,dataDir,runId:run.id});
         if(run.guardedContext){if(run.researchContext)await getResearchRoute().precreate(run.id);validateRunDispatch(store.read(),run,input,{guarded:true,prepared:true});launchRequested=true;await getGuarded().launch(run.id,{message});return find(store.read(),'runs',run.id);}
         validateDispatch({prepared:true});
         launchRequested=true;
