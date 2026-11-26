@@ -1,4 +1,4 @@
-import {readFile,mkdtemp,readdir} from 'node:fs/promises';
+import {readFile,mkdtemp,readdir,mkdir,copyFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {bytesDigest,digest} from '../../app/guarded-runtime/profile.mjs';
@@ -17,18 +17,22 @@ export async function sessionArtifactInventory(root){
 export async function runSessionPipeline({preparedCache,buildDirectory,runCommand,environment,signal,onProgress=()=>{}}){
   if(!path.isAbsolute(preparedCache??'')||!path.isAbsolute(buildDirectory??'')||typeof runCommand!=='function'||!environment)throw Error('PRIVATE_SETUP_JOB_RUNNER_REQUIRED');
   const reports=await mkdtemp(path.join(buildDirectory,'session-pipeline-')),generationFile=path.join(reports,'generation.json');
-  async function run(family,stage,args){
-    signal?.throwIfAborted();onProgress('session-'+stage);
+  async function run(family,stage,args,label='session-'+stage){
+    signal?.throwIfAborted();onProgress(label);
     const file=fileURLToPath(new URL('../'+family+'/'+stage+'.mjs',import.meta.url));
-    const result=await runCommand({stage:'session-'+stage,command:process.execPath,args:[file,...args],cwd:buildDirectory,env:environment,timeoutMs:600000});
+    const result=await runCommand({stage:label,command:process.execPath,args:[file,...args],cwd:buildDirectory,env:environment,timeoutMs:600000});
     signal?.throwIfAborted();if(result?.exitCode!==0)throw Object.assign(Error('SESSION_BUILD_STAGE_FAILED'),{stage});
   }
   await run('frontend-tools','clone-generation',[preparedCache,generationFile]);
   const {generation}=JSON.parse(await readFile(generationFile,'utf8'));
   if(!path.isAbsolute(generation)||!path.basename(generation).startsWith('forge-frontend-generation-'))throw Error('NEW_GENERATION_REQUIRED');
-  await run('frontend-tools','patch-generation',[generation]);
+  await run('frontend-tools','patch-generation',[generation],'session-frontend-patch');
   await run('session-tools','patch-generation',[generation]);
   await run('frontend-tools','link-t3-dependencies',[generation]);
   await run('session-tools','build-generation',[generation]);
+  // Distribution notices are copied into the NEW generation only.
+  const notices=path.join(generation,'session-notices');await mkdir(notices,{recursive:true});
+  for(const [name,file] of [['FORGE',fileURLToPath(new URL('../../LICENSE',import.meta.url))],['T3',path.join(generation,'t3/LICENSE')],['OPENCODE',path.join(generation,'opencode/LICENSE')],['NODE',path.join(preparedCache,'node/LICENSE')],['MCP-SDK',fileURLToPath(new URL('../../node_modules/@modelcontextprotocol/sdk/LICENSE',import.meta.url))]])await copyFile(file,path.join(notices,name+'-LICENSE.txt'));
+  signal?.throwIfAborted();
   return sessionArtifactInventory(generation);
 }

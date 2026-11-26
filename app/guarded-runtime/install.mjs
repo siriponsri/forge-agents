@@ -1,6 +1,6 @@
 // Host-only setup. Inventory is never live qualification or execution authority.
 import {open, mkdir, readFile, writeFile, rename, lstat, realpath, readdir, copyFile} from 'node:fs/promises';
-import {createHash, randomUUID} from 'node:crypto';
+import {createHash, createHmac, randomBytes, randomUUID} from 'node:crypto';
 import {spawn} from 'node:child_process';
 import path from 'node:path';
 import os from 'node:os';
@@ -15,6 +15,9 @@ const ENTRY = 'forge-guarded-host.mjs';
 const APPROVED = {t3:'3494a3e4bce00e971a999fe51f5334d471e8d7a220db43e90f50f535314b0bf9',opencode:'33ef775f30afbf7808773e97bc4d70e1dc990155541162c92e5b6e2dc1c18ad3',broker:'0c8a796db59f0829ac4b28b97be774523210f5ff99b7e6139e3fc442e8d2e08d'};
 const FRONTEND_PATCH_DIGEST = '036f7cd3a33311b93f9e324bd5d399c01f154da9a06155ab156b6882bcb993d8';
 const FRONTEND_APPROVED = {t3:'715c5c8657db3f2910b031e740f9391f04649914569a8c2a0da155d5f73179a5',opencode:'edde02f4107862e229cbe5436fde8b3a28d94195dd6fba85e9f716acaf6cf934'};
+const SESSION_APPROVED = {t3:'1435d81ad72b5838dd6f8b413bfda3576a4878f0845ec40e474758c333ba538e',opencode:'2224d7edb8a06f241c5ec764b506607af110bfec5300e91a03e00421854aef17'};
+const PURPOSES = ['guarded-default','supervised-frontend-v1','supervised-orchestrator-v1'];
+const SESSION_PATCH_DIGEST = 'd301fbbfa07b51da44e6d087e74714e07b082292de985b7613140998b07a5a47';
 const SDK_NOTICE = "MIT License\n\nCopyright (c) 2024 Anthropic, PBC\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n";
 const COMPILER_HASH = '46809206887326d2d24db1eff1f3064de972c3451abe766b49111450a5e08e00';
 const PIPELINE = {
@@ -37,7 +40,7 @@ const PIPELINE = {
   "app/guarded-runtime/native/patch-inputs.json": "cc7e7ca7f1f8f9b34b078876ae1947afa9d666ab70fc95a16aa58f809ea93ab6",
   "app/guarded-runtime/native/t3-guard.ts": "b08a98fb2865752d31d2a4d85cc4ce0a98d397f1286222544b9894771fd52bd4",
   "app/guarded-runtime/native/t3-host-entry.ts": "650621442cbe5165fa65a7aa4b5bcd94f44326a10e3290796acdd717f3cdb9e1",
-  "app/guarded-runtime/profile.mjs": "22ae18f9a1999349d5c24eeb14292100c71b43dce5315b318805d12d02063b4a",
+  "app/guarded-runtime/profile.mjs": "b8f3c86ff957c4ff0d372d1232b3f789dbf20315822b74aeff3df9a1d284a78e",
   "app/guarded-runtime/windows/ConfinedText.cs": "f5ee43d7d32c5b783359baec2984f22c25ffece380c5d28c9f1325547a5a58b2",
   "app/proactive-native/audit-upstream.mjs": "32b5e95a0c8014fa8300118e2a913c74214663ee33926880e751a1d6565e0f5a",
   "app/proactive-native/source-pins.json": "174c4ad2440a04713b6b43a7dde8102a712fbe03e134aec02af48633ce7ee03a",
@@ -48,7 +51,13 @@ const PIPELINE = {
   "tools/guarded-runtime/build-t3.mjs": "5ec773734e4e3ba5a6fea7c992167ee871e1dc69e1f03a73f0d244a64da8f010",
   "tools/guarded-runtime/build-windows.mjs": "fd604002966d03ba239200cb99212bce32632f12af33ee7ee29e7ac2fcc4ab57",
   "tools/guarded-runtime/extract.py": "04dee9c4039ca6deaf783b7cbb7c87fb8250d84b9f897f924288c0d94b5c7517",
-  "tools/guarded-runtime/prepare-native.mjs": "c6b9cb2d75211962c78b2aab9f2e1187f1ee008eda43822f4a3fe12f825e8b6b"
+  "tools/guarded-runtime/prepare-native.mjs": "c6b9cb2d75211962c78b2aab9f2e1187f1ee008eda43822f4a3fe12f825e8b6b",
+  "app/session-tools/contract.mjs": "4e4e2fcec88a112621135731d95a14f1f4ac8d547f5e12e208e50c36459bd866",
+  "app/session-tools/native-tool.mjs": "b9373b3800b18ca375a5c15aa28ad9c4aad2d2f2c99cb6defee31d168287c182",
+  "app/session-tools/opencode-cli-runtime.ts": "157fb7e958d467b1ebe740e64d90b1bb7c624fd9271533be8431efefe69a8d39",
+  "tools/session-tools/pipeline.mjs": "7e3bbf2ec76db9380e44360da4642688d854460e906a9b0ccb8b4aa5e466a8c8",
+  "tools/session-tools/patch-generation.mjs": "a25eccd22853e12c9a546584c47145fc94a86e5cf869d54fef56bbd20a3ea202",
+  "tools/session-tools/build-generation.mjs": "1ce753a64b766ccd58982e1b75d2bbbbfb49095dfb8ec50d802e84b8f811ef5a"
 };
 const PATCH_DIGEST = '93dd03f0c868158be340019d8bbaea7a86b3c8681104dfd5d3da5d3d62631582';
 const ARCHIVES = {
@@ -57,7 +66,7 @@ const ARCHIVES = {
   'bun.tgz':'2fa598bc6c8d20440929f9c18b6363c15323274dc0fc5031e33ea209e687121c',
   'node.zip':'e2edda75bfb089654705cf65a13b58933bfd5f57148e8ebda916f58a2474f1f7',
 };
-const STAGES = ['preflight','sources','toolchain','patch','opencode-dependencies','t3-dependencies','opencode-build','t3-build','broker-build','frontend-dependencies','frontend-clone-generation','frontend-patch-generation','frontend-link-t3-dependencies','frontend-build-generation','verify','copy','complete'];
+const STAGES = ['preflight','sources','toolchain','patch','opencode-dependencies','t3-dependencies','opencode-build','t3-build','broker-build','frontend-dependencies','session-clone-generation','session-frontend-patch','session-patch-generation','session-link-t3-dependencies','session-build-generation','verify','copy','complete'];
 const inside = (root, value) => { const rel=path.relative(root,value); return rel==='' || !rel.startsWith('..'+path.sep) && rel!=='..' && !path.isAbsolute(rel); };
 function absolute(value) {
   if(typeof value!=='string'||!path.isAbsolute(value)||value.includes('\0')||value.startsWith('\\\\')||value.slice(3).includes(':')) fail('PRIVATE_PATH_REQUIRED');
@@ -108,7 +117,7 @@ function strictOperation(input) {
   if(!input || Object.keys(input).join(',')!=='operationId' || !/^[a-zA-Z0-9_-]{8,100}$/.test(input.operationId??'')) fail('SETUP_OPERATION_REQUIRED');
   return input.operationId;
 }
-const safeError = code => ({code,action:({WINDOWS_X64_REQUIRED:'use-windows-x64',PYTHON_REQUIRED:'install-python-3',FRAMEWORK_REQUIRED:'enable-net-framework-4',COMPILER_CHANGED:'update-forge-build-pins',SETUP_TIMEOUT:'check-network-and-retry',INSTALL_INTERRUPTED:'reconcile-installed-files',ARTIFACT_CHANGED:'reinstall-private-artifacts'})[code]??'retry-setup-with-new-operation'});
+const safeError = code => ({code,action:({WINDOWS_X64_REQUIRED:'use-windows-x64',PYTHON_REQUIRED:'install-python-3',FRAMEWORK_REQUIRED:'enable-net-framework-4',COMPILER_CHANGED:'update-forge-build-pins',SETUP_TIMEOUT:'check-network-and-retry',INSTALL_INTERRUPTED:'reconcile-installed-files',ARTIFACT_CHANGED:'reinstall-private-artifacts',PIPELINE_CHANGED:'restore-reviewed-forge-source',PATCH_CHANGED:'reacquire-pinned-source',SESSION_PATCH_CHANGED:'rebuild-reviewed-session-generation',CACHE_NOT_APPROVED:'rebuild-reviewed-session-generation'})[code]??'retry-setup-with-new-operation'});
 
 // Windows JobObject owns all descendant processes from their suspended creation.
 // Closing stdin on app death closes the job; no persisted PID is ever killed.
@@ -193,6 +202,14 @@ export async function createGuardedArtifactService({dataDir,approvedCache=null,w
   if(!runner && !initError)fail('SETUP_OWNER_REQUIRED');
   const stateFile=path.join(root,'setup.json');let record={version:1,current:null,operations:{}};
   try {record=await json(stateFile);if(record.version!==1||!record.operations)fail('SETUP_STATE_INVALID');}catch(e){if(e.code!=='ENOENT') {await runner?.close();throw e;}}
+  // Authenticates setup inventory across restart; public JSON cannot select images or purposes.
+  let inventoryKey;
+  try {
+    const keyFile=path.join(root,'setup-inventory.key');
+    try {inventoryKey=await bytes(keyFile);}catch(e){if(e.code!=='ENOENT')throw e;inventoryKey=randomBytes(32);await writeFile(keyFile,inventoryKey,{flag:'wx',mode:0o600});}
+    if(inventoryKey.length!==32)fail('SETUP_STATE_INVALID');
+  } catch(e){await runner?.close();throw e;}
+  const inventoryMac=(generation,inventory)=>createHmac('sha256',inventoryKey).update(digest({generation,inventory})).digest('hex');
   let active=null,closed=false,closePromise=null,serial=Promise.resolve();
   const exclusive=fn=>{const next=serial.then(fn,fn);serial=next.catch(()=>{});return next;};
   const current=()=>record.operations[record.current]??null;
@@ -233,41 +250,71 @@ export async function createGuardedArtifactService({dataDir,approvedCache=null,w
     if(approved&&(profile!==APPROVED.t3||opencode!==APPROVED.opencode||broker!==APPROVED.broker))fail('CACHE_NOT_APPROVED');
     return {files,runtime,profile,opencode,broker,sourcePins:ARCHIVES,patchDigest:PATCH_DIGEST,compilerSha256:COMPILER_HASH,pipeline:PIPELINE,proof:null};
   }
-  async function verifyUnified(generation,approved,pipeline){
+  async function verifyUnified(generation,approved,pipeline,session=false){
     const meta=await json(path.join(generation,'generation.json'));
     if(meta.root!==generation||meta.cache===generation||!path.basename(generation).startsWith('forge-frontend-generation-')||meta.proof!==null)fail('NEW_GENERATION_REQUIRED');
     const base=await verifyBuild(absolute(meta.cache),approved,pipeline);
+    if(session){
+      for(const [name,expected] of [['bun/bin/bun.exe','cb1d8e6564e655e49d30cead359750a1cbbd12f42651caa4b62244d7bd93c244'],['node/node.exe','f5109dc868ec38703ad8f305e0aceece717cb60d4889873f434017af4e96cccb']])if(await fileHash(path.join(meta.cache,name))!==expected)fail('TOOLCHAIN_CHANGED');
+      const notices={'FORGE-LICENSE.txt':PIPELINE.LICENSE,'T3-LICENSE.txt':PIPELINE['app/guarded-runtime/native/T3-LICENSE.txt'],'OPENCODE-LICENSE.txt':PIPELINE['app/guarded-runtime/native/OPENCODE-LICENSE.txt'],'NODE-LICENSE.txt':'8e603aa87c70d36e497004f0dec63111511cb61b7d65ace12e10ea791599286c','MCP-SDK-LICENSE.txt':hash(SDK_NOTICE)};
+      if(digest((await readdir(path.join(generation,'session-notices'))).sort())!==digest(Object.keys(notices).sort()))fail('NOTICE_CHANGED');
+      for(const [name,expected] of Object.entries(notices))if(hash((await bytes(path.join(generation,'session-notices',name))).toString('utf8').replaceAll('\r\n','\n'))!==expected)fail('NOTICE_CHANGED');
+    }
     const provenance=await json(path.join(pipeline,'tools/frontend-tools/source-provenance.json')),patches=await json(path.join(generation,'frontend-patches.json'));
     if(digest(patches)!==digest(provenance.patches))fail('FRONTEND_PATCH_CHANGED');
-    for(const p of patches.changes){if(!['t3','opencode'].includes(p.tree)||p.file.includes('..')||path.isAbsolute(p.file)||hash((await bytes(path.join(generation,p.tree,p.file))).toString('utf8').replaceAll('\r\n','\n'))!==p.after)fail('FRONTEND_SOURCE_CHANGED');}
+    const sessionPatches=session?await json(path.join(generation,'session-patches.json')):null;
+    if(session&&(sessionPatches.version!==1||sessionPatches.purpose!==PURPOSES[2]||sessionPatches.proof!==null||digest(sessionPatches.changes)!==SESSION_PATCH_DIGEST))fail('SESSION_PATCH_CHANGED');
+    for(const p of sessionPatches?.changes??[])if(p.before!==patches.changes.find(x=>x.tree===p.tree&&x.file===p.file)?.after)fail('SESSION_PATCH_CHANGED');
+    const overlay=(tree,file)=>sessionPatches?.changes.find(x=>x.tree===tree&&x.file===file)?.after;
+    for(const p of patches.changes){if(!['t3','opencode'].includes(p.tree)||p.file.includes('..')||path.isAbsolute(p.file)||hash((await bytes(path.join(generation,p.tree,p.file))).toString('utf8').replaceAll('\r\n','\n'))!==(overlay(p.tree,p.file)??p.after))fail('FRONTEND_SOURCE_CHANGED');}
     const basePatches=await json(path.join(meta.cache,'patch-report.json')),pins=await json(path.join(pipeline,'app/proactive-native/source-pins.json'));
     for(const source of pins.sources)for(const p of source.files){
-      const expected=patches.changes.find(c=>c.tree===source.id&&c.file===p.path)?.after??basePatches.changes.find(c=>c.source===source.id&&c.file===p.path)?.after??p.sha256LF;
+      const expected=overlay(source.id,p.path)??patches.changes.find(c=>c.tree===source.id&&c.file===p.path)?.after??basePatches.changes.find(c=>c.source===source.id&&c.file===p.path)?.after??p.sha256LF;
       if(hash((await bytes(path.join(generation,source.id,p.path))).toString('utf8').replaceAll('\r\n','\n'))!==expected)fail('FRONTEND_SOURCE_CHANGED');
     }
     for(const name of ['contract.mjs','native-tool.mjs'])if(await fileHash(path.join(generation,'opencode/packages/core/src/forge-frontend',name))!==hash(await bytes(path.join(pipeline,'app/frontend-tools',name))))fail('FRONTEND_SOURCE_CHANGED');
-    let runtime=(await bytes(path.join(generation,'opencode/packages/core/src/forge-frontend-runtime.ts'))).toString('utf8').replaceAll('\r\n','\n');
-    const imports=['FORGE_MCP_SDK_CLIENT','FORGE_MCP_SDK_TRANSPORT'],suffixes=['index.js','streamableHttp.js'];
-    for(let i=0;i<imports.length;i++){
-      const pattern=new RegExp('"([^"\\n]+/node_modules/@modelcontextprotocol/sdk/dist/esm/client/'+suffixes[i].replace('.','\\.')+')"'),match=runtime.match(pattern);
-      if(!match||!path.isAbsolute(match[1]))fail('SDK_SOURCE_CHANGED');
-      if(!approved&&path.resolve(match[1])!==path.join(pipeline,'node_modules/@modelcontextprotocol/sdk/dist/esm/client',suffixes[i]))fail('SDK_SOURCE_CHANGED');
-      runtime=runtime.replace(match[0],'"'+imports[i]+'"');
+    async function sdkRuntime(file,original){
+      let runtime=(await bytes(path.join(generation,file))).toString('utf8').replaceAll('\r\n','\n');
+      const imports=['FORGE_MCP_SDK_CLIENT','FORGE_MCP_SDK_TRANSPORT'],suffixes=['index.js','streamableHttp.js'];
+      for(let i=0;i<imports.length;i++){
+        const suffix='/node_modules/@modelcontextprotocol/sdk/dist/esm/client/'+suffixes[i];
+        const match=[...runtime.matchAll(/"([^"\n]+)"/g)].find(m=>m[1].endsWith(suffix));
+        if(!match||!path.isAbsolute(match[1]))fail('SDK_SOURCE_CHANGED');
+        if(!approved&&path.resolve(match[1])!==path.join(pipeline,'node_modules/@modelcontextprotocol/sdk/dist/esm/client',suffixes[i]))fail('SDK_SOURCE_CHANGED');
+        runtime=runtime.replace(match[0],'"'+imports[i]+'"');
+      }
+      if(runtime!==(await bytes(path.join(pipeline,original))).toString('utf8').replaceAll('\r\n','\n'))fail('SDK_SOURCE_CHANGED');
     }
-    if(runtime!==(await bytes(path.join(pipeline,'app/frontend-tools/opencode-cli-runtime.ts'))).toString('utf8').replaceAll('\r\n','\n'))fail('SDK_SOURCE_CHANGED');
-    for(const name of ['opencode','t3']){const report=await json(path.join(generation,name+'-frontend-build.json'));if(report.name!==name||report.exitCode!==0||report.proof!==null)fail('FRONTEND_BUILD_REPORT_INVALID');}
+    await sdkRuntime('opencode/packages/core/src/forge-frontend-runtime.ts','app/frontend-tools/opencode-cli-runtime.ts');
+    if(session){
+      const folder='opencode/packages/core/src/forge-sessions/',additionFiles=['contract.mjs','native-tool.mjs','profile.mjs'].map(n=>folder+n).concat('opencode/packages/core/src/forge-sessions-runtime.ts');
+      if(digest(sessionPatches.additions.map(p=>p.file).sort())!==digest(additionFiles.sort()))fail('SESSION_PATCH_CHANGED');
+      for(const name of ['contract.mjs','native-tool.mjs','profile.mjs']){
+        let original=(await bytes(path.join(pipeline,name==='profile.mjs'?'app/guarded-runtime/profile.mjs':'app/session-tools/'+name))).toString('utf8').replaceAll('\r\n','\n');
+        if(name==='contract.mjs')original=original.replace("'../guarded-runtime/profile.mjs'","'./profile.mjs'");
+        const actual=await bytes(path.join(generation,folder,name));
+        if(hash(actual.toString('utf8').replaceAll('\r\n','\n'))!==hash(original)||hash(actual)!==sessionPatches.additions.find(p=>p.file===folder+name)?.sha256)fail('SESSION_SOURCE_CHANGED');
+      }
+      const runtimeFile='opencode/packages/core/src/forge-sessions-runtime.ts';
+      if(await fileHash(path.join(generation,runtimeFile))!==sessionPatches.additions.find(p=>p.file===runtimeFile)?.sha256)fail('SESSION_SOURCE_CHANGED');
+      await sdkRuntime(runtimeFile,'app/session-tools/opencode-cli-runtime.ts');
+    }
+    for(const name of ['opencode','t3']){const report=await json(path.join(generation,name+(session?'-session-build.json':'-frontend-build.json')));if(report.name!==name||report.exitCode!==0||report.proof!==null)fail('FRONTEND_BUILD_REPORT_INVALID');}
     const names=(await readdir(path.join(generation,'t3/apps/server/dist'))).filter(n=>n.endsWith('.mjs')).sort();
     if(names.length!==45||!names.includes(ENTRY)||names.some(n=>!/^[\w.-]+\.mjs$/.test(n)))fail('T3_GRAPH_INCOMPLETE');
     const files=[];for(const name of names)files.push({name,sha256:await fileHash(path.join(generation,'t3/apps/server/dist',name))});
-    const profile=digest([...files,base.runtime].sort((a,b)=>a.name.localeCompare(b.name))),opencode=await fileHash(path.join(generation,'opencode/forge-frontend-cli-build/cli-windows-x64/bin/opencode.exe'));
-    if(approved&&(profile!==FRONTEND_APPROVED.t3||opencode!==FRONTEND_APPROVED.opencode))fail('CACHE_NOT_APPROVED');
-    return {...base,files,profile,opencode,frontend:{version:'2.4.1-forge-frontend.0',patchDigest:digest(patches),proof:null}};
+    const profile=digest([...files,base.runtime].sort((a,b)=>a.name.localeCompare(b.name))),opencode=await fileHash(path.join(generation,'opencode',session?'forge-sessions-cli-build':'forge-frontend-cli-build','cli-windows-x64/bin/opencode.exe'));
+    const pair=session?SESSION_APPROVED:FRONTEND_APPROVED;
+    if(approved&&(profile!==pair.t3||opencode!==pair.opencode))fail('CACHE_NOT_APPROVED');
+    return {...base,files,profile,opencode,frontend:{version:'2.4.1-forge-frontend.0',patchDigest:digest(patches),proof:null},...(session?{session:{version:'2.4.1-forge-sessions.0',patchDigest:SESSION_PATCH_DIGEST,proof:null}}:{})};
   }
   async function installed(job) {
     if(!job?.generation||!job.inventory)return null;
     if(!/^[a-f0-9-]{36}$/.test(job.generation))fail('ARTIFACT_CHANGED');
     const dest=path.join(root,'generations',job.generation);await checked(dest,{directory:true});
     const inv=job.inventory,files=[];
+    if(job.inventoryMac!==inventoryMac(job.generation,inv)||inv.proof!==null)fail('ARTIFACT_CHANGED');
+    if(inv.session&&(!inv.frontend||inv.session.version!=='2.4.1-forge-sessions.0'||inv.session.proof!==null||inv.session.patchDigest!==SESSION_PATCH_DIGEST))fail('ARTIFACT_CHANGED');
     if(inv.patchDigest!==PATCH_DIGEST||digest(inv.pipeline)!==digest(PIPELINE)||digest(inv.sourcePins)!==digest(ARCHIVES)||inv.compilerSha256!==COMPILER_HASH||inv.files.length!==45)fail('ARTIFACT_CHANGED');
     if(inv.frontend&&(inv.frontend.version!=='2.4.1-forge-frontend.0'||inv.frontend.proof!==null||inv.frontend.patchDigest!==FRONTEND_PATCH_DIGEST))fail('ARTIFACT_CHANGED');
     const names=(await readdir(path.join(dest,'t3'))).sort(),expected=inv.files.map(f=>f.name).sort();
@@ -281,10 +328,11 @@ export async function createGuardedArtifactService({dataDir,approvedCache=null,w
     const oc=path.join(dest,'opencode.exe'),broker=path.join(dest,'ConfinedText.exe');
     if(await fileHash(oc)!==inv.opencode||await fileHash(broker)!==inv.broker)fail('ARTIFACT_CHANGED');
     const notices={'MCP-SDK-LICENSE.txt':hash(SDK_NOTICE),'FORGE-LICENSE.txt':PIPELINE.LICENSE,'T3-LICENSE.txt':PIPELINE['app/guarded-runtime/native/T3-LICENSE.txt'],'OPENCODE-LICENSE.txt':PIPELINE['app/guarded-runtime/native/OPENCODE-LICENSE.txt'],'NODE-LICENSE.txt':hash((await bytes(path.join(path.dirname(process.execPath),'LICENSE'))).toString('utf8').replaceAll('\r\n','\n'))};
+    if(inv.session)notices['NODE-BUILD-LICENSE.txt']='8e603aa87c70d36e497004f0dec63111511cb61b7d65ace12e10ea791599286c';
     if(digest((await readdir(path.join(dest,'notices'))).sort())!==digest(Object.keys(notices).sort()))fail('ARTIFACT_CHANGED');
     for(const [name,expected] of Object.entries(notices))if(hash((await bytes(path.join(dest,'notices',name))).toString('utf8').replaceAll('\r\n','\n'))!==expected)fail('ARTIFACT_CHANGED');
     files.push({name:'node.exe',path:process.execPath});
-    return {t3:{entry:path.join(dest,'t3',ENTRY),files},opencode:{path:oc},fileBroker:{path:broker,sha256:inv.broker}};
+    return {t3:{entry:path.join(dest,'t3',ENTRY),files},opencode:{path:oc,version:inv.session?.version??inv.frontend?.version??'2.4.1-forge-guarded.0',purposes:PURPOSES.slice(0,inv.session?3:inv.frontend?2:1),proof:null},fileBroker:{path:broker,sha256:inv.broker}};
   }
   async function execute(job,signal) {
     const build=path.join(root,'builds',job.generation),pipeline=path.join(build,'pipeline'),cache=path.join(build,'cache');
@@ -292,7 +340,7 @@ export async function createGuardedArtifactService({dataDir,approvedCache=null,w
     try {
       await stage('preflight');if(initError)fail(initError.code);
       await mkdir(cache,{recursive:true});await pipelineCopy(pipeline);
-      let source=cache,unified=false,brokerSource=cache;
+      let source=cache,unified=false,session=false,brokerSource=cache;
       if(approvedCache){source=absolute(approvedCache);for(const workspace of [REPO,process.cwd(),...workspaceRoots].map(absolute))if(inside(workspace,source))fail('PRIVATE_WORKSPACE_OVERLAP');}
       else {
         let python=pythonPath;
@@ -328,25 +376,26 @@ export async function createGuardedArtifactService({dataDir,approvedCache=null,w
         await writeFile(path.join(pipeline,'package-lock.json'),JSON.stringify(sdk.lock));
         await run('frontend-dependencies',path.join(cache,'node/node.exe'),[path.join(cache,'node/node_modules/npm/bin/npm-cli.js'),'ci','--ignore-scripts','--no-audit','--no-fund','--cache',path.join(build,'npm-cache')],pipeline);
         if((await bytes(path.join(pipeline,'node_modules/@modelcontextprotocol/sdk/LICENSE'))).toString('utf8')!==SDK_NOTICE)fail('SDK_NOTICE_CHANGED');
-        const {runFrontendPipeline}=await import(pathToFileURL(path.join(pipeline,'tools/frontend-tools/pipeline.mjs')).href);
-        const output=await runFrontendPipeline({preparedCache:cache,buildDirectory:build,environment:env,signal,
+        const {runSessionPipeline}=await import(pathToFileURL(path.join(pipeline,'tools/session-tools/pipeline.mjs')).href);
+        const output=await runSessionPipeline({preparedCache:cache,buildDirectory:build,environment:env,signal,
           onProgress:()=>{},runCommand:async spec=>{await stage(spec.stage);return commandRunner?commandRunner({...spec,signal},runner.run):runner.run(spec);}});
         // The hook creates a NEW generation under this private setup home's TEMP.
-        source=path.dirname(path.dirname(path.dirname(path.dirname(path.dirname(output.t3.entry)))));
-        if(!inside(home,source))fail('PRIVATE_ESCAPE_DENIED');unified=true;
+        source=output.generation;
+        if(!inside(home,source))fail('PRIVATE_ESCAPE_DENIED');unified=true;session=true;
       }
-      if(approvedCache)unified=await lstat(path.join(source,'generation.json')).then(()=>true,()=>false);
+      if(approvedCache){unified=await lstat(path.join(source,'generation.json')).then(()=>true,()=>false);session=unified&&await lstat(path.join(source,'session-patches.json')).then(()=>true,()=>false);}
       brokerSource=unified?absolute((await json(path.join(source,'generation.json'))).cache):source;
-      await stage('verify');const inventory=unified?await verifyUnified(source,!!approvedCache,pipeline):await verifyBuild(source,!!approvedCache,pipeline);
+      await stage('verify');const inventory=unified?await verifyUnified(source,!!approvedCache,pipeline,session):await verifyBuild(source,!!approvedCache,pipeline);
       await stage('copy');const dest=path.join(root,'generations',job.generation);await mkdir(path.join(dest,'t3'),{recursive:true});
       for(const f of inventory.files){signal.throwIfAborted();await copyFile(await checked(path.join(source,'t3/apps/server/dist',f.name)),path.join(dest,'t3',f.name));}
-      signal.throwIfAborted();await copyFile(await checked(path.join(source,unified?'opencode/forge-frontend-cli-build/cli-windows-x64/bin/opencode.exe':'opencode/forge-guarded-cli-build/cli-windows-x64/bin/opencode.exe')),path.join(dest,'opencode.exe'));
+      signal.throwIfAborted();await copyFile(await checked(path.join(source,session?'opencode/forge-sessions-cli-build/cli-windows-x64/bin/opencode.exe':unified?'opencode/forge-frontend-cli-build/cli-windows-x64/bin/opencode.exe':'opencode/forge-guarded-cli-build/cli-windows-x64/bin/opencode.exe')),path.join(dest,'opencode.exe'));
       await copyFile(await checked(path.join(brokerSource,'windows/ConfinedText.exe')),path.join(dest,'ConfinedText.exe'));
       await mkdir(path.join(dest,'notices'));for(const name of ['T3-LICENSE.txt','OPENCODE-LICENSE.txt'])await copyFile(path.join(pipeline,'app/guarded-runtime/native',name),path.join(dest,'notices',name));
       await copyFile(path.join(pipeline,'LICENSE'),path.join(dest,'notices/FORGE-LICENSE.txt'));
       await copyFile(await checked(path.join(path.dirname(process.execPath),'LICENSE')),path.join(dest,'notices/NODE-LICENSE.txt'));
       await writeFile(path.join(dest,'notices/MCP-SDK-LICENSE.txt'),SDK_NOTICE);
-      job.inventory=inventory;await installed(job);signal.throwIfAborted();
+      if(session)await copyFile(await checked(path.join(source,'session-notices/NODE-LICENSE.txt')),path.join(dest,'notices/NODE-BUILD-LICENSE.txt'));
+      job.inventory=inventory;job.inventoryMac=inventoryMac(job.generation,inventory);await installed(job);signal.throwIfAborted();
       await exclusive(async()=>{signal.throwIfAborted();Object.assign(job,{status:'ready',stage:'complete',error:null,recovery:null});await save();});
     } catch(e) {
       await exclusive(async()=>{Object.assign(job,{status:signal.aborted?'cancelled':'failed',error:signal.aborted?null:safeError(e.code??'BUILD_STAGE_FAILED'),recovery:'retry-with-new-operation'});delete job.inventory;await save();});
