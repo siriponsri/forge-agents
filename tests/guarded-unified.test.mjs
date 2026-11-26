@@ -34,9 +34,9 @@ test('frontend native metadata uses same writer while SDK handler stays outside 
   try{const {key,brokerUrl}=gateway.bootstrap(),raw=JSON.stringify({profileDigest,phase:'model-request',sessionID:'actual-session'}),response=await fetch(brokerUrl+'/fence',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+key,'X-Forge-Mac':createHmac('sha256',Buffer.from(key,'hex')).update(raw).digest('hex')},body:raw});assert.equal(response.status,200);assert.equal((await response.json()).result.profileDigest,profileDigest);assert.equal(count,1);}finally{await gateway.close();}
 });
 
-test('private generation hashes Research, components, frontend and server source; editable drift fails before refresh',async t=>{
+test('private generation hashes all enforcement owners; editable drift fails before refresh',async t=>{
   const root=await fs.mkdtemp(path.join(os.tmpdir(),'forge-unified-source-'));t.after(async()=>{assert.equal(path.dirname(root),os.tmpdir());assert.ok(path.basename(root).startsWith('forge-unified-source-'));await fs.rm(root,{recursive:true,force:true});});
-  const directories=['guarded-runtime','research-native','research-components','frontend-tools','server'];for(const d of directories)await fs.mkdir(path.join(root,'app',d),{recursive:true});
+  const directories=['guarded-runtime','research-native','research-components','frontend-tools','session-tools','strategies','server'];for(const d of directories)await fs.mkdir(path.join(root,'app',d),{recursive:true});
   const original=new URL('../app/server/guarded-policy.mjs',import.meta.url),source=(await fs.readFile(original,'utf8')).replace(/from '([^']+)'/g,(whole,spec)=>spec.startsWith('.')?"from '"+new URL(spec,original).href+"'":whole),file=path.join(root,'app/server/guarded-policy.mjs');await fs.writeFile(file,source);
   const {createGuardedPolicy}=await import(pathToFileURL(file).href);
   for(const directory of directories){const changed=path.join(root,'app',directory,'enforcement.mjs');await fs.writeFile(changed,'export const rule=1;');const policy=createGuardedPolicy({});await fs.writeFile(changed,'export const rule=2;');await assert.rejects(policy.refresh({projectId:'p'}),{code:'GUARDED_MODULE_CHANGED'});await fs.unlink(changed);}
