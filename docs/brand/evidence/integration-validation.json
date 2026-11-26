@@ -563,11 +563,15 @@
     },
     {
       "document": "README.md",
+      "target": "docs/HOME_HANDOFF_20261126_TH.md"
+    },
+    {
+      "document": "README.md",
       "target": "docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md"
     },
     {
       "document": "README.md",
-      "target": "docs/CHECKPOINT_HOME_20261125.md"
+      "target": "docs/HOME_HANDOFF_20261126_TH.md"
     },
     {
       "document": "README.md",
@@ -583,7 +587,27 @@
     },
     {
       "document": "README.md",
+      "target": "docs/worker-agent-strategies.md"
+    },
+    {
+      "document": "README.md",
       "target": "#verification-and-current-limits"
+    },
+    {
+      "document": "README.md",
+      "target": "apps/website/public/downloads/FORGE-Windows.zip"
+    },
+    {
+      "document": "README.md",
+      "target": "apps/website/public/downloads/FORGE-macOS.zip"
+    },
+    {
+      "document": "README.md",
+      "target": "apps/website/public/downloads/manifest.json"
+    },
+    {
+      "document": "README.md",
+      "target": "apps/website/public/downloads/SHA256SUMS"
     },
     {
       "document": "README.md",
@@ -676,6 +700,10 @@
     {
       "document": "README.md",
       "target": "docs/guarded-route.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/evidence/session-control-transport-20261126.json"
     },
     {
       "document": "README.md",
@@ -1305,13 +1333,13 @@
       }
     }
   ],
-  "readme_sha256": "0886db2012c6c5c1a44ec908b5f6a154a111527e3ea28a3fe5d4f2ab4806cce5",
+  "readme_sha256": "24737dc6587c28a56ed9c99f695626881ddace638cf52d6f067225b0d3643bad",
   "readme_layout_variants": 4,
   "whole_tree_brand_only_scope_guard": "not applicable to integrated product",
   "source_sha256": {
     "tools/brand/build.mjs": "087934e208ef28e13648dc3b8a5f43688c0de3517bd6f08d4afb3e865e3d3523",
     "tools/brand/determinism.py": "374b5e97384511adb6e16fbdb28f4d3ba8507f57826a46a92f6a79863281cac2",
-    "tools/brand/verify.py": "fd59d1673402835986d4a7af300258ea182d3e3b713afe6d911150b7995379e9",
+    "tools/brand/verify.py": "b65e5ba5619358d096ec229320fc4f951af4e85eef0a91f7f26586439c4b9ab8",
     "tools/brand/readme-proof.mjs": "fa4d9b6c6b25bef639ab54d467e394b498338a051568cbc30e882f93d89dae8c"
   },
   "result": "PASS"

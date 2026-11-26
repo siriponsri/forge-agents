@@ -1,5 +1,16 @@
 # Resumed work and continuation map
 
+## Main publication — 26 November
+
+At the Owner's explicit request, local `main` fast-forwarded from `d928e9c`
+to `f2387e866a2ae3808ad1989a0a7860ae437e9956` and pushed successfully to
+`https://github.com/siriponsri/forge-agents`. `git ls-remote` confirmed that
+exact revision. Subsequent publication-copy edits preserve the tested app and
+download payloads. This supersedes earlier unpushed-branch instructions below.
+No website deployment or complete-product acceptance is implied. Continue from
+the home handoff; native monetary finality and Windows-only private setup remain
+implementation limits, separate from deferred live-product/server and Home UAT.
+
 ## Final local checkpoint — 26 November
 
 Local work below is complete at the recorded developer-check scope; the full
@@ -39,7 +50,8 @@ pending-landing and native-return diagnosis instructions below.
   Current native Guarded/Orchestrator/selection setup is Windows x64 only;
   macOS launcher execution remains NOT_RUN. Native monetary finality remains
   unsupported, separate from credentials. Real-product/external-server journeys
-  and Home UAT remain deferred at the Owner's request. No resumed push/deploy.
+  and Home UAT remain deferred at the Owner's request. Main publication is
+  recorded above; no public service was deployed.
 
 ## Latest verified state — native return correction and landing review
 

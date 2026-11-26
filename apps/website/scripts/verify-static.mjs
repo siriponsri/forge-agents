@@ -21,12 +21,14 @@ for(const lang of ['th','en']){
   assert.ok(source.includes(`/blob/${baseline}/app/web/src/Office.jsx`),'Actual public Office source link');
   assert.ok(source.includes('Public baseline')&&source.includes('Current development'),'Separate source qualifications');
   assert.ok(source.includes('/tree/d928e9cc97d54abbd38f2f65afa1798ac8b5b6d5'),'Verified public checkpoint link');
+  assert.ok(source.includes('/tree/f2387e866a2ae3808ad1989a0a7860ae437e9956'),'Remote-verified current checkpoint link');
   assert.ok(!source.includes('integrations are unpublished on GitHub'),'No stale blanket publication warning');
   const changes=await readFile(`dist/${lang}/changelog/index.html`,'utf8');
   assert.ok(changes.includes('2026-11-25')&&changes.includes('2026-11-24'),'Exact development and baseline dates');
   assert.ok(changes.includes('NOT_QUALIFIED'),'Unqualified routes remain explicit');
 }
 assert.ok(html.includes('Developer verified')&&html.includes('labelled injected provider/native observations'),'Developer evidence qualifier');
+assert.ok(!html.includes('on an unpublished branch'),'Published strategy source has no obsolete branch warning');
 assert.ok(html.includes('Local CPU/file trials, recheck, comparison and export are mounted and developer verified.'),'Local Research qualification');
 assert.ok(html.includes('Agent/native execution bridging and qualification remain pending; no model trials or benchmark scores.'),'Research native/model gap remains explicit');
 const image=await readFile('public/forge-workbench.png');

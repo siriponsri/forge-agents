@@ -151,7 +151,9 @@ assert media(readme) == media(baseline), 'Existing screenshot/GIF paths or alt l
 checks['preserved']['existing_media_paths_and_alt_labels_identical'] = True
 assert '2x speed' in readme and 'predetermined' in readme and 'injected' in readme
 assert 'Apache-2.0' in readme and 'Legacy launchers retain their original meaning' in readme
-assert 'Strategist' in readme and 'd928e9c' in readme
+assert 'Strategist' in readme
+checkpoint = 'f2387e866a2ae3808ad1989a0a7860ae437e9956' if args.integrated else 'd928e9c'
+assert checkpoint in readme, 'README must retain its applicable development checkpoint'
 checks['readme_sha256'] = sha(readme.encode())
 assert layout['readmeSHA256'] == checks['readme_sha256'], 'README layout captures need regeneration'
 checks['readme_layout_variants'] = len(layout['variants'])

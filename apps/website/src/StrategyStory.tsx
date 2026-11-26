@@ -79,6 +79,6 @@ export function StrategyStory({lang,t}:{lang:Lang;t:T}) {
       <div className="story-detail" aria-live={playing?'off':'polite'} aria-atomic="true"><strong>{t(steps[step].titleTh,steps[step].titleEn)}</strong><p>{t(steps[step].bodyTh,steps[step].bodyEn)}</p></div>
       <p className="strategy-boundary"><ShieldCheck size={16} aria-hidden="true"/>{t(strategy.limitTh,strategy.limitEn)}</p>
     </div>
-    <div className="strategy-publication"><p>{t('ทั้ง 6 โหมดอยู่ระหว่างพัฒนาใน branch ที่ยังไม่เผยแพร่ ภาพนี้อธิบายแนวคิด ไม่ใช่หลักฐานว่า checkpoint d928e9c มีโหมดเหล่านี้หรือผ่านการรัน provider จริง','All six modes are in active development on an unpublished branch. This diagram explains the design; it does not show these modes in public checkpoint d928e9c or qualify live provider execution.')}</p><a href={href(lang,'github')}>{t('ตรวจสถานะ source','Check source status')}<ArrowUpRight size={16} aria-hidden="true"/></a></div>
+    <div className="strategy-publication"><p>{t('Source รุ่นพัฒนา 26 พ.ย. รวม GUI ทั้ง 6 โหมดแล้ว ภาพนี้อธิบายแนวคิด ไม่ใช่หลักฐานการรัน provider จริงหรือการรับรอง complete product','The 26 Nov development source includes all six GUI modes. This diagram explains the design; it does not qualify live provider execution or complete-product acceptance.')}</p><a href={href(lang,'github')}>{t('ตรวจสถานะ source','Check source status')}<ArrowUpRight size={16} aria-hidden="true"/></a></div>
   </section>;
 }

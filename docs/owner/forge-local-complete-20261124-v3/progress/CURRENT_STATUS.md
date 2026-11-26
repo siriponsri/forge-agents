@@ -6,7 +6,10 @@
 goal, authorized workers, and added session roles, native parent-to-child
 orchestration, selectable Strategist and a professional README/minimal identity.
 The default identity now uses orange with secondary yellow and gray. Existing
-theme semantics remain unchanged. This branch has not been published to main.
+theme semantics remain unchanged. The Owner subsequently authorized main
+publication: checkpoint `f2387e866a2ae3808ad1989a0a7860ae437e9956` was pushed
+successfully and its remote revision independently read back. Publication-copy
+updates follow that tested checkpoint; complete-product acceptance remains open.
 
 The earlier assembled Research defect is corrected. Actual application/native
 verification passed for static Research, then for the all-ON primary/helper/

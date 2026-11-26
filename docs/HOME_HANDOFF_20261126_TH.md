@@ -1,5 +1,22 @@
 # ส่งต่องาน FORGE ไปทดสอบที่บ้าน
 
+## อัปเดต main ตามคำขอ Owner — 26 พฤศจิกายน
+
+Push checkpoint `f2387e866a2ae3808ad1989a0a7860ae437e9956` เข้า
+`https://github.com/siriponsri/forge-agents` สาขา `main` สำเร็จ และตรวจ remote
+revision ตรงกันแล้ว การแก้เอกสารสถานะหลังจากนั้นไม่เปลี่ยน source ที่แพ็กไว้.
+เป็น development checkpoint ไม่ใช่การรับรอง complete product หรือ deploy เว็บไซต์.
+
+ที่บ้าน หาก checkout สะอาดและไม่มี commit แยกจาก main ให้ใช้:
+
+```powershell
+git switch main
+git pull --ff-only origin main
+```
+
+แล้วดับเบิลคลิก `Start-FORGE.cmd`. หากมีงานค้างหรือประวัติแยก ให้เก็บงานเดิมก่อน;
+ไม่ใช้ reset ล้างงาน. ทำ Home UAT ตามลำดับด้านล่าง.
+
 ## ไฟล์ที่เปิดใช้งานได้
 
 - [Windows source launcher](../apps/website/public/downloads/FORGE-Windows.zip)
@@ -72,5 +89,5 @@ Native monetary billing finality ยัง unsupported (`cost:null`, `final:fals
 พร้อม source/image, บัญชีหรือ route ที่ตรวจโดยไม่เก็บ secret, operation/run refs,
 ขั้นตอนทำซ้ำ และ expected/actual evidence. สถานะ release อยู่ที่
 [Current Status](owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md).
-ไม่มี resumed push หรือ public deployment ในการส่งต่อนี้; public `main`
-checkpoint เดิมไม่รวมงานใน development branch จนกว่าจะผ่าน active release authorization.
+Owner อนุมัติและส่ง checkpoint รอบนี้ผ่าน `main` แล้วตามบันทึกด้านบน.
+ไม่ได้ deploy เว็บไซต์หรือเปิดบริการสาธารณะ และไม่ได้ยกเลิกข้อจำกัดการรับรอง.

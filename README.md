@@ -22,11 +22,12 @@ The interface defaults to Thai and supports English. The local core is
 [Development status](docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md)
 
 > **Development checkpoint — implementation incomplete.** Published `main`
-> checkpoint `d928e9c` is source for continued development and home testing.
+> includes the [26 November checkpoint](https://github.com/siriponsri/forge-agents/tree/f2387e866a2ae3808ad1989a0a7860ae437e9956)
+> for continued development and home testing.
 > Complete-product acceptance and final release verification remain pending.
 > **Live account checks and Home UAT have not run.** No signed desktop
 > installer is published.
-> [Checkpoint scope and home instructions](docs/CHECKPOINT_HOME_20261125.md) ·
+> [Current scope and home instructions](docs/HOME_HANDOFF_20261126_TH.md) ·
 > [Continuation handoff](docs/NEXT_SESSION_20261126.md).
 
 ![FORGE Mission showing a registered HTML preview and local test evidence. Engineering fixture with injected provider observations; actual local files, tests and preview.](docs/media/screenshots/mission-preview.png)

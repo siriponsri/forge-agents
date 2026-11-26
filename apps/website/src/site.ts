@@ -4,6 +4,7 @@ export const pages: Page[] = ['home', 'docs', 'install', 'download', 'changelog'
 export const repo = 'https://github.com/siriponsri/forge-agents';
 export const publicBaseline = `${repo}/tree/01ee779ffd049ba875ad85bd36f2c8accd274ca0`;
 export const publicCheckpoint = `${repo}/tree/d928e9cc97d54abbd38f2f65afa1798ac8b5b6d5`;
+export const currentCheckpoint = `${repo}/tree/f2387e866a2ae3808ad1989a0a7860ae437e9956`;
 export const href = (lang: Lang, page: Page = 'home') => `/${lang}/${page === 'home' ? '' : page + '/'}`;
 export function route(path: string): {lang: Lang; page: Page} {
   const parts = path.split('/').filter(Boolean);

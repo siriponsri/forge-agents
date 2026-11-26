@@ -4,8 +4,13 @@
 
 **Development source packages prepared; NOT a complete-product release.**
 This supersedes the old observed-status/template fields below. Version remains
-1.1.0-alpha.3; no resumed push, public deployment, compute purchase, credential
-migration or prototype activation. Public main remains the earlier `d928e9c`.
+1.1.0-alpha.3. The Owner explicitly authorized main publication on 26 November.
+`git merge --ff-only` advanced main from `d928e9c` to
+`f2387e866a2ae3808ad1989a0a7860ae437e9956`; `git push origin main` succeeded,
+and `git ls-remote origin refs/heads/main` returned that exact revision.
+Subsequent publication-copy edits retain this tested app source and the existing
+source ZIPs. No public deployment, compute purchase, credential migration or
+prototype activation occurred. This remains a development checkpoint.
 
 | Area | Observed result |
 |---|---|

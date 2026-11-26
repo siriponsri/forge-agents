@@ -1,5 +1,15 @@
 # Implementation Log
 
+## Owner-authorized main publication — 2026-11-26
+
+Fetched the confirmed FORGE origin; remote main had no commits outside the
+tested integration history. Clean local main fast-forwarded from `d928e9c` to
+`f2387e866a2ae3808ad1989a0a7860ae437e9956` and pushed successfully without
+force. Remote `ls-remote` read back the same revision. Publication copy and home
+instructions are reconciled afterward; no app/runtime/launcher payload changes.
+Protected legacy paths remain identical to `d928e9c`. Home/live checks and the
+documented implementation limits remain open; no public service deployment.
+
 ## Final local correction and documentation checks — 2026-11-26
 
 `246daac` closes private session JSON control connections after acknowledgement;

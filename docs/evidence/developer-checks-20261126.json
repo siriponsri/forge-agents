@@ -1,6 +1,14 @@
 {
   "status": "LOCAL_DEVELOPER_VERIFICATION; NOT_COMPLETE_PRODUCT_RELEASE",
   "runtimeCorrection": "246daac",
+  "mainPublication": {
+    "authorization": "Owner explicitly requested push main on 26 November 2026",
+    "remote": "https://github.com/siriponsri/forge-agents",
+    "previousMain": "d928e9cc97d54abbd38f2f65afa1798ac8b5b6d5",
+    "observedPublishedCheckpoint": "f2387e866a2ae3808ad1989a0a7860ae437e9956",
+    "verification": "git push origin main succeeded; git ls-remote returned the exact checkpoint",
+    "followUpScope": "Publication copy and README proofs only; app/runtime and launcher payloads unchanged. Website TypeScript/build/12-page static checks and release-policy2 pass after the copy changes. This does not repeat or widen the earlier native qualification."
+  },
   "serialRun": {
     "command": "node --test --test-concurrency=1 tests/*.test.mjs app/web/tests/boundaries.test.mjs",
     "tests": 917,
@@ -68,6 +76,6 @@
     "Private Guarded/native Orchestrator/selection-tool setup is currently Windows x64 only; macOS launcher execution remains NOT_RUN.",
     "Native monetary billing finality remains unsupported, with null cost and false finality preserved.",
     "Real-product creation, external-server journeys and Home UAT are deferred by the Owner and remain NOT_RUN.",
-    "No public deployment, resumed push, purchased compute, credential migration or prototype activation."
+    "Main checkpoint f2387e866a2ae3808ad1989a0a7860ae437e9956 was pushed at the Owner's explicit request and its remote revision read back; publication-copy updates follow. No public deployment, purchased compute, credential migration or prototype activation."
   ]
 }
