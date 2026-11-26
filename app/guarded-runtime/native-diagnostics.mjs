@@ -1,7 +1,7 @@
 // Child stderr is untrusted. Retain only these bounded classifications, never
 // raw log text, error messages, identities, credentials or authority receipts.
-const stages=new Set(['before-call-tool','after-call-tool','after-current-check','before-result-for','after-result-for','cancellation']);
-const codes=new Set(['UNKNOWN','SESSION_NATIVE_BINDING','SESSION_NATIVE_CONTEXT','SESSION_NATIVE_INPUT','SESSION_NATIVE_RESULT','SESSION_NATIVE_REFUSED','SESSION_NATIVE_TOOL_DENIED','INVALID_SHAPE','NON_JSON','ABORT_ERR','ETIMEDOUT','ECONNRESET','ECONNREFUSED','UND_ERR_ABORTED','UND_ERR_CONNECT_TIMEOUT','UND_ERR_SOCKET',-32700,-32600,-32601,-32602,-32603,-32000,-32001,-32002]);
+const stages=new Set(['before-call-tool','after-call-tool','after-current-check','before-result-for','after-result-for','cancellation','before-connect','session-return']);
+const codes=new Set(['UNKNOWN','SESSION_NATIVE_BINDING','SESSION_NATIVE_CONTEXT','SESSION_NATIVE_INPUT','SESSION_NATIVE_RESULT','SESSION_NATIVE_REFUSED','SESSION_NATIVE_TOOL_DENIED','INVALID_SHAPE','NON_JSON','ABORT_ERR','ETIMEDOUT','ECONNRESET','ECONNREFUSED','UND_ERR_ABORTED','UND_ERR_CONNECT_TIMEOUT','UND_ERR_SOCKET','FORGE_PRIVATE_PROFILE_REQUIRED','FORGE_CURRENT_AUTHORITY_UNAVAILABLE','FORGE_CURRENT_AUTHORITY_DENIED',-32700,-32600,-32601,-32602,-32603,-32000,-32001,-32002]);
 const names=new Set(['Error','TypeError','RangeError','SyntaxError','ReferenceError','URIError','EvalError','McpError','AbortError','TimeoutError','Unknown']);
 const prefix='FORGE_SESSION_DIAGNOSTIC ';
 export function createNativeSessionDiagnostics(){

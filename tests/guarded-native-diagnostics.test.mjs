@@ -9,6 +9,7 @@ test('private native diagnostics accept chunked classifications and reject raw/p
   for(const value of [{...event,message:'private fixture value'},{...event,errorCode:'PRIVATE_VALUE'},{...event,stage:'unknown'},{...event,errorName:'PrivateName'},null])collector.push(log(value));
   collector.push('ordinary stderr with private fixture value\n');collector.push('FORGE_SESSION_DIAGNOSTIC {invalid}\n');
   assert.deepEqual(collector.snapshot(),[event]);assert.ok(!JSON.stringify(collector.snapshot()).includes('private'));
+  const wrapper={stage:'session-return',errorCode:'FORGE_CURRENT_AUTHORITY_UNAVAILABLE',errorName:'Error'};collector.push(log(wrapper));assert.deepEqual(collector.snapshot().at(-1),wrapper);
 });
 test('oversized lines and incomplete records never leak; bounded ring is independently copied',()=>{
   const collector=createNativeSessionDiagnostics();collector.push('x'.repeat(10000));collector.push(log(event));assert.deepEqual(collector.snapshot(),[]);
