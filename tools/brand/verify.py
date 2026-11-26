@@ -10,17 +10,37 @@ import xml.etree.ElementTree as ET
 from PIL import Image
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--baseline', default='4c944bd')
+parser.add_argument('--baseline', default='631ca22')
 args = parser.parse_args()
 ROOT = Path(__file__).resolve().parents[2]
 BRAND = ROOT / 'docs/brand'
 evidence = json.loads((BRAND / 'evidence/exports.json').read_text(encoding='utf-8'))
 checks = {'baseline': args.baseline, 'files': [], 'links': [], 'preserved': {}}
 # Materialize this report's own linked target before validating documentation.
-(BRAND / 'evidence/validation.json').write_text('{}\n', encoding='utf-8')
+(BRAND / 'evidence/validation.json').write_text('{}\n', encoding='utf-8', newline='\n')
 
 def sha(data):
     return hashlib.sha256(data).hexdigest()
+
+PALETTE = {'orange': '#f97316', 'yellow': '#f2c94c', 'gray': '#8b9199'}
+assert evidence['palette'] == PALETTE and evidence['defaultVariant'] == 'default'
+assert evidence['sourceSHA256'] == sha((ROOT / evidence['generator']).read_bytes())
+checks['palette'] = PALETTE
+checks['default_is_colored'] = True
+repeat = json.loads((BRAND / 'evidence/determinism.json').read_text(encoding='utf-8'))
+assert repeat['result'] == 'PASS' and repeat['reruns'] == 2
+assert repeat['generatorSHA256'] == evidence['sourceSHA256']
+assert repeat['verifierSHA256'] == sha((ROOT / 'tools/brand/determinism.py').read_bytes())
+for file, expected in repeat['files'].items():
+    assert sha((BRAND / file).read_bytes()) == expected
+checks['repeat_builds'] = {'result': repeat['result'], 'reruns': repeat['reruns'], 'identical_files': len(repeat['files'])}
+
+def effective_fills(element, inherited=None):
+    fill = element.attrib.get('fill', inherited)
+    result = {fill} if element.tag.endswith('}path') else set()
+    for child in element:
+        result |= effective_fills(child, fill)
+    return result
 
 for record in evidence['files']:
     file = BRAND / record['file']
@@ -36,6 +56,7 @@ for record in evidence['files']:
             allowed = {'svg', 'title', 'desc', 'g', 'path'}
             assert all(el.tag.rsplit('}', 1)[-1] in allowed for el in svg.iter())
             assert all(not key.endswith('href') for el in svg.iter() for key in el.attrib)
+            assert all(not key.startswith('on') and key != 'style' for el in svg.iter() for key in el.attrib)
             assert 'http' not in file.read_text(encoding='utf-8').replace('http://www.w3.org/2000/svg', '')
             result['accessible_font_free_vector'] = True
     if file.suffix == '.png':
@@ -53,27 +74,75 @@ for record in evidence['files']:
     checks['files'].append(result)
 
 layout = json.loads((BRAND / 'evidence/readme-layout.json').read_text(encoding='utf-8'))
+assert layout['generatorSHA256'] == sha((ROOT / 'tools/brand/readme-proof.mjs').read_bytes())
 for capture in layout['files']:
     assert sha((BRAND / 'evidence' / capture['file']).read_bytes()) == capture['sha256']
+for logo in layout['logos']:
+    assert logo['colored'] and sha((ROOT / logo['file']).read_bytes()) == logo['sha256']
+assert {(v['theme'], v['viewport']) for v in layout['variants']} == {('light', 900), ('light', 375), ('dark', 900), ('dark', 375)}
+for v in layout['variants']:
+    expected = 'default' if v['theme'] == 'light' else 'for-dark'
+    assert v['visibleLogoCount'] == 1 and len(v['visibleLogo']) == 1
+    assert f'forge-lockup-{expected}.svg' in v['visibleLogo'][0]
+    assert v['documentWidth'] == v['viewport'] and not v['externalRequests'] and not v['pageErrors']
+    assert all(i['decoded'] for i in v['images']) and all(h['fits'] for h in v['headings'])
 
 def lum(color):
     rgb = [int(color[i:i + 2], 16) / 255 for i in (1, 3, 5)]
     return sum((v / 12.92 if v <= .04045 else ((v + .055) / 1.055) ** 2.4) * w
                for v, w in zip(rgb, [.2126, .7152, .0722]))
 
-for pair in evidence['contrast']:
-    a, b = sorted([lum(pair['foreground']), lum(pair['background'])])
-    ratio = (b + .05) / (a + .05)
-    assert abs(ratio - pair['ratio']) < 1e-10 and ratio >= 7
+assert len(evidence['contrast']['neutralText']) == 4
+assert len(evidence['contrast']['decorativeAccents']) == 12
+for category, pairs in evidence['contrast'].items():
+    for pair in pairs:
+        a, b = sorted([lum(pair['foreground']), lum(pair['background'])])
+        ratio = (b + .05) / (a + .05)
+        assert abs(ratio - pair['ratio']) < 1e-10
+        if category == 'neutralText':
+            assert pair['minimum'] == 7 and ratio >= 7
+        else:
+            assert pair['foreground'] in PALETTE.values() and pair['minimum'] is None
 checks['contrast'] = evidence['contrast']
 
+assert len(evidence['exports']) == 15
 for asset in evidence['exports']:
     file = BRAND / f"exports/forge-{asset['name']}-{asset['variant']}.png"
     with Image.open(file) as img:
         assert img.size == (asset['pngWidth'], asset['pngHeight'])
+    source = BRAND / f"exports/forge-{asset['name']}-{asset['variant']}.svg"
+    svg = ET.parse(source).getroot()
+    assert [float(svg.attrib[k]) for k in ('width', 'height')] == [asset['svgWidth'], asset['svgHeight']]
+    fills = effective_fills(svg)
+    if asset['variant'] in ('default', 'for-light', 'for-dark'):
+        assert asset['colored'] and set(PALETTE.values()) <= fills
+        assert fills == set(PALETTE.values()) | ({asset['ink']} if asset['name'] != 'mark' else set())
+    else:
+        assert not asset['colored'] and fills == {asset['ink']}
+        assert 'fallback' in asset['role']
 
-readme = (ROOT / 'README.md').read_text(encoding='utf-8')
-baseline = subprocess.check_output(['git', 'show', f'{args.baseline}:README.md'], cwd=ROOT).decode('utf-8')
+checks['small_size'] = []
+for size in (16, 24, 32, 48, 64):
+    for variant in ('default', 'for-light', 'for-dark'):
+        file = BRAND / f'exports/forge-mark-{variant}-{size}.png'
+        with Image.open(file) as img:
+            assert img.size == (size, size)
+            pixels = list(img.get_flattened_data()) if hasattr(img, 'get_flattened_data') else list(img.getdata())
+            counts = {name: sum(p == tuple(bytes.fromhex(color[1:])) + (255,) for p in pixels) for name, color in PALETTE.items()}
+            assert all(n > 0 for n in counts.values()), f'Accent disappeared at {size}px: {counts}'
+            assert counts['orange'] > counts['yellow'] + counts['gray'], 'Orange must dominate the mark'
+            checks['small_size'].append({'file': file.relative_to(BRAND).as_posix(), 'size': size, 'opaque_palette_pixels': counts})
+for name in ('mark', 'wordmark', 'lockup'):
+    for suffix in ('svg', 'png'):
+        assert (BRAND / f'exports/forge-{name}-default.{suffix}').read_bytes() == (BRAND / f'exports/forge-{name}-for-light.{suffix}').read_bytes()
+
+readme_bytes = (ROOT / 'README.md').read_bytes()
+baseline_bytes = subprocess.check_output(['git', 'show', f'{args.baseline}:README.md'], cwd=ROOT)
+assert re.findall(rb'<picture>[\s\S]*?</picture>', baseline_bytes) == re.findall(rb'<picture>[\s\S]*?</picture>', readme_bytes)
+readme = readme_bytes.decode('utf-8')
+baseline = baseline_bytes.decode('utf-8')
+assert readme.replace('forge-lockup-default.svg#gh-light-mode-only', 'forge-lockup-for-light.svg#gh-light-mode-only') == baseline, 'README changed outside logo embed reference'
+checks['preserved']['readme_text_except_logo_reference_identical'] = True
 assert re.findall(r'<picture>[\s\S]*?</picture>', baseline) == re.findall(r'<picture>[\s\S]*?</picture>', readme)
 checks['preserved']['diagram_picture_blocks_byte_identical'] = True
 media = lambda s: re.findall(r'!\[[^\]]*\]\(docs/media/[^)]+\)', s)
@@ -85,6 +154,10 @@ assert 'role-session' in readme and 'pending' in readme and 'd928e9c' in readme
 checks['readme_sha256'] = sha(readme.encode())
 assert layout['readmeSHA256'] == checks['readme_sha256'], 'README layout captures need regeneration'
 checks['readme_layout_variants'] = len(layout['variants'])
+changed = subprocess.check_output(['git', 'diff', '--name-only', args.baseline], cwd=ROOT).decode().splitlines()
+assert all(p in ('README.md', 'docs/worker-brand-color.md') or p.startswith(('docs/brand/', 'tools/brand/')) for p in changed), changed
+subprocess.run(['git', 'diff', '--exit-code', args.baseline, '--', 'docs/media', 'docs/diagrams', 'bootstrap/payload', 'bootstrap/P11_PORTABLE_PACKAGE_MANIFEST.json', 'runtime', 'adapters/ao'], cwd=ROOT, check=True, capture_output=True)
+checks['preserved']['existing_diagram_media_and_protected_legacy_files_identical'] = True
 
 def anchor_set(source):
     anchors = set()
@@ -93,7 +166,7 @@ def anchor_set(source):
         anchors.add(re.sub(r'[^\w\- ]', '', heading).replace(' ', '-'))
     return anchors
 
-docs = [ROOT / 'README.md', BRAND / 'README.md', ROOT / 'docs/worker-readme-brand.md']
+docs = [ROOT / 'README.md', BRAND / 'README.md', ROOT / 'docs/worker-brand-color.md']
 for doc in docs:
     text = doc.read_text(encoding='utf-8')
     refs = re.findall(r'(?:!?\[[^\]]*\]\()([^\s)]+)\)', text)
@@ -108,7 +181,7 @@ for doc in docs:
             assert fragment in anchor_set(path.read_text(encoding='utf-8')), f'Unknown anchor: {ref}'
         checks['links'].append({'document': doc.relative_to(ROOT).as_posix(), 'target': ref})
 
-checks['source_sha256'] = {f: sha((ROOT / f).read_bytes()) for f in ['tools/brand/build.mjs', 'tools/brand/verify.py', 'tools/brand/readme-proof.mjs']}
+checks['source_sha256'] = {f: sha((ROOT / f).read_bytes()) for f in ['tools/brand/build.mjs', 'tools/brand/determinism.py', 'tools/brand/verify.py', 'tools/brand/readme-proof.mjs']}
 checks['result'] = 'PASS'
-(BRAND / 'evidence/validation.json').write_text(json.dumps(checks, indent=2) + '\n', encoding='utf-8')
-print(f"PASS: {len(checks['files'])} asset hashes/XML/PNG checks; {len(checks['links'])} local links; 6 contrast pairs; preserved diagrams and media.")
+(BRAND / 'evidence/validation.json').write_text(json.dumps(checks, indent=2) + '\n', encoding='utf-8', newline='\n')
+print(f"PASS: {len(checks['files'])} asset hashes/XML/PNG checks; {len(checks['links'])} local links; 15 native small-size checks; four neutral text pairs >=7:1; 12 decorative pairs measured only; README text, diagrams, media and protected legacy preserved.")

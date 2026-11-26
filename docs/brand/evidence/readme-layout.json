@@ -1,15 +1,31 @@
 {
-  "scope": "Local Markdown layout fixture. Not actual GitHub CSS/sanitization.",
-  "readmeSHA256": "4dfc630db12b42860e4fdcdf5d8c3387c0c4342388b88ed3c72b8e7ab01e2f9d",
+  "scope": "Local Markdown layout fixture. Not actual GitHub CSS/sanitization or assembled app/site qualification.",
+  "readmeSHA256": "0886db2012c6c5c1a44ec908b5f6a154a111527e3ea28a3fe5d4f2ab4806cce5",
+  "generatorSHA256": "fa4d9b6c6b25bef639ab54d467e394b498338a051568cbc30e882f93d89dae8c",
+  "logos": [
+    {
+      "file": "docs/brand/exports/forge-lockup-default.svg",
+      "sha256": "2a8e90ee695615afb15d443f11209a18028216e8f1fbb01986f4d33149bba6b8",
+      "colored": true
+    },
+    {
+      "file": "docs/brand/exports/forge-lockup-for-dark.svg",
+      "sha256": "5d592936ed53c7920c03e579115ebf7ea30362bd1438c8ae1b3540f922131c87",
+      "colored": true
+    }
+  ],
   "variants": [
     {
       "theme": "light",
       "viewport": 900,
       "documentWidth": 900,
       "visibleLogoCount": 1,
+      "visibleLogo": [
+        "docs/brand/exports/forge-lockup-default.svg#gh-light-mode-only"
+      ],
       "images": [
         {
-          "src": "forge-lockup-for-light.svg#gh-light-mode-only",
+          "src": "forge-lockup-default.svg#gh-light-mode-only",
           "decoded": true,
           "displayWidth": 314
         },
@@ -109,9 +125,12 @@
       "viewport": 375,
       "documentWidth": 375,
       "visibleLogoCount": 1,
+      "visibleLogo": [
+        "docs/brand/exports/forge-lockup-default.svg#gh-light-mode-only"
+      ],
       "images": [
         {
-          "src": "forge-lockup-for-light.svg#gh-light-mode-only",
+          "src": "forge-lockup-default.svg#gh-light-mode-only",
           "decoded": true,
           "displayWidth": 314
         },
@@ -211,9 +230,12 @@
       "viewport": 900,
       "documentWidth": 900,
       "visibleLogoCount": 1,
+      "visibleLogo": [
+        "docs/brand/exports/forge-lockup-for-dark.svg#gh-dark-mode-only"
+      ],
       "images": [
         {
-          "src": "forge-lockup-for-light.svg#gh-light-mode-only",
+          "src": "forge-lockup-default.svg#gh-light-mode-only",
           "decoded": true,
           "displayWidth": 314
         },
@@ -313,9 +335,12 @@
       "viewport": 375,
       "documentWidth": 375,
       "visibleLogoCount": 1,
+      "visibleLogo": [
+        "docs/brand/exports/forge-lockup-for-dark.svg#gh-dark-mode-only"
+      ],
       "images": [
         {
-          "src": "forge-lockup-for-light.svg#gh-light-mode-only",
+          "src": "forge-lockup-default.svg#gh-light-mode-only",
           "decoded": true,
           "displayWidth": 314
         },
@@ -417,19 +442,27 @@
   "files": [
     {
       "file": "readme-light-900.png",
-      "sha256": "c4104b24e1007c22dad493320a62b867a11cd4ef33a7ca7fa678f3735d5a414e"
+      "sha256": "cec27f2cf6396b5a782475be0b3ac7672d402952ecffd58a1aeb18f602abdc23"
     },
     {
       "file": "readme-light-375.png",
-      "sha256": "3b26079d494b2365e180cc1b6182a5d75cdbcf3846ecf7eee10d330abd467d21"
+      "sha256": "bc75f0a8d986948e6ff4025c1cb6cf583baf5566be703d7ee0cc883dabd49118"
     },
     {
       "file": "readme-dark-900.png",
-      "sha256": "ec6831c8a42ed750db04a479f4dac37c3b12c42454c1bbf9b0bd84969faceb5a"
+      "sha256": "7f39398a2838116c982f880338c607d61e3383c66f120d758650f2143640ebdb"
     },
     {
       "file": "readme-dark-375.png",
-      "sha256": "9358a8edcf37388253df5da4ebe2f69407d7800648e07ae645745f4c261d6119"
+      "sha256": "34e025bf7343950e650516f5b1526fecaa3eff0d812a8368d169092eb53b8a37"
+    },
+    {
+      "file": "readme-light.html",
+      "sha256": "b5f194334b94333dacdc0367cedc702eaf9f996ce02a7e34122e6073bc0d4479"
+    },
+    {
+      "file": "readme-dark.html",
+      "sha256": "cc3d6f2e7761d84ecc452decb0ef26edbb1605488aa3c039727d5d95ec2b8452"
     }
   ]
 }

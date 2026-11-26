@@ -1,10 +1,21 @@
 {
   "generator": "tools/brand/build.mjs",
   "rasterizer": "@resvg/resvg-js 2.6.2",
+  "sourceSHA256": "087934e208ef28e13648dc3b8a5f43688c0de3517bd6f08d4afb3e865e3d3523",
+  "defaultVariant": "default",
+  "palette": {
+    "orange": "#f97316",
+    "yellow": "#f2c94c",
+    "gray": "#8b9199"
+  },
   "fontsInLogo": false,
   "networkAssets": false,
   "sourceGeometry": {
     "mark": "M8 8H56L44 20H20V28H48L36 40H20V56H8Z",
+    "facets": {
+      "yellow": "M44 8H56L44 20H32Z",
+      "gray": "M40 28H48L36 40H28Z"
+    },
     "letters": [
       [
         0,
@@ -26,13 +37,33 @@
         194,
         "M0 0H32V8H8V20H28V28H8V40H32V48H0Z"
       ]
-    ]
+    ],
+    "wordFacets": {
+      "yellow": "M24 0H32L24 8H16Z",
+      "gray": "M22 20H28L20 28H14Z"
+    }
   },
   "exports": [
     {
       "name": "mark",
+      "variant": "default",
+      "ink": "#20252b",
+      "colored": true,
+      "role": "Default colored identity for light surfaces",
+      "svgWidth": 64,
+      "svgHeight": 64,
+      "pngWidth": 256,
+      "pngHeight": 256,
+      "transparent": true
+    },
+    {
+      "name": "mark",
       "variant": "for-light",
-      "color": "#20252b",
+      "ink": "#20252b",
+      "colored": true,
+      "role": "Colored identity for light surfaces; identical to default",
+      "svgWidth": 64,
+      "svgHeight": 64,
       "pngWidth": 256,
       "pngHeight": 256,
       "transparent": true
@@ -40,7 +71,11 @@
     {
       "name": "mark",
       "variant": "for-dark",
-      "color": "#f5f5f5",
+      "ink": "#f5f5f5",
+      "colored": true,
+      "role": "Colored identity for dark surfaces",
+      "svgWidth": 64,
+      "svgHeight": 64,
       "pngWidth": 256,
       "pngHeight": 256,
       "transparent": true
@@ -48,7 +83,11 @@
     {
       "name": "mark",
       "variant": "black",
-      "color": "#000000",
+      "ink": "#000000",
+      "colored": false,
+      "role": "Optional single-ink technical fallback only",
+      "svgWidth": 64,
+      "svgHeight": 64,
       "pngWidth": 256,
       "pngHeight": 256,
       "transparent": true
@@ -56,15 +95,35 @@
     {
       "name": "mark",
       "variant": "white",
-      "color": "#ffffff",
+      "ink": "#ffffff",
+      "colored": false,
+      "role": "Optional single-ink technical fallback only",
+      "svgWidth": 64,
+      "svgHeight": 64,
       "pngWidth": 256,
       "pngHeight": 256,
       "transparent": true
     },
     {
       "name": "wordmark",
+      "variant": "default",
+      "ink": "#20252b",
+      "colored": true,
+      "role": "Default colored identity for light surfaces",
+      "svgWidth": 258,
+      "svgHeight": 64,
+      "pngWidth": 1032,
+      "pngHeight": 256,
+      "transparent": true
+    },
+    {
+      "name": "wordmark",
       "variant": "for-light",
-      "color": "#20252b",
+      "ink": "#20252b",
+      "colored": true,
+      "role": "Colored identity for light surfaces; identical to default",
+      "svgWidth": 258,
+      "svgHeight": 64,
       "pngWidth": 1032,
       "pngHeight": 256,
       "transparent": true
@@ -72,7 +131,11 @@
     {
       "name": "wordmark",
       "variant": "for-dark",
-      "color": "#f5f5f5",
+      "ink": "#f5f5f5",
+      "colored": true,
+      "role": "Colored identity for dark surfaces",
+      "svgWidth": 258,
+      "svgHeight": 64,
       "pngWidth": 1032,
       "pngHeight": 256,
       "transparent": true
@@ -80,7 +143,11 @@
     {
       "name": "wordmark",
       "variant": "black",
-      "color": "#000000",
+      "ink": "#000000",
+      "colored": false,
+      "role": "Optional single-ink technical fallback only",
+      "svgWidth": 258,
+      "svgHeight": 64,
       "pngWidth": 1032,
       "pngHeight": 256,
       "transparent": true
@@ -88,15 +155,35 @@
     {
       "name": "wordmark",
       "variant": "white",
-      "color": "#ffffff",
+      "ink": "#ffffff",
+      "colored": false,
+      "role": "Optional single-ink technical fallback only",
+      "svgWidth": 258,
+      "svgHeight": 64,
       "pngWidth": 1032,
       "pngHeight": 256,
       "transparent": true
     },
     {
       "name": "lockup",
+      "variant": "default",
+      "ink": "#20252b",
+      "colored": true,
+      "role": "Default colored identity for light surfaces",
+      "svgWidth": 314,
+      "svgHeight": 64,
+      "pngWidth": 1256,
+      "pngHeight": 256,
+      "transparent": true
+    },
+    {
+      "name": "lockup",
       "variant": "for-light",
-      "color": "#20252b",
+      "ink": "#20252b",
+      "colored": true,
+      "role": "Colored identity for light surfaces; identical to default",
+      "svgWidth": 314,
+      "svgHeight": 64,
       "pngWidth": 1256,
       "pngHeight": 256,
       "transparent": true
@@ -104,7 +191,11 @@
     {
       "name": "lockup",
       "variant": "for-dark",
-      "color": "#f5f5f5",
+      "ink": "#f5f5f5",
+      "colored": true,
+      "role": "Colored identity for dark surfaces",
+      "svgWidth": 314,
+      "svgHeight": 64,
       "pngWidth": 1256,
       "pngHeight": 256,
       "transparent": true
@@ -112,7 +203,11 @@
     {
       "name": "lockup",
       "variant": "black",
-      "color": "#000000",
+      "ink": "#000000",
+      "colored": false,
+      "role": "Optional single-ink technical fallback only",
+      "svgWidth": 314,
+      "svgHeight": 64,
       "pngWidth": 1256,
       "pngHeight": 256,
       "transparent": true
@@ -120,69 +215,181 @@
     {
       "name": "lockup",
       "variant": "white",
-      "color": "#ffffff",
+      "ink": "#ffffff",
+      "colored": false,
+      "role": "Optional single-ink technical fallback only",
+      "svgWidth": 314,
+      "svgHeight": 64,
       "pngWidth": 1256,
       "pngHeight": 256,
       "transparent": true
     }
   ],
-  "contrast": [
-    {
-      "foreground": "#20252b",
-      "background": "#ffffff",
-      "ratio": 15.43067007971108
-    },
-    {
-      "foreground": "#20252b",
-      "background": "#f5f5f5",
-      "ratio": 14.153578619084563
-    },
-    {
-      "foreground": "#f5f5f5",
-      "background": "#1f1f1f",
-      "ratio": 15.118793699076623
-    },
-    {
-      "foreground": "#f5f5f5",
-      "background": "#0d1117",
-      "ratio": 17.358367773735836
-    },
-    {
-      "foreground": "#000000",
-      "background": "#ffffff",
-      "ratio": 21
-    },
-    {
-      "foreground": "#ffffff",
-      "background": "#000000",
-      "ratio": 21
-    }
-  ],
+  "contrast": {
+    "neutralText": [
+      {
+        "role": "Neutral lockup lettering / O-R-G-E in wordmark / body ink",
+        "foreground": "#20252b",
+        "background": "#ffffff",
+        "minimum": 7,
+        "ratio": 15.43067007971108
+      },
+      {
+        "role": "Neutral lockup lettering / O-R-G-E in wordmark / body ink",
+        "foreground": "#20252b",
+        "background": "#f5f5f5",
+        "minimum": 7,
+        "ratio": 14.153578619084563
+      },
+      {
+        "role": "Neutral lockup lettering / O-R-G-E in wordmark / body ink",
+        "foreground": "#f5f5f5",
+        "background": "#1f1f1f",
+        "minimum": 7,
+        "ratio": 15.118793699076623
+      },
+      {
+        "role": "Neutral lockup lettering / O-R-G-E in wordmark / body ink",
+        "foreground": "#f5f5f5",
+        "background": "#0d1117",
+        "minimum": 7,
+        "ratio": 17.358367773735836
+      }
+    ],
+    "decorativeAccents": [
+      {
+        "role": "orange",
+        "foreground": "#f97316",
+        "background": "#ffffff",
+        "ratio": 2.8030548103399218,
+        "minimum": null,
+        "usage": "Logo/decorative accent only; not a text or control contrast approval"
+      },
+      {
+        "role": "orange",
+        "foreground": "#f97316",
+        "background": "#f5f5f5",
+        "ratio": 2.571065055944225,
+        "minimum": null,
+        "usage": "Logo/decorative accent only; not a text or control contrast approval"
+      },
+      {
+        "role": "orange",
+        "foreground": "#f97316",
+        "background": "#1f1f1f",
+        "ratio": 5.88036217291446,
+        "minimum": null,
+        "usage": "Logo/decorative accent only; not a text or control contrast approval"
+      },
+      {
+        "role": "orange",
+        "foreground": "#f97316",
+        "background": "#0d1117",
+        "ratio": 6.75143078686547,
+        "minimum": null,
+        "usage": "Logo/decorative accent only; not a text or control contrast approval"
+      },
+      {
+        "role": "yellow",
+        "foreground": "#f2c94c",
+        "background": "#ffffff",
+        "ratio": 1.5867657882914983,
+        "minimum": null,
+        "usage": "Logo/decorative accent only; not a text or control contrast approval"
+      },
+      {
+        "role": "yellow",
+        "foreground": "#f2c94c",
+        "background": "#f5f5f5",
+        "ratio": 1.4554399918242513,
+        "minimum": null,
+        "usage": "Logo/decorative accent only; not a text or control contrast approval"
+      },
+      {
+        "role": "yellow",
+        "foreground": "#f2c94c",
+        "background": "#1f1f1f",
+        "ratio": 10.387782240425246,
+        "minimum": null,
+        "usage": "Logo/decorative accent only; not a text or control contrast approval"
+      },
+      {
+        "role": "yellow",
+        "foreground": "#f2c94c",
+        "background": "#0d1117",
+        "ratio": 11.926543087481623,
+        "minimum": null,
+        "usage": "Logo/decorative accent only; not a text or control contrast approval"
+      },
+      {
+        "role": "gray",
+        "foreground": "#8b9199",
+        "background": "#ffffff",
+        "ratio": 3.177997544370808,
+        "minimum": null,
+        "usage": "Logo/decorative accent only; not a text or control contrast approval"
+      },
+      {
+        "role": "gray",
+        "foreground": "#8b9199",
+        "background": "#f5f5f5",
+        "ratio": 2.9149763337012584,
+        "minimum": null,
+        "usage": "Logo/decorative accent only; not a text or control contrast approval"
+      },
+      {
+        "role": "gray",
+        "foreground": "#8b9199",
+        "background": "#1f1f1f",
+        "ratio": 5.186592262956627,
+        "minimum": null,
+        "usage": "Logo/decorative accent only; not a text or control contrast approval"
+      },
+      {
+        "role": "gray",
+        "foreground": "#8b9199",
+        "background": "#0d1117",
+        "ratio": 5.95489149364559,
+        "minimum": null,
+        "usage": "Logo/decorative accent only; not a text or control contrast approval"
+      }
+    ]
+  },
   "files": [
     {
+      "file": "exports/forge-mark-default.svg",
+      "bytes": 493,
+      "sha256": "68b5f549e09589588a89520e8c457a160b4f6e78f4c7402a8dd536566461b90c"
+    },
+    {
+      "file": "exports/forge-mark-default.png",
+      "bytes": 1599,
+      "sha256": "c32456b59042f5d128b29bb6a2739a6e99813a3fff0d085ec33c3c23c268af20"
+    },
+    {
       "file": "exports/forge-mark-for-light.svg",
-      "bytes": 337,
-      "sha256": "230a59f17fc59ee7d6921ca875b7ce2bb85de35f20f27acd9e109a8dff7cc485"
+      "bytes": 493,
+      "sha256": "68b5f549e09589588a89520e8c457a160b4f6e78f4c7402a8dd536566461b90c"
     },
     {
       "file": "exports/forge-mark-for-light.png",
-      "bytes": 1443,
-      "sha256": "499311c7f898e3901f43962f609671f4eb457a3851b747ac3dd93d61119e0ca5"
+      "bytes": 1599,
+      "sha256": "c32456b59042f5d128b29bb6a2739a6e99813a3fff0d085ec33c3c23c268af20"
     },
     {
       "file": "exports/forge-mark-for-dark.svg",
-      "bytes": 337,
-      "sha256": "bb1c8f253aba03135ccdce366a104e1cb36ae6729109b70dd51f04c9dfb25d28"
+      "bytes": 493,
+      "sha256": "c3e769f3a02a868bec446aee6bcf2e85aab4d133cd95e5674d9f0cb2e326365e"
     },
     {
       "file": "exports/forge-mark-for-dark.png",
-      "bytes": 1430,
-      "sha256": "1eb5dccd8154990ee871aa40a71550e836c4afb807aa97c628411b4fa9ce3477"
+      "bytes": 1599,
+      "sha256": "c32456b59042f5d128b29bb6a2739a6e99813a3fff0d085ec33c3c23c268af20"
     },
     {
       "file": "exports/forge-mark-black.svg",
-      "bytes": 337,
-      "sha256": "525cf58cf188ded1cd6fe056a10feb757ff8030aadd053e24ded3720a5d56acf"
+      "bytes": 377,
+      "sha256": "2126cc02c89d81c799965d512da927635a098aa9c7bd2a0a0eaaf6736ff6cdc7"
     },
     {
       "file": "exports/forge-mark-black.png",
@@ -191,8 +398,8 @@
     },
     {
       "file": "exports/forge-mark-white.svg",
-      "bytes": 337,
-      "sha256": "01f62d1396e35a3c785739c93e93967712e39918111c86b0fa9fbf78d181c789"
+      "bytes": 377,
+      "sha256": "db883f295ff83fb4d2b073e95812baf8f426075eca9802fedeab34d24931a483"
     },
     {
       "file": "exports/forge-mark-white.png",
@@ -200,29 +407,39 @@
       "sha256": "cd4644624b3731144db4407c933a36b7c7dc4359721eed6eac118857dc56c493"
     },
     {
+      "file": "exports/forge-wordmark-default.svg",
+      "bytes": 1169,
+      "sha256": "97f89d29f1fbcad6d23697ff6ba92a19d4bd89d99ecc837222a5f57a1b6f58d2"
+    },
+    {
+      "file": "exports/forge-wordmark-default.png",
+      "bytes": 13092,
+      "sha256": "2ac0db0d6f2d5a97031322d63631a7168a6c1476045263540eebf7c81d6807bc"
+    },
+    {
       "file": "exports/forge-wordmark-for-light.svg",
-      "bytes": 1014,
-      "sha256": "1c42bebd35031f973491ad9d9af6d7974307fe7efb2c6367d2bda0c817d7ff25"
+      "bytes": 1169,
+      "sha256": "97f89d29f1fbcad6d23697ff6ba92a19d4bd89d99ecc837222a5f57a1b6f58d2"
     },
     {
       "file": "exports/forge-wordmark-for-light.png",
-      "bytes": 12939,
-      "sha256": "60b7b06c59f943aeba3ad015f5d1b9caa3fa3e7f834377af4267171b76d88d41"
+      "bytes": 13092,
+      "sha256": "2ac0db0d6f2d5a97031322d63631a7168a6c1476045263540eebf7c81d6807bc"
     },
     {
       "file": "exports/forge-wordmark-for-dark.svg",
-      "bytes": 1014,
-      "sha256": "f07cbf43e961649f1398a9847fd9e61c9bc2be54b239ffadccfa482b7f0b538c"
+      "bytes": 1169,
+      "sha256": "bb858278f694c932de392bf3f0d000145a53bed6b4e0c169e51839cfeb34095a"
     },
     {
       "file": "exports/forge-wordmark-for-dark.png",
-      "bytes": 14917,
-      "sha256": "895bdc7fdf9234a5bf642bba450c046dc39047c6e81108a15d18367ebebdcbb2"
+      "bytes": 14987,
+      "sha256": "50645cc3da34bb5d3473cc3a21dc39cc8b295a7bb2e339aea73fb6931a433335"
     },
     {
       "file": "exports/forge-wordmark-black.svg",
-      "bytes": 1014,
-      "sha256": "9f273d4ffdf32e9e0afd1267620715e52e247f45e9a29b02a0b6c531fb424d2a"
+      "bytes": 1054,
+      "sha256": "b7ee5f3ddd785e598bde007f28d100bf50f09fa9b478ff7c4de8f704ea8b2aa9"
     },
     {
       "file": "exports/forge-wordmark-black.png",
@@ -231,8 +448,8 @@
     },
     {
       "file": "exports/forge-wordmark-white.svg",
-      "bytes": 1014,
-      "sha256": "2ea6399b36362732d0e48d18544bda0ca2f742135783d83549f93fb74950ff69"
+      "bytes": 1054,
+      "sha256": "880f1bc614a86bceb3e70aa441d31388eae4199522f42472a77c1fead2374fef"
     },
     {
       "file": "exports/forge-wordmark-white.png",
@@ -240,29 +457,39 @@
       "sha256": "f1e3504a3a5e15f447c42f96b58ea72a75fc6cab678e9b246c79a315830ff36a"
     },
     {
+      "file": "exports/forge-lockup-default.svg",
+      "bytes": 1226,
+      "sha256": "2a8e90ee695615afb15d443f11209a18028216e8f1fbb01986f4d33149bba6b8"
+    },
+    {
+      "file": "exports/forge-lockup-default.png",
+      "bytes": 14290,
+      "sha256": "ac6757d33914b4549c081af17898812c3ff5b4d20749c392c2439c9fc3c02149"
+    },
+    {
       "file": "exports/forge-lockup-for-light.svg",
-      "bytes": 1070,
-      "sha256": "aae24f70ada31ba32a94ad0445e9874da35b6f2eab0110273409978658972a9c"
+      "bytes": 1226,
+      "sha256": "2a8e90ee695615afb15d443f11209a18028216e8f1fbb01986f4d33149bba6b8"
     },
     {
       "file": "exports/forge-lockup-for-light.png",
-      "bytes": 14777,
-      "sha256": "8c504dc86d135b5d48a97f3ff3b7c09c330b6e9b5056c0e118f3f58ca807e7ef"
+      "bytes": 14290,
+      "sha256": "ac6757d33914b4549c081af17898812c3ff5b4d20749c392c2439c9fc3c02149"
     },
     {
       "file": "exports/forge-lockup-for-dark.svg",
-      "bytes": 1070,
-      "sha256": "37d6ba6067bd255b5ccc83f81fc5587e91e42e7ac608ba2d3b12d4e7d0d19592"
+      "bytes": 1226,
+      "sha256": "5d592936ed53c7920c03e579115ebf7ea30362bd1438c8ae1b3540f922131c87"
     },
     {
       "file": "exports/forge-lockup-for-dark.png",
-      "bytes": 16736,
-      "sha256": "e696b89b5e42ef0fa72e74f8c87a043e2809e9c3750adccf6b41570d27efd1cb"
+      "bytes": 16211,
+      "sha256": "210d44106dcfe9801c0b6568bfb5b2f656fa1f7fb99205a96f9a01e0bde8735c"
     },
     {
       "file": "exports/forge-lockup-black.svg",
-      "bytes": 1070,
-      "sha256": "6cb51f3785f63eab70a75e1dd68ea265d003d91f8ddc0db5d3fc2075fae16033"
+      "bytes": 1110,
+      "sha256": "60a5bd984be1025348ce8370547251547bbeb43ed72fc684917101d681653274"
     },
     {
       "file": "exports/forge-lockup-black.png",
@@ -271,8 +498,8 @@
     },
     {
       "file": "exports/forge-lockup-white.svg",
-      "bytes": 1070,
-      "sha256": "b930e93237985fb0a6bdb2309f16e421f2f2f294d488865e6bc870e2f6e77cd2"
+      "bytes": 1110,
+      "sha256": "f2ddc34c0b705c19e23a5624bd4fbb9a417d9a5da86251dc3f11e7dc38ac4628"
     },
     {
       "file": "exports/forge-lockup-white.png",
@@ -280,64 +507,89 @@
       "sha256": "7f8567f55ef7846d3e6b6d42fe3c855390e0a556750ebe46d2e6c08b22a0929f"
     },
     {
+      "file": "exports/forge-mark-default-16.png",
+      "bytes": 178,
+      "sha256": "d2db644a2e31228d64f0b3cdef576e51df867b17efff294b0048d11b45749960"
+    },
+    {
+      "file": "exports/forge-mark-default-24.png",
+      "bytes": 291,
+      "sha256": "55e993be2c9e24091b06bac4700ddbd9fac0b46cf75d994fda4a2295ef0793df"
+    },
+    {
+      "file": "exports/forge-mark-default-32.png",
+      "bytes": 257,
+      "sha256": "31f64f5f759ae30ce6861b55e09a728129d9e048d195bc2213704f76acf299a7"
+    },
+    {
+      "file": "exports/forge-mark-default-48.png",
+      "bytes": 330,
+      "sha256": "2e87fcd68f535406cc09a26d65362a228f624293ac93ef46599c6851c03f3523"
+    },
+    {
+      "file": "exports/forge-mark-default-64.png",
+      "bytes": 400,
+      "sha256": "379d2e573578fc7445e6ab71753610e546afff96bc8c86453d7a74acb6ba6037"
+    },
+    {
       "file": "exports/forge-mark-for-light-16.png",
-      "bytes": 150,
-      "sha256": "280066b5cedd6198082bb406b112c8739bd288666473c7e82eea89d44458924c"
+      "bytes": 178,
+      "sha256": "d2db644a2e31228d64f0b3cdef576e51df867b17efff294b0048d11b45749960"
     },
     {
       "file": "exports/forge-mark-for-light-24.png",
-      "bytes": 214,
-      "sha256": "b7b7bc65627cba6a3e141db32954982276f66bd118d405874c473e9ffca00f85"
+      "bytes": 291,
+      "sha256": "55e993be2c9e24091b06bac4700ddbd9fac0b46cf75d994fda4a2295ef0793df"
     },
     {
       "file": "exports/forge-mark-for-light-32.png",
-      "bytes": 194,
-      "sha256": "347251330e147374cc959eddd7cd4f033b0a0259e55e6689cd4406254d43ccf0"
+      "bytes": 257,
+      "sha256": "31f64f5f759ae30ce6861b55e09a728129d9e048d195bc2213704f76acf299a7"
     },
     {
       "file": "exports/forge-mark-for-light-48.png",
-      "bytes": 261,
-      "sha256": "4f5ef43c9cf4b38729c714f99844f3c1c1b3b11f2d0cd818edfde3fdc330f40c"
+      "bytes": 330,
+      "sha256": "2e87fcd68f535406cc09a26d65362a228f624293ac93ef46599c6851c03f3523"
     },
     {
       "file": "exports/forge-mark-for-light-64.png",
-      "bytes": 322,
-      "sha256": "118b36d46345dda2093ef1c88fa42079b2b5f0200fa052a84316009987a87c6f"
+      "bytes": 400,
+      "sha256": "379d2e573578fc7445e6ab71753610e546afff96bc8c86453d7a74acb6ba6037"
     },
     {
       "file": "exports/forge-mark-for-dark-16.png",
-      "bytes": 144,
-      "sha256": "67e6afa3c153db2f2179e88b9268dc4fe8364cae9b9aec03cefcc882face89a2"
+      "bytes": 178,
+      "sha256": "d2db644a2e31228d64f0b3cdef576e51df867b17efff294b0048d11b45749960"
     },
     {
       "file": "exports/forge-mark-for-dark-24.png",
-      "bytes": 208,
-      "sha256": "2a4140ff3f06accc9674f26082e15a68ea61bf792c9da65e7c7f0165fd1a27d7"
+      "bytes": 291,
+      "sha256": "55e993be2c9e24091b06bac4700ddbd9fac0b46cf75d994fda4a2295ef0793df"
     },
     {
       "file": "exports/forge-mark-for-dark-32.png",
-      "bytes": 189,
-      "sha256": "7687b56f79fa2bd79780249f7cf3fe6f614dc990b0b53d4cd16278f08bc6db17"
+      "bytes": 257,
+      "sha256": "31f64f5f759ae30ce6861b55e09a728129d9e048d195bc2213704f76acf299a7"
     },
     {
       "file": "exports/forge-mark-for-dark-48.png",
-      "bytes": 254,
-      "sha256": "ca8214d4b875d354a1c69814afeef686102556c3ec8ae20757754372b664137e"
+      "bytes": 330,
+      "sha256": "2e87fcd68f535406cc09a26d65362a228f624293ac93ef46599c6851c03f3523"
     },
     {
       "file": "exports/forge-mark-for-dark-64.png",
-      "bytes": 315,
-      "sha256": "fa315abb69ccd11a28fbaf4567911814a005613ea8acd00a3ca096af49fb1b39"
+      "bytes": 400,
+      "sha256": "379d2e573578fc7445e6ab71753610e546afff96bc8c86453d7a74acb6ba6037"
     },
     {
       "file": "evidence/contact-sheet.svg",
-      "bytes": 12505,
-      "sha256": "97ed30a8e26f7f7befc7324481f4863e922a779da6e2c4fc93461a52ed92d827"
+      "bytes": 18098,
+      "sha256": "46e6c867f494a599e094d1084e44b836b2e909824aa065c5b846e9e3d7f4c1ee"
     },
     {
       "file": "evidence/contact-sheet.png",
-      "bytes": 63025,
-      "sha256": "a123d65c24c39549e133f0eb25c8dda170fb66a90893fc7bf0ccf4a05a3ce6e7"
+      "bytes": 90649,
+      "sha256": "1ed920b546e5b59c22de227ed1a14a8ea0d05cbd3992906b4c9becd29528d513"
     }
   ]
 }

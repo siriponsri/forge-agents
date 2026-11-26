@@ -1,7 +1,7 @@
 # FORGE
 
 <a href="docs/brand/README.md">
-  <img src="docs/brand/exports/forge-lockup-for-light.svg#gh-light-mode-only" alt="FORGE" width="314" height="64">
+  <img src="docs/brand/exports/forge-lockup-default.svg#gh-light-mode-only" alt="FORGE" width="314" height="64">
   <img src="docs/brand/exports/forge-lockup-for-dark.svg#gh-dark-mode-only" alt="FORGE" width="314" height="64">
 </a>
 
