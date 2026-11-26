@@ -1,3 +1,4 @@
+import {browserOwner} from './support/browser-owner.mjs';
 // Display/recovery HTTP fixture: this file does not claim a provider ran.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -17,7 +18,7 @@ test('live AG-UI display uses durable cursors and domain deltas without executin
   await cmd('document.create',p.id,{name:'Saved revision',kind:'doc',snapshot:{body:{dataStream:'Thai\r\n'}}});
   let live='';while(!live.includes('STATE_DELTA')){const part=await reader.read();if(part.done)break;live+=new TextDecoder().decode(part.value);}assert.match(live,/STATE_DELTA/);assert.match(live,/documents/);
   const recovery=await(await fetch(app.url+`/api/runs/${run.id}/recovery`)).json();assert.equal(recovery.identity.runId,run.id);assert.equal(recovery.capabilities.frontendToolResults,false);
-  const unsupported=await fetch(app.url+`/api/runs/${run.id}/tool-result`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({result:'forged result'})});assert.equal(unsupported.status,409);assert.equal((await unsupported.json()).error.code,'T3_FRONTEND_TOOL_UNSUPPORTED');
+  const unsupported=await fetch(app.url+`/api/runs/${run.id}/tool-result`,{method:'POST',headers:{'Content-Type':'application/json',...await browserOwner(app.url)},body:JSON.stringify({result:'forged result'})});assert.equal(unsupported.status,409);assert.equal((await unsupported.json()).error.code,'T3_FRONTEND_TOOL_UNSUPPORTED');
   assert.equal(app.store.read().runs.length,1);
   await reader.cancel();
 });

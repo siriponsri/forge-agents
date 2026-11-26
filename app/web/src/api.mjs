@@ -6,9 +6,9 @@ export class ApiError extends Error {
 }
 export const operationId = () => crypto.randomUUID();
 let browserSession;
-async function ownerHeaders(path,body){
-  const needs=/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/mcp\/(configure|enable|discover|call|stop)$|^\/api\/mcp\/[^/]+\/(discover|call)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|memory|owner-memory|memory-mcp|context|goals|compute|plugins|relay|secrets|missions|proactive|workspaces|budgets|playbooks|research|research-components|frontend-tools|session-roles|session-orchestrator|strategies|guarded)\//.test(path);
-  if(!needs||body===undefined&&!path.startsWith('/api/frontend-tools/pending?'))return {};
+export async function ownerHeaders(path,body){
+  const needs=path.startsWith('/api/')&&(body!==undefined||path.startsWith('/api/frontend-tools/pending?'));
+  if(!needs)return {};
   browserSession??=fetch('/api/session',{cache:'no-store'}).then(async r=>{const data=await r.json();if(!r.ok||!data.csrf)throw new ApiError('Reload the FORGE page before performing this Owner action.',403,'BROWSER_SESSION_REQUIRED');return data;}).catch(e=>{browserSession=null;throw e;});
   return {'X-Forge-CSRF':(await browserSession).csrf};
 }

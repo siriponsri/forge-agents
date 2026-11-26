@@ -1,5 +1,5 @@
 // FORGE owns uploaded bytes; Univer owns native drawing commands and undo state.
-import { ApiError, assertDurableSnapshot, downloadUrl, operationId } from './api.mjs';
+import { ApiError, assertDurableSnapshot, downloadUrl, operationId, ownerHeaders } from './api.mjs';
 
 export const IMAGE_RESOURCE = 'FORGE_IMAGE_ASSETS_V1';
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -117,7 +117,7 @@ export function createProjectImageIO(ImageIoService, { projectId, assets = [] })
         let response;
         try {
           response = await fetch('/api/artifacts/upload', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: controller.signal,
+            method: 'POST', headers: { 'Content-Type': 'application/json', ...await ownerHeaders('/api/artifacts/upload', {}) }, signal: controller.signal,
             body: JSON.stringify({ operationId: this.operations.get(file), projectId,
               name: `${name}.${png ? 'png' : 'jpg'}`, kind: 'figure', base64 }),
           });

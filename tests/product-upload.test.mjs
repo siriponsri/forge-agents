@@ -1,3 +1,4 @@
+import {browserOwner} from './support/browser-owner.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtemp,writeFile,readFile} from 'node:fs/promises';
@@ -10,7 +11,7 @@ test('browser upload is durable, replay-safe, project scoped and hash checked',a
   const dir=await mkdtemp(path.join(os.tmpdir(),'forge-upload-')),app=await createApplication({dataDir:path.join(dir,'state')});t.after(()=>app.close());
   const project=async name=>(await command(app.store,{type:'project.create',operationId:crypto.randomUUID(),data:{name,workspace:path.join(dir,name)}})).entity;
   const a=await project('one'),b=await project('two');
-  const post=async body=>{const r=await fetch(app.url+'/api/artifacts/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return {status:r.status,body:await r.json()};};
+  const post=async body=>{const r=await fetch(app.url+'/api/artifacts/upload',{method:'POST',headers:{'Content-Type':'application/json',...await browserOwner(app.url)},body:JSON.stringify(body)});return {status:r.status,body:await r.json()};};
   const input={projectId:a.id,operationId:crypto.randomUUID(),name:'ไทย weights.json',kind:'model',base64:Buffer.from('{"weights":[1,2]}').toString('base64')};
   const uploaded=await post(input);assert.equal(uploaded.status,200);assert.equal(uploaded.body.status,'verified');
   const replay=await post(input);assert.equal(replay.body.id,uploaded.body.id);assert.equal(app.store.read().artifacts.length,1);

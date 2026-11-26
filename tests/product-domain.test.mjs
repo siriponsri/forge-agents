@@ -1,3 +1,4 @@
+import {browserOwner} from './support/browser-owner.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, writeFile, readFile } from 'node:fs/promises';
@@ -50,7 +51,7 @@ test('atomic rollback and serialized writers keep last acknowledged data',async(
 test('HTTP startup, job execution, verified artifacts, backup and process restart',async t=>{
   const dir=await temp();let app=await createApplication({dataDir:dir});
   t.after(()=>app.close());
-  const post=async(p,input)=>{const r=await fetch(app.url+p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(input)});const data=await r.json();if(!r.ok)throw Object.assign(new Error(data.error.message),data.error);return data;};
+  const post=async(p,input)=>{const r=await fetch(app.url+p,{method:'POST',headers:{'Content-Type':'application/json',...await browserOwner(app.url)},body:JSON.stringify(input)});const data=await r.json();if(!r.ok)throw Object.assign(new Error(data.error.message),data.error);return data;};
   const health=await (await fetch(app.url+'/api/health')).json();assert.equal(health.product,'FORGE');
   const project=(await post('/api/command',op('project.create',null,{name:'Job fixture',workspace:path.join(dir,'job workspace')}))).entity;
   const notebook=(await post('/api/command',op('notebook.create',project.id,{name:'Harmless Python fixture',code:"print('FORGE real Python execution')\n",language:'python'}))).entity;

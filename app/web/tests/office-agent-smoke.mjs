@@ -1,3 +1,4 @@
+import {browserOwner} from '../../../tests/support/browser-owner.mjs';
 // Actual mounted FORGE GUI + SDK HTTP queue + native drawings + local bundle.
 // Run identity is an injected engineering fixture; no LLM/provider is invoked.
 import assert from 'node:assert/strict';
@@ -12,7 +13,7 @@ import {createApplication} from '../../server/main.mjs';
 const temp=await mkdtemp(path.join(os.tmpdir(),'forge-office-queue-gui-')),dataDir=path.join(temp,'state');
 let app=await createApplication({dataDir}),browser,client,page;
 const errors=[],checks=[];
-async function post(route,input){const r=await fetch(app.url+route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(input)}),v=await r.json();assert.equal(r.status,200,JSON.stringify(v));return v;}
+async function post(route,input){const r=await fetch(app.url+route,{method:'POST',headers:{'Content-Type':'application/json',...await browserOwner(app.url)},body:JSON.stringify(input)}),v=await r.json();assert.equal(r.status,200,JSON.stringify(v));return v;}
 const cmd=(type,projectId,data,record)=>post('/api/command',{type,projectId,data,operationId:crypto.randomUUID(),...(record?{id:record.id,expectedRevision:record.revision}:{})});
 const state=async()=>(await fetch(app.url+'/api/state')).json();
 async function wait(predicate){for(let n=0;n<120;n++){const s=await state();if(predicate(s))return s;await new Promise(r=>setTimeout(r,100));}throw Error('Office queue state timeout');}
