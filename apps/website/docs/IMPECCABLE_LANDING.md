@@ -5,6 +5,85 @@ Read surface: the existing localized download route. This packet supersedes
 `DIRECTION.md` and `LANDING_AMBITION.md` **for this new Home composition**; their
 previous design verdicts do not approve this work.
 
+## Independent review correction — disposition FIX, verdict pending
+
+Root's fresh reviewer evaluated all 17 valid first-generation captures at root
+`ab0b5ce` and returned **FIX**. This worker is applying exactly its four material
+findings in one coherent correction batch. The prior technical checks below
+describe the first generation; the correction record will name refreshed evidence.
+Neither the original checks nor this correction is Owner aesthetic acceptance.
+
+1. The hero now follows one expressly illustrative project-website brief. Plan
+   has a stacked goal/scope/owner allocation and a Mission plan sheet; Make has
+   assigned Outline/Pages/Review work and two separately retained Site files and
+   Review notes outputs; Inspect changes to source/history/evidence records and
+   a Delivery Pack folder. Connector topology, work arrangement, output content
+   and output structure change together. The lead stays on one line at 320px.
+   The statement sits below the canvas with its own breathing room.
+2. Mobile proof adds a labelled crop of the **same original dated screenshot**
+   showing the actual plans/documents/reports/notebooks entry area at readable
+   native scale, with a modest scale reduction at 320px. The full capture remains
+   below for context; a visible “Open full-resolution capture” action accompanies
+   the unchanged original date/developer-fixture qualification. No public raster
+   was created or changed.
+3. Home's pending/invalid navigation is accurately named “Windows / macOS package
+   details”. The detail route has Checking/Unavailable status, no self-link
+   platform buttons, and the existing Retry. Direct ZIP actions appear only after
+   valid metadata. No-JavaScript direct ZIP/manifest links remain.
+4. The down-arrow glyph was replaced by Lucide ArrowDown, matching the existing
+   SVG icon family.
+
+One TypeScript + production/static rebuild passed in the granted serial slot.
+The same 17 baseline image paths below now contain the correction generation;
+all 17 were opened and visually checked after recapture. No UI edit followed
+those captures. No second detector, broader polish pass, new world, nested review,
+global design repair or public asset edit. Root owns the verdict on these four
+fixes; the independent disposition remains **FIX pending verdict** at handoff.
+
+The correction evidence is `evidence/impeccable-20261126/correction-checks.json`.
+It records 24 AA audits (TH/EN × light/dark × six widths), all with no violations,
+and 72 settled phase checks: one-line leader, statement clear of retained output,
+and no document overflow. Plan/Make/Inspect have distinct text, connector paths
+and flex/grid/block output structures. `finish-check.json` records actual reduced
+motion, delayed metadata, malformed metadata, a truthful Home package-details
+click through to the detail route, Retry recovery and no-JavaScript links.
+The delayed state has no platform download buttons or self-links; the unavailable
+state preserves an actionable Retry. Tests are not aesthetic approval.
+
+Supplemental inspected evidence for the four specific fixes:
+
+- `phase-plan-1440-en.png`, `phase-inspect-1440-en.png`: complete distinct desktop
+  illustration states and their different retained output structures.
+- `phase-plan-375-th-dark.png`, `phase-inspect-375-th-dark.png`: mobile state
+  details. The Inspect element capture's upper edge closely crops the leader;
+  use the baseline 375px viewport for leader spacing and the desktop Inspect
+  capture for complete topology. Its retained output and caption remain visible.
+- `mobile-proof-375-th-dark.png`: readable crop, full context, date/fixture
+  qualification and visible full-resolution action in one element capture.
+- `download-pending-375-en-dark.png`, `download-unavailable-375-en-dark.png`:
+  delayed Checking and failed availability states without fake download actions.
+- `home-package-details-375-en-dark.png`: accurate navigation in the unavailable
+  Home state, subsequently clicked through to the actual package details route.
+
+The first focused Playwright run hit a test-harness route-unregister timing
+error (`route.continue: Route is already handled!`). Waiting for continuation
+before unregistering fixed the harness; the focused check passed afterward.
+This did not change UI source or require another build. Browser and static server
+were closed, and the serial slot was explicitly released before the file review.
+
+Root's current real packages, copied only into ignored test `dist/downloads`, are
+source `02a888c27fe7df81cc9e390cee7e1498c2da0bd8` with 420 source files each:
+
+| Platform | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Windows | 1,374,563 | 5978a7a338a6249344c85dc7dbb5b5c5f83b6890a72e00ce374df68509b3c972 |
+| macOS | 1,374,551 | 5c085968762d4360587bd35ab36dcc52d9fdea1d0603cc0740421191bf1e4120 |
+
+Both fetched with matching bytes/SHA-256 and completed actual browser downloads.
+Those delivery checks supersede the first-generation archive values retained in
+the historical section below. They do not qualify new platform/native execution.
+No archive/manifest or other public asset is part of this correction commit.
+
 The Owner rejected the previous giant black headline/catalog/diagram landing as
 unattractive, and asked for a substantially more ambitious, beautiful page than
 Orca/T3, real Windows/macOS downloads and Impeccable. That rejection outranks its

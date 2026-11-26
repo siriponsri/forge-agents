@@ -1,0 +1,899 @@
+{
+  "checkedAt": "2026-11-26T03:29:47.614Z",
+  "status": "Technical checks PASS; independent four-fix verdict pending",
+  "sourceBuilds": 1,
+  "detector": "Not rerun; original once-only result remains in first-generation packet",
+  "scope": "Only the four listed finish-review corrections. No new native/product/runtime qualification.",
+  "audits": [
+    {
+      "lang": "en",
+      "phases": [
+        {
+          "content": "Mission planProject site · Tasks and owners",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "Site filesBuilderReview notesReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery PackFiles + Revisions + Evidence",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "light",
+      "violations": [],
+      "width": 320
+    },
+    {
+      "lang": "en",
+      "phases": [
+        {
+          "content": "Mission planProject site · Tasks and owners",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "Site filesBuilderReview notesReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery PackFiles + Revisions + Evidence",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "light",
+      "violations": [],
+      "width": 375
+    },
+    {
+      "lang": "en",
+      "phases": [
+        {
+          "content": "Mission planProject site · Tasks and owners",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "Site filesBuilderReview notesReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery PackFiles + Revisions + Evidence",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "light",
+      "violations": [],
+      "width": 414
+    },
+    {
+      "lang": "en",
+      "phases": [
+        {
+          "content": "Mission planProject site · Tasks and owners",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "Site filesBuilderReview notesReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery PackFiles + Revisions + Evidence",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "light",
+      "violations": [],
+      "width": 768
+    },
+    {
+      "lang": "en",
+      "phases": [
+        {
+          "content": "Mission planProject site · Tasks and owners",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "Site filesBuilderReview notesReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery PackFiles + Revisions + Evidence",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "light",
+      "violations": [],
+      "width": 1280
+    },
+    {
+      "lang": "en",
+      "phases": [
+        {
+          "content": "Mission planProject site · Tasks and owners",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "Site filesBuilderReview notesReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery PackFiles + Revisions + Evidence",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "light",
+      "violations": [],
+      "width": 1440
+    },
+    {
+      "lang": "en",
+      "phases": [
+        {
+          "content": "Mission planProject site · Tasks and owners",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "Site filesBuilderReview notesReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery PackFiles + Revisions + Evidence",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "dark",
+      "violations": [],
+      "width": 320
+    },
+    {
+      "lang": "en",
+      "phases": [
+        {
+          "content": "Mission planProject site · Tasks and owners",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "Site filesBuilderReview notesReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery PackFiles + Revisions + Evidence",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "dark",
+      "violations": [],
+      "width": 375
+    },
+    {
+      "lang": "en",
+      "phases": [
+        {
+          "content": "Mission planProject site · Tasks and owners",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "Site filesBuilderReview notesReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery PackFiles + Revisions + Evidence",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "dark",
+      "violations": [],
+      "width": 414
+    },
+    {
+      "lang": "en",
+      "phases": [
+        {
+          "content": "Mission planProject site · Tasks and owners",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "Site filesBuilderReview notesReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery PackFiles + Revisions + Evidence",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "dark",
+      "violations": [],
+      "width": 768
+    },
+    {
+      "lang": "en",
+      "phases": [
+        {
+          "content": "Mission planProject site · Tasks and owners",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "Site filesBuilderReview notesReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery PackFiles + Revisions + Evidence",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "dark",
+      "violations": [],
+      "width": 1280
+    },
+    {
+      "lang": "en",
+      "phases": [
+        {
+          "content": "Mission planProject site · Tasks and owners",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "Site filesBuilderReview notesReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery PackFiles + Revisions + Evidence",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "dark",
+      "violations": [],
+      "width": 1440
+    },
+    {
+      "lang": "th",
+      "phases": [
+        {
+          "content": "แผนของ Missionเว็บไซต์โปรเจกต์ · งานและผู้รับผิดชอบ",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "ไฟล์เว็บไซต์BuilderบันทึกตรวจงานReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery Packไฟล์ + Revision + หลักฐาน",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "light",
+      "violations": [],
+      "width": 320
+    },
+    {
+      "lang": "th",
+      "phases": [
+        {
+          "content": "แผนของ Missionเว็บไซต์โปรเจกต์ · งานและผู้รับผิดชอบ",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "ไฟล์เว็บไซต์BuilderบันทึกตรวจงานReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery Packไฟล์ + Revision + หลักฐาน",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "light",
+      "violations": [],
+      "width": 375
+    },
+    {
+      "lang": "th",
+      "phases": [
+        {
+          "content": "แผนของ Missionเว็บไซต์โปรเจกต์ · งานและผู้รับผิดชอบ",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "ไฟล์เว็บไซต์BuilderบันทึกตรวจงานReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery Packไฟล์ + Revision + หลักฐาน",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "light",
+      "violations": [],
+      "width": 414
+    },
+    {
+      "lang": "th",
+      "phases": [
+        {
+          "content": "แผนของ Missionเว็บไซต์โปรเจกต์ · งานและผู้รับผิดชอบ",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "ไฟล์เว็บไซต์BuilderบันทึกตรวจงานReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery Packไฟล์ + Revision + หลักฐาน",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "light",
+      "violations": [],
+      "width": 768
+    },
+    {
+      "lang": "th",
+      "phases": [
+        {
+          "content": "แผนของ Missionเว็บไซต์โปรเจกต์ · งานและผู้รับผิดชอบ",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "ไฟล์เว็บไซต์BuilderบันทึกตรวจงานReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery Packไฟล์ + Revision + หลักฐาน",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "light",
+      "violations": [],
+      "width": 1280
+    },
+    {
+      "lang": "th",
+      "phases": [
+        {
+          "content": "แผนของ Missionเว็บไซต์โปรเจกต์ · งานและผู้รับผิดชอบ",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "ไฟล์เว็บไซต์BuilderบันทึกตรวจงานReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery Packไฟล์ + Revision + หลักฐาน",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "light",
+      "violations": [],
+      "width": 1440
+    },
+    {
+      "lang": "th",
+      "phases": [
+        {
+          "content": "แผนของ Missionเว็บไซต์โปรเจกต์ · งานและผู้รับผิดชอบ",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "ไฟล์เว็บไซต์BuilderบันทึกตรวจงานReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery Packไฟล์ + Revision + หลักฐาน",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "dark",
+      "violations": [],
+      "width": 320
+    },
+    {
+      "lang": "th",
+      "phases": [
+        {
+          "content": "แผนของ Missionเว็บไซต์โปรเจกต์ · งานและผู้รับผิดชอบ",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "ไฟล์เว็บไซต์BuilderบันทึกตรวจงานReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery Packไฟล์ + Revision + หลักฐาน",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "dark",
+      "violations": [],
+      "width": 375
+    },
+    {
+      "lang": "th",
+      "phases": [
+        {
+          "content": "แผนของ Missionเว็บไซต์โปรเจกต์ · งานและผู้รับผิดชอบ",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "ไฟล์เว็บไซต์BuilderบันทึกตรวจงานReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery Packไฟล์ + Revision + หลักฐาน",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "dark",
+      "violations": [],
+      "width": 414
+    },
+    {
+      "lang": "th",
+      "phases": [
+        {
+          "content": "แผนของ Missionเว็บไซต์โปรเจกต์ · งานและผู้รับผิดชอบ",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "ไฟล์เว็บไซต์BuilderบันทึกตรวจงานReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery Packไฟล์ + Revision + หลักฐาน",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "dark",
+      "violations": [],
+      "width": 768
+    },
+    {
+      "lang": "th",
+      "phases": [
+        {
+          "content": "แผนของ Missionเว็บไซต์โปรเจกต์ · งานและผู้รับผิดชอบ",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "ไฟล์เว็บไซต์BuilderบันทึกตรวจงานReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery Packไฟล์ + Revision + หลักฐาน",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "dark",
+      "violations": [],
+      "width": 1280
+    },
+    {
+      "lang": "th",
+      "phases": [
+        {
+          "content": "แผนของ Missionเว็บไซต์โปรเจกต์ · งานและผู้รับผิดชอบ",
+          "display": "flex",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V350",
+          "phase": 0,
+          "statementClear": true
+        },
+        {
+          "content": "ไฟล์เว็บไซต์BuilderบันทึกตรวจงานReviewer",
+          "display": "grid",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V135Q300 155 280 155H115Q95 155 95 175V216M300 85V216M300 85V135Q300 155 320 155H485Q505 155 505 175V216M95 284V315Q95 335 115 335H280Q300 335 300 355M300 284V355M505 284V315Q505 335 485 335H320Q300 335 300 355",
+          "phase": 1,
+          "statementClear": true
+        },
+        {
+          "content": "Delivery Packไฟล์ + Revision + หลักฐาน",
+          "display": "block",
+          "leadOneLine": true,
+          "overflow": false,
+          "path": "M300 85V115Q300 140 275 140H190Q170 140 170 160V200M300 140H410Q430 140 430 160V200M170 265V300Q170 325 195 325H275Q300 325 300 350M430 265V300Q430 325 405 325H325Q300 325 300 350",
+          "phase": 2,
+          "statementClear": true
+        }
+      ],
+      "theme": "dark",
+      "violations": [],
+      "width": 1440
+    }
+  ],
+  "actualSourceDownloads": {
+    "commit": "02a888c27fe7df81cc9e390cee7e1498c2da0bd8",
+    "downloads": [
+      {
+        "bytes": 1374563,
+        "matches": true,
+        "platform": "windows",
+        "sha256": "5978a7a338a6249344c85dc7dbb5b5c5f83b6890a72e00ce374df68509b3c972"
+      },
+      {
+        "bytes": 1374551,
+        "matches": true,
+        "platform": "macos",
+        "sha256": "5c085968762d4360587bd35ab36dcc52d9fdea1d0603cc0740421191bf1e4120"
+      }
+    ]
+  },
+  "browserDownloadCompletions": [
+    {
+      "fileName": "FORGE-Windows.zip",
+      "sizeBytes": 1374563,
+      "url": "http://127.0.0.1:4179/downloads/FORGE-Windows.zip",
+      "completedAt": "2026-11-26T03:26:49.467Z"
+    },
+    {
+      "fileName": "FORGE-macOS.zip",
+      "sizeBytes": 1374551,
+      "url": "http://127.0.0.1:4179/downloads/FORGE-macOS.zip",
+      "completedAt": "2026-11-26T03:26:50.493Z"
+    }
+  ],
+  "captures": [
+    "apps/website/docs/evidence/impeccable-20261126/desktop-1280-en-dark.png",
+    "apps/website/docs/evidence/impeccable-20261126/hero-320-en-light.png",
+    "apps/website/docs/evidence/impeccable-20261126/hero-375-en-light.png",
+    "apps/website/docs/evidence/impeccable-20261126/hero-414-en-light.png",
+    "apps/website/docs/evidence/impeccable-20261126/hero-768-en-light.png",
+    "apps/website/docs/evidence/impeccable-20261126/hero-1280-en-light.png",
+    "apps/website/docs/evidence/impeccable-20261126/hero-1440-en-light.png",
+    "apps/website/docs/evidence/impeccable-20261126/hero-320-th-dark.png",
+    "apps/website/docs/evidence/impeccable-20261126/hero-375-th-dark.png",
+    "apps/website/docs/evidence/impeccable-20261126/hero-1440-th-dark.png",
+    "workbench-1440-en-dark.png",
+    "workflow-1440-en-dark.png",
+    "formation-1440-en-dark.png",
+    "formation-375-en-dark.png",
+    "download-1440-en-dark.png"
+  ],
+  "focusedChecks": "finish-check.json",
+  "harnessCorrection": "First focused run encountered route.continue already handled due route-unregister timing. Harness sequencing fixed; focused checks then passed. No source change or rebuild followed captures."
+}

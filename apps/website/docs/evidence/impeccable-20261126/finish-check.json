@@ -1,7 +1,9 @@
 {
   "status": "PASS",
   "checks": [
+    "Plan/Make/Inspect change illustrative retained output, connector topology and result structure: mission plan, split files/review, Delivery Pack",
     "Actual reduced-motion CSS disables hero connector animation; strategy manual Next step advances without playback",
+    "Pending detail route gives Checking availability with no self-link download actions",
     "Malformed download metadata fails closed; visible Retry recovers to real same-origin platform anchors",
     "No-JavaScript localized home retains honest direct Windows/macOS links; setup content remains readable"
   ],

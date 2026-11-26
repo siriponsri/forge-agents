@@ -1,5 +1,31 @@
 # Landing redesign worker handoff
 
+Correction implemented: root's independent fresh review returned **FIX** at
+root `ab0b5ce`. Exactly four material corrections are being applied: specific
+illustrative brief-to-assignment-to-retained-output structure changes; readable
+mobile detail from the unchanged dated capture plus visible full-resolution
+action; accurate pending/invalid package navigation with no download-route
+self-links; Lucide down arrow. Verdict on those fixes remains pending. The
+correction's verification/capture record in
+`apps/website/docs/evidence/impeccable-20261126/correction-checks.json` supersedes
+the first-generation evidence below. Exactly one source rebuild passed. The same
+17 baseline views were recaptured and visually opened; supplemental phase,
+mobile-proof and pending/unavailable/package-navigation images document the
+four fixes. 24 AA audits and 72 settled phase/viewport checks passed. Reduced
+motion, slow pending, unavailable, truthful package-details navigation, Retry and
+no-JavaScript checks passed. No second detector or unrelated polish hunt.
+
+Current root-owned actual archives checked in ignored test output are source
+`02a888c27fe7df81cc9e390cee7e1498c2da0bd8` (420 source files each), Windows
+1,374,563 bytes / SHA-256
+`5978a7a338a6249344c85dc7dbb5b5c5f83b6890a72e00ce374df68509b3c972`, macOS
+1,374,551 bytes / SHA-256
+`5c085968762d4360587bd35ab36dcc52d9fdea1d0603cc0740421191bf1e4120`.
+Both matched the manifest and completed browser downloads. No public package
+files are committed. Independent review of the four fixes remains pending;
+no whole-surface or Owner satisfaction claim. Browser/server closed and slot
+released before filesystem review and documentation. No further source edits.
+
 Owned paths: `apps/website/src/**`, `apps/website/docs/**`, this new note only.
 No dependency/lock/manifest, public asset, legacy, runtime, release source-record,
 README, global design-context or central progress file was edited. No push or
