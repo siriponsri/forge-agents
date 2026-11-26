@@ -31,6 +31,12 @@ it did not claim live agent runs. No mutable state, database or secret was copie
   before the new integrations. It is not evidence of Missions/Parallel/Visualization/
   Proactive/Research. No screenshot or GIF was fabricated or recaptured for those
   features. Final fresh product media remains the lead-owned release task.
+- Superseding anonymous primary API check **2026-11-26T01:05:24.801Z**:
+  main and `d928e9cc97d54abbd38f2f65afa1798ac8b5b6d5` return HTTP **200**;
+  Releases returns HTTP **200** with **[]**. That checkpoint includes the
+  25 November integrations. Earlier unpublished warnings above are historical.
+  The source/install/changelog copy now distinguishes this public checkpoint
+  from resumed unpublished work. Evidence: `evidence/checkpoint-20261126/source.json`.
 - Screenshot content belongs to FORGE and follows the repository license. No
   upstream product screenshot is included.
 

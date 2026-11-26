@@ -13,16 +13,18 @@ for(const lang of ['th','en'])for(const page of ['','docs/','install/','download
 }
 const html=await readFile('dist/en/index.html','utf8');
 // Publication claims must distinguish the authentic public baseline from the
-// unpublished development integrations, without turning fixtures into live proof.
+// published checkpoint and resumed work, without turning fixtures into live proof.
 const baseline='01ee779ffd049ba875ad85bd36f2c8accd274ca0';
 for(const lang of ['th','en']){
   const source=await readFile(`dist/${lang}/github/index.html`,'utf8');
   assert.ok(source.includes(`/tree/${baseline}`),'Pinned public baseline link');
   assert.ok(source.includes(`/blob/${baseline}/app/web/src/Office.jsx`),'Actual public Office source link');
   assert.ok(source.includes('Public baseline')&&source.includes('Current development'),'Separate source qualifications');
+  assert.ok(source.includes('/tree/d928e9cc97d54abbd38f2f65afa1798ac8b5b6d5'),'Verified public checkpoint link');
+  assert.ok(!source.includes('integrations are unpublished on GitHub'),'No stale blanket publication warning');
   const changes=await readFile(`dist/${lang}/changelog/index.html`,'utf8');
   assert.ok(changes.includes('2026-11-25')&&changes.includes('2026-11-24'),'Exact development and baseline dates');
-  assert.ok(changes.includes('NOT_QUALIFIED'),'Native all-action execution gap remains explicit');
+  assert.ok(changes.includes('NOT_QUALIFIED'),'Unqualified routes remain explicit');
 }
 assert.ok(html.includes('Developer verified')&&html.includes('labelled injected provider/native observations'),'Developer evidence qualifier');
 assert.ok(html.includes('Local CPU/file trials, recheck, comparison and export are mounted and developer verified.'),'Local Research qualification');

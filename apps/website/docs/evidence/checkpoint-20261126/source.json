@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-11-26T01:05:24.801Z",
+  "authentication": "anonymous",
+  "results": [
+    {
+      "url": "https://api.github.com/repos/siriponsri/forge-agents/git/ref/heads/main",
+      "status": 200,
+      "sha": "d928e9cc97d54abbd38f2f65afa1798ac8b5b6d5"
+    },
+    {
+      "url": "https://api.github.com/repos/siriponsri/forge-agents/commits/d928e9cc97d54abbd38f2f65afa1798ac8b5b6d5",
+      "status": 200,
+      "sha": "d928e9cc97d54abbd38f2f65afa1798ac8b5b6d5"
+    },
+    {
+      "url": "https://api.github.com/repos/siriponsri/forge-agents/releases",
+      "status": 200,
+      "count": 0
+    }
+  ]
+}
