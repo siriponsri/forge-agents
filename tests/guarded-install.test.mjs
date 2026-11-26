@@ -49,18 +49,9 @@ test('actual approved native private copy, exact descriptor, replay, restart and
   assert.equal((await s.install({operationId:'actual-cache-0001'})).status,'failed');
 });
 
-test('build execution fixture: exact pinned stages, scrubbed environment, fixture outputs verified',{skip:!available},async t=>{
-  const dataDir=await temp(t),seen=[];process.env.GUARDED_INSTALL_TEST_SECRET='never-forward-this';t.after(()=>delete process.env.GUARDED_INSTALL_TEST_SECRET);
-  const s=await service(t,{dataDir,commandRunner:async spec=>{
-    seen.push(spec);assert.equal(spec.env.GUARDED_INSTALL_TEST_SECRET,undefined);assert.equal(spec.env.NODE_OPTIONS,undefined);assert.ok(!JSON.stringify(spec).includes('never-forward-this'));assert.equal(spec.timeoutMs,600000);
-    if(spec.stage==='verify')await fixtureOutput(spec.args[1]);return {exitCode:0};
-  }});
-  await s.install({operationId:'fixture-stages-001'});assert.equal((await settled(s)).status,'ready');
-  assert.deepEqual(seen.map(s=>s.stage),['sources','toolchain','patch','opencode-dependencies','t3-dependencies','opencode-build','t3-build','broker-build','verify']);
-  assert.deepEqual(seen[3].args,['install','--frozen-lockfile','--ignore-scripts','--filter','@opencode/core','--filter','@opencode/cli']);assert.ok(seen[3].command.endsWith('bun.exe'));
-  assert.equal(seen[4].args.at(-1),'install');assert.equal(seen[6].args.at(-1),'build');assert.equal(seen[8].args.at(-1),process.execPath);
-  assert.equal((await s.artifacts()).t3.files.length,46);
-});
+// The complete default stage/environment/output fixture now lives in
+// guarded-session-install.test.mjs. The old nine-stage fixture stopped before
+// the mandatory SDK/session derivative and could no longer produce ready.
 
 test('build execution fixture: nonzero stage never produces ready or leaks logs',{skip:!available},async t=>{
   const dataDir=await temp(t),s=await service(t,{dataDir,commandRunner:async()=>({exitCode:1,stdout:'secret private path',stderr:'credential=hidden'})});

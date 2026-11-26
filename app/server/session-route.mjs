@@ -54,10 +54,20 @@ export function createSessionRoute({store,authorizeOwner,policy,getGuarded,getT3
     return {purpose:PURPOSE,manifestDigest:p.manifestDigest,profileDigest:digest(p),attestationDigest:digest(a),binding:bindingFor({projectId:r.projectId,runId:r.id,attemptId:r.attemptId,threadId:r.threadId,providerThreadId:thread.id,providerTurnId:turn.id,nativeSessionId:thread.nativeThreadRef.nativeId,nativeTurnId:turn.nativeTurnRef?.nativeId,identityKind:'private-adapter'})};
   }
   function reserve(s,{run,input}){const c=validateContext(s,input,{run}),row=rowFor(s,input);if(row.status!=='dispatching')fail('SESSION_ROUTE_ALREADY_USED');row.runId=run.id;row.attemptId=run.attemptId;row.status='dispatched';return c;}
-  function onEvent(s,{run}){
-    if(!run.sessionContext||run.status!=='running')return;
-    qualifyRun(s,run);const row=rowFor(s,run),caller=approvals.get(row.id);
-    for(const child of row.context.children)getRoles().bindInTransaction(s,{projectId:run.projectId,operationId:`session-intent-child:${row.id}:${child.conversationId}:${child.botId}`,parentRunId:run.id,childConversationId:child.conversationId,childBotId:child.botId},caller);
+  function onEvent(s,{run,projection}){
+    // Observed lifecycle is evidence, not a new action. Revocation/expiry and
+    // provider_turn.completed BEFORE turn.terminal must never kill the event
+    // consumer or erase the actual outcome. Tool dispatch still rechecks live
+    // authority through qualifyRun on every authenticated SDK request.
+    if(!run.sessionContext||run.status!=='running'||projection?.providerTurn?.status!=='running'||run.sessionBinding?.status==='bound')return;
+    try{
+      qualifyRun(s,run);const row=rowFor(s,run),caller=approvals.get(row.id),candidate=structuredClone(s),ids=[];
+      // Preflight the whole reviewed child set in the same writer. Publish its
+      // event/receipt mutations together; a refused child cannot leave a partial
+      // newly minted set while actual native observation is still retained.
+      for(const child of row.context.children)ids.push(getRoles().bindInTransaction(candidate,{projectId:run.projectId,operationId:`session-intent-child:${row.id}:${child.conversationId}:${child.botId}`,parentRunId:run.id,childConversationId:child.conversationId,childBotId:child.botId},caller).id);
+      s.events=candidate.events;s.receipts=candidate.receipts;run.sessionBinding={status:'bound',membershipIds:ids,observedAt:clock()};
+    }catch(error){run.sessionBinding={status:'unavailable',code:/^SESSION_(ROUTE|ROLE)_[A-Z_]+$/.test(error?.code??'')?error.code:'SESSION_ROUTE_BINDING_UNAVAILABLE'};}
   }
   async function createSessionGateway({profile,assertCurrent,withFence,authorizePhase}){
     if(gateways.has(profile.runId))fail('SESSION_ROUTE_ALREADY_BOUND');let descriptor,closing;

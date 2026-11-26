@@ -6,6 +6,7 @@ import {entity,changed,find} from '../app/server/domain.mjs';
 import {digest as taskDigest} from '../app/server/agui.mjs';
 import {createConversationService} from '../app/providers/conversations.mjs';
 import {assertWorkspaceAvailable} from '../app/server/admission.mjs';
+import {applyGuardedObservation} from '../app/protocol/observations.mjs';
 
 // Canonical SQLite, role/Owner boundary and reservation hooks are real. Only
 // native setup/observations are injected here; this is not live qualification.
@@ -64,6 +65,19 @@ test('Owner can revoke an unstarted retained approval without dispatch or reviva
   assert.equal((await f.route.cancel(body,f.owner)).status,'cancelled');assert.equal((await f.route.cancel(body,f.owner)).status,'cancelled');
   assert.equal((await f.route.start(body,f.owner)).status,'cancelled');assert.equal(f.calls,0);
   assert.equal((await f.route.createIntent(f.input,f.owner)).status,'cancelled');assert.equal(f.calls,0);
+});
+
+test('native completed-turn then terminal evidence survives missing or revoked binding authority',async t=>{
+  const f=await routeFixture(t),intent=await f.route.createIntent(f.input,f.owner),started=await f.route.start({projectId:f.p.id,intentId:intent.intentId,operationId:intent.operationId},f.owner);
+  const observation=async(status,terminal)=>f.store.transaction(s=>{
+    const run=find(s,'runs',started.runId),projection={providerThread:{id:'actual-fixture-thread',appThreadId:run.threadId},providerTurn:{id:'actual-fixture-turn',providerThreadId:'actual-fixture-thread',runAttemptId:run.attemptId,nodeId:run.rootNodeId,status},terminal,turnItems:[]};
+    applyGuardedObservation(s,run,projection);f.route.onEvent(s,{run,projection});return run;
+  });
+  const running=await observation('running',null);assert.equal(running.status,'running');assert.equal(running.sessionBinding.status,'unavailable');
+  await f.route.closeRun(started.runId);f.advance(300001);
+  const preterminal=await observation('completed',null);assert.equal(preterminal.status,'running');
+  const completed=await observation('completed',{status:'completed'});assert.equal(completed.status,'completed');assert.equal(completed.terminalEvent,true);
+  assert.ok(f.store.read().events.some(e=>e.type==='agui'&&e.runId===started.runId&&e.event.type==='RUN_FINISHED'));
 });
 
 test('workspace exception is exact two-tool attested parent only and unrelated writable runs remain blocked',async t=>{

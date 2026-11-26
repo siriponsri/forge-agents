@@ -1,9 +1,52 @@
-# Paused work and next-session tasks
+# Resumed work and continuation map
+
+## Current continuation — 26 November 2026
+
+The Owner explicitly resumed the full goal and authorized subagents. The pause
+and failed Research diagnostics below are historical. This current section
+supersedes their executable instructions.
+
+- README-PRO and the original minimal logo are delivered. The Owner's later
+  direction is now the default: orange primary, yellow and gray secondary.
+  App header/favicon and public-site mark use the same original geometry.
+- Strategist is integrated through the existing Assistance/T3 owner with four
+  explicit role patterns, reviewed handoff and optional Asst. Scoped service/UI
+  checks and independent review passed; external model quality is unrun.
+- Session roles, approved parent-child prompt service, bounded SDK gateway and
+  the compiled native two-tool purpose are integrated. Root Owner HTTP/CSRF,
+  canonical T3/Conversation role snapshots, final fences, restore and Chat UI
+  are mounted at `661a3f7`. Actual assembled native parent qualification and
+  final independent UI/security correction checks remain pending.
+- The old Research action-scope defect is corrected. Actual assembled static
+  Research passed; a frozen `def855d` all-ON cohort also passed primary/helper/
+  revision with six loopback requests, three real effects and independent
+  validation. This qualifies that source/image pair, not the later session image.
+- Fixed cohort approval now survives ordinary Adaptive decision age within its
+  absolute trial envelope; task/skill/route bytes remain pinned and current
+  native authority remains required. Ordinary Adaptive TTL stays fifteen minutes.
+- Session-capable installer cache/inventory/Windows process safety checks pass.
+  A fresh-source compile is active in a separate owned directory. Its dependency
+  store reuse and engineering harness differences must be reported explicitly.
+  No fresh-build/native proof may be inferred from successful cache copies.
+
+Current branch: `fix/research-attestation-check-work`. Public `main` remains
+`d928e9cc97d54abbd38f2f65afa1798ac8b5b6d5`; resumed changes are not published.
+Required next checks: finish native Orchestrator production qualification;
+current-image Guarded/frontend/Research regression; fresh installer evidence;
+final UI/media, acceptance ledger, serial checks and handoff. Monetary native
+finality is an unsupported contract, separate from live accounts and Home UAT.
+
+Do not overwrite protected legacy paths or machine accounts. Continue existing
+canonical owners; preserve durable unknown/no-redispatch behavior. The Goal tool
+still reports paused despite the explicit resume instruction; that UI state
+does not authorize marking the unfinished product complete.
+
+## Historical pause — 25 November 2026
 
 Owner explicitly requested pausing the goal on 25 November 2026 and resuming
 tomorrow. No automatic resume or scheduled work is authorized by this note.
 
-## Added by the Owner — pending, not started
+## Added at the historical pause — completed in the resumed session above
 
 - **README-PRO:** make the English README more professional. Improve the product
   story, structure, installation flow, media placement and readability. Keep
