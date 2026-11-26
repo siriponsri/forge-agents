@@ -2,6 +2,7 @@ import path from 'node:path';
 import {append,record,records,find,fail,changed,revision,digest,boundedText,integer,taskSignature,planSignature,approvedTask,assertNoMixedControllers,policy,contextFor,ownedRun,terminal,activeWorkspace,pathKey} from './contracts.mjs';
 import {assertIsolatedWorkspaceAvailable} from './context.mjs';
 import {checkoutPath,inspectSource,inspectWorkspace,addWorktree,git,gitText,runChecks,noLinks} from './git.mjs';
+import {validateStrategyContext,assertStrategySourceAvailable} from '../strategies/index.mjs';
 
 export function createWorkspaceService({store,dataDir,t3,authorize}){
   const pending=new Set(),locks=new Set();let closed=false;
@@ -42,6 +43,7 @@ export function createWorkspaceService({store,dataDir,t3,authorize}){
   function currentCheck(s,w,head){const c=w.checkId&&record(s,'check',w.checkId,w.projectId);if(!c||c.status!=='passed'||c.head!==head||c.baseSha!==w.baseSha||c.runId!==w.runId||c.attemptId!==w.attemptId)fail('CHECKS_REQUIRED','Run checks against the exact current head and attempt',409);return c;}
   const api={
     get researchComponentContextVersion(){return t3?.researchComponentContextVersion===1?1:0;},
+    get strategyContextVersion(){return t3?.strategyContextVersion===1?1:0;},
     async state(input,caller){await identity('state',input,caller);find(store.read(),'projects',input.projectId);const s=store.read();return {projectId:input.projectId,stateRevision:s.revision,policy:policy(s,input.projectId),workspaces:records(s,'workspace',input.projectId),integrations:records(s,'integration',input.projectId),checks:records(s,'check',input.projectId),operations:records(s,'operation',input.projectId),capabilities:{executionSupported:executionSupported(),isolation:'git-worktree-files',osSandbox:false,automaticPush:false,checks:['diff','node-test'],capacitySource:'explicit-owner-ceilings'}};},
     configure(input,caller){return operation('configure',input,caller,async i=>store.transaction(s=>{
       const old=policy(s,i.projectId);if((old?.revision??0)!==i.expectedRevision)fail('REVISION_CONFLICT','Parallel policy changed',409);
@@ -56,7 +58,7 @@ export function createWorkspaceService({store,dataDir,t3,authorize}){
       if(managed===sourceKey||managed.startsWith(sourceKey+path.sep))fail('PATH_SCOPE','Machine workspace storage must be outside the user repository',403);
       await noLinks(dataDir);
       const w=await store.transaction(s=>{
-        const p=find(s,'projects',i.projectId);assertNoMixedControllers(s,i.projectId,i);const {task,plan}=approvedTask(s,i.projectId,i.taskId);
+        const p=find(s,'projects',i.projectId);assertStrategySourceAvailable(s,i.projectId,i);assertNoMixedControllers(s,i.projectId,i);const {task,plan}=approvedTask(s,i.projectId,i.taskId);
         revision(task,i.expectedTaskRevision);if(!['ready','backlog','blocked'].includes(task.status))fail('TASK_STATE','Choose a task ready for a new workspace',409);
         const configured=policy(s,i.projectId);if(!configured)fail('WORKSPACE_POLICY_REQUIRED','Configure explicit capacity and checks first',409);
         const w=append(s,'workspace',{taskId:task.id,botId:task.botId??null,botRevision:task.botId?find(s,'bots',task.botId,p.id).revision:null,taskRevision:task.revision,taskSignature:taskSignature(task),planId:plan.id,planRevision:plan.revision,planSignature:planSignature(plan),profileDigest:digest(p.profile),providerInstanceId:p.profile?.provider?.instanceId??null,...source,baseSha:source.sourceHeadSha,creationOperationId:i.operationId,status:'creating',requiredChecks:[...configured.checks],runOperationId:null,runId:null,attemptId:null},p.id);
@@ -65,20 +67,23 @@ export function createWorkspaceService({store,dataDir,t3,authorize}){
       try{await addWorktree(w,dataDir);return store.transaction(s=>{const r=get(s,{...i,workspaceId:w.id});r.status='ready';changed(r);return r;});}
       catch(e){await store.transaction(s=>{const r=get(s,{...i,workspaceId:w.id});r.status='creation-unknown';r.error=e.message;changed(r);});throw e;}
     });},
-    start(input,caller,{researchContext,researchComponentContext}={}){
+    start(input,caller,{researchContext,researchComponentContext,strategyContext}={}){
       if(input.researchContext!==undefined||input.researchComponentContext!==undefined)fail('RESEARCH_CONTEXT','Research context is host-only, not a Workspace body field',403);
+      if(input.strategyContext!==undefined)fail('STRATEGY_CONTEXT','Strategy context is host-only, not a Workspace body field',403);
       if(researchComponentContext&&api.researchComponentContextVersion!==1)fail('RESEARCH_COMPONENT_INTEGRATION','Canonical T3 component admission is required',409);
-      return operation('start',{...input,...(researchContext?{researchContext:structuredClone(researchContext)}:{}),...(researchComponentContext?{researchComponentContext:structuredClone(researchComponentContext)}:{})},caller,async i=>{
+      if(strategyContext&&api.strategyContextVersion!==1)fail('STRATEGY_INTEGRATION_REQUIRED','Canonical T3 strategy admission is required',409);
+      return operation('start',{...input,...(researchContext?{researchContext:structuredClone(researchContext)}:{}),...(researchComponentContext?{researchComponentContext:structuredClone(researchComponentContext)}:{}),...(strategyContext?{strategyContext:structuredClone(strategyContext)}:{})},caller,async i=>{
       if(!executionSupported())fail('WORKSPACE_INTEGRATION_REQUIRED','T3 must retain and resolve the authoritative workspace context before dispatch',409);
       const before=get(store.read(),i);revision(before,i.expectedRevision);const files=await observed(before);
       if(files.head!==before.baseSha||files.dirty)fail('WORKSPACE_CHANGED','A new execution requires its unchanged reserved checkout',409);
       const w=await updateWorkspace(i,(s,w)=>{
         if(w.status!=='ready'||w.runOperationId)fail('REPLAY_FORBIDDEN','This workspace already owns an attempt; reconcile it',409);
+        validateStrategyContext(s,{projectId:w.projectId,taskId:w.taskId,operationId:`workspace-run:${w.id}`,workspaceContext:contextFor(w),...(i.strategyContext?{strategyContext:i.strategyContext}:{})},{preparing:true});
         w.runOperationId=`workspace-run:${w.id}`;w.status='admitting';
         assertIsolatedWorkspaceAvailable(s,i.projectId,{projectId:i.projectId,taskId:w.taskId,operationId:w.runOperationId,workspaceContext:contextFor(w)});changed(w);return w;
       });
       let response;
-      try{response=await t3.startRun({projectId:w.projectId,taskId:w.taskId,operationId:w.runOperationId,workspaceContext:contextFor(w),...(i.researchContext?{researchContext:i.researchContext}:{}),...(i.researchComponentContext?{researchComponentContext:i.researchComponentContext}:{})});}
+      try{response=await t3.startRun({projectId:w.projectId,taskId:w.taskId,operationId:w.runOperationId,workspaceContext:contextFor(w),...(i.researchContext?{researchContext:i.researchContext}:{}),...(i.researchComponentContext?{researchComponentContext:i.researchComponentContext}:{}),...(i.strategyContext?{strategyContext:i.strategyContext}:{})});}
       catch(e){await store.transaction(s=>{const w=get(s,i);w.status='unknown';w.error=e.message;changed(w);});return get(store.read(),i);}
       return store.transaction(s=>{const w=get(s,i);let run;try{run=ownedRun(s,w);}catch(e){w.status='unknown';w.error=e.message;changed(w);return w;}if(!run||response?.id!==run.id){w.status='unknown';w.error='T3 did not retain a matching authoritative run';}else{w.runId=run.id;w.attemptId=run.attemptId;w.status=terminal.has(run.status)?(w.stopRequested?'stopped':run.status==='completed'?'review':'failed'):run.status==='unknown'?'unknown':'running';}changed(w);return w;});
     });},

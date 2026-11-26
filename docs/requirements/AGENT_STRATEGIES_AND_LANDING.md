@@ -40,6 +40,30 @@ motion behavior and visually inspect actual renders before delivery.
 
 ## Primary references
 
+### Later Owner correction — same day
+
+The Owner rejected the first landing implementation (`170274d`) as unattractive.
+Its automated/rendering checks do not constitute design acceptance. Replace its
+composition with a stronger product-led design using Impeccable from
+https://github.com/pbakaus/impeccable, while preserving the confirmed FORGE mark,
+orange primary/yellow and gray secondary identity and factual product boundaries.
+The Owner requested Claude 5.5 High. The connected catalog listed that model but
+could not run its provider because Claude CLI was absent; the Owner explicitly
+selected the current model plus Impeccable instead. Do not claim Claude execution.
+
+Provide actual Windows and macOS downloadable launcher archives with real
+Start/Stop/Restart entry points, exact source revision, file size and SHA-256.
+These may be unsigned development source packages requiring Node.js 24.13+ and
+first-launch dependency connectivity. Keep that distinction clear without
+withholding real source-launcher downloads merely because no signed GitHub
+Release exists. Native macOS and real-product/home qualification remain NOT_RUN;
+download links must resolve to generated verified bytes before delivery.
+
+The Owner also explicitly deferred real-product creation and external-server
+connectivity tests to the home machine because of administrator/network limits
+on the work machine. Feasible local developer verification and correction of
+reproduced implementation defects continue.
+
 - https://github.com/OrchestratorInc/agent-orchestrator
 - https://github.com/nibzard/awesome-agentic-patterns
 - https://www.anthropic.com/research/building-effective-agents

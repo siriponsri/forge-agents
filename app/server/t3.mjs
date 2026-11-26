@@ -27,6 +27,7 @@ import {validateProactiveAction} from '../proactive/context.mjs';
 import {digest as observationDigest} from './agui.mjs';
 import {validateResearchComponentContext} from '../research-components/contracts.mjs';
 import {sessionRoleInstruction} from './session-roles.mjs';
+import {validateStrategyContext,strategyPrompt} from '../strategies/index.mjs';
 
 const launcher=fileURLToPath(new URL('../vendor/t3/bin/t3.mjs',import.meta.url));
 // app/server -> repo root is two parent directories.
@@ -187,6 +188,7 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
     admitResearchTrial(current,input);
     frontendContext(current,input,reserved);
     sessionContext(current,input,reserved);sessionRole(current,input,reserved);
+    validateStrategyContext(current,reserved);
     if(prepared&&run.researchContext){const receipt=researchReceipt(current,reserved);if(researchDigest(receipt)!==researchDigest(reserved.researchReceipt??null))fail('RESEARCH_CONTEXT_RECEIPT','Research dispatch evidence changed',409);}
     validateBudgetAdmission(current,{run:reserved,input});
     const task=find(current,'tasks',run.taskId,p.id),plan=find(current,'plans',task.planId,p.id);
@@ -219,6 +221,7 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
     workspaceContextVersion:1,
     researchContextVersion:typeof prepareResearch==='function'&&typeof validatePreparedResearch==='function'?1:0,
     researchComponentContextVersion:typeof prepareResearch==='function'&&typeof validatePreparedResearch==='function'&&typeof getResearchRoute==='function'?1:0,
+    strategyContextVersion:1,
     // Pinned T3 exposes supervision, not a FORGE all-action path sandbox.
     // Never manufacture route qualification from Owner approval or a prompt.
     qualifyProactive(state,request){try{const version=state.events.find(e=>e.type==='proactive.version'&&e.projectId===request.projectId&&e.digest===request.envelopeDigest);if(!version)return null;const b=version.definition.budget;return getGuarded?.()?.qualifyProactive(state,{...request,limits:{maxRunMs:b.maxRunMs,maxTokens:b.maxTokens,maxCost:b.maxCost}})??null;}catch{return null;}},
@@ -230,6 +233,8 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
     async catalog(){return call('orchestrator_capabilities',{});},
     async startRun(input){
       if(input.sessionRoleContext)fail('SESSION_ROLE_SCOPE','Child prompts use the canonical Conversation owner',409);
+      const strategy=validateStrategyContext(store.read(),input,{replay:store.read().runs.some(r=>r.operationId===input.operationId)});
+      input={...input,...(strategy?{strategyContext:strategy}:{})};
       await prepareCapabilities?.(input.projectId);
       await protocol.recover();
       let guardedPrepared,guardedInput;
@@ -252,7 +257,7 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
       let run;
       try{run=await store.transaction(s=>{
         if(!input.operationId)fail('VALIDATION','operationId required');
-        const prior=s.runs.find(r=>r.operationId===input.operationId);if(prior){frontendContext(s,input,prior,true);sessionContext(s,input,prior,true);if(prior.projectId!==input.projectId||prior.taskId!==input.taskId||['adaptiveContext','assistanceContext','relayContext','goalContext','proactiveContext','workspaceContext','researchContext','researchComponentContext','frontendContext','sessionContext'].some(key=>contextDigest(prior[key]??null)!==contextDigest(input[key]??null))||(prior.conversationId??null)!==(input.conversationId??null))fail('OPERATION_REUSE','Run operation ID belongs to different work or context',409);replay=true;return prior;}
+        const prior=s.runs.find(r=>r.operationId===input.operationId);if(prior){frontendContext(s,input,prior,true);sessionContext(s,input,prior,true);validateStrategyContext(s,prior,{replay:true});if(prior.projectId!==input.projectId||prior.taskId!==input.taskId||['adaptiveContext','assistanceContext','relayContext','goalContext','proactiveContext','workspaceContext','researchContext','researchComponentContext','frontendContext','sessionContext','strategyContext'].some(key=>contextDigest(prior[key]??null)!==contextDigest(input[key]??null))||(prior.conversationId??null)!==(input.conversationId??null))fail('OPERATION_REUSE','Run operation ID belongs to different work or context',409);replay=true;return prior;}
         const p=find(s,'projects',input.projectId),task=find(s,'tasks',input.taskId,p.id);
         const researchTrial=admitResearchTrial(s,input),researchContext=researchTrial?buildResearchContext(s,{projectId:p.id,trialId:researchTrial.id}):null;
         const researchComponentContext=validateResearchComponentContext(s,input),frontend=frontendContext(s,input),nativeSession=sessionContext(s,input),workingRole=sessionRole(s,{...input,botId:task.botId});
@@ -261,6 +266,7 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
         const relayContext=validateRelayAdmission(s,input);
         const goalContext=validateGoalContext(s,input);
         const proactiveContext=validateProactiveContext(s,input);
+        const strategyContext=validateStrategyContext(s,input);
         if(proactiveContext)validateProactiveEnforcement(s,input,api.qualifyProactive(s,proactiveEnforcementRequest(s,input)));
         const workspaceContext=validateWorkspaceContext(s,input);
         if(input.conversationId)find(s,'conversations',input.conversationId,p.id);
@@ -272,7 +278,7 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
         if(!selection?.instanceId||!selection?.model)fail('MODEL_REQUIRED','Connect a provider and select an observed model before starting',409);
         const harnessSelection=checkCapabilities?.(s,{...input,botId:task.botId},['provider',...(adaptiveContext?['skills']:[])]);
         const approvalSnapshot={taskRevision:task.revision,planRevision:find(s,'plans',task.planId,p.id).revision,botRevision:task.botId?find(s,'bots',task.botId,p.id).revision:null,...(relayContext?{relayTask:structuredClone(task)}:{})};
-        const r=entity({operationId:input.operationId,taskId:task.id,botId:task.botId,conversationId:input.conversationId,...(adaptiveContext?{adaptiveContext}:{}),...(assistanceContext?{assistanceContext}:{}),...(relayContext?{relayContext}:{}),...(goalContext?{goalContext}:{}),...(proactiveContext?{proactiveContext}:{}),...(workspaceContext?{workspaceContext}:{}),...(researchContext?{researchContext}:{}),...(researchComponentContext?{researchComponentContext}:{}),...(frontend?{frontendContext:frontend}:{}),...(nativeSession?{sessionContext:nativeSession}:{}),...(workingRole?{sessionRole:workingRole}:{}),...(harnessSelection?{harnessSelection}:{}),approvalSnapshot,selection,providerInstanceId:selection?.instanceId,status:'submitting',attemptId:crypto.randomUUID(),profileRevision:p.revision,profile:structuredClone(p.profile),protocolEvents:[],messages:[],...(guardedPrepared?{threadId:crypto.randomUUID(),rootNodeId:crypto.randomUUID(),workspace:guardedInput.workspace,sourceWorkspace:p.workspace}:{})},p.id);s.runs.push(r);reserveBudget(s,{run:r,input});task.runIds.push(r.id);changed(task);if(guardedPrepared){r.guardedReservedTaskSnapshot=observationDigest(task);getGuarded().reserve(s,{run:r,input:guardedInput,prepared:guardedPrepared});if(r.researchContext)getResearchRoute().reserve(s,{run:r,input});if(r.frontendContext)getFrontendRoute().reserve(s,{run:r,input});if(r.sessionContext)getSessionRoute().reserve(s,{run:r,input});}return r;
+        const r=entity({operationId:input.operationId,taskId:task.id,botId:task.botId,conversationId:input.conversationId,...(adaptiveContext?{adaptiveContext}:{}),...(assistanceContext?{assistanceContext}:{}),...(relayContext?{relayContext}:{}),...(goalContext?{goalContext}:{}),...(proactiveContext?{proactiveContext}:{}),...(workspaceContext?{workspaceContext}:{}),...(researchContext?{researchContext}:{}),...(researchComponentContext?{researchComponentContext}:{}),...(frontend?{frontendContext:frontend}:{}),...(nativeSession?{sessionContext:nativeSession}:{}),...(strategyContext?{strategyContext}:{}),...(workingRole?{sessionRole:workingRole}:{}),...(harnessSelection?{harnessSelection}:{}),approvalSnapshot,selection,providerInstanceId:selection?.instanceId,status:'submitting',attemptId:crypto.randomUUID(),profileRevision:p.revision,profile:structuredClone(p.profile),protocolEvents:[],messages:[],...(guardedPrepared?{threadId:crypto.randomUUID(),rootNodeId:crypto.randomUUID(),workspace:guardedInput.workspace,sourceWorkspace:p.workspace}:{})},p.id);s.runs.push(r);reserveBudget(s,{run:r,input});task.runIds.push(r.id);changed(task);if(guardedPrepared){r.guardedReservedTaskSnapshot=observationDigest(task);getGuarded().reserve(s,{run:r,input:guardedInput,prepared:guardedPrepared});if(r.researchContext)getResearchRoute().reserve(s,{run:r,input});if(r.frontendContext)getFrontendRoute().reserve(s,{run:r,input});if(r.sessionContext)getSessionRoute().reserve(s,{run:r,input});}return r;
       });}catch(error){if(guardedPrepared)await getGuarded?.()?.discardPreparation?.(guardedPrepared);throw error;}if(replay){if(guardedPrepared)await getGuarded?.()?.discardPreparation?.(guardedPrepared);return run;}
       let launchRequested=false;
       try{
@@ -284,7 +290,7 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
         const validateDispatch=({prepared=false}={})=>{const current=store.read();
         const reserved=find(current,'runs',run.id,p.id);if(reserved.status!=='submitting'||reserved.stopRequest)fail('RUN_CANCELLED','Run admission was cancelled before dispatch',409);
         admitResearchTrial(current,input);
-        frontendContext(current,input,reserved);sessionContext(current,input,reserved);sessionRole(current,input,reserved);
+        frontendContext(current,input,reserved);sessionContext(current,input,reserved);sessionRole(current,input,reserved);validateStrategyContext(current,reserved);
         if(prepared&&run.researchContext){const receipt=researchReceipt(current,reserved);if(researchDigest(receipt)!==researchDigest(reserved.researchReceipt??null))fail('RESEARCH_CONTEXT_RECEIPT','Research dispatch evidence changed during preparation',409);}
         validateBudgetAdmission(current,{run:reserved,input});
         const currentTask=find(current,'tasks',run.taskId,p.id),currentPlan=find(current,'plans',currentTask.planId,p.id);
@@ -307,7 +313,7 @@ export function createT3Service({dataDir,store,validateProviderSelection,prepare
         if(validateProviderSelection){if(!providerConnectionId)fail('PROVIDER_SETUP_REQUIRED','Connect and select this provider in Project accounts & models before execution',409);await validateProviderSelection({projectId:p.id,connectionId:providerConnectionId,selection:provider,guarded:!!run.guardedContext});}
         const bot=task.botId?find(s,'bots',task.botId,p.id):null;
         let message=`FORGE task ${task.id}. Work only within this selected workspace: ${workspace}. Use this path explicitly as the working directory for commands.\n${task.title}\n${task.description??''}${bot?`\nAssigned bot: ${bot.name}. Role: ${bot.role??''}\n${bot.instructions??''}`:''}${adaptivePrompt(run.adaptiveContext)}${assistancePrompt(run.assistanceContext)}${goalPrompt(run.goalContext)}${proactivePrompt(run.proactiveContext)}${workspacePrompt(resolved)}`;
-        message+='\n'+sessionRoleInstruction(run);
+        message+='\n'+sessionRoleInstruction(run)+strategyPrompt(run.strategyContext);
         if(run.researchContext){if(!prepareResearch||!validatePreparedResearch||!prepareContext)fail('RESEARCH_OWNER_INTEGRATION','The canonical Research execution bridge and actual Context preparation are required',409);const prepared=await prepareResearch({run:find(store.read(),'runs',run.id,p.id),baseMessage:message});if(typeof prepared?.message!=='string'||!prepared.message)fail('RESEARCH_CONTEXT','Research preparation did not return a verified prompt',409);message=prepared.message;}
         if(prepareContext){const prepared=await prepareContext({run:find(store.read(),'runs',run.id,p.id),project:find(store.read(),'projects',p.id),baseMessage:message});if(typeof prepared?.message!=='string'||!prepared.message)fail('CONTEXT_INVALID','Dispatch context did not return a verified message',409);message=prepared.message;await store.transaction(s=>{const r=find(s,'runs',run.id,p.id);r.contextId=prepared.contextId;r.contextReceipt=structuredClone(prepared.receipt);r.contextMode=prepared.mode??'forge-prefix';if(r.researchContext)r.researchReceipt=structuredClone(researchReceipt(s,r,{message}));changed(r);});}
         if(run.workspaceContext){const latest=await resolveWorkspaceForRun({store,input,dataDir});if(contextDigest(latest)!==contextDigest(resolved))fail('WORKSPACE_CHANGED','Isolated checkout identity changed during setup',409);}

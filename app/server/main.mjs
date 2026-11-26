@@ -61,6 +61,7 @@ import {createFrontendRoute} from './frontend-route.mjs';
 import {createSessionRoleService,dispatchSessionRoleRequest} from './session-roles.mjs';
 import {createSessionRoleMcpGateway} from './session-roles-mcp.mjs';
 import {createSessionRoute} from './session-route.mjs';
+import {createStrategyService,dispatchStrategyRequest} from '../strategies/index.mjs';
 export {defaultDataDir};
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const manifest=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
@@ -119,6 +120,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
   frontend=createFrontendRoute({store,authorizeOwner:authority.goalAuthorize,policy:guardedPolicy,getGuarded:()=>guarded,getT3:()=>t3});await frontend.recover();
   sessionRoles=createSessionRoleService({store,conversations:providers.conversations,authorize:authority.sessionAuthorize,qualifyRun:(s,r)=>sessionRoute?.qualifyRun(s,r)});
   sessionRoute=createSessionRoute({store,authorizeOwner:authority.goalAuthorize,policy:guardedPolicy,getGuarded:()=>guarded,getT3:()=>t3,getRoles:()=>sessionRoles,getMcp:()=>sessionMcp});await sessionRoute.recover();await sessionRoles.recover();
+  const strategies=createStrategyService({store,dataDir,workspaces,sessionRoute,sessionRoles,t3,authorize:authority.goalAuthorize});await strategies.recover();
   compute=createComputeRouter({store,dataDir,jobs,artifacts,admit:admitCompute,secrets,resolveBearer:({vaultRef,projectId})=>secrets.resolveRef({projectId,reference:vaultRef,purpose:'compute'}),resolveEnvironment:({projectId,name})=>secrets.resolveEnv({projectId,name,purpose:'compute'})});
   const catalog=createCatalogService({load:()=>t3.catalog()});
   const gitStorage=createGitStorageService({store});
@@ -147,7 +149,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
     return session;
   }
   function humanSession(req,res){const s=browserSession(req,res);if(!s||req.headers['x-forge-csrf']!==s.csrf)fail('BROWSER_SESSION_REQUIRED','Refresh the FORGE page and perform this Owner action in the GUI',403);return s;}
-  const app={store,t3,jobs,compute,connections,providers,governance,adaptive,assistance,memory,ownerMemory,context,goals,missions,playbooks,proactive,workspaces,research,researchComponents,researchBridge,frontend,sessionRoles,sessionRoute,budgets,relay,secrets,plugins:capabilities.service,reports,serving,storage,desktop,officeAgent,server:null,url:null,async close(){
+  const app={store,t3,jobs,compute,connections,providers,governance,adaptive,assistance,memory,ownerMemory,context,goals,missions,playbooks,proactive,workspaces,research,researchComponents,researchBridge,frontend,sessionRoles,sessionRoute,strategies,budgets,relay,secrets,plugins:capabilities.service,reports,serving,storage,desktop,officeAgent,server:null,url:null,async close(){
     if(closingPromise)return closingPromise;closed=true;
     closingPromise=(async()=>{
     offProjection();await projectionPromise;
@@ -160,7 +162,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
     // effect. Keep its services and canonical store alive until the handler's
     // finally releases admission. Restore drains ordinary writes, but shutdown
     // must also wait for the restore operation itself.
-    await sessionRoute.close();
+    await strategies.close();await sessionRoute.close();
     await Promise.allSettled([...admittedPosts,...admittedRestores,memoryMcp?.close(),sessionMcp?.close(),frontend.close()]);await sessionRoles.close();
     await guarded?.close();await guardedArtifacts?.close();await research.close();await researchComponents.close();await researchBridge.close();await researchRoute.close();await proactive.close();await playbooks.close();await missions.close();await workspaces.close();adaptive.shutdown();await assistance.close();await goals.close();await Promise.allSettled([...relayWork]);relay.close();await oauth?.close();await providers.close();
     await officeMcpHandler?.close();await desktop.shutdown();await storage.shutdown();await compute.shutdown();await jobs.shutdown();await t3.shutdown();await serving.shutdown();await connections.close();await reports?.shutdown?.();
@@ -262,7 +264,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
         if(closed||restoring)fail('APPLICATION_BUSY','Application is shutting down or restoring metadata; retry after readiness',409);
         finishAdmission=admitPost({restore:p==='/api/storage/restore'});
         let owner;
-        if(/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/mcp\/(configure|enable|discover|call|stop)$|^\/api\/mcp\/[^/]+\/(discover|call)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|plugins|memory|owner-memory|memory-mcp|context|goals|compute|relay|secrets|missions|proactive|workspaces|budgets|playbooks|research|research-components|frontend-tools|session-roles|session-orchestrator|guarded)\//.test(p))owner=humanSession(req,res);
+        if(/^\/api\/providers\/(configure|setup|select|preview-models)$|^\/api\/mcp\/oauth\/(begin|disconnect)$|^\/api\/mcp\/(configure|enable|discover|call|stop)$|^\/api\/mcp\/[^/]+\/(discover|call)$|^\/api\/governance\/(policy|bot|task|tool\/decide)$|^\/api\/(assistance|adaptive|plugins|memory|owner-memory|memory-mcp|context|goals|compute|relay|secrets|missions|proactive|workspaces|budgets|playbooks|research|research-components|frontend-tools|session-roles|session-orchestrator|strategies|guarded)\//.test(p))owner=humanSession(req,res);
         if(p==='/api/command'){value=await command(store,input);if(input.type==='project.create')await capabilities.defaults(value.entity.id);}
         else if(p.startsWith('/api/guarded/')){
           const method=p.slice('/api/guarded/'.length),keys=method==='state'?['projectId']:method==='check'?['projectId','operationId','leaseMs']:['projectId','operationId'];
@@ -279,6 +281,7 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
           value={installation:await installer.state(),readiness:guarded?.readiness({projectId:input.projectId})??null};
         }
         else if(p.startsWith('/api/session-roles/'))value=await dispatchSessionRoleRequest(sessionRoles,p.slice('/api/session-roles/'.length),input,authority.owner(owner));
+        else if(p.startsWith('/api/strategies/'))value=await dispatchStrategyRequest(strategies,p.slice('/api/strategies/'.length),input,authority.owner(owner));
         else if(p.startsWith('/api/session-orchestrator/')){const method=p.slice('/api/session-orchestrator/'.length);if(!['intent','start','cancel'].includes(method))fail('NOT_FOUND','Session orchestration operation not found',404);value=await sessionRoute[method==='intent'?'createIntent':method](input,authority.owner(owner));}
         else if(p.startsWith('/api/memory-mcp/')){const method=p.slice('/api/memory-mcp/'.length);if(!['issue','state','revoke'].includes(method))fail('NOT_FOUND','Memory MCP Owner operation not found',404);value=await memoryMcp[method](input,authority.owner(owner));}
         else if(p.startsWith('/api/plugins/'))value=await dispatchPluginRequest(capabilities.service,p.slice('/api/plugins/'.length),input);
@@ -359,12 +362,12 @@ export async function createApplication({dataDir=defaultDataDir(),port=0,machine
           memoryMcp.invalidateForRestore();sessionMcp.invalidateForRestore();await sessionRoute.invalidateForRestore();
           await frontend.invalidateForRestore();
           try{
-            await research.suspendForRestore();await proactive.suspendForRestore();await playbooks.suspendForRestore();await missions.suspendForRestore();await goals.suspendForRestore();
+            await strategies.beforeRestore();await research.suspendForRestore();await proactive.suspendForRestore();await playbooks.suspendForRestore();await missions.suspendForRestore();await goals.suspendForRestore();
             await Promise.allSettled([...admittedPosts,...relayWork]);
             assertWorkspaceRestoreAvailable(store.read());assertResearchRestoreAvailable(store.read());
             if(store.read().runs.some(r=>!['completed','failed','cancelled','interrupted','rolled_back','stopped'].includes(r.status))||store.read().jobs.some(j=>['submitting','queued','running','starting','stopping','unknown','preparing','rendering','validating','publishing'].includes(j.status)))fail('RESTORE_BUSY','Previously admitted work became active; reconcile it before restoring',409);
             value=await artifacts.restore(input);await sessionRoute.recover();await sessionRoles.recover();await memory.afterRestore();await ownerMemory.afterRestore();await goals.afterRestore();await missions.afterRestore();await playbooks.afterRestore();await proactive.afterRestore();await research.afterRestore();await governance.recover({invalidateUnconsumed:true});await officeAgent.recover();await providers.mcp.recover();await providers.conversations.recover();
-          }finally{goals.cancelRestore();missions.cancelRestore();playbooks.cancelRestore();proactive.cancelRestore();research.cancelRestore();restoring=false;}
+          }finally{await strategies.afterRestore();goals.cancelRestore();missions.cancelRestore();playbooks.cancelRestore();proactive.cancelRestore();research.cancelRestore();restoring=false;}
         }
         else if(p==='/api/storage/configure')value=await storage.configure(input);
         else if(p==='/api/storage/health')value=await storage.health(input);

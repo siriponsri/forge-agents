@@ -41,7 +41,7 @@ export function createGuardedExecutionBridge({store,dataDir,artifacts,authorizeO
   function owner(s,detail){if(closed||sync(authorizeOwner,s,detail)!==true)fail('GUARDED_OWNER_DENIED');}
   function privatePaths(s){
     const editable=[...s.projects.map(p=>p.workspace),...s.runs.map(r=>r.workspace)].filter(Boolean).map(physical);
-    const protectedDirectories=[privateRoot,...['guarded-runtime','research-native','research-components','frontend-tools','session-tools','server'].map(n=>fileURLToPath(new URL('../'+n,import.meta.url)))];
+    const protectedDirectories=[privateRoot,...['guarded-runtime','research-native','research-components','frontend-tools','session-tools','strategies','server'].map(n=>fileURLToPath(new URL('../'+n,import.meta.url)))];
     if(protectedDirectories.some(dir=>editable.some(root=>inside(root,physical(dir))||inside(physical(dir),root))))fail('GUARDED_PRIVATE_PATH_OVERLAP');
     for(const file of [fileURLToPath(import.meta.url),...Object.values(installedArtifacts).flatMap(a=>(a.files??[{path:a.path}]).map(f=>f.path))]){
       if(!path.isAbsolute(file??'')||editable.some(root=>inside(root,physical(file))))fail('GUARDED_PRIVATE_PATH_OVERLAP');

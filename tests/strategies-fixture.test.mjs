@@ -11,14 +11,14 @@ export async function fixture(t){
  await f.store.transaction(s=>{for(const [n,task] of f.tasks.entries()){const b=entity({name:`Approved specialist ${n}`,kind:'resident',status:'active'},f.p.id),c=entity({name:`Approved session ${n}`,kind:'private',botId:b.id,messages:[]},f.p.id);s.bots.push(b);s.conversations.push(c);find(s,'tasks',task.id).botId=b.id;bots.push(b);chats.push(c);}});
  for(const [n,c]of chats.entries())await roles.assign(f.input({conversationId:c.id,botId:bots[n].id,role:n===1?'reviewer':'executor',expectedRevision:0}),f.owner);
  await f.configure({checks:['diff'],maxConcurrent:3,providerLimit:3});
- const contexts=new Map(),original=f.t3.startRun;let before;
+ const original=f.t3.startRun;let before;f.t3.strategyContextVersion=1;
  f.control.before=async input=>{await before?.(input);validateStrategyContext(f.store.read(),input);};
  f.t3.startRun=async input=>{
-   input={...input,strategyContext:contexts.get(input.workspaceContext.workspaceId)};validateStrategyContext(f.store.read(),input);
+   validateStrategyContext(f.store.read(),input);
    const r=await original(input);
    await f.store.transaction(s=>{const run=find(s,'runs',r.id);reserveBudget(s,{run,input});validateBudgetAdmission(s,{run,input});validateStrategyContext(s,run);});return r;
  };
- const workspaces={strategyContextVersion:1,start(input,caller,{strategyContext}={}){contexts.set(input.workspaceId,strategyContext);return f.service.start(input,caller);},reconcile:(...args)=>f.service.reconcile(...args),stop:(...args)=>f.service.stop(...args)};
+ const workspaces={get strategyContextVersion(){return f.service.strategyContextVersion;},start(input,caller,options){return f.service.start(input,caller,options);},reconcile:(...args)=>f.service.reconcile(...args),stop:(...args)=>f.service.stop(...args)};
  let service=createStrategyService({store:f.store,workspaces,sessionRoles:roles,dataDir:f.dataDir,authorize:(_i,c)=>c===f.owner?{kind:'human',role:'owner'}:null});
  t.after(async()=>{await service.close();await roles.close();});
  const h={f,get roles(){return roles;},bots,chats,workspaces,get service(){return service;},get store(){return f.store;},owner:f.owner,input:f.input,

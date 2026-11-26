@@ -3,6 +3,7 @@ import { busy, changed, digest, entity, fail, find, required, safeError, termina
 import {assertWorkspaceAvailable} from '../server/admission.mjs';
 import {reserveBudget,validateBudgetAdmission} from '../budgets/index.mjs';
 import {sessionRoleInstruction} from '../server/session-roles.mjs';
+import {validateStrategyContext,strategyPrompt} from '../strategies/index.mjs';
 
 export function createConversationService({store,t3,providers,checkCapabilities,prepareCapabilities,onNotDispatched,getSessionRoles}){
   const pending=new Set();let closing=false;
@@ -72,10 +73,12 @@ export function createConversationService({store,t3,providers,checkCapabilities,
   const api={
     list(input){const {conversation}=scope(input);return conversation;},
     async send(input){
+      const strategy=validateStrategyContext(store.read(),input,{replay:store.read().runs.some(r=>r.operationId===input.operationId)});
+      input={...input,...(strategy?{strategyContext:strategy}:{})};
       await prepareCapabilities?.(input.projectId);
       required(input.operationId,'operationId');required(input.text,'text');if(input.text.length>50000)fail('MESSAGE_LIMIT','Use an artifact for long content');
       const fingerprint=digest(input),state=store.read();const prior=state.runs.find(r=>r.operationId===input.operationId);
-      if(prior){if(prior.kind!=='conversation'||prior.fingerprint!==fingerprint)fail('OPERATION_REUSE','Chat operation reused for different work',409);return prior;}
+      if(prior){validateStrategyContext(state,prior,{replay:true});if(prior.kind!=='conversation'||prior.fingerprint!==fingerprint)fail('OPERATION_REUSE','Chat operation reused for different work',409);return prior;}
       const {project,conversation}=scope(input,state),bot=botScope(state,project.id,input.botId??conversation.botId);
       if(conversation.kind==='private'&&conversation.botId!==bot.id)fail('PRIVATE_SCOPE','Private conversation belongs to another bot',403);
       const desired=input.selection??project.profile?.provider;
@@ -84,17 +87,19 @@ export function createConversationService({store,t3,providers,checkCapabilities,
       if(binding&&digest(binding.selection)!==digest({instanceId:selection.instanceId,model:selection.model,options:selection.options}))fail('HANDOFF_REQUIRED','Provider/model changed; explicitly hand off to a new conversation binding',409);
       let replay=false;
       const run=await store.transaction(s=>{
-        const prior=s.runs.find(r=>r.operationId===input.operationId);if(prior){if(prior.fingerprint!==fingerprint)fail('OPERATION_REUSE','Chat operation reused',409);replay=true;return prior;}
+        const prior=s.runs.find(r=>r.operationId===input.operationId);if(prior){validateStrategyContext(s,prior,{replay:true});if(prior.fingerprint!==fingerprint)fail('OPERATION_REUSE','Chat operation reused',409);replay=true;return prior;}
         const {project:currentProject,conversation:c}=scope(input,s);const currentBot=botScope(s,project.id,bot.id);
         if(currentProject.revision!==project.revision||digest(currentProject)!==digest(project)||digest(currentBot)!==digest(bot)||digest(c)!==digest(conversation))fail('REVISION_CONFLICT','Chat context changed before reservation; review the current conversation',409);
         if(s.receipts.some(x=>x.operationId===input.operationId))fail('OPERATION_REUSE','Operation belongs to a different command',409);
         const roles=roleAdmission(s,{...input,botId:bot.id});
+        const strategyContext=validateStrategyContext(s,input);
         const parent=roles.sessionRoleContext?.parentRunId,privateParent=parent&&s.runs.find(r=>r.id===parent)?.guardedContext?.profile?.purpose==='supervised-orchestrator-v1'?parent:undefined;
         assertWorkspaceAvailable(s,project.id,{orchestratorRunId:privateParent});
         const harnessSelection=checkCapabilities?.(s,{projectId:project.id,conversationId:c.id,botId:bot.id},['provider']);
         const chatAdmission={botDigest:digest(bot),conversationRevision:c.revision,kind:c.kind,botId:c.botId??null,bindingDigest:digest(binding??null),workspace:project.workspace};
         const r=entity({kind:'conversation',fingerprint,operationId:input.operationId,attemptId:randomUUID(),botId:bot.id,helperTaskId:bot.kind==='helper'?bot.taskId:null,conversationId:c.id,...(harnessSelection?{harnessSelection}:{}),chatAdmission,status:'submitting',providerInstanceId:selection.instanceId,selection,profileRevision:project.revision,profile:structuredClone(project.profile),inputText:input.text,messages:[],protocolEvents:[],clientRequestId:`forge-chat-${digest(input.operationId)}`,...(binding?{threadId:binding.threadId,inheritedThreadId:binding.threadId,t3ProjectId:binding.t3ProjectId}:{})},project.id);
         if(roles.sessionRoleContext)r.sessionRoleContext=roles.sessionRoleContext;if(roles.sessionRole)r.sessionRole=roles.sessionRole;
+        if(strategyContext)r.strategyContext=strategyContext;
         const user=entity({role:'user',text:input.text,botId:bot.id,conversationId:c.id,runId:r.id,attemptId:r.attemptId,operationId:r.operationId,status:'submitting'},project.id);r.userMessageId=user.id;c.messages.push(user);s.runs.push(r);reserveBudget(s,{run:r,input});changed(c);return r;
       });if(replay)return run;
       let dispatched=false;
@@ -111,12 +116,13 @@ export function createConversationService({store,t3,providers,checkCapabilities,
         if(latest.project.revision!==reserved.profileRevision||latest.project.workspace!==admission.workspace||digest(latest.project.profile)!==digest(reserved.profile)||digest(latestBot)!==admission.botDigest||latest.conversation.revision!==admission.conversationRevision+1||latest.conversation.kind!==admission.kind||(latest.conversation.botId??null)!==admission.botId||digest(latest.conversation.bindings?.[bot.id]??null)!==admission.bindingDigest)fail('REVISION_CONFLICT','Bot, workspace or conversation changed during setup; review before a new attempt',409);
         providers.validateSelection({projectId:project.id,connectionId:selection.connectionId,selection});
         roleAdmission(current,input,reserved);
+        validateStrategyContext(current,reserved);
         const parent=reserved.sessionRoleContext?.parentRunId,privateParent=parent&&current.runs.find(r=>r.id===parent)?.guardedContext?.profile?.purpose==='supervised-orchestrator-v1'?parent:undefined;
         assertWorkspaceAvailable(current,project.id,{runId:run.id,orchestratorRunId:privateParent});
         const currentHarness=checkCapabilities?.(current,{projectId:project.id,conversationId:conversation.id,botId:bot.id},['provider']);
         if(run.harnessSelection&&digest(currentHarness?.plugins)!==digest(run.harnessSelection.plugins))fail('CONNECTION_CHANGED','Scoped capabilities changed before dispatch',409);
         const role=reserved.sessionRole?'\n'+sessionRoleInstruction(reserved)+'\n':'';
-        const text=prompt(run,project,conversation,bot,binding)+role;if(text.length>120000)fail('MESSAGE_LIMIT','Bot instructions and visible context exceed the T3 prompt limit');const final=store.read(),finalRun=find(final,'runs',run.id);validateBudgetAdmission(final,{run:finalRun,input});roleAdmission(final,input,finalRun);dispatched=true;
+        const text=prompt(run,project,conversation,bot,binding)+role+strategyPrompt(run.strategyContext);if(text.length>120000)fail('MESSAGE_LIMIT','Bot instructions and visible context exceed the T3 prompt limit');const final=store.read(),finalRun=find(final,'runs',run.id);validateBudgetAdmission(final,{run:finalRun,input});roleAdmission(final,input,finalRun);validateStrategyContext(final,finalRun);dispatched=true;
         const response=await t3.providers.call(binding?'t3_thread_send':'t3_thread_launch',binding?{threadId:binding.threadId,message:text,mode:'auto',clientRequestId:run.clientRequestId}:{projectId:t3ProjectId,clientRequestId:run.clientRequestId,title:`FORGE ${bot.name} chat ${run.id}`,message:text,runtimeMode:'approval-required',interactionMode:'default',modelSelection:{instanceId:selection.instanceId,model:selection.model,options:selection.options},workspaceStrategy:{type:'root'}});
         if(!response.threadId||!response.runId||binding&&response.threadId!==binding.threadId||response.projectId&&response.projectId!==t3ProjectId)fail('T3_IDENTITY','T3 returned incomplete or mismatched execution identity',502);
         await store.transaction(s=>{const r=find(s,'runs',run.id),c=find(s,'conversations',r.conversationId,r.projectId);r.threadId=response.threadId;r.providerRunId=response.runId;r.status=response.status??'unknown';changed(r);
