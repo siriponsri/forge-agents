@@ -1,3 +1,4 @@
+import {browserOwner} from '../../../tests/support/browser-owner.mjs';
 // Production mounts + actual SDK stdio effect. No model, login or cloud calls.
 import assert from 'node:assert/strict';
 import {mkdtemp,readFile,writeFile} from 'node:fs/promises';
@@ -11,7 +12,7 @@ const temp=await mkdtemp(path.join(os.tmpdir(),'forge-controls-integrated-')),ap
 const browser=await chromium.launch({headless:true}),page=await browser.newPage({viewport:{width:1500,height:1050}}),errors=[];page.setDefaultTimeout(20000);page.on('pageerror',e=>errors.push(e.message));
 const button=name=>page.getByRole('button',{name,exact:true}),state=()=>app.store.read();
 async function wait(predicate){for(let n=0;n<120;n++){const s=state();if(predicate(s))return s;await page.waitForTimeout(100);}throw Error('Integrated control state timeout');}
-async function post(route,data,status=200){const r=await page.request.post(app.url+route,{data});const v=await r.json();assert.equal(r.status(),status,JSON.stringify(v));return v;}
+async function post(route,data,status=200){const r=await page.request.post(app.url+route,{headers:await browserOwner(app.url),data});const v=await r.json();assert.equal(r.status(),status,JSON.stringify(v));return v;}
 const cmd=(type,projectId,data)=>post('/api/command',{type,projectId,data,operationId:crypto.randomUUID()});
 try{
   const project=(await cmd('project.create',undefined,{name:'Disposable integrated controls',workspace:path.join(temp,'workspace')})).entity;

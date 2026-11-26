@@ -1,3 +1,4 @@
+import {browserOwner} from '../../../tests/support/browser-owner.mjs';
 // Actual integrated UI and persistent appearance checks, with labelled engineering data.
 import assert from 'node:assert/strict';
 import {mkdtemp,writeFile,mkdir,copyFile} from 'node:fs/promises';
@@ -9,7 +10,7 @@ import {createApplication} from '../../server/main.mjs';
 import {THEMES} from '../src/themes.mjs';
 const temp=await mkdtemp(path.join(os.tmpdir(),'forge-appearance-'));let app=await createApplication({dataDir:path.join(temp,'state')});
 const browser=await chromium.launch({headless:true}),page=await browser.newPage({viewport:{width:1600,height:1000}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
-const cmd=async(type,projectId,data,record)=>{const r=await page.request.post(app.url+'/api/command',{data:{operationId:crypto.randomUUID(),type,projectId,data,...(record?{id:record.id,expectedRevision:record.revision}:{})}});assert.ok(r.ok(),await r.text());return(await r.json()).entity;};
+const cmd=async(type,projectId,data,record)=>{const r=await page.request.post(app.url+'/api/command',{headers:await browserOwner(app.url),data:{operationId:crypto.randomUUID(),type,projectId,data,...(record?{id:record.id,expectedRevision:record.revision}:{})}});assert.ok(r.ok(),await r.text());return(await r.json()).entity;};
 const state=async()=>(await page.request.get(app.url+'/api/state')).json();
 async function choose(id){await chooseTheme(page,THEMES.find(t=>t.id===id).label);await page.waitForFunction(id=>document.documentElement.dataset.theme===id,id);for(let n=0;n<40;n++){if((await state()).settings.theme===id)return;await page.waitForTimeout(25);}throw new Error('Theme was not durably saved');}
 try{

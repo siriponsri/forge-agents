@@ -1,3 +1,4 @@
+import {browserOwner} from '../../../tests/support/browser-owner.mjs';
 // Real built FORGE + disposable service state. No provider, compute, or external
 // account calls. Delay gates below retain real responses to inspect loading/busy UI.
 // Run: npm run build && node app/web/tests/visual-refinement.mjs
@@ -17,7 +18,7 @@ const page = await browser.newPage({viewport:{width:1440,height:1000},reducedMot
 const errors=[]; page.on('pageerror',error => errors.push(error.message));
 const checks=[]; const contrast=[];
 const cmd = async(type,projectId,data,record) => {
-  const r=await page.request.post(app.url+'/api/command',{data:{operationId:crypto.randomUUID(),type,projectId,data,...(record ? {id:record.id,expectedRevision:record.revision} : {})}});
+  const r=await page.request.post(app.url+'/api/command',{headers:await browserOwner(app.url),data:{operationId:crypto.randomUUID(),type,projectId,data,...(record ? {id:record.id,expectedRevision:record.revision} : {})}});
   assert.ok(r.ok(),await r.text()); return (await r.json()).entity;
 };
 const nav = name => openRoute(page, name);

@@ -28,6 +28,7 @@ async function fixture(root) {
   // disposable repository is an archive fixture, never a product runtime test.
   const selected = ['package.json', 'package-lock.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md',
     'assets/forge-mark.svg', 'docs/FORGE_LOCAL_QUICKSTART_TH.md', 'app/launcher.mjs', 'app/server/paths.mjs',
+    'tools/training-env/manage.py','tools/cloudflare/wrangler.example.jsonc','docs/universal-training/00_HANDOFF_TH.md','docs/worker-training-env.md',
     'tools/guarded-runtime/acquire.mjs','tools/frontend-tools/pipeline.mjs','tools/session-tools/pipeline.mjs',
     ...['Start', 'Stop', 'Restart'].flatMap(action => [action + '-FORGE.cmd', action + '-FORGE.command'])];
   for (const name of selected) {

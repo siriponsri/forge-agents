@@ -1,5 +1,8 @@
 คุณเป็น lead engineer ที่พัฒนา FORGE ให้ครบตาม requirements สำหรับผู้ใช้ no-code
 
+CURRENT OWNER ADDENDUM (2026-11-26): Read docs/universal-training/00_HANDOFF_TH.md and its detailed plan first. The real Cardiac project is now accepted for HOME execution via SSH dr-train, not activated in this office preparation round. Cloudflare deployment is explicitly deferred home. Isolated updateable Python dependencies, local security fixes, Claude-work recovery and merge/push are authorized. Preserve all original authority and protected legacy boundaries.
+
+
 Owner development repo:
 C:\Users\siripon.sri\Desktop\my_project\forge-agents
 

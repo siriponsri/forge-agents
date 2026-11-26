@@ -21,6 +21,14 @@ The interface defaults to Thai and supports English. The local core is
 [Home test checklist](docs/HOME_HANDOFF_20261126_TH.md) ·
 [Development status](docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md)
 
+The resumed desktop interface adds a threads sidebar, command palette and guided
+AI Product Studio. Studio saves a planning brief and creates a draft Mission;
+it does **not** train or deploy a model. The
+[Universal Training plan and home runbook](docs/universal-training/00_HANDOFF_TH.md)
+cover the remaining recipe/data/remote-execution work. A separate
+[Python environment manager](docs/worker-training-env.md) supports pinned
+versions, explicit upgrades and rollback without changing running environments.
+
 > **Development checkpoint — implementation incomplete.** Published `main`
 > includes the [26 November checkpoint](https://github.com/siriponsri/forge-agents/tree/f2387e866a2ae3808ad1989a0a7860ae437e9956)
 > for continued development and home testing.
@@ -38,7 +46,8 @@ are injected; local tests, file preview and delivery artifacts are real.
 
 *Media was refreshed from `d502648`: 21 production-App screenshots and four
 walkthroughs with disposable engineering data. It documents the labelled local
-flows below; external providers and model quality remain unqualified.*
+flows below and predates the resumed desktop shell/Studio; external providers
+and model quality remain unqualified.*
 
 ## A workspace that follows the work
 

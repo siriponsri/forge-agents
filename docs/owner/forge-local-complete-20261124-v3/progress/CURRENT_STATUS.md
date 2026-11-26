@@ -1,5 +1,10 @@
 # Current Status — Complete Local FORGE
 
+## Latest continuation ? Universal Training preparation
+
+[Current owner addendum](../../../universal-training/00_HANDOFF_TH.md) supersedes earlier pending-worker instructions. Claude shell/landing/Thai/Studio work is recovered; Studio is planning-only. Standalone isolated Python environment tooling and browser command authentication are implemented. Complete Universal Training execution remains IMPLEMENTATION_INCOMPLETE; dr-train/RunPod/Vast/Colab/Home UAT and Cloudflare deployment are deferred home, not claimed from local tests. See [round evidence](../../../universal-training/verification.json).
+
+
 ## Resumed integration — 2026-11-26
 
 **IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN.** The Owner resumed the full

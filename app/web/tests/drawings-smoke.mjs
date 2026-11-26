@@ -1,3 +1,4 @@
+import {browserOwner} from '../../../tests/support/browser-owner.mjs';
 // Real Univer/browser + real artifact HTTP boundary + a separate restarted FORGE process.
 // Disposable engineering fixtures only. No provider, accounts or prototype product.
 // node app/web/tests/drawings-smoke.mjs (after installing coordinated root dependencies)
@@ -34,7 +35,7 @@ async function start(port = 0) {
 }
 async function stop() { if (child && child.exitCode === null) { const exited = once(child, 'exit'); child.send('close'); await exited; } }
 async function post(route, body, expected = 200) {
-  const response = await fetch(appURL + route, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const response = await fetch(appURL + route, { method: 'POST', headers: { 'Content-Type': 'application/json', ...await browserOwner(appURL) }, body: JSON.stringify(body) });
   const value = await response.json(); assert.equal(response.status, expected, JSON.stringify(value)); return value;
 }
 const command = (type, projectId, data, entity, expected = 200) => post('/api/command', {

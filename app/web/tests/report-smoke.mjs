@@ -1,3 +1,4 @@
+import {browserOwner} from '../../../tests/support/browser-owner.mjs';
 // Explicit real-engine GUI engineering qualification. No user product/provider run.
 import assert from 'node:assert/strict';
 import { mkdtemp,writeFile } from 'node:fs/promises';
@@ -20,7 +21,7 @@ try{
   await page.getByLabel('Project name',{exact:true}).fill('Disposable report GUI qualification');await page.getByLabel('Workspace directory').fill(path.join(temp,'workspace'));await page.getByRole('dialog').getByRole('button',{name:'Create project',exact:true}).click();await wait(s=>s.projects.length===1);
   const projectId=(await state()).projects[0].id;
   const snapshot=newSnapshot('sheet','รายงานจากตาราง');snapshot.sheets.sheet1.cellData={0:{0:{v:'รายการ'},1:{v:'จำนวน'}},1:{0:{v:'Engineering value'},1:{f:'=2+3',v:5}}};
-  const created=await page.request.post(app.url+'/api/command',{data:{type:'document.create',operationId:crypto.randomUUID(),projectId,data:{name:'รายงานจากตาราง',kind:'sheet',snapshot,packageVersion:'1.6.1'}}});assert.equal(created.status(),200);
+  const created=await page.request.post(app.url+'/api/command',{headers:await browserOwner(app.url),data:{type:'document.create',operationId:crypto.randomUUID(),projectId,data:{name:'รายงานจากตาราง',kind:'sheet',snapshot,packageVersion:'1.6.1'}}});assert.equal(created.status(),200);
   await openRoute(page,'Artifacts');
   await page.getByLabel('Upload a file (up to 16 MB)',{exact:true}).setInputFiles('app/web/public/forge-workbench-preview.png');await page.getByLabel('Uploaded artifact kind',{exact:true}).selectOption('figure');await click('Upload & verify');await wait(s=>s.artifacts.some(a=>a.kind==='png'&&a.source?.kind==='browser-upload'));
   await openRoute(page,'Report Studio');

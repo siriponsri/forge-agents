@@ -1,5 +1,12 @@
 # Resumed work and continuation map
 
+**จุดพักล่าสุด:** [ขั้นตอนเริ่มต่อที่บ้านและ review FIX 4 ข้อ](universal-training/06_RESUME_AT_HOME_TH.md). เป็น checkpoint ยังไม่ใช่ product-complete acceptance.
+
+## Superseding continuation: Universal Training / Claude recovery
+
+Use [the current scope and home runbook](universal-training/00_HANDOFF_TH.md). Owner authorized isolated updateable Python environments, security corrections, and main publication. Actual cardiac research and paid lifecycle tests are deferred to home via SSH dr-train; Cloudflare is preparation only. The new Studio creates canonical planning briefs/draft missions; it does not train models. Executable recipe/data/remote-environment/serving gaps are listed separately from credentials and Home UAT in the detailed plan. Historical checkpoints below remain historical evidence.
+
+
 ## Main publication — 26 November
 
 At the Owner's explicit request, local `main` fast-forwarded from `d928e9c`

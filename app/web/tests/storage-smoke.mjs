@@ -1,3 +1,4 @@
+import {browserOwner} from '../../../tests/support/browser-owner.mjs';
 // Real local filesystem GUI backup/restore; Drive account qualification is separate.
 import assert from 'node:assert/strict';
 import {mkdtemp,writeFile} from 'node:fs/promises';
@@ -14,7 +15,7 @@ async function action(name,suffix){const pending=page.waitForResponse(r=>r.url()
 try{
   await page.goto(app.url+'/app');await setLanguage(page,'en');await button('Create first project').click();await page.getByLabel('Project name',{exact:true}).fill('Disposable storage GUI fixture');await page.getByLabel('Workspace directory').fill(path.join(temp,'workspace'));await page.getByRole('dialog').getByRole('button',{name:'Create project',exact:true}).click();await wait(s=>s.projects.length===1);
   await openRoute(page,'Artifacts');const content='สวัสดี FORGE · registered artifact bytes';await page.getByLabel('Upload a file (up to 16 MB)',{exact:true}).setInputFiles({name:'ไทย.txt',mimeType:'text/plain',buffer:Buffer.from(content)});await button('Upload & verify').click();let s=await wait(s=>s.artifacts.length===1);const original=s.artifacts[0],projectId=s.projects[0].id;
-  const doc=await page.request.post(app.url+'/api/command',{data:{type:'document.create',projectId,operationId:crypto.randomUUID(),data:{name:'Native document with durable resource',kind:'doc',snapshot:{body:{dataStream:'Saved native content\r\n'},resource:'/api/artifacts/'+original.id+'/download'}}}});assert.equal(doc.status(),200);
+  const doc=await page.request.post(app.url+'/api/command',{headers:await browserOwner(app.url),data:{type:'document.create',projectId,operationId:crypto.randomUUID(),data:{name:'Native document with durable resource',kind:'doc',snapshot:{body:{dataStream:'Saved native content\r\n'},resource:'/api/artifacts/'+original.id+'/download'}}}});assert.equal(doc.status(),200);
   await openRoute(page,'Storage & recovery');await button('+ Local folder').click();await page.getByLabel('Destination name',{exact:true}).fill('Verified local archive');await page.getByLabel('Archive directory (outside workspace)',{exact:true}).fill(path.join(temp,'archive'));await page.getByLabel('Revisions to retain',{exact:true}).fill('1');await button('Save destinations & routing').click();await wait(s=>s.projects[0].profile.storage.destinations?.length===1);
   await button('Check destination').click();await page.getByRole('status').filter({hasText:'ready'}).waitFor();
   const first=await action('Back up project & registered files','/api/storage/bundles/backup');

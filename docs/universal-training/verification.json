@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-26",
+  "kind": "owner-requested-checkpoint-not-product-release",
+  "integrationHeadBeforeClose": "cc6cfac122e099d3cb91beb763f7cfa503df4167",
+  "build": {
+    "command": "npm.cmd run build",
+    "status": "PASS",
+    "durationSeconds": 15.88
+  },
+  "rootCloseChecks": {
+    "command": "node --test --test-concurrency=1 tests/studio.test.mjs tests/studio-resume.test.mjs tests/studio-http.test.mjs tests/launcher-downloads.test.mjs tests/product-browser-command-auth.test.mjs tests/product-final-admission.test.mjs",
+    "tests": 40,
+    "passed": 39,
+    "failed": 1,
+    "skipped": 0,
+    "failure": "normalized Office path positive fixture lacked browser session; expected 404, received 403",
+    "correction": "authenticate fixture; preserve server guard",
+    "correctedFileRerun": {
+      "command": "node --test tests/product-final-admission.test.mjs",
+      "tests": 17,
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "chatAfterBuild": {
+    "command": "node --test tests/agent-workspace-ui.test.mjs",
+    "passed": 1,
+    "failed": 0
+  },
+  "broadSerialRegression": {
+    "status": "INTERRUPTED_AT_OWNER_CHECKPOINT_REQUEST",
+    "complete": false,
+    "allPass": false,
+    "logSha256": "b750fee92d1bd087b4c9bd6a709825fc56a1b5c358d14d4b80d216d3de44a1fe",
+    "observedFailure": "built Chat graph timeout; separate post-build file rerun passed",
+    "note": "Do not aggregate worker checks as full-suite success. Exact owned test process tree stopped; user app was not stopped."
+  },
+  "earlierRootAuthChecks": {
+    "passed": 9
+  },
+  "workerEvidence": {
+    "pythonOfflineWindows31210": {
+      "passed": 11,
+      "skipped": 0,
+      "largeDependenciesDownloaded": false
+    },
+    "thai": "17 tests, three UI scripts, production build and string-only AST audit passed per worker handoff",
+    "studio": "13 tests, build and scoped rendered checks passed per worker handoff"
+  },
+  "audit": {
+    "command": "npm audit --omit=dev --json",
+    "knownVulnerabilitiesReturned": 0,
+    "scope": "root Node lock only"
+  },
+  "openReview": {
+    "disposition": "FIX",
+    "reviewedHead": "cc6cfac122e099d3cb91beb763f7cfa503df4167",
+    "findings": [
+      "Studio regenerated brief overwrites Owner-edited sections",
+      "QuestionRound local answers can cross brief identity",
+      "Shell selection still blue despite requested orange accent",
+      "Landing Deploy copy exceeds local model loader support"
+    ],
+    "deferred": "Owner explicitly requested checkpoint and home continuation"
+  },
+  "external": {
+    "drTrain": "NOT_RUN",
+    "runpod": "NOT_RUN",
+    "vast": "NOT_RUN",
+    "colab": "NOT_RUN",
+    "cloudflare": "PREPARED_NOT_DEPLOYED",
+    "homeUat": "NOT_RUN",
+    "clinicalActivation": false
+  },
+  "fullProductComplete": false
+}

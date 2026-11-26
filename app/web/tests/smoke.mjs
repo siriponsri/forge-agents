@@ -1,3 +1,4 @@
+import {browserOwner} from '../../../tests/support/browser-owner.mjs';
 // Developer fixture only. Uses the real service with disposable state; no provider calls.
 // npm run build; npm install --no-save --package-lock=false playwright; node app/web/tests/smoke.mjs
 import assert from "node:assert/strict";
@@ -185,7 +186,8 @@ try {
   // Force a genuine optimistic-revision conflict from another client, retaining local edits.
   s = await state();
   const doc = s.documents[0];
-  await page.request.post(`${app.url}/api/command`, {
+  const independentSave = await page.request.post(`${app.url}/api/command`, {
+    headers: await browserOwner(app.url),
     data: {
       operationId: crypto.randomUUID(),
       type: "document.save",
@@ -195,6 +197,7 @@ try {
       data: { snapshot: doc.snapshot, summary: "Independent client revision" },
     },
   });
+  assert.equal(independentSave.status(), 200, await independentSave.text());
   await page
     .locator(".editor-toolbar")
     .getByRole("button", { name: "Undo", exact: true })

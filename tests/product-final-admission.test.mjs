@@ -80,7 +80,7 @@ for(const route of ['/api/runs/start','/api/relay/bridge'])test(`an incomplete b
   app.memory.afterRestore=async()=>{entered();await held;return original();};
   const payload=JSON.stringify({operationId:crypto.randomUUID(),projectId:'no-effect',taskId:'no-effect'});
   let request;const requestEntered=new Promise(resolve=>app.server.on('request',req=>{if(req.url===route)setImmediate(resolve);}));
-  const response=new Promise((resolve,reject)=>{request=http.request(app.url+route,{method:'POST',headers:{'Content-Type':'application/json','Content-Length':Buffer.byteLength(payload)}},res=>{let text='';res.on('data',b=>text+=b);res.on('end',()=>resolve({status:res.statusCode,body:JSON.parse(text)}));});request.on('error',reject);request.write(payload[0]);});
+  const response=new Promise((resolve,reject)=>{request=http.request(app.url+route,{method:'POST',headers:{'Content-Type':'application/json','Content-Length':Buffer.byteLength(payload),...(route==='/api/runs/start'?{Cookie:cookie,'X-Forge-CSRF':csrf}:{})}},res=>{let text='';res.on('data',b=>text+=b);res.on('end',()=>resolve({status:res.statusCode,body:JSON.parse(text)}));});request.on('error',reject);request.write(payload[0]);});
   await requestEntered;
   const restoring=fetch(app.url+'/api/storage/restore',{method:'POST',headers:{'Content-Type':'application/json',Cookie:cookie,'X-Forge-CSRF':csrf},body:JSON.stringify({id:backup.id,expectedRevision:app.store.read().revision})});
   try{await inside;request.end(payload.slice(1));const denied=await response;assert.equal(denied.status,409);assert.equal(denied.body.error.code,'APPLICATION_BUSY');assert.equal(calls,0);}finally{release();await restoring;}
@@ -111,7 +111,8 @@ test('OAuth credential callbacks cannot mutate bindings during restore',{timeout
 
 test('a declined normalized Office path releases admission and cannot wedge later restore',{timeout:20000},async t=>{
   const dir=await mkdtemp(path.join(os.tmpdir(),'forge-http-office-admission-')),app=await createApplication({dataDir:dir});t.after(()=>app.close());
-  const response=await new Promise((resolve,reject)=>{const target=new URL(app.url),req=http.request({hostname:target.hostname,port:target.port,path:'/mcp/./office',method:'POST',headers:{'Content-Type':'application/json'}},res=>{res.resume();res.on('end',()=>resolve(res.statusCode));});req.on('error',reject);req.end('{}');});assert.equal(response,404);
+  const ownerSession=await fetch(app.url+'/api/session'),ownerToken=await ownerSession.json(),ownerCookie=ownerSession.headers.get('set-cookie').split(';')[0];
+  const response=await new Promise((resolve,reject)=>{const target=new URL(app.url),req=http.request({hostname:target.hostname,port:target.port,path:'/mcp/./office',method:'POST',headers:{'Content-Type':'application/json',Cookie:ownerCookie,'X-Forge-CSRF':ownerToken.csrf}},res=>{res.resume();res.on('end',()=>resolve(res.statusCode));});req.on('error',reject);req.end('{}');});assert.equal(response,404);
   const session=await fetch(app.url+'/api/session'),{csrf}=await session.json(),cookie=session.headers.get('set-cookie').split(';')[0],backup=await createArtifactService({store:app.store,dataDir:dir}).backup();
   const restored=await fetch(app.url+'/api/storage/restore',{method:'POST',headers:{'Content-Type':'application/json',Cookie:cookie,'X-Forge-CSRF':csrf},body:JSON.stringify({id:backup.id,expectedRevision:app.store.read().revision}),signal:AbortSignal.timeout(5000)});assert.equal(restored.status,200);
 });
