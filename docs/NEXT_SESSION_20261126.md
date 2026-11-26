@@ -25,9 +25,17 @@ supersedes their executable instructions.
   absolute trial envelope; task/skill/route bytes remain pinned and current
   native authority remains required. Ordinary Adaptive TTL stays fifteen minutes.
 - Session-capable installer cache/inventory/Windows process safety checks pass.
-  A fresh-source compile is active in a separate owned directory. Its dependency
-  store reuse and engineering harness differences must be reported explicitly.
-  No fresh-build/native proof may be inferred from successful cache copies.
+  Fresh-source compile, private install, reopen, copied T3 import and CLI-version
+  checks passed. Read-only dependency-store reuse and direct base T3 compiler
+  invocation are documented engineering-harness boundaries. Runtime qualification
+  remains separate from successful installation.
+- The ambitious six-mode formation landing is integrated at `170274d`; all six
+  functional GUI strategy modes are being connected to canonical owners. The
+  website explorer remains illustrative rather than native execution evidence.
+- Owner steering on 26 November: real-product creation and external-server
+  connectivity tests wait for the home machine because of work-machine admin/
+  network restrictions. Preserve explicit NOT_RUN status and home instructions;
+  continue feasible local developer checks and fix reproduced code defects.
 
 Current branch: `fix/research-attestation-check-work`. Public `main` remains
 `d928e9cc97d54abbd38f2f65afa1798ac8b5b6d5`; resumed changes are not published.

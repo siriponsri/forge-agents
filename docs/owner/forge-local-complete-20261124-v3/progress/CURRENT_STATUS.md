@@ -25,10 +25,26 @@ verification, current-image route regression and final UI/media review remain
 pending. Worker module proofs are recorded separately from production proofs.
 
 The installer now authenticates inventory/capability metadata and supports the
-session-capable derivative. A full fresh-source pipeline is actively being
-verified in a separate owned build directory; actual cache copy/tamper/restart
-and Windows process-tree safety checks passed. Windows long-path failures found
-by that run have been corrected without relaxing source/image pins.
+session-capable derivative. The fresh-source pipeline reached READY and passed
+reopen, copied T3 import and actual CLI-version checks. Its documented engineering
+harness reuses read-only dependency stores and invokes the exact base T3 bundle
+compiler directly; this is not a clean dependency-download qualification. Cache
+copy/tamper/restart and Windows process-tree safety checks also passed. Windows
+long-path and private npm-configuration failures were corrected without relaxing
+source/image pins.
+
+The ambitious landing redesign is integrated at `170274d`: a responsive six-mode
+formation explorer, genuine dated workbench capture and preserved source/release
+qualifications. Worker verification passed 120 layout/mode combinations and 20
+axe AA audits. Functional six-mode strategy composition is still being connected
+to the canonical owners; the website illustration is not execution evidence.
+
+On 26 November the Owner explicitly deferred real-product creation journeys and
+external-server connectivity tests to the home machine because the work machine
+has administrator/network restrictions. Keep these as HOME_UAT_NOT_RUN and
+EXTERNAL_PRODUCT_JOURNEY_NOT_RUN with executable handoff steps. Local developer
+builds, localhost checks and correction of reproduced implementation defects
+continue; missing implementation is not reclassified as a credentials limitation.
 
 Ordinary Adaptive decision expiry remains fifteen minutes. An already claimed
 Research cohort validates its unchanged pinned decision at original approval,
