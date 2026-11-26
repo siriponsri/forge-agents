@@ -35,6 +35,10 @@ test('mounted Owner-approved orchestrator calls an existing child through the re
   c.providerCatalog={providerInstanceId:c.providerInstanceId,identityKey:digest([c.providerInstanceId,1,c.config.routeId,c.config.accountRoute,source]),models:[{id:'forge/fixture-model',options:[]}],catalogComplete:true,stale:false,canRunChildTask:true,runtimeModes:['approval-required'],omittedModels:0,observedAt:Date.now()};p.profile.provider={instanceId:c.providerInstanceId,connectionId:c.id,connectionGeneration:1,model:'forge/fixture-model',options:[]};
   child.bindings={[childBot.id]:{botId:childBot.id,threadId:'injected-child-thread',t3ProjectId:'injected-child-project',selection:{instanceId:c.providerInstanceId,model:'forge/fixture-model',options:[]}}};
   await app.store.transaction(s=>{s.projects.push(p);s.plans.push(plan);s.bots.push(bot,childBot);s.tasks.push(task);s.conversations.push(parent,child);s.connections.push(c);});
+  // The fixture seeds catalog/project records directly. Provision the SAME
+  // builtin bindings that production project.create initializes before an
+  // intent is approved; first-start setup must not change its pinned policy.
+  for(const capability of ['models','provider','mcp','skills','environment','desktop','browser'])await app.plugins.enable({projectId:p.id,pluginId:'forge.'+capability,expectedRevision:0,operationId:`builtin-default:${p.id}:forge.${capability}`});
   const configDir=path.join(dir,'data/providers',c.providerInstanceId,'config/opencode');await mkdir(configDir,{recursive:true});await writeFile(path.join(configDir,'opencode.json'),JSON.stringify({providers:{forge:{package:'@opencode/ai/providers/openai-compatible',settings:{baseURL:`http://127.0.0.1:${model.address().port}/v1`,apiKey:`{env:${envName}}`},models:{'fixture-model':{modelID:'fixture-model'}}}}}));
   // These replace ONLY the ordinary child transport. Parent T3 adapter/native
   // execution, live attestation, SDK attachment and all domain guards are real.
