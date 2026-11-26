@@ -1,0 +1,171 @@
+{
+  "checkedAt": "2026-11-26T02:33:04.006072+00:00",
+  "status": "VISUALLY_REVIEWED",
+  "requiredWidths": [
+    320,
+    375,
+    414,
+    768,
+    1440
+  ],
+  "additionalLaptopWidth": 1280,
+  "laptopHeroBottomPx": 720.484375,
+  "laptopViewportHeightPx": 800,
+  "themeAndLocale": "Final EN light hero/formation crops at all widths; TH dark full-page at320/375/1440; both themes/locales in20 axe audits",
+  "corrections": [
+    "Headline fits3 lines on desktop",
+    "Removed inherited duplicate hero gap",
+    "Shortened narrow mode label; full accessible mode name retained",
+    "Clipped offscreen skip link while preserving keyboard focus"
+  ],
+  "scope": "Worker inline review; no independent or Owner product acceptance",
+  "referenceVisualsInspected": [
+    "https://orca.dev/",
+    "https://t3.codes/",
+    "https://orchestrator.inc/"
+  ],
+  "referencesCopiedToProduct": false,
+  "additionalInteractionChecks": [
+    "Theme toggle and reload persistence",
+    "EN to TH navigation",
+    "Genuine full-resolution1440px product image"
+  ],
+  "sources": {
+    "apps/website/src/App.tsx": "180b5600c29762d0950ee3b7a063887627204dfd01d2d8353cb967239da8237e",
+    "apps/website/src/landing.css": "5198a3d8d4119def02f2523e71881ba60a041a63529c14b3bcdfa57b29432170",
+    "apps/website/src/main.tsx": "ed32ee40aa3fc43c84d9159c9f94352b3ff4552e5bfbd89779c2e751c8d94c49",
+    "apps/website/src/releases.ts": "12cae7cb09226f7c0c996c312464d35e0a2b754309f77a60aa0e60c749fb437e",
+    "apps/website/src/site.ts": "af875c7010353d40abca4bd049fdb1579ef7d58501573132fd9a5776650b7110",
+    "apps/website/src/StrategyStory.tsx": "d01d7cb75a9df874b5532b038174b3ac21f8a529ab6c8b3e468ad067dbc7a561",
+    "apps/website/src/style.css": "cb2aa3ad1e60de3ba8c3a3946bb2be3598502f79e03554800a341af74f209a52",
+    "apps/website/src/tokens.css": "b13a88625ab9efde59cb9eaa64bee67f48cfa370b4990aa58c2d8469deb21bec"
+  },
+  "images": [
+    {
+      "file": "formation-1280.png",
+      "width": 1184,
+      "height": 782,
+      "sha256": "db1b158a4c6cbbb614238e316edfe5b5e04c732f2c8907c5dfadc8b3ab867841"
+    },
+    {
+      "file": "formation-1440.png",
+      "width": 1232,
+      "height": 783,
+      "sha256": "9fc7251abbe711baf0ae54f203a3a2bc4a1de81b71f6c36e3ed678f9d6b60414"
+    },
+    {
+      "file": "formation-320.png",
+      "width": 280,
+      "height": 1435,
+      "sha256": "bb557bd92824ccc9627b6356cdb1870728187a6fb04b40ff2243958564855aa1"
+    },
+    {
+      "file": "formation-375.png",
+      "width": 335,
+      "height": 1303,
+      "sha256": "1c1f1cb95d9cec85aa291685f0a62dbe0d15d53a0032c5e8fd9808bfb4a39d1c"
+    },
+    {
+      "file": "formation-414.png",
+      "width": 374,
+      "height": 1298,
+      "sha256": "8187d8510d9c0565bf3d6f6b168548d72fdb86b432b92a5e50248c7cb3436db3"
+    },
+    {
+      "file": "formation-768.png",
+      "width": 712,
+      "height": 1014,
+      "sha256": "91a4459e4536752166fc2dc3b06f72c1271653bb60ca524c21a1a1552a331ddc"
+    },
+    {
+      "file": "hero-1280.png",
+      "width": 1184,
+      "height": 632,
+      "sha256": "2669e60a0afd095f92a8bff37a2161e5f06782e661cfd3d298be8f55d6dc4ba2"
+    },
+    {
+      "file": "hero-1440.png",
+      "width": 1232,
+      "height": 639,
+      "sha256": "202f51aab840cba028c910ab1a5c53bf257c92d3565e3c93496f2c5c7c30ca04"
+    },
+    {
+      "file": "hero-320.png",
+      "width": 280,
+      "height": 873,
+      "sha256": "3bd43e81fdc10843e11665c59df93b7c8997e331f15e9f9cc0829f377d23581c"
+    },
+    {
+      "file": "hero-375.png",
+      "width": 335,
+      "height": 873,
+      "sha256": "87fe065e0809eea51a9de6feee8aa12b9094003153aa6a72673f904f263ba00f"
+    },
+    {
+      "file": "hero-414.png",
+      "width": 374,
+      "height": 804,
+      "sha256": "a14c19a3945cd70089b807ff01f4e7d3a8d316e616714fd7888427200da977bc"
+    },
+    {
+      "file": "hero-768.png",
+      "width": 712,
+      "height": 812,
+      "sha256": "1789037747d9925a522b586211ba4bce77f0f8c17917f689ac4c23ca13fd593f"
+    },
+    {
+      "file": "home-en-light-1440.png",
+      "width": 1440,
+      "height": 7759,
+      "sha256": "c1b3230ef7cdacf4d6533d8a876f5f90ec07892975c9ecc7cd894ebfed57a120"
+    },
+    {
+      "file": "home-en-light-320.png",
+      "width": 320,
+      "height": 10970,
+      "sha256": "f17f8ce67038f4369e4c5cdb0ccfc8537fb4d5a79ecf0425cda8837e7c944758"
+    },
+    {
+      "file": "home-en-light-375.png",
+      "width": 375,
+      "height": 10312,
+      "sha256": "4c918d63d5ae8577bbbfc080c82dfd7f4cb8550ce68d8ddc7a996ff8a46526ef"
+    },
+    {
+      "file": "home-en-light-414.png",
+      "width": 414,
+      "height": 10005,
+      "sha256": "e0c50428ddd7f0d6b7c73ebe205df007f3f9e45ea5e1049283d0e235fb06107b"
+    },
+    {
+      "file": "home-en-light-768.png",
+      "width": 768,
+      "height": 7717,
+      "sha256": "b2943bb0b3ffcda3f64ea4da52c73a5c7915d776631323bc5c7219b77246e212"
+    },
+    {
+      "file": "home-th-dark-1440.png",
+      "width": 1440,
+      "height": 7685,
+      "sha256": "f149567f4ec601064fb9a9a75a253ec9e56fb24b6133d37379b41b3cebd3897f"
+    },
+    {
+      "file": "home-th-dark-320.png",
+      "width": 320,
+      "height": 10239,
+      "sha256": "9f49742fc944e37b4f3af24c5972fd3aeef5925e720d23fa49cda55e568dc9be"
+    },
+    {
+      "file": "home-th-dark-375.png",
+      "width": 375,
+      "height": 9813,
+      "sha256": "5ee8616b685dcd0d263b9b0555d8b45f97ba65f1a63e6c7ce42b4b19117b8772"
+    },
+    {
+      "file": "strategy-keyboard-1440.png",
+      "width": 1232,
+      "height": 783,
+      "sha256": "957770413b8f15613be8d7959cea40cc281f64a57d5944b3bba0f2cfc0eeb1e3"
+    }
+  ]
+}

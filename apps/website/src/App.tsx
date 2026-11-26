@@ -3,6 +3,7 @@ import * as Tabs from '@radix-ui/react-tabs';
 import {ArrowUpRight, ArrowRight, Sun, Moon, Menu, X, GitBranch, Layers3, Monitor, FileCheck2, Check, Download, ExternalLink} from 'lucide-react';
 import {href, repo, publicBaseline, publicCheckpoint, titles, type Lang, type Page} from './site';
 import {releases, windows} from './releases';
+import {StrategyStory} from './StrategyStory';
 
 type T = (th:string,en:string) => string;
 const Mark = () => <svg viewBox="0 0 64 64" aria-hidden="true"><path fill="#f97316" d="M8 8H56L44 20H20V28H48L36 40H20V56H8Z"/><path fill="#f2c94c" d="M44 8H56L44 20H32Z"/><path fill="#8b9199" d="M40 28H48L36 40H28Z"/></svg>;
@@ -110,9 +111,15 @@ function CapabilityTable({t,lang}:{t:T;lang:Lang}) {
 }
 
 function Home({lang,t}:{lang:Lang;t:T}) {
-  return <>
+  return <div className="landing">
     <section className="hero wrap" id="product">
-      <div className="hero-copy"><h1>One workspace.<br/>Every part<br className="desktop-break"/> of the work<span className="orange-period">.</span></h1><div className="hero-aside"><p>{t('เปลี่ยนไอเดียเป็นแผน ให้ทีมเอเจนต์ลงมือทำ แล้วเก็บเอกสาร ผลลัพธ์ และหลักฐานไว้ด้วยกัน ในพื้นที่ทำงานบนเครื่องของคุณ','Turn an idea into a plan. Put your agents to work. Keep the documents, outputs and evidence together in a workspace on your machine.')}</p><div className="hero-actions"><Action to={href(lang,'install')}>{t('ดูวิธีเริ่มต้น','Explore FORGE')}</Action><External to={repo}>View on GitHub</External></div><p className="hero-note">{t('กำลังพัฒนา · ใช้บัญชีและโมเดลที่คุณเชื่อมต่อ','In development · Bring your connected accounts and models')}</p></div></div>
+      <div className="hero-context"><span>{t('พื้นที่ทำงาน AI บนเครื่องของคุณ','The local workspace for connected AI work')}</span><a href={href(lang,'github')}>{t('Open source · กำลังพัฒนา','Open source · In development')}<ArrowUpRight size={14} aria-hidden="true"/></a></div>
+      <div className="hero-copy"><h1>One workspace.<br/>Every part of<br/>the <span className="hero-work">work<span className="orange-period">.</span></span></h1><div className="hero-aside"><div className="hero-thesis"><span className="thesis-line" aria-hidden="true"/><p>{t('จากไอเดีย ถึงสิ่งที่ตรวจสอบได้','From a first idea to work you can inspect.')}</p></div><p>{t('เปลี่ยนไอเดียเป็นแผน ให้ทีมเอเจนต์ลงมือทำ แล้วเก็บเอกสาร ผลลัพธ์ และหลักฐานไว้ด้วยกัน ในพื้นที่ทำงานบนเครื่องของคุณ','Turn an idea into a plan. Put your agents to work. Keep the documents, outputs and evidence together in a workspace on your machine.')}</p><div className="hero-actions"><Action to={href(lang,'install')}>{t('ดูวิธีเริ่มต้น','Explore FORGE')}</Action><External to={repo}>View on GitHub</External></div><p className="hero-note">{t('ใช้บัญชีและโมเดลที่คุณเชื่อมต่อ · ยังไม่มี signed release','Bring your connected accounts and models · No signed release')}</p></div></div>
+      <div className="hero-index"><a href="#strategies">{t('สำรวจกลยุทธ์','Explore formations')}<Arrow/></a><span>Plan <span aria-hidden="true">/</span> Execute <span aria-hidden="true">/</span> Inspect</span><a href="#workbench">{t('ดูพื้นที่ทำงานจริง','See the real workbench')}<Arrow/></a></div>
+    </section>
+    <div className="wrap"><StrategyStory lang={lang} t={t}/></div>
+    <section className="workbench-proof wrap" id="workbench" aria-labelledby="workbench-heading">
+      <div className="proof-heading"><h2 id="workbench-heading">The work has<br/>a home.</h2><div><p>{t('แผน ทีม และงานจริงในพื้นที่เดียวกัน ภาพจากแอป FORGE ที่นักพัฒนาเปิดตรวจ ไม่ใช่ภาพจำลอง UI','Plans, teams and tasks in one place. An actual FORGE capture from developer verification.')}</p><a className="text-link" href={href(lang,'changelog')}>{t('อ่านสิ่งที่ตรวจแล้วและข้อจำกัด','Read verification and limits')}<ArrowUpRight size={16} aria-hidden="true"/></a></div></div>
       <figure className="product-figure"><a className="screenshot-button" href="/forge-workbench.png" aria-label={t('เปิดภาพพื้นที่ทำงานความละเอียดเต็ม','Open full-resolution workbench screenshot')}><img src="/forge-workbench.png" width="1440" height="1000" fetchPriority="high" alt={t('หน้าจอ FORGE จริงรุ่นพื้นฐาน 24 พ.ย. 2026 ในธีม Dark Modern แสดงแผน งาน และสมาชิกทีม พร้อมข้อมูลตัวอย่างสำหรับการตรวจสอบของนักพัฒนา','Actual FORGE baseline workbench, 24 Nov 2026, in Dark Modern, showing plans, tasks and team ownership with disposable developer verification data')}/></a><figcaption><span><span className="caption-dot"/>FORGE workbench · Dark Modern</span><span>{t('ภาพจริง 24 พ.ย. 2026 · ข้อมูลทดสอบของนักพัฒนา · ก่อน integration ใหม่','Actual capture · 24 Nov 2026 · Developer fixtures · Before newer integrations')}</span></figcaption></figure>
       <div className="product-principles"><span><Layers3 size={18}/> {t('แผนและทีมในพื้นที่เดียว','Plans and teams, together')}</span><span><Monitor size={18}/> {t('ทำงานบนเครื่องของคุณ','A workspace on your machine')}</span><span><FileCheck2 size={18}/> {t('ผลลัพธ์ที่ตรวจสอบย้อนกลับได้','Outputs with a traceable source')}</span></div>
     </section>
@@ -125,7 +132,7 @@ function Home({lang,t}:{lang:Lang;t:T}) {
     </section>
     <Architecture t={t} lang={lang}/><CapabilityTable t={t} lang={lang}/>
     <section className="closing section"><h2>Your next idea.<br/>A place to begin.</h2><div><p>{t('เริ่มจากคู่มือติดตั้ง ตรวจข้อกำหนด และเชื่อมต่อบริการเมื่อคุณพร้อม','Start with the setup guide. Check the requirements, then connect your services when you’re ready.')}</p><Action to={href(lang,'install')}>{t('อ่านคู่มือติดตั้ง','Read the installation guide')}</Action><a className="subtle-link" href={href(lang,'download')}>{t('ดูสถานะ Windows download','Check Windows download status')}<Arrow/></a></div></section>
-  </>;
+  </div>;
 }
 
 function DownloadPage({lang,t}:{lang:Lang;t:T}) {

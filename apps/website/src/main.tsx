@@ -9,6 +9,8 @@ import '@fontsource/ibm-plex-sans-thai/600.css';
 import {App} from './App';
 import {route} from './site';
 import './style.css';
+import './tokens.css';
+import './landing.css';
 
 const container = document.getElementById('root')!;
 const app = <React.StrictMode><App {...route(location.pathname)} /></React.StrictMode>;

@@ -1,0 +1,133 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-11-26T02:31:25.371Z",
+  "checks": [
+    "TH/EN × light/dark × 320/375/414/768/1440; all six modes fit; 20 WCAG AA axe audits",
+    "Mode keyboard Left/Right/Home/End wrap, focus/pressed state, all workflow steps, reduced-motion manual progression, timed play/advance/pause, live preference change and offscreen pause",
+    "All ten localized inner pages remain readable at 375; zero fake installer links; existing architecture arrow keys, filters, menu Escape and skip-link work",
+    "Every local link/fragment and bundled license resolves; no-JS home/install content; strict served CSP, no console/page errors or remote runtime/font/API requests"
+  ],
+  "audits": [
+    {
+      "label": "th light 320",
+      "violations": []
+    },
+    {
+      "label": "th light 375",
+      "violations": []
+    },
+    {
+      "label": "th light 414",
+      "violations": []
+    },
+    {
+      "label": "th light 768",
+      "violations": []
+    },
+    {
+      "label": "th light 1440",
+      "violations": []
+    },
+    {
+      "label": "th dark 320",
+      "violations": []
+    },
+    {
+      "label": "th dark 375",
+      "violations": []
+    },
+    {
+      "label": "th dark 414",
+      "violations": []
+    },
+    {
+      "label": "th dark 768",
+      "violations": []
+    },
+    {
+      "label": "th dark 1440",
+      "violations": []
+    },
+    {
+      "label": "en light 320",
+      "violations": []
+    },
+    {
+      "label": "en light 375",
+      "violations": []
+    },
+    {
+      "label": "en light 414",
+      "violations": []
+    },
+    {
+      "label": "en light 768",
+      "violations": []
+    },
+    {
+      "label": "en light 1440",
+      "violations": []
+    },
+    {
+      "label": "en dark 320",
+      "violations": []
+    },
+    {
+      "label": "en dark 375",
+      "violations": []
+    },
+    {
+      "label": "en dark 414",
+      "violations": []
+    },
+    {
+      "label": "en dark 768",
+      "violations": []
+    },
+    {
+      "label": "en dark 1440",
+      "violations": []
+    }
+  ],
+  "errors": [],
+  "captures": [
+    {
+      "name": "home-th-dark-320",
+      "sha256": "9f49742fc944e37b4f3af24c5972fd3aeef5925e720d23fa49cda55e568dc9be"
+    },
+    {
+      "name": "home-th-dark-375",
+      "sha256": "5ee8616b685dcd0d263b9b0555d8b45f97ba65f1a63e6c7ce42b4b19117b8772"
+    },
+    {
+      "name": "home-th-dark-1440",
+      "sha256": "f149567f4ec601064fb9a9a75a253ec9e56fb24b6133d37379b41b3cebd3897f"
+    },
+    {
+      "name": "home-en-light-320",
+      "sha256": "f17f8ce67038f4369e4c5cdb0ccfc8537fb4d5a79ecf0425cda8837e7c944758"
+    },
+    {
+      "name": "home-en-light-375",
+      "sha256": "4c918d63d5ae8577bbbfc080c82dfd7f4cb8550ce68d8ddc7a996ff8a46526ef"
+    },
+    {
+      "name": "home-en-light-414",
+      "sha256": "e0c50428ddd7f0d6b7c73ebe205df007f3f9e45ea5e1049283d0e235fb06107b"
+    },
+    {
+      "name": "home-en-light-768",
+      "sha256": "b2943bb0b3ffcda3f64ea4da52c73a5c7915d776631323bc5c7219b77246e212"
+    },
+    {
+      "name": "home-en-light-1440",
+      "sha256": "c1b3230ef7cdacf4d6533d8a876f5f90ec07892975c9ecc7cd894ebfed57a120"
+    },
+    {
+      "name": "strategy-keyboard-1440",
+      "sha256": "957770413b8f15613be8d7959cea40cc281f64a57d5944b3bba0f2cfc0eeb1e3"
+    }
+  ],
+  "scope": "Static public landing only; no product/native/live-provider/Home UAT qualification",
+  "sourceStatus": "Pinned 26 Nov source.json: public d928e9c; six-mode later branch unpublished; no public release"
+}
