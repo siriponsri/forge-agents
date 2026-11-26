@@ -1,5 +1,46 @@
 # Resumed work and continuation map
 
+## Final local checkpoint — 26 November
+
+Local work below is complete at the recorded developer-check scope; the full
+complete-product goal is not marked achieved. This supersedes all pending-worker,
+pending-landing and native-return diagnosis instructions below.
+
+- Code correction `246daac` passes the mounted native parent on the original
+  approved session image: 3 loopback model requests, one child dispatch, both
+  same-turn replies and replay without another dispatch. The same exact image
+  subsequently passed Guarded/default and frontend-purpose regression **15/15**,
+  no skips, 9 loopback requests and three real broker callbacks (290.218s).
+  Native source/pins remain unchanged; engineering diagnostic-image commits
+  are not promoted as production fixes.
+- Serial regression: **917 tests, 905 PASS, 11 skipped, one obsolete-fixture
+  ENOENT**. `cc60da3` corrects the fixture's missing enforcement directories;
+  its complete three-test file passes separately. The aggregate itself is not
+  relabelled all green. Runtime code was unaffected by that fixture correction.
+  Exact counts/qualification: `docs/evidence/developer-checks-20261126.json`.
+- App build, site TypeScript/Vite/12 prerenders, CSP/license/source checks and
+  release policy pass. All six GUI strategies, session roles and Strategist are
+  integrated. The independent predecessor-file race correction remains accepted.
+- Landing's original four findings are resolved (scoped ship). The factual
+  Windows-x64 qualification follow-up also has no material regression: 24 layouts,
+  four axe audits and five actual captures. This is not Owner aesthetic approval.
+- Final source ZIPs pin **be617db**, contain 420 files each including private setup
+  tools and the native-return fix, pass Git/ZIP checks and actual HTTP hashes.
+  They are committed in `apps/website/public/downloads`. A dedicated owned TEMP
+  parent allowed atomic staging after direct-TEMP `EBUSY`; existing sets were
+  retained and no per-file mixed publication was used.
+- README media refreshed from **d502648**: 21 actual production-App captures and
+  four walkthroughs, zero provider calls, real local files/tests/preview/ZIP,
+  Univer edits and Windows report outputs. Full decode/hash/privacy-text checks
+  pass. Fresh independent review inspected all21 captures and12 GIF keyframes,
+  with no actionable findings. Sampled visual review is not every-frame privacy
+  certification. README light/dark 900/375 proof and integrated brand checks pass.
+- Use `docs/HOME_HANDOFF_20261126_TH.md` for the actual files and home test order.
+  Current native Guarded/Orchestrator/selection setup is Windows x64 only;
+  macOS launcher execution remains NOT_RUN. Native monetary finality remains
+  unsupported, separate from credentials. Real-product/external-server journeys
+  and Home UAT remain deferred at the Owner's request. No resumed push/deploy.
+
 ## Latest verified state — native return correction and landing review
 
 This supersedes the earlier diagnosis and pending-review instructions below.

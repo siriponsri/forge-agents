@@ -1,5 +1,23 @@
 # Implementation Log
 
+## Final local correction and documentation checks — 2026-11-26
+
+`246daac` closes private session JSON control connections after acknowledgement;
+no retry, changed authority or deadline extension. Copied engineering experiment
+passed, then actual primary parent/current approved session image passed with
+three loopback requests and one canonical child. The same image's default and
+frontend purposes passed15/15. The exact original TCP/parser mechanism remains
+unproven; no speculative timeout or native source/pin change was promoted.
+
+Serial917 checks produced905PASS/11skip/one old fixture ENOENT. `cc60da3` adds
+the missing fixture directories and its full3checks pass separately. New-image
+native fixture paths/pins were made exact in64924cc/4e2c588. Builds/site checks,
+source ZIP generation/HTTP hashes, landing scoped verdict and genuine README
+media verification/independent visual review are retained in developer-checks
+evidence. Downloads pinbe617db; media captures pind502648. Protected legacy
+paths remain unchanged. Unsupported native monetary finality and Windows-only
+native setup remain distinct from deferred live/Home tests; no push/deploy.
+
 ## Six-mode integration and Owner landing correction — 2026-11-26
 
 Integrated source-pattern mappings (`4fc3d31`), six bounded strategy modes

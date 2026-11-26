@@ -1,5 +1,35 @@
 # Release Report — Development checkpoint
 
+## Current local checkpoint — 2026-11-26
+
+**Development source packages prepared; NOT a complete-product release.**
+This supersedes the old observed-status/template fields below. Version remains
+1.1.0-alpha.3; no resumed push, public deployment, compute purchase, credential
+migration or prototype activation. Public main remains the earlier `d928e9c`.
+
+| Area | Observed result |
+|---|---|
+| Native parent | `246daac`, original approved image, PASS180.623s; 3 loopback model requests, one canonical child dispatch, completed parent, replay without duplication; account/catalog/model and child transport injected |
+| Same-image compatibility | Guarded/default + frontend15/15 PASS, no skips, 290.218s, 9 loopback requests/3 broker callbacks; actual compiled runtime, controlled admission fixtures |
+| Serial developer checks | 917 total: 905 PASS, 11 skipped, one old fixture ENOENT; corrected fixture complete3/3 PASS separately, not a retroactive all-green aggregate |
+| Builds/site policy | App build PASS; website TypeScript/Vite/12 prerenders, source/CSP/licenses and release-policy2 PASS; noindex until publication authorized |
+| Landing | Same reviewer resolved four findings; scoped ship. Windows-only setup copy/layout follow-up accepted, 24 layouts/four audits. Owner aesthetic acceptance unasserted |
+| README/media | d502648 capture, 21 screenshots/four walkthroughs/providerCalls0; real local receipts; full decode/hash checks and independent21-image/12-keyframe review accepted at documentation scope; brand/layout checks pass |
+| Actual Windows/macOS downloads | Source be617db; 420 committed files each, exact source/ZIP verification and HTTP200 hashes pass; unsigned source launchers requiring Node24.13+ and initial network |
+| Legacy integrity | Protected bootstrap payload/manifest, legacy runtime and AO paths unchanged from public checkpoint |
+
+Evidence: [developer checks](../../../evidence/developer-checks-20261126.json),
+[native control correction](../../../evidence/session-control-transport-20261126.json),
+[media review](../../../evidence/media-finish-review-20261126.json),
+[home handoff](../../../HOME_HANDOFF_20261126_TH.md).
+
+Remaining limits are not waived: bounded private native setup is Windows x64
+only; actual macOS launcher execution is NOT_RUN. Native monetary billing finality
+is unsupported (`cost:null`, `final:false`); unsupported hard caps fail closed.
+External product/server/account/model-quality journeys and Home UAT are NOT_RUN
+as explicitly deferred by the Owner. No signed desktop installer or complete
+release approval is asserted.
+
 ## Observed status — 2026-11-24
 
 **IMPLEMENTATION_INCOMPLETE / HOME_UAT_NOT_RUN**. Integration branch only;

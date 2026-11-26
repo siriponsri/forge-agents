@@ -6,9 +6,11 @@
 |---|---|
 | Six strategy modes / shared canonical owners | `77e6ac0`: Workspace third host-only context, T3 and Conversation derive/save/final/replay, role-safe prompts, Owner HTTP/CSRF, restore and private source protection; 13 service + 3 production-owner + 42 affected checks PASS, injected native transport |
 | Checked predecessor final admission | Independent P2 reproduced on `77e6ac0`; `2a34a9e` final actual Git/Workspace inspection + pure guard, race regression PASS; independent recheck accepted, 4/4 focused checks |
-| Actual static launcher downloads | Source `02a888c`; Windows/macOS ZIPs + manifest/SHA256SUMS, 420 committed files including all setup tools; exact Git/source/checksum validation PASS; unsigned source packages, Node required, runtime/Home UAT NOT_RUN; final regeneration pending |
+| Actual static launcher downloads | Source `be617db`; Windows/macOS ZIPs + manifest/SHA256SUMS, 420 committed files including all setup tools and transport correction; exact Git/ZIP and actual HTTP hashes PASS; unsigned source packages, Node required, Windows-only private setup stated; platform/Home UAT NOT_RUN |
 | Landing replacement | Owner rejected `170274d`; current-model + Impeccable replacement integrated through `ddfe465`; same reviewer resolved all four findings, scoped disposition ship; no Owner aesthetic/release approval inferred |
 | Native session transport mitigation | `246daac` closes private JSON acknowledgement connections without retry or changed authority/deadlines; independent scoped review accepted, 6 unit checks PASS. Copied-source experiment PASS183.961s, then actual primary/original-approved-image PASS180.623s: 3 loopback model requests, one canonical child dispatch, same-turn replies, completed parent, no replay; account/catalog/model and ordinary child transport injected |
+| Same-image compatibility | Original approved session-capable image also passes default/Guarded + frontend15/15, no skips, 290.218s; 9 loopback requests/3 broker callbacks. No source/pin change; exact independent tuple asserted |
+| Full regression and documentation | Serial917:905PASS/11skip/one obsolete fixture ENOENT; affected fixture corrected and full3/3PASS separately. App/site builds/static policy pass. Media d502648:21 captures/4walkthroughs, machine checked and independent21-image/12-keyframe review accepted; no live/model/release claims |
 
 Earlier rows retain historical source/image qualifications only. Real-product
 and external-server testing is explicitly deferred to home, while local code

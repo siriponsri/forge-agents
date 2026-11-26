@@ -9,13 +9,14 @@ with the current model plus Impeccable for this design round.
 
 | Owner | Scope | State |
 |---|---|---|
-| Lead | Shared strategy/native owners, final admission, HTTP/CSRF/restore, integration, packages, progress and handoff | Active; six modes mounted, final predecessor race corrected |
+| Lead | Shared strategy/native owners, final admission, HTTP/CSRF/restore, integration, packages, progress and handoff | Local closure: native parent + same-image15/15, full serial plus corrected fixture, builds/packages/media checked; complete release/live/Home limits retained |
 | Six-strategy worker | app/strategies, Strategies component, focused tests/handoff | Delivered `0b0cb36`, integrated as `b404bb4` |
 | Source-pattern research worker | Two pinned primary-source mapping files | Delivered and integrated `4fc3d31` |
 | First landing worker | Static Home formation story, evidence and rationale | Delivered `f0f7fec`; integrated `170274d`, later rejected by Owner |
-| Replacement landing worker | Website source/docs only, Impeccable, actual launch-download CTAs | Active; root owns download bytes and independent finish review |
+| Replacement landing worker | Website source/docs only, Impeccable, actual launch-download CTAs | Delivered2a1bc28/e82395a/b012a0d; integrated throughddfe465, scoped reviewer ship; factual platform-copy follow-up accepted |
 | Launcher packaging worker | New deterministic source ZIP publication/verification tool and tests | Delivered `9ee76e3`, integrated `5e4156a`; real assets generated |
-| Native telemetry worker | Narrow native-tool diagnostics and NEW immutable derivative | Active; unknown cause remains unresolved, no production fix claimed |
+| Native telemetry worker | Narrow native-tool diagnostics and NEW immutable derivative | Delivered diagnostics/evidence, all jobs closed; diagnostic images not promoted. Root transport-only mitigation246daac passed original approved image |
+| Fresh media reviewer | All21 captures and12 sampled GIF frames, provenance/readability/privacy | Accepted documentation scope, no actionable findings; no release/Owner/live approval implied |
 | Independent strategy reviewers | Exact read-only integration and correction checks | First found one P2; correction recheck active |
 
 Real-product creation and external-server tests are deferred to the home machine
