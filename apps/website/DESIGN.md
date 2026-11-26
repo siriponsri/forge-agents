@@ -10,7 +10,17 @@ colors:
   soft: "#eceff2"
   accent: "#a83d0b"
   accent-soft: "#fbe5d5"
-  brand-orange: "#fa7415"
+  brand-orange: "#f97316"
+  brand-yellow: "#f2c94c"
+  brand-gray: "#8b9199"
+  home-paper: "#fbfaf7"
+  home-ink: "#242522"
+  home-muted: "#60605d"
+  home-dark-paper: "#181a19"
+  home-dark-ink: "#f5f5ee"
+  home-dark-muted: "#b4b6b1"
+  hero-ink: "#291a10"
+  hero-secondary: "#66300d"
   dark-paper: "#13161a"
   dark-surface: "#1a1e23"
   dark-ink: "#edf0f3"
@@ -68,6 +78,34 @@ components:
 # Design System: FORGE public website
 
 ## Overview
+
+### Current Home composition — 26 November 2026
+
+The Owner rejected the earlier giant-headline/catalog composition. Home now
+uses the replacement described in `docs/IMPECCABLE_LANDING.md`: an orange hero
+with a crisp, explicitly illustrative project-website brief, assigned work and
+retained outputs. Plan, Make and Inspect change the work layout, connector paths
+and output structure together. A genuine dated workbench capture follows it;
+mobile includes a readable crop of that same image, its complete context and a
+visible full-resolution link. Existing detailed explorers remain disclosed.
+
+For Home, `src/home.css` overrides the older reading-surface rules below.
+Its paper/ink pairs use the `home-*` colors above, while the orange hero uses
+warm brown ink. Yellow and gray remain secondary brand facets. They do not
+replace semantic status or informational text colors. The illustration has
+soft offset depth; the rest of the page retains restrained reading surfaces.
+Bundled Manrope and IBM Plex Sans Thai remain the only typefaces.
+
+Download actions use the verified same-origin source-launcher manifest. While
+metadata is loading or unavailable, Home offers package details; the download
+page gives an explicit status and Retry. Only validated ready entries become
+platform ZIP actions. No-JavaScript links remain available. These are unsigned
+development source launchers, requiring Node 24.13+ and initial dependency
+downloads, not signed native installers or a completed product release.
+
+The independent finish review at `ddfe465` resolved its four material findings.
+That is a scoped design verdict, not Owner aesthetic acceptance or release
+approval. Earlier sections below describe the retained inner-page system.
 
 **Creative North Star: "Connected work, clearly seen"**
 

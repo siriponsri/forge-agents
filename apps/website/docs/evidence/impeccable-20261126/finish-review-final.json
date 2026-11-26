@@ -1,0 +1,26 @@
+{
+  "reviewedRevision": "ddfe465",
+  "reviewer": "/root/impeccable_finish_reviewer_landing",
+  "kind": "same-reviewer correction verdict",
+  "disposition": "ship",
+  "scope": "The four original material landing findings only; not release-wide approval.",
+  "findings": [
+    {"finding": "Specific illustrative brief, assigned work, retained output and connected Inspect topology", "status": "resolved"},
+    {"finding": "Readable crop of the same dated mobile proof, complete context and visible full-resolution action", "status": "resolved"},
+    {"finding": "Truthful pending/unavailable download states and distinct actual ready ZIP actions", "status": "resolved"},
+    {"finding": "Lucide arrow replacing the Unicode icon", "status": "resolved"}
+  ],
+  "lastCorrection": {
+    "source": "src/WorkIllustration.tsx",
+    "junction": [300, 115],
+    "captures": ["phase-inspect-1440-en.png", "phase-inspect-375-th-dark.png"],
+    "reviewerObservation": "Both Inspect recaptures show a continuous incoming trunk branching left and right.",
+    "otherCapturesRefreshedInLastCorrection": false
+  },
+  "limitations": [
+    "Owner aesthetic acceptance is not asserted.",
+    "Product completion, native qualification and release approval are not asserted.",
+    "The illustration is not an actual model run; dated workbench proof retains its fixture provenance.",
+    "Final launcher regeneration after later app-source changes remains required."
+  ]
+}

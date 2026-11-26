@@ -80,3 +80,26 @@ large benchmark/API spend or RL training this iteration. See
 `docs/requirements/RESEARCH_EVALUATION_ADDENDUM.md`.
 Owner confirmed P01: start Proactive native enforcement with a bounded FORGE
 Guarded Route on T3/OpenCode; qualify actual deny/allow behavior before enabling.
+
+## Owner extensions — 26 November 2026
+
+Session roles include Orchestrator, Planner, Reviewer and Executor. The main
+Orchestrator may prompt explicitly approved child sessions through the canonical
+session owner. Assistance adds selectable Strategist patterns. All six working
+strategies must be selectable in the GUI: supervisor/workers, parallel fan-out
+and fan-in, routing to specialists, generator/verifier, sequential DAG and
+independent candidates with reviewed selection. A role label never grants tools
+or execution authority.
+
+The identity keeps orange primary with secondary yellow and gray. The Owner
+rejected the first new landing and approved the current model plus Impeccable
+after the requested Claude CLI was unavailable. The replacement landing must
+show truthful actual Windows/macOS source-launcher downloads and keep setup,
+unsigned-package and qualification limits visible. Local design review does
+not substitute for the Owner's aesthetic judgment.
+
+The Owner explicitly deferred real-product creation, external-server journeys
+and home UAT to the home machine because of workplace admin/network limits.
+Feasible local developer checks continue. Reproduced implementation defects
+remain implementation gaps and must not be reclassified as unavailable live
+credentials or deferred home testing.

@@ -33,16 +33,15 @@ copy/tamper/restart and Windows process-tree safety checks also passed. Windows
 long-path and private npm-configuration failures were corrected without relaxing
 source/image pins.
 
-The ambitious landing redesign is integrated at `170274d`: a responsive six-mode
-formation explorer, genuine dated workbench capture and preserved source/release
-qualifications. Worker verification passed 120 layout/mode combinations and 20
-axe AA audits. Functional six-mode strategy composition is still being connected
-to the canonical owners; the website illustration is not execution evidence.
-
-**Later Owner correction:** `170274d` was rejected aesthetically. A replacement
-using Impeccable is being reviewed; the earlier automated passes are not design
-acceptance. Claude 5.5 High was catalogued but its CLI/provider was unavailable;
-the Owner explicitly approved the current model plus Impeccable instead.
+The Owner rejected landing `170274d` aesthetically. Its Impeccable replacement
+and two correction batches are integrated through `ddfe465`. The same independent
+reviewer resolved all four material findings: the illustrative brief/work/output
+story and connected Inspect paths, readable mobile proof/full-resolution action,
+truthful download states and a consistent SVG arrow. Scoped disposition is
+**ship**, not Owner aesthetic acceptance or release approval. The site retains
+its actual dated screenshot and labels the illustration as illustrative. Claude
+5.5 High was catalogued but its CLI/provider was unavailable; the Owner explicitly
+approved the current model plus Impeccable instead.
 
 All six functional GUI strategies are mounted through the canonical owners at
 `77e6ac0`. Thirteen real Git/SQLite/service checks and three production-owner/
@@ -50,22 +49,30 @@ HTTP checks passed with labelled injected native transport; 42 affected existing
 admission/role/route checks also passed. Independent review found one P2: checked
 predecessor files could change during asynchronous verifier setup. `2a34a9e`
 adds final filesystem inspection followed by pure canonical admission; the actual
-Git/SQLite/T3-owner race regression passed. Separate recheck remains pending.
+Git/SQLite/T3-owner race regression passed. Independent recheck accepted the
+correction at exact `2a34a9e`, with four focused checks passed. Filesystem
+inspection is point-in-time; no filesystem lock or OS sandbox is inferred.
 
 Real Windows/macOS source-launcher ZIPs, manifest and checksums are now generated
-and committed under `apps/website/public/downloads` (`50ed3b2`, source `77e6ac0`).
+and committed under `apps/website/public/downloads` (current source `02a888c`).
+Each archive contains 420 committed files, including all private setup tools;
+`f3343a1` corrected the earlier omission of those tools from source packaging.
 They are unsigned development source packages, require Node.js 24.13+ and initial
 dependency connectivity, and are not signed native installers. Regenerate from
 the final app source before final delivery. Native macOS/platform execution and
 Home UAT are explicitly unrun. This does not imply public deployment.
 
-**Open implementation defect:** the assembled native parent is running and its
-approved membership is bound; real SDK `session_children` returns one child over
-HTTP 200, but the compiled native item becomes `SESSION_NATIVE_OUTCOME_UNKNOWN`
-before `session-return`. No child prompt/effect has occurred in those failed
-attempts. Standalone SDK/compiled-tool checks passed and do not resolve this
-assembled failure. A bounded private stage-telemetry derivative is being built;
-do not attribute the defect to live credentials or claim production qualification.
+**Open implementation defect:** engineering native diagnostics identify
+`session-return` / `FORGE_CURRENT_AUTHORITY_UNAVAILABLE`. The first child listing
+completed; the subsequent prompt returned valid SDK data and accepted one child
+through the canonical owner, then its return fence failed. Treat that child as
+acknowledged work; never replay it to recover the parent. Passive request-arrival
+tracing saw no second return request in that reproduction. The bootstrap catch
+covers fetch or response-read failure; its underlying transport cause remains
+under investigation. Standalone SDK/compiled-tool checks pass but do not resolve
+the assembled failure. A fresh-connection experiment is confined to copied
+engineering source and is not yet production qualification. Missing credentials
+and home UAT do not explain or close this implementation defect.
 
 On 26 November the Owner explicitly deferred real-product creation journeys and
 external-server connectivity tests to the home machine because the work machine

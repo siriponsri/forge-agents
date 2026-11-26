@@ -5,7 +5,17 @@ Read surface: the existing localized download route. This packet supersedes
 `DIRECTION.md` and `LANDING_AMBITION.md` **for this new Home composition**; their
 previous design verdicts do not approve this work.
 
-## Inspect connector follow-up — narrow verdict pending
+## Independent final disposition — scoped ship
+
+The same reviewer accepted the narrow correction at root `ddfe465`: both
+Inspect recaptures show a continuous trunk with joined left and right branches.
+All four original material findings are **resolved**, disposition **ship** at
+that scope. See `evidence/impeccable-20261126/finish-review-final.json`.
+This does not assert Owner aesthetic acceptance, product completion, native
+qualification or release approval. The following records preserve the earlier
+correction and verdict sequence.
+
+## Inspect connector follow-up — historical pre-verdict record
 
 The same independent reviewer returned **FIX** after the four-finding verdict
 pass: findings 2–4 were **resolved**; finding 1 was **partial only because** the
