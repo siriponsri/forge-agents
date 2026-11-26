@@ -4,6 +4,13 @@ export const CATALOG_TTL_MS=300000;
 export const latestPolicy=(s,p)=>records(s,'policy',p).at(-1);
 export const planSignature=p=>digest(p?{id:p.id,name:p.name,description:p.description}:null);
 export const routeKey=r=>JSON.stringify([r.connectionId,r.model]);
+export const ROLE_PATTERNS=Object.freeze({
+  'executor-only':Object.freeze(['executor']),
+  'executor-asst':Object.freeze(['executor','asst']),
+  'strategist-executor':Object.freeze(['strategist','executor']),
+  'strategist-executor-asst':Object.freeze(['strategist','executor','asst']),
+});
+export const rolesFor=constraints=>ROLE_PATTERNS[constraints?.rolePattern??'executor-asst'];
 // Only policy ordinals are compared. No model-name parsing, guessed prices,
 // parameter counts, measured-quality claims or confidence percentages.
 export function validatePolicy(policy){
@@ -13,7 +20,7 @@ export function validatePolicy(policy){
   if(!Array.isArray(policy.classifications)||policy.classifications.length>1000)fail('VALIDATION','Use up to 1000 explicit classifications');
   result.classifications=policy.classifications.map(c=>{
     keys(c,['connectionId','model','roles','sizeRank','qualityRank','costRank','monetaryCost','options','provenance'],'classification');
-    if(!Array.isArray(c.roles)||new Set(c.roles).size!==c.roles.length||c.roles.some(r=>!['executor','asst'].includes(r)))fail('ROLE_CONFLICT','Use distinct Executor/Asst roles; empty roles explicitly excludes the model',409);
+    if(!Array.isArray(c.roles)||new Set(c.roles).size!==c.roles.length||c.roles.some(r=>!['executor','asst','strategist'].includes(r)))fail('ROLE_CONFLICT','Use distinct Executor/Asst/Strategist roles; empty roles explicitly excludes the model',409);
     const monetary=c.monetaryCost??null;
     if(monetary!==null){keys(monetary,['amount','currency','unit','provenance'],'monetary cost');if(typeof monetary.amount!=='number'||!Number.isFinite(monetary.amount)||monetary.amount<0)fail('VALIDATION','Invalid reported monetary cost');text(monetary.currency,'currency',20);text(monetary.unit,'cost unit',100);provenance(monetary.provenance);}
     const options=c.options??[];
@@ -27,12 +34,14 @@ export function validatePolicy(policy){
 
 export const connectionSignature=c=>digest({id:c.id,enabled:c.enabled,providerInstanceId:c.providerInstanceId,config:c.config,catalog:c.providerCatalog,lastCheck:c.lastCheck,catalogError:c.catalogError});
 export function validateConstraints(c={}){
-  keys(c,['minExecutorQuality','minAsstQuality','maxCostRank','requiredCapabilities','difficulty'],'constraints');
+  keys(c,['rolePattern','minExecutorQuality','minAsstQuality','minStrategistQuality','maxCostRank','requiredCapabilities','difficulty'],'constraints');
+  const rolePattern=c.rolePattern??'executor-asst';
+  if(typeof rolePattern!=='string'||!Object.hasOwn(ROLE_PATTERNS,rolePattern))fail('ROLE_CONFLICT','Choose an advertised Assistance role pattern',409);
   const caps=c.requiredCapabilities??[];
   if(!Array.isArray(caps)||caps.length>32||new Set(caps).size!==caps.length||caps.some(x=>typeof x!=='string'||!x||x.length>200))fail('VALIDATION','Invalid required capabilities');
   const difficulty=c.difficulty??null;
   if(difficulty!==null){keys(difficulty,['kind','reason','provenance'],'difficulty');if(difficulty.kind!=='difficult')fail('VALIDATION','Only explicit difficult-work evidence triggers assistance');text(difficulty.reason,'difficulty reason');provenance(difficulty.provenance);}
-  return {minExecutorQuality:integer(c.minExecutorQuality??0,'minExecutorQuality',0,100),minAsstQuality:integer(c.minAsstQuality??0,'minAsstQuality',0,100),maxCostRank:c.maxCostRank==null?null:integer(c.maxCostRank,'maxCostRank',0,100),requiredCapabilities:[...caps],difficulty:structuredClone(difficulty)};
+  return {rolePattern,minExecutorQuality:integer(c.minExecutorQuality??0,'minExecutorQuality',0,100),minAsstQuality:integer(c.minAsstQuality??0,'minAsstQuality',0,100),minStrategistQuality:integer(c.minStrategistQuality??0,'minStrategistQuality',0,100),maxCostRank:c.maxCostRank==null?null:integer(c.maxCostRank,'maxCostRank',0,100),requiredCapabilities:[...caps],difficulty:structuredClone(difficulty)};
 }
 
 export function selectFromState(s,input,providers,t3,clock=Date.now){
@@ -78,13 +87,20 @@ export function selectFromState(s,input,providers,t3,clock=Date.now){
   }
   const sort=(a,b)=>(a.utility===null)-(b.utility===null)||(b.utility??0)-(a.utility??0)||b.classification.qualityRank-a.classification.qualityRank||routeKey(a).localeCompare(routeKey(b));
   const executors=base.candidates.filter(c=>c.eligible&&c.classification.roles.includes('executor')&&c.classification.qualityRank>=constraints.minExecutorQuality).sort(sort);
-  // Select the best feasible pair, allowing all connected providers. An Asst
-  // must have a strictly greater configured size rank than its Executor.
+  // Select a feasible pattern across connected providers. Only Asst retains
+  // the legacy larger-size ordinal rule. Strategist has no size/superiority rule:
+  // its explicit classification and constraints qualify a distinct route/model.
+  const roles=rolesFor(constraints);
   for(const executor of executors){
-    const asst=base.candidates.filter(c=>c.eligible&&c.classification.roles.includes('asst')&&c.classification.qualityRank>=constraints.minAsstQuality&&c.classification.sizeRank>executor.classification.sizeRank&&routeKey(c)!==routeKey(executor)).sort(sort)[0];
-    if(asst){base.selection={executor,asst};break;}
+    const assistants=roles.includes('asst')?base.candidates.filter(c=>c.eligible&&c.classification.roles.includes('asst')&&c.classification.qualityRank>=constraints.minAsstQuality&&c.classification.sizeRank>executor.classification.sizeRank&&routeKey(c)!==routeKey(executor)).sort(sort):[null];
+    for(const asst of assistants){
+      const strategist=roles.includes('strategist')?base.candidates.filter(c=>c.eligible&&c.classification.roles.includes('strategist')&&c.classification.qualityRank>=constraints.minStrategistQuality&&routeKey(c)!==routeKey(executor)&&(!asst||routeKey(c)!==routeKey(asst))).sort(sort)[0]:null;
+      if(roles.includes('strategist')&&!strategist)continue;
+      base.selection={executor,...(asst?{asst}:{}),...(strategist?{strategist}:{})};break;
+    }
+    if(base.selection)break;
   }
-  if(!base.selection){ask=true;base.issues.push({code:'ROLE_CONFLICT',action:'Configure a suitable Executor and a distinct larger Asst within the task constraints.'});}
+  if(!base.selection){ask=true;base.issues.push({code:'ROLE_CONFLICT',action:`Configure distinct route/models for ${roles.join(' + ')} within task constraints. Asst, when chosen, requires a greater owner-classified size rank than Executor. Strategist has no size rule.`});}
   if(!connections.length){setup=true;base.issues.push({code:'CONNECTION_REQUIRED',action:'Connect and check a T3 provider route.'});}
   return {...base,status:setup?'needs_setup':ask?'ask_owner':'selected'};
 }

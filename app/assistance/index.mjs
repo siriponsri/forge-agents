@@ -1,5 +1,5 @@
 import {append,record,records,receipt,saveReceipt,find,fail,changed,revision,text,integer,keys,provenance} from './records.mjs';
-import {validatePolicy,selectFromState,validateDecision,latestPolicy} from './selection.mjs';
+import {validatePolicy,selectFromState,validateDecision,latestPolicy,rolesFor} from './selection.mjs';
 import {terminal,durableRun,validateTaskScope} from './context.mjs';
 import {assertWorkspaceAvailable} from '../server/admission.mjs';
 export {validateAssistanceContext,assistancePrompt} from './context.mjs';
@@ -45,7 +45,7 @@ export function createAssistanceService({store,providers,t3,clock=Date.now}){
     if(inactive.has(l.status))return;
     if(!terminal.has(r.status)){l.status=['submitting','unknown'].includes(r.status)?'unknown':'running';return;}
     if(l.pendingRole)return;
-    l.status=a.role==='asst'?(r.status==='completed'?'awaiting_return':'awaiting_owner'):'awaiting_review';
+    l.status=a.role!=='executor'?(r.status==='completed'?'awaiting_return':'awaiting_owner'):'awaiting_review';
   }
   function checkBudget(s,l){
     if(l.steps>=l.limits.maxSteps||clock()>=l.deadlineAt||l.attempts.length>=l.limits.maxAttempts)return 'Task attempt, step or elapsed-time limit reached';
@@ -108,7 +108,8 @@ export function createAssistanceService({store,providers,t3,clock=Date.now}){
         const d=record(s,'decision',i.decisionId,i.projectId);if(d.taskId!==i.taskId)fail('SCOPE','Selection belongs to another task',409);
         validateDecision(s,d,i.projectId,clock);
         if(records(s,'loop',i.projectId).some(l=>!inactive.has(l.status))||s.events.some(e=>e.type==='adaptive.loop'&&e.projectId===i.projectId&&!inactive.has(e.status)))fail('LOOP_EXISTS','Reconcile the existing project task loop before creating assistance',409);
-        const limits=limitsOf(i.limits),l=append(s,'loop',{decisionId:d.id,taskId:d.taskId,botId:d.botId,conversationId:i.conversationId??null,status:'ready',pendingRole:'executor',reason:{kind:'initial',reason:'Start with the Executor selected by the configured policy.'},feedback:null,limits,steps:0,escalations:0,attempts:[],history:[],stopRequested:false,startedAt:clock(),deadlineAt:clock()+limits.maxMs},i.projectId);
+        const firstRole=rolesFor(d.constraints)[0];
+        const limits=limitsOf(i.limits),l=append(s,'loop',{decisionId:d.id,taskId:d.taskId,botId:d.botId,conversationId:i.conversationId??null,status:'ready',pendingRole:firstRole,reason:{kind:'initial',reason:`Start with the ${firstRole==='strategist'?'Strategist':'Executor'} selected by the configured policy and role pattern.`},feedback:null,limits,steps:0,escalations:0,attempts:[],history:[],stopRequested:false,startedAt:clock(),deadlineAt:clock()+limits.maxMs},i.projectId);
         validateTaskScope(s,l);trace(l,'created');return l;
       });arm(result);return result;
     },
@@ -124,6 +125,7 @@ export function createAssistanceService({store,providers,t3,clock=Date.now}){
         assertWorkspaceAvailable(s,i.projectId,{assistanceLoopId:l.id});
         const budget=checkBudget(s,l);if(budget){l.status='exhausted';trace(l,'limit_reached',{reason:budget});return l;}
         const role=l.pendingRole,number=l.attempts.length+1;
+        if(!rolesFor(d.constraints).includes(role)||!d.selection[role])fail('ROLE_CONFLICT','Pending role is outside the selected pattern',409);
         const context={version:1,decisionId:d.id,loopId:l.id,attemptNumber:number,role,taskSignature:d.taskSignature,selection:structuredClone(d.selection[role].selection),feedback:l.feedback,reason:structuredClone(l.reason),runtimeMode:'approval-required'};
         l.attempts.push({number,role,operationId:`assistance:${l.id}:attempt:${number}`,context,runId:null,status:'reserved',reconciled:false,reportedCost:null});
         l.pendingRole=null;l.status='submitting';l.steps++;trace(l,'dispatch_reserved');effect='dispatch';return l;
@@ -149,6 +151,7 @@ export function createAssistanceService({store,providers,t3,clock=Date.now}){
       if(l.steps>=l.limits.maxSteps||clock()>=l.deadlineAt){l.status='exhausted';trace(l,'limit_reached');return l;}
       if(i.action==='escalate'){
         if(a.role!=='executor')fail('ROLE_CONFLICT','Only Executor work can escalate to Asst',409);
+        if(!rolesFor(d.constraints).includes('asst')||!d.selection.asst)fail('ROLE_CONFLICT','This role pattern does not select Asst; stop and select a new pattern to change roles',409);
         if(l.escalations>=l.limits.maxEscalations)fail('ESCALATION_LIMIT','Assistance escalation limit reached',409);
         let reason;
         if(i.trigger==='difficult'&&d.constraints.difficulty)reason=structuredClone(d.constraints.difficulty);
@@ -156,8 +159,8 @@ export function createAssistanceService({store,providers,t3,clock=Date.now}){
         else fail('TRIGGER_REQUIRED','Asst is permitted only for explicitly difficult work or an observed stuck Executor',409);
         l.escalations++;l.pendingRole='asst';l.reason=reason;l.feedback=text(i.feedback??reason.reason,'assistance handoff');
       }else if(i.action==='return'){
-        if(a.role!=='asst'||r.status!=='completed')fail('ROLE_CONFLICT','A completed Asst attempt is required before returning to Executor',409);
-        l.pendingRole='executor';l.feedback=text(i.feedback,'reviewed Asst handoff');l.reason={kind:'return',runId:r.id,reason:'Continue Executor work from the reviewed Asst handoff.',provenance:provenance(i.provenance)};
+        if(!['asst','strategist'].includes(a.role)||r.status!=='completed')fail('ROLE_CONFLICT','A completed Asst or Strategist attempt is required before handing off to Executor',409);
+        l.pendingRole='executor';l.feedback=text(i.feedback,'reviewed role handoff');l.reason={kind:'return',runId:r.id,reason:`Continue Executor work from the reviewed ${a.role==='strategist'?'Strategist':'Asst'} handoff.`,provenance:provenance(i.provenance)};
       }else if(i.action==='approve'){
         if(a.role!=='executor'||r.status!=='completed')fail('REVIEW_REQUIRED','Only completed Executor work can be human-reviewed',409);
         l.review={reviewer:text(i.reviewer,'reviewer',200),evidence:text(i.evidence,'verification evidence'),runId:r.id,at:clock()};l.status='completed';l.steps++;trace(l,'human_reviewed');return l;
