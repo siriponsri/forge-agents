@@ -15,7 +15,7 @@ import {openLocalGateway} from './local-gateway.mjs';
  * sends a provider/model request. `attest` invokes the actual native gate probe.
  * No API here is mounted on HTTP/MCP or accepts model-owned configuration.
  */
-export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,authorizeCurrent,authorizeAction,authorizeNativePhase,beforeAction,recordReceipt,withFence,artifacts,createFrontendGateway,clock=Date.now}){
+export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,authorizeCurrent,authorizeAction,authorizeNativePhase,beforeAction,recordReceipt,withFence,artifacts,createFrontendGateway,createSessionGateway,clock=Date.now}){
   assertInstalledT3Host(t3Host);
   if(![readRun,validateReservation,authorizeCurrent,authorizeAction,recordReceipt,withFence].every(x=>typeof x==='function'))fail('CANONICAL_HOST_REQUIRED');
   if([authorizeNativePhase,beforeAction].some(x=>x!==undefined&&typeof x!=='function'))fail('CANONICAL_HOST_REQUIRED');
@@ -27,6 +27,7 @@ export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,aut
     if(s.phase==='closed')fail('ROUTE_CLOSED');
     artifact('t3',s.profile.route.t3BinarySha256);artifact('opencode',s.profile.route.opencodeBinarySha256);
     const run=synchronous(readRun,s.profile.runId);
+    if(s.profile.purpose==='supervised-orchestrator-v1'&&run?.attemptId!==s.profile.attemptId)fail('CANONICAL_ATTEMPT_CHANGED');
     if(!run||run.operationId!==s.operationId||run.projectId!==s.profile.projectId||run.taskId!==s.profile.taskId||!['submitting','running'].includes(run.status)||run.stopRequested||run.revoked||digest(run.profile)!==digest(s.profile))fail('CANONICAL_RUN_NOT_DISPATCHABLE');
     checkProfile(run.profile,clock());
     if(synchronous(authorizeCurrent,{profile:run.profile,run,workspace:s.workspace,runtimeDirectory:s.runtimeDirectory})!==true)fail('CANONICAL_CURRENT_AUTHORITY_DENIED');
@@ -74,9 +75,10 @@ export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,aut
       s.phase='binding';
       try{
         const authority=createProfileAuthority({readCurrent:()=>current(s),clock}),handle=authority.bind(s.profile);
-        if(s.profile.purpose==='supervised-frontend-v1'){
-          if(typeof createFrontendGateway!=='function')fail('FRONTEND_GATEWAY_REQUIRED');
-          s.gateway=await createFrontendGateway({profile:structuredClone(s.profile),assertCurrent:()=>current(s).profile,
+        if(['supervised-frontend-v1','supervised-orchestrator-v1'].includes(s.profile.purpose)){
+          const createGateway=s.profile.purpose==='supervised-orchestrator-v1'?createSessionGateway:createFrontendGateway;
+          if(typeof createGateway!=='function')fail(s.profile.purpose==='supervised-orchestrator-v1'?'SESSION_GATEWAY_REQUIRED':'FRONTEND_GATEWAY_REQUIRED');
+          s.gateway=await createGateway({profile:structuredClone(s.profile),assertCurrent:()=>current(s).profile,
             withFence:fn=>withFence(s.profile.runId,fn),authorizePhase:(body,profile)=>{
               const p=current(s).profile;if(digest(profile)!==digest(p)||body.profileDigest!==digest(p))fail('FRONTEND_PROFILE_CHANGED');
               if(body.sessionID!==null&&body.sessionID!==s.nativeSessionId)fail('NATIVE_SESSION_CHANGED');
@@ -109,7 +111,7 @@ export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,aut
         const url=new Promise((resolve,reject)=>{let text='';const inspect=b=>{text+=b.toString();if(text.length>32000)text=text.slice(-32000);const match=text.match(/http:\/\/127\.0\.0\.1:[0-9]+/);if(match)resolve(match[0]);};s.child.stdout.on('data',inspect);s.child.stderr.on('data',inspect);s.child.once('error',reject);s.child.once('exit',()=>reject(Error('NATIVE_BOOTSTRAP_FAILED')));});
         s.child.stdio[3].end(canonical({version:1,profile:s.profile,key:s.key.toString('hex'),brokerUrl:s.gateway.url,provider:s.provider,runtimeDirectory:s.runtimeDirectory,toolManifest:s.toolManifest}));
         s.url=await Promise.race([url,new Promise((_,reject)=>{const timer=setTimeout(()=>reject(Error('NATIVE_BOOTSTRAP_TIMEOUT')),15000);s.childDone.then(()=>clearTimeout(timer));})]);
-        current(s);const info=await api(s,'/api/info');if(!['2.4.1-forge-guarded.0','2.4.1-forge-frontend.0'].includes(String(info.version??info.data?.version)))fail('NATIVE_VERSION_CHANGED');
+        current(s);const info=await api(s,'/api/info');if(!['2.4.1-forge-guarded.0','2.4.1-forge-frontend.0','2.4.1-forge-sessions.0'].includes(String(info.version??info.data?.version)))fail('NATIVE_VERSION_CHANGED');
         s.phase='bound';return Object.freeze({url:s.url,password:s.password,binaryPath:artifacts.opencode.path,runtimeDirectory:s.runtimeDirectory,profileHandle:lease});
       }catch(e){await close(lease,'bind-failed');throw e;}
     },
@@ -119,17 +121,18 @@ export function createGuardedRuntimeHost({t3Host,readRun,validateReservation,aut
       const session=(await api(s,`/api/session/${encodeURIComponent(nativeSessionId)}`)).data;
       const variant=Array.isArray(s.profile.route.options)?s.profile.route.options.find(x=>x.id==='variant')?.value:s.profile.route.options.variant;
       if(session.location.directory!==s.runtimeDirectory||session.parentID||session.metadata?.forgeGuard?.profileDigest!==digest(s.profile)||session.model.providerID!==s.profile.route.apiProviderId||`${session.model.providerID}/${session.model.id}`!==s.profile.route.modelId||(session.model.variant??'default')!==(variant??'default'))fail('NATIVE_SESSION_CHANGED');
-      const frontend=s.profile.purpose==='supervised-frontend-v1';
-      const expectedRules=[{action:'*',resource:'*',effect:'deny'},...(frontend?['forge_frontend_selection_read']:['read_text','propose_change','edit_text'].map(name=>'forge_guarded_'+name)).map(action=>({action,resource:'*',effect:'allow'}))];
+      const frontend=s.profile.purpose==='supervised-frontend-v1',orchestrator=s.profile.purpose==='supervised-orchestrator-v1';
+      const purposeNames=orchestrator?['forge_sessions_session_children','forge_sessions_session_prompt']:['forge_frontend_selection_read'];
+      const expectedRules=[{action:'*',resource:'*',effect:'deny'},...(frontend||orchestrator?purposeNames:['read_text','propose_change','edit_text'].map(name=>'forge_guarded_'+name)).map(action=>({action,resource:'*',effect:'allow'}))];
       if(digest(session.permissions)!==digest(expectedRules))fail('NATIVE_POLICY_CHANGED');
       s.nativeSessionId=nativeSessionId;s.phase='attesting';
-      if(frontend){
+      if(frontend||orchestrator){
         // The default three-tool negative probe cannot attest another purpose.
         // Observe the authenticated actual session and shared T3 lifecycle only.
         current(s);const native=observeInstalledT3Host(t3Host,lease);
         if(!native?.phases.includes('openSession')||!native.phases.includes('ensureThread')||s.child.exitCode!==null||s.child.signalCode)fail('NATIVE_PROCESS_NOT_LIVE');
-        const p=s.profile,r={version:1,purpose:p.purpose,sessionID:nativeSessionId,pid:s.child.pid,binarySha256:p.route.opencodeBinarySha256,profileDigest:digest(p),manifestDigest:p.manifestDigest,contextDigest:p.contextDigest,toolGeneration:p.toolGeneration,policyGeneration:p.policyGeneration,runtimeDirectory:s.runtimeDirectory,names:['forge_frontend_selection_read']};
-        s.attestation=Object.freeze({...r,evidenceId:'frontend-session-v1:'+digest(r)});s.phase='attested';return structuredClone(s.attestation);
+        const p=s.profile,r={version:1,purpose:p.purpose,sessionID:nativeSessionId,pid:s.child.pid,binarySha256:p.route.opencodeBinarySha256,profileDigest:digest(p),manifestDigest:p.manifestDigest,contextDigest:p.contextDigest,toolGeneration:p.toolGeneration,policyGeneration:p.policyGeneration,runtimeDirectory:s.runtimeDirectory,names:purposeNames};
+        s.attestation=Object.freeze({...r,evidenceId:(orchestrator?'orchestrator-session-v1:':'frontend-session-v1:')+digest(r)});s.phase='attested';return structuredClone(s.attestation);
       }
       const body={nonce:randomBytes(32).toString('hex'),sessionID:nativeSessionId},mac=createHmac('sha256',s.key).update(canonical(body)).digest('hex');
       try{

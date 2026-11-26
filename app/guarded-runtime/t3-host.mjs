@@ -25,7 +25,9 @@ export function installT3GuardedHost({resolveThread,assertCurrent,runtimeDirecto
       if(!seen.has(handle))fail('PRIVATE_PROFILE_REQUIRED');
       const p=assertCurrent(handle);if(!p||p.then)fail('PRIVATE_PROFILE_REQUIRED');
       const names=toolNames(handle,p);if(names?.then)fail('SYNCHRONOUS_ROUTE_OBSERVATION_REQUIRED');
-      if(names!==undefined&&(p.purpose!=='supervised-frontend-v1'||JSON.stringify(names)!==JSON.stringify(['forge_frontend_selection_read'])))fail('PRIVATE_TOOL_PROFILE_REQUIRED');
+      const expected=p.purpose==='supervised-frontend-v1'?['forge_frontend_selection_read']:p.purpose==='supervised-orchestrator-v1'?['forge_sessions_session_children','forge_sessions_session_prompt']:undefined;
+      if(p.purpose==='supervised-orchestrator-v1'&&names===undefined)fail('PRIVATE_TOOL_PROFILE_REQUIRED');
+      if(names!==undefined&&(!expected||JSON.stringify(names)!==JSON.stringify(expected)))fail('PRIVATE_TOOL_PROFILE_REQUIRED');
       return names;
     }}:{}),
     connection(input){

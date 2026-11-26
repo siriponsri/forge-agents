@@ -1,0 +1,514 @@
+{
+  "version": 1,
+  "observedAt": "2026-11-26T01:23:14.543Z",
+  "scope": "NEW source generation/build inventory and actual parent native protocol fixtures; no production activation",
+  "inputs": {
+    "archives": {
+      "t3": "6828739be5126583b945e7173e7caef5acaa7ae57ffe566d9db9f65b5ab94ca2",
+      "opencode": "2e6432bb7c27b03b5bffa170360f6b95210213520ba43c1c7f82fd1d9e2f6f28"
+    },
+    "toolchains": {
+      "bun": "cb1d8e6564e655e49d30cead359750a1cbbd12f42651caa4b62244d7bd93c244",
+      "buildNode": "f5109dc868ec38703ad8f305e0aceece717cb60d4889873f434017af4e96cccb",
+      "hostNode": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    "revisions": {
+      "t3": "59651c1761f6c63e9b6056839067066968e6a406",
+      "opencode": "6f0514052a3c859894ad01bb14cc14dda1e44b96"
+    },
+    "mcpSdk": "1.32.2"
+  },
+  "sourcePins": [
+    {
+      "file": "app/session-tools/contract.mjs",
+      "sha256": "4e4e2fcec88a112621135731d95a14f1f4ac8d547f5e12e208e50c36459bd866"
+    },
+    {
+      "file": "app/session-tools/native-tool.mjs",
+      "sha256": "b9373b3800b18ca375a5c15aa28ad9c4aad2d2f2c99cb6defee31d168287c182"
+    },
+    {
+      "file": "app/session-tools/opencode-cli-runtime.ts",
+      "sha256": "157fb7e958d467b1ebe740e64d90b1bb7c624fd9271533be8431efefe69a8d39"
+    },
+    {
+      "file": "app/session-tools/native-gateway.mjs",
+      "sha256": "a41d450b73b5e80de4193baba2ce2630fe393b077d033af095a4532055bbccab"
+    },
+    {
+      "file": "app/guarded-runtime/profile.mjs",
+      "sha256": "b8f3c86ff957c4ff0d372d1232b3f789dbf20315822b74aeff3df9a1d284a78e"
+    },
+    {
+      "file": "app/guarded-runtime/runtime-host.mjs",
+      "sha256": "e5891ce90bc18bb1d759bdec5270e882ca3c1cf9694a380ed21314926c4c14b4"
+    },
+    {
+      "file": "app/guarded-runtime/t3-host.mjs",
+      "sha256": "e36ac1b3f39bedbba670ab1c8fba16bb5a324a136f0609bf2088ab12262aa716"
+    },
+    {
+      "file": "tools/session-tools/patch-generation.mjs",
+      "sha256": "a25eccd22853e12c9a546584c47145fc94a86e5cf869d54fef56bbd20a3ea202"
+    },
+    {
+      "file": "tools/session-tools/build-generation.mjs",
+      "sha256": "1ce753a64b766ccd58982e1b75d2bbbbfb49095dfb8ec50d802e84b8f811ef5a"
+    },
+    {
+      "file": "tools/session-tools/pipeline.mjs",
+      "sha256": "8781ea044f40ec767490e631ce90b3ead8246a0606128a2fc87a47170155dc28"
+    }
+  ],
+  "inventory": {
+    "version": 1,
+    "purposes": [
+      "guarded-default",
+      "supervised-frontend-v1",
+      "supervised-orchestrator-v1"
+    ],
+    "generation": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl",
+    "t3": {
+      "entry": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\forge-guarded-host.mjs",
+      "files": [
+        {
+          "name": "AcpMcpStdioBridge-DyJIQpZi.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\AcpMcpStdioBridge-DyJIQpZi.mjs",
+          "sha256": "72f0786e593967eee22081c8b39f11a144be9a7a9152ef1bb688136a425a5a9f"
+        },
+        {
+          "name": "AcpMcpStdioBridge-Pbhx3C4O.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\AcpMcpStdioBridge-Pbhx3C4O.mjs",
+          "sha256": "c101c42d13268e17b508ad6a03f25dec83b3e9b1ed8089c39658f2bde663cb2d"
+        },
+        {
+          "name": "CodexManagedTokenProtocol-CqrJZnS8.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\CodexManagedTokenProtocol-CqrJZnS8.mjs",
+          "sha256": "5ae6ca2feb51595f8fd322800d2ffb6ad77ebcf348853d69cd2bcd59ef79d3bc"
+        },
+        {
+          "name": "HostProcess-CTeQUVtM.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\HostProcess-CTeQUVtM.mjs",
+          "sha256": "26d54ea791246dc2c1a412d6d420d60fea9e20f899d0afa68c1f9c1068187ce1"
+        },
+        {
+          "name": "IdAllocator-4_Cm4_rr.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\IdAllocator-4_Cm4_rr.mjs",
+          "sha256": "443fdc073cc83bee84b25b9475c5a1aa90558197f6072703e1a16cf4af593079"
+        },
+        {
+          "name": "Latch-C8iLQEjk.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\Latch-C8iLQEjk.mjs",
+          "sha256": "41f6cf5e677e8097d90899e04bf516aa5179cc653926c38dcea05a5448ce07ca"
+        },
+        {
+          "name": "ManagedEndpointRuntime-BJixTOAO.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\ManagedEndpointRuntime-BJixTOAO.mjs",
+          "sha256": "6ff70e4da254ac0b77f00f1d64a7b56b94447e01a48a3397bdabe0126491ff54"
+        },
+        {
+          "name": "NodeCrypto-TZu7Okrv.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\NodeCrypto-TZu7Okrv.mjs",
+          "sha256": "91472085cfe54f4e5019212563d32f1a159a0bca7264af42b9c3dbe8ac17213f"
+        },
+        {
+          "name": "ProviderContinuationRequests-BTi_VzuC.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\ProviderContinuationRequests-BTi_VzuC.mjs",
+          "sha256": "da4fdb1781cea20b122b93a53d3566e32614aedc1f0233e875f7527116d259ac"
+        },
+        {
+          "name": "Schema-UsozyQoc.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\Schema-UsozyQoc.mjs",
+          "sha256": "ed29d76f554f53c2430882ca0368337f657285e286ddb6de37827f315c2d6d25"
+        },
+        {
+          "name": "Socket-BJIOErrH.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\Socket-BJIOErrH.mjs",
+          "sha256": "c5f895853dea5e96c020a5ce9b5c8d2aff3f2bc3f5a16cc9df2c7589706d92fc"
+        },
+        {
+          "name": "Stream-OiyKPUwA.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\Stream-OiyKPUwA.mjs",
+          "sha256": "f26d18f2a51b4c94ef7df6f9c1713f69180f2a408dc8bcee7252b831448d6f8e"
+        },
+        {
+          "name": "Undici-5qHq_ODn.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\Undici-5qHq_ODn.mjs",
+          "sha256": "29f0b75b5dbf57dd84eadf1c6c73e4ceb49b64a54baccd3d9d4fcea516645ade"
+        },
+        {
+          "name": "adapter-BDzww3AF.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\adapter-BDzww3AF.mjs",
+          "sha256": "6c965a8a8b0f141cec46880f8ed3c2700b3daaa7771050f3aef6ed63f4cbcac5"
+        },
+        {
+          "name": "bin.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\bin.mjs",
+          "sha256": "796a3ebbe7f429c83cd4b9fea3e24d7fd1f52c29300ddcc5b8d2a327a56c827b"
+        },
+        {
+          "name": "binCli-DnZVxu9C.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\binCli-DnZVxu9C.mjs",
+          "sha256": "60ada5c77eb86feff5f9396ef269b33315ce902bad907fc7b2706f3872112a03"
+        },
+        {
+          "name": "binMain-BZm8HD1H.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\binMain-BZm8HD1H.mjs",
+          "sha256": "c2b67e4b936fa78efafaf8b6a62949f09287abd18c8ab67eff14827e15a16be0"
+        },
+        {
+          "name": "character-entities-Dhh02MUY.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\character-entities-Dhh02MUY.mjs",
+          "sha256": "021547a061e7b53283344df30340f5658207f83640064ceda73bfe5ddfb1b2a1"
+        },
+        {
+          "name": "claude-history-worker.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\claude-history-worker.mjs",
+          "sha256": "31c05fc0828c01590603ca6ca4d5c720e00d277636122ab5f8ee395788ee1a15"
+        },
+        {
+          "name": "claudeHistoryWorker-BhPTRSDn.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\claudeHistoryWorker-BhPTRSDn.mjs",
+          "sha256": "501e9e6d0378ab0ccddd9b2a5b10a9c711eacd6c1c2bae4a16171006809420c5"
+        },
+        {
+          "name": "claudeHistoryWorker-DWJR_9rQ.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\claudeHistoryWorker-DWJR_9rQ.mjs",
+          "sha256": "dd8e6ff5d50dd5b257f04be5b2dbac4a7793bfcfa945c578774dffaf08a5d4d8"
+        },
+        {
+          "name": "consoleStdin-BOYsgYPv.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\consoleStdin-BOYsgYPv.mjs",
+          "sha256": "c9e741482e0dd8a32d96058d9b1641eeea8910b59779733543488876385b3b32"
+        },
+        {
+          "name": "consoleStdin-BYE9c3c3.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\consoleStdin-BYE9c3c3.mjs",
+          "sha256": "26e84f5a7050b4be050cf4c6556ae1f05f64c0016eff9c2efb9f7381c193eb52"
+        },
+        {
+          "name": "documentTextWorker-CZ8-t-QB.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\documentTextWorker-CZ8-t-QB.mjs",
+          "sha256": "79d44421c3491704232b896bedfd50c82229b678b7008b14006833628ae0128e"
+        },
+        {
+          "name": "forge-guarded-host.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\forge-guarded-host.mjs",
+          "sha256": "28ee070fdc31c7c3aabd015b86517be1bfbce366467c3248369606a97cad83ad"
+        },
+        {
+          "name": "managedChatGptToken-BybgOGkI.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\managedChatGptToken-BybgOGkI.mjs",
+          "sha256": "8b09085a48d3100d2996905d2259a6a8d7fbe2bd5db7916d1690104a627b208a"
+        },
+        {
+          "name": "mcpResponsePayloads-C3-UlCPn.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\mcpResponsePayloads-C3-UlCPn.mjs",
+          "sha256": "42ea91e1cf09f865cafa9dcb0e6856438e295e9ff07249b05a6c6da66a448c9b"
+        },
+        {
+          "name": "native-C_-xbgAx.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\native-C_-xbgAx.mjs",
+          "sha256": "b0fbc77904a87ff7c9c366e43302cb33bb202abd1d8515d541929eedeaa22d9a"
+        },
+        {
+          "name": "native-IwHky4jN.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\native-IwHky4jN.mjs",
+          "sha256": "a8870ac9e9d38865ba6dd5edd3b45393759cc875b8450786a5da636235638b9d"
+        },
+        {
+          "name": "noCopyOnWrite-CiUe--I6.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\noCopyOnWrite-CiUe--I6.mjs",
+          "sha256": "029b9a41854ad729453398e305aee96d5a956c8a783fdc4ede66912a76c5663c"
+        },
+        {
+          "name": "outboundHttp-BsOM_gO4.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\outboundHttp-BsOM_gO4.mjs",
+          "sha256": "f7dde68b43fd9655f98897a0058b5f5e9e99caf19f780eb59b1fd7fc96a0d1b0"
+        },
+        {
+          "name": "outboundHttp-licDtJv9.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\outboundHttp-licDtJv9.mjs",
+          "sha256": "6191ae8ad44580ef78bd151141160130d3a7c68992acac3d6c89516a04537b41"
+        },
+        {
+          "name": "promise-B3tgs-aD.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\promise-B3tgs-aD.mjs",
+          "sha256": "1eba7cde05e8a47853d34c04768ce4d27a45c961e60fd36ab6b79f2d6c9e983c"
+        },
+        {
+          "name": "relayTracing-WXdI0aJS.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\relayTracing-WXdI0aJS.mjs",
+          "sha256": "0f36e2499c8f2c93dc3565a0fdf04baf23876bda0e8b30c22780becb9d6ea5bd"
+        },
+        {
+          "name": "runtimeLayer-B-UsnfqF.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\runtimeLayer-B-UsnfqF.mjs",
+          "sha256": "6c812b141745ab72c8852551974ab82a56d3a7e022e6e93b7077b73e721fc8de"
+        },
+        {
+          "name": "runtimeLayer-gptYnLu5.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\runtimeLayer-gptYnLu5.mjs",
+          "sha256": "0c32653e23c32bebe2043b3bf0824481b9f9e4d1e66dc74099f3e6a7cde3b7c8"
+        },
+        {
+          "name": "sdk-b72oGJiu.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\sdk-b72oGJiu.mjs",
+          "sha256": "f325ad146a32fb6465125b9a97dbf5d039e1729bdcc206b741c1c3b83b88aa1a"
+        },
+        {
+          "name": "server-Botz4KUv.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\server-Botz4KUv.mjs",
+          "sha256": "8cd16fa804db120721e081a0eae8136632f38add47099cc01c61e1989a267622"
+        },
+        {
+          "name": "service-probe-frbwqjmf-ThT6rp-U.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\service-probe-frbwqjmf-ThT6rp-U.mjs",
+          "sha256": "41e9fc7a80d78c467b5f53163cf3f7b621899312ea8d6ce307cee280c8e291ba"
+        },
+        {
+          "name": "serviceLauncher-B3U0fwNX.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\serviceLauncher-B3U0fwNX.mjs",
+          "sha256": "19025067368821713366696beb211ee0da8aa02bc00423711479feb5ed48dd3c"
+        },
+        {
+          "name": "serviceLauncher-Bc_Z7WLi.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\serviceLauncher-Bc_Z7WLi.mjs",
+          "sha256": "1e2efa6fdba7bec5c7e63864165689662170d4ce3411faf60f49fe93e9596908"
+        },
+        {
+          "name": "serviceLauncher-DdNin5_8.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\serviceLauncher-DdNin5_8.mjs",
+          "sha256": "9c1be9d559f4380f0aedbded95594c84a92e0e1568d6a28d4a67f4c983715746"
+        },
+        {
+          "name": "upgrade-B2fNv_Qg.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\upgrade-B2fNv_Qg.mjs",
+          "sha256": "6712183212fee9505afb846a8e0c06875ca7d1151960ccfb8e5ac7b2b47ca387"
+        },
+        {
+          "name": "upgrade-mKz5UlgC.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\upgrade-mKz5UlgC.mjs",
+          "sha256": "a03ed646e86319a5f86508dd38a1017bbaccc8c1de147fae455f7d032f8b7e08"
+        },
+        {
+          "name": "yauzl-D4Jqygaq.mjs",
+          "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\t3\\apps\\server\\dist\\yauzl-D4Jqygaq.mjs",
+          "sha256": "33c2cc3507829f187fc5298ad874598a9bc23378975c284689d1b64878980fa5"
+        },
+        {
+          "name": "node.exe",
+          "path": "C:\\Users\\siripon.sri\\Tools\\nodejs\\node.exe",
+          "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+        }
+      ],
+      "sha256": "1435d81ad72b5838dd6f8b413bfda3576a4878f0845ec40e474758c333ba538e"
+    },
+    "opencode": {
+      "path": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\opencode\\forge-sessions-cli-build\\cli-windows-x64\\bin\\opencode.exe",
+      "sha256": "2224d7edb8a06f241c5ec764b506607af110bfec5300e91a03e00421854aef17",
+      "version": "2.4.1-forge-sessions.0"
+    },
+    "patches": {
+      "version": 1,
+      "purpose": "supervised-orchestrator-v1",
+      "changes": [
+        {
+          "tree": "opencode",
+          "file": "packages/core/src/forge-bootstrap.ts",
+          "before": "24fd02434326d22dfc19d5a702b4a60abb6bb2317fe0d467293c88c9466c94b6",
+          "after": "9f43b51d498cc3baf8c234f7176380fafe888d9fcfda1286352f4e78e46324fd"
+        },
+        {
+          "tree": "opencode",
+          "file": "packages/core/src/forge-guard.ts",
+          "before": "fa0db34bcd1f9ceb7997d6a71002683f9818ffce5ba6030517b8444d5b2e8cf1",
+          "after": "86d7d249b6cb08142a9507998bbac19082e9d04b03fa2a965297736301f68293"
+        },
+        {
+          "tree": "t3",
+          "file": "packages/provider-core/src/server/forgeGuard.ts",
+          "before": "3088595700fe14f29a3343bd7b2ad2417cc78775d5cdccd4ca3d7ce11d7bbdb6",
+          "after": "6ca9ba62b446dcec6ef3d063edf6d3ee8d15bf4783cecf0947cd066a9486da5a"
+        }
+      ],
+      "additions": [
+        {
+          "file": "opencode/packages/core/src/forge-sessions/contract.mjs",
+          "sha256": "14aba22aa9da5fa5b9267b924622f52b120e0cbf556b0ffb9c057cda82162663"
+        },
+        {
+          "file": "opencode/packages/core/src/forge-sessions/native-tool.mjs",
+          "sha256": "b9373b3800b18ca375a5c15aa28ad9c4aad2d2f2c99cb6defee31d168287c182"
+        },
+        {
+          "file": "opencode/packages/core/src/forge-sessions/profile.mjs",
+          "sha256": "b8f3c86ff957c4ff0d372d1232b3f789dbf20315822b74aeff3df9a1d284a78e"
+        },
+        {
+          "file": "opencode/packages/core/src/forge-sessions-runtime.ts",
+          "sha256": "898cab2c5f6cb6072b35d5b761557a7fc9236ed0979054192c4d252c59e65825"
+        }
+      ],
+      "proof": null
+    },
+    "proof": null
+  },
+  "frontendPatches": {
+    "version": 1,
+    "changes": [
+      {
+        "tree": "opencode",
+        "file": "packages/core/src/forge-bootstrap.ts",
+        "before": "733c714e30cf6dd5389ec3085639ec6d08123330c09a56c99a86227cc650f1a3",
+        "after": "24fd02434326d22dfc19d5a702b4a60abb6bb2317fe0d467293c88c9466c94b6"
+      },
+      {
+        "tree": "opencode",
+        "file": "packages/core/src/forge-guard.ts",
+        "before": "a1f6992ea6c0c17d15e430732da265b31579322f1b3810fa4fcc7952d7c9f470",
+        "after": "fa0db34bcd1f9ceb7997d6a71002683f9818ffce5ba6030517b8444d5b2e8cf1"
+      },
+      {
+        "tree": "t3",
+        "file": "packages/provider-core/src/server/forgeGuard.ts",
+        "before": "b08a98fb2865752d31d2a4d85cc4ce0a98d397f1286222544b9894771fd52bd4",
+        "after": "3088595700fe14f29a3343bd7b2ad2417cc78775d5cdccd4ca3d7ce11d7bbdb6"
+      },
+      {
+        "tree": "t3",
+        "file": "packages/provider-opencode/src/server/v2/adapter.ts",
+        "before": "e36db2899354711abeebbb9dc52b324d2fd3b27d2490d07a4e16b32900f68e2e",
+        "after": "2f6babd32bce9b7ae9a50cf734efaa3964c99b2304d986cde9c1a6d6151fa82b"
+      }
+    ],
+    "nativeSourcesAdded": [
+      "forge-frontend-runtime.ts",
+      "forge-frontend/contract.mjs",
+      "forge-frontend/native-tool.mjs"
+    ],
+    "proof": null
+  },
+  "buildReports": [
+    {
+      "name": "t3",
+      "exitCode": 0,
+      "stdout": "ℹ entry: src/bin.ts, src/claude-history-worker.ts, src/forge-guarded-host.ts\nℹ target: node22.16.0\nℹ tsconfig: tsconfig.json\nℹ Build start\nℹ Granting execute permission to dist\\bin.mjs\nℹ Granting execute permission to dist\\claude-history-worker.mjs\nℹ Granting execute permission to dist\\forge-guarded-host.mjs\nℹ dist\\forge-guarded-host.mjs                           3.33 kB │ gzip:   1.32 kB\nℹ dist\\bin.mjs                                          1.94 kB │ gzip:   0.86 kB\nℹ dist\\claude-history-worker.mjs                        0.32 kB │ gzip:   0.22 kB\nℹ dist\\runtimeLayer-B-UsnfqF.mjs.map                   13.71 MB\nℹ dist\\IdAllocator-4_Cm4_rr.mjs.map                    10.22 MB\nℹ dist\\server-Botz4KUv.mjs.map                          9.01 MB\nℹ dist\\runtimeLayer-B-UsnfqF.mjs                        6.13 MB\nℹ dist\\IdAllocator-4_Cm4_rr.mjs                         4.80 MB\nℹ dist\\server-Botz4KUv.mjs                              4.08 MB\nℹ dist\\ManagedEndpointRuntime-BJixTOAO.mjs.map          4.06 MB\nℹ dist\\Schema-UsozyQoc.mjs.map                          3.05 MB\nℹ dist\\sdk-b72oGJiu.mjs.map                             2.60 MB\nℹ dist\\adapter-BDzww3AF.mjs.map                         2.20 MB\nℹ dist\\ManagedEndpointRuntime-BJixTOAO.mjs              2.01 MB\nℹ dist\\sdk-b72oGJiu.mjs                                 1.49 MB\nℹ dist\\Schema-UsozyQoc.mjs                              1.37 MB\nℹ dist\\relayTracing-WXdI0aJS.mjs.map                    1.28 MB\nℹ dist\\binCli-DnZVxu9C.mjs.map                          1.17 MB\nℹ dist\\adapter-BDzww3AF.mjs                           928.73 kB │ gzip: 198.72 kB\nℹ dist\\Stream-OiyKPUwA.mjs.map                        914.42 kB │ gzip: 168.19 kB\nℹ dist\\relayTracing-WXdI0aJS.mjs                      616.46 kB │ gzip: 158.62 kB\nℹ dist\\binCli-DnZVxu9C.mjs                            534.34 kB │ gzip: 137.03 kB\nℹ dist\\Stream-OiyKPUwA.mjs                            521.50 kB │ gzip: 103.23 kB\nℹ dist\\NodeCrypto-TZu7Okrv.mjs.map                    228.96 kB │ gzip:  52.54 kB\nℹ dist\\ProviderContinuationRequests-BTi_VzuC.mjs.map  178.43 kB │ gzip:  37.27 kB\nℹ dist\\documentTextWorker-CZ8-t-QB.mjs.map            167.99 kB │ gzip:  35.50 kB\nℹ dist\\serviceLauncher-DdNin5_8.mjs.map               121.87 kB │ gzip:  30.94 kB\nℹ dist\\NodeCrypto-TZu7Okrv.mjs                        110.57 kB │ gzip:  28.27 kB\nℹ dist\\promise-B3tgs-aD.mjs.map                       100.33 kB │ gzip:  12.06 kB\nℹ dist\\ProviderContinuationRequests-BTi_VzuC.mjs       80.30 kB │ gzip:  17.11 kB\nℹ dist\\yauzl-D4Jqygaq.mjs.map                          78.91 kB │ gzip:  20.55 kB\nℹ dist\\documentTextWorker-CZ8-t-QB.mjs                 78.08 kB │ gzip:  18.61 kB\nℹ dist\\character-entities-Dhh02MUY.mjs.map             61.56 kB │ gzip:  14.31 kB\nℹ dist\\serviceLauncher-DdNin5_8.mjs                    59.50 kB │ gzip:  15.47 kB\nℹ dist\\promise-B3tgs-aD.mjs                            55.43 kB │ gzip:   6.90 kB\nℹ dist\\yauzl-D4Jqygaq.mjs                              41.53 kB │ gzip:  11.04 kB\nℹ dist\\character-entities-Dhh02MUY.mjs                 35.45 kB │ gzip:  11.72 kB\nℹ dist\\Socket-BJIOErrH.mjs.map                         35.00 kB │ gzip:   8.94 kB\nℹ dist\\native-IwHky4jN.mjs.map                         32.93 kB │ gzip:   9.57 kB\nℹ dist\\upgrade-B2fNv_Qg.mjs.map                        30.92 kB │ gzip:   8.34 kB\nℹ dist\\AcpMcpStdioBridge-Pbhx3C4O.mjs.map              22.57 kB │ gzip:   6.60 kB\nℹ dist\\native-IwHky4jN.mjs                             19.85 kB │ gzip:   5.93 kB\nℹ dist\\Socket-BJIOErrH.mjs                             15.16 kB │ gzip:   4.37 kB\nℹ dist\\upgrade-B2fNv_Qg.mjs                            14.47 kB │ gzip:   4.57 kB\nℹ dist\\AcpMcpStdioBridge-Pbhx3C4O.mjs                  10.82 kB │ gzip:   3.49 kB\nℹ dist\\service-probe-frbwqjmf-ThT6rp-U.mjs.map          8.42 kB │ gzip:   2.51 kB\nℹ dist\\Latch-C8iLQEjk.mjs.map                           7.79 kB │ gzip:   1.89 kB\nℹ dist\\HostProcess-CTeQUVtM.mjs.map                     6.34 kB │ gzip:   2.06 kB\nℹ dist\\mcpResponsePayloads-C3-UlCPn.mjs.map             6.31 kB │ gzip:   2.30 kB\nℹ dist\\binMain-BZm8HD1H.mjs.map                         5.26 kB │ gzip:   2.17 kB\nℹ dist\\forge-guarded-host.mjs.map                       5.05 kB │ gzip:   1.91 kB\nℹ dist\\CodexManagedTokenProtocol-CqrJZnS8.mjs.map       4.88 kB │ gzip:   1.80 kB\nℹ dist\\bin.mjs.map                                      4.61 kB │ gzip:   1.88 kB\nℹ dist\\service-probe-frbwqjmf-ThT6rp-U.mjs              4.48 kB │ gzip:   1.49 kB\nℹ dist\\outboundHttp-licDtJv9.mjs.map                    4.06 kB │ gzip:   1.90 kB\nℹ dist\\consoleStdin-BOYsgYPv.mjs.map                    3.67 kB │ gzip:   1.62 kB\nℹ dist\\HostProcess-CTeQUVtM.mjs                         3.44 kB │ gzip:   1.20 kB\nℹ dist\\managedChatGptToken-BybgOGkI.mjs.map             3.27 kB │ gzip:   1.39 kB\nℹ dist\\mcpResponsePayloads-C3-UlCPn.mjs                 2.91 kB │ gzip:   1.19 kB\nℹ dist\\binMain-BZm8HD1H.mjs                             2.61 kB │ gzip:   1.14 kB\nℹ dist\\noCopyOnWrite-CiUe--I6.mjs.map                   2.46 kB │ gzip:   1.24 kB\nℹ dist\\claudeHistoryWorker-BhPTRSDn.mjs.map             2.40 kB │ gzip:   1.04 kB\nℹ dist\\CodexManagedTokenProtocol-CqrJZnS8.mjs           2.38 kB │ gzip:   1.01 kB\nℹ dist\\outboundHttp-licDtJv9.mjs                        2.25 kB │ gzip:   1.09 kB\nℹ dist\\Latch-C8iLQEjk.mjs                               1.95 kB │ gzip:   0.71 kB\nℹ dist\\consoleStdin-BOYsgYPv.mjs                        1.88 kB │ gzip:   0.93 kB\nℹ dist\\managedChatGptToken-BybgOGkI.mjs                 1.85 kB │ gzip:   0.90 kB\nℹ dist\\serviceLauncher-B3U0fwNX.mjs.map                 1.84 kB │ gzip:   0.85 kB\nℹ dist\\Undici-5qHq_ODn.mjs.map                          1.38 kB │ gzip:   0.69 kB\nℹ dist\\noCopyOnWrite-CiUe--I6.mjs                       1.27 kB │ gzip:   0.69 kB\nℹ dist\\claudeHistoryWorker-BhPTRSDn.mjs                 1.23 kB │ gzip:   0.61 kB\nℹ dist\\Undici-5qHq_ODn.mjs                              1.17 kB │ gzip:   0.63 kB\nℹ dist\\serviceLauncher-B3U0fwNX.mjs                     1.07 kB │ gzip:   0.56 kB\nℹ dist\\claude-history-worker.mjs.map                    0.42 kB │ gzip:   0.27 kB\nℹ dist\\runtimeLayer-gptYnLu5.mjs                        0.21 kB │ gzip:   0.16 kB\nℹ dist\\serviceLauncher-Bc_Z7WLi.mjs                     0.13 kB │ gzip:   0.12 kB\nℹ dist\\upgrade-mKz5UlgC.mjs                             0.11 kB │ gzip:   0.12 kB\nℹ dist\\outboundHttp-BsOM_gO4.mjs                        0.10 kB │ gzip:   0.12 kB\nℹ dist\\claudeHistoryWorker-DWJR_9rQ.mjs                 0.10 kB │ gzip:   0.11 kB\nℹ dist\\AcpMcpStdioBridge-DyJIQpZi.mjs                   0.10 kB │ gzip:   0.12 kB\nℹ dist\\consoleStdin-BYE9c3c3.mjs                        0.09 kB │ gzip:   0.10 kB\nℹ dist\\native-C_-xbgAx.mjs                              0.09 kB │ gzip:   0.11 kB\nℹ 82 files, total: 72.40 MB\n✔ Build complete in 4424ms\n",
+      "stderr": "",
+      "proof": null
+    },
+    {
+      "name": "opencode",
+      "exitCode": 0,
+      "stdout": "opencode script {\n  \"channel\": \"forge-sessions\",\n  \"version\": \"2.4.1-forge-sessions.0\",\n  \"preview\": true,\n  \"team\": [\n    \"adamdotdevin\",\n    \"arvsrn\",\n    \"Brendonovich\",\n    \"fwang\",\n    \"Hona\",\n    \"iamdavidhill\",\n    \"jayair\",\n    \"jlongster\",\n    \"kitlangton\",\n    \"kommander\",\n    \"ludvigrask\",\n    \"MrMushrooooom\",\n    \"neriousy\",\n    \"nexxeln\",\n    \"R44VC0RP\",\n    \"rekram1-node\",\n    \"thdxr\",\n    \"simonklee\",\n    \"Slickstef11\",\n    \"usrnk1\",\n    \"vimtor\",\n    \"StarpTech\",\n    \"actions-user\",\n    \"opencode\",\n    \"opencode-agent[bot]\"\n  ]\n}\nbuilding cli-windows-x64\n",
+      "stderr": "",
+      "proof": null
+    }
+  ],
+  "notices": [
+    {
+      "name": "FORGE-LICENSE",
+      "file": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\session-notices\\FORGE-LICENSE.txt",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "name": "T3-LICENSE",
+      "file": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\session-notices\\T3-LICENSE.txt",
+      "sha256": "935d8f2af0c703f9c39517ee57cc4930b19d02d533be930b63f0e82f93614b43"
+    },
+    {
+      "name": "OPENCODE-LICENSE",
+      "file": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\session-notices\\OPENCODE-LICENSE.txt",
+      "sha256": "625f0f619133f89bbbb2abe37369613dfa1885eba1e50d02170deb62bb42cb6b"
+    },
+    {
+      "name": "NODE-LICENSE",
+      "file": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\session-notices\\NODE-LICENSE.txt",
+      "sha256": "cbc91dba25c546898544155e1c0fce897f00e3f1df0afc795b8da891d38f92d9"
+    },
+    {
+      "name": "MCP-SDK-LICENSE",
+      "file": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl\\session-notices\\MCP-SDK-LICENSE.txt",
+      "sha256": "5e13dbbc1d120fc2a03cecde7c91424ae2d7de11b63d58ded2f4431e261ee50d"
+    }
+  ],
+  "fixtures": [
+    {
+      "version": 1,
+      "scope": "actual NEW compiled CLI and matching compiled T3 adapter, actual SQLite role service/private SDK gateway; INJECTED_CHILD_CONVERSATION_OWNER",
+      "observedAt": "2026-11-26T01:20:24.109Z",
+      "generation": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl",
+      "cliBinarySha256": "2224d7edb8a06f241c5ec764b506607af110bfec5300e91a03e00421854aef17",
+      "t3BundleAndNodeSha256": "1435d81ad72b5838dd6f8b413bfda3576a4878f0845ec40e474758c333ba538e",
+      "actualSameNativeTurnResult": true,
+      "actualStop": false,
+      "terminal": "completed",
+      "modelRequests": 13,
+      "advertisedTools": [
+        "forge_sessions_session_children",
+        "forge_sessions_session_prompt"
+      ],
+      "nativeThreadRef": {
+        "driver": "opencode",
+        "nativeId": "ses_dea8f8557ffe7Ig26iP4qFFqeP",
+        "strength": "strong"
+      },
+      "nativeTurnRef": {
+        "driver": "opencode",
+        "nativeId": "msg_t3_turn_ses_dea8f8557ffe7Ig26iP4qFFqeP:attempt",
+        "strength": "weak"
+      },
+      "childOwnerEffects": 1,
+      "negatives": [
+        "unknown",
+        "alias",
+        "Guarded file tool",
+        "frontend tool",
+        "foreign-parent JSON",
+        "foreign membership",
+        "revoke",
+        "session binding"
+      ],
+      "externalRequests": 0,
+      "proof": null,
+      "homeUat": "NOT_RUN"
+    },
+    {
+      "version": 1,
+      "scope": "actual NEW compiled CLI and matching compiled T3 adapter, actual SQLite role service/private SDK gateway; INJECTED_CHILD_CONVERSATION_OWNER",
+      "observedAt": "2026-11-26T01:20:35.483Z",
+      "generation": "C:\\Users\\siripon.sri\\AppData\\Local\\Temp\\forge-frontend-generation-Vmhthl",
+      "cliBinarySha256": "2224d7edb8a06f241c5ec764b506607af110bfec5300e91a03e00421854aef17",
+      "t3BundleAndNodeSha256": "1435d81ad72b5838dd6f8b413bfda3576a4878f0845ec40e474758c333ba538e",
+      "actualSameNativeTurnResult": false,
+      "actualStop": true,
+      "terminal": "interrupted",
+      "modelRequests": 1,
+      "advertisedTools": [
+        "forge_sessions_session_children",
+        "forge_sessions_session_prompt"
+      ],
+      "nativeThreadRef": {
+        "driver": "opencode",
+        "nativeId": "ses_dea8f54b5ffe0vqWG6c4cL1u4t",
+        "strength": "strong"
+      },
+      "nativeTurnRef": {
+        "driver": "opencode",
+        "nativeId": "msg_t3_turn_ses_dea8f54b5ffe0vqWG6c4cL1u4t:attempt",
+        "strength": "weak"
+      },
+      "childOwnerEffects": 0,
+      "negatives": [
+        "Stop binding denied",
+        "actual T3 interrupt terminal"
+      ],
+      "externalRequests": 0,
+      "proof": null,
+      "homeUat": "NOT_RUN"
+    }
+  ],
+  "productionProof": null,
+  "externalProviderTurns": 0,
+  "homeUat": "NOT_RUN"
+}
