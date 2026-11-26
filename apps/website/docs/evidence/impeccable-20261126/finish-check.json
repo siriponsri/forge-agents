@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "checks": [
+    "Actual reduced-motion CSS disables hero connector animation; strategy manual Next step advances without playback",
+    "Malformed download metadata fails closed; visible Retry recovers to real same-origin platform anchors",
+    "No-JavaScript localized home retains honest direct Windows/macOS links; setup content remains readable"
+  ],
+  "scope": "Public static website only; no native runtime/product qualification"
+}

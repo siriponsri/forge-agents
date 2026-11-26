@@ -50,7 +50,7 @@ export function StrategyStory({lang,t}:{lang:Lang;t:T}) {
   },[playing,step,reduced]);
   const strategy=strategies[mode];
   function choose(index:number){setMode(index);setPlaying(false)}
-  return <section ref={section} className="strategy-story" id="strategies" aria-labelledby="strategy-heading">
+  return <section ref={section} className="strategy-story" aria-labelledby="strategy-heading">
     <div className="strategy-intro"><div><h2 id="strategy-heading">Different work.<br/><span>Different formations.</span></h2></div><p>{t('บางงานต้องการผู้นำ บางงานควรแยกทาง บางงานต้องมีคนตรวจ ลองสำรวจรูปแบบการทำงานของทีมเอเจนต์','Some work needs a lead. Some can run in parallel. Some needs a second look. Explore the shape of an agent team.')}</p></div>
     <div className="strategy-board" data-playing={playing}>
       <div className="story-topline"><span><GitBranch size={16} aria-hidden="true"/>{t('ภาพอธิบายกลยุทธ์','Strategy explorer')}</span><span>{t('งานพัฒนา · ไม่ใช่การรันจริง','In development · Illustrative, not a live run')}</span></div>

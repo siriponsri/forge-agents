@@ -11,6 +11,7 @@ import {route} from './site';
 import './style.css';
 import './tokens.css';
 import './landing.css';
+import './home.css';
 
 const container = document.getElementById('root')!;
 const app = <React.StrictMode><App {...route(location.pathname)} /></React.StrictMode>;

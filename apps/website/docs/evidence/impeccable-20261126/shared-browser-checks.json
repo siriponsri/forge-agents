@@ -1,0 +1,239 @@
+{
+  "checkedAt": "2026-11-26T03:04:45.194Z",
+  "status": "PASS at recorded scope",
+  "audits": [
+    {
+      "heroActionVisible": true,
+      "lang": "en",
+      "overflow": [],
+      "theme": "light",
+      "violations": [],
+      "width": 320
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "en",
+      "overflow": [],
+      "theme": "light",
+      "violations": [],
+      "width": 375
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "en",
+      "overflow": [],
+      "theme": "light",
+      "violations": [],
+      "width": 414
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "en",
+      "overflow": [],
+      "theme": "light",
+      "violations": [],
+      "width": 768
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "en",
+      "overflow": [],
+      "theme": "light",
+      "violations": [],
+      "width": 1280
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "en",
+      "overflow": [],
+      "theme": "light",
+      "violations": [],
+      "width": 1440
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "en",
+      "overflow": false,
+      "theme": "dark",
+      "violations": [],
+      "width": 320
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "en",
+      "overflow": false,
+      "theme": "dark",
+      "violations": [],
+      "width": 375
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "en",
+      "overflow": false,
+      "theme": "dark",
+      "violations": [],
+      "width": 414
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "en",
+      "overflow": false,
+      "theme": "dark",
+      "violations": [],
+      "width": 768
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "en",
+      "overflow": false,
+      "theme": "dark",
+      "violations": [],
+      "width": 1280
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "en",
+      "overflow": false,
+      "theme": "dark",
+      "violations": [],
+      "width": 1440
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "th",
+      "overflow": false,
+      "theme": "light",
+      "violations": [],
+      "width": 320
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "th",
+      "overflow": false,
+      "theme": "light",
+      "violations": [],
+      "width": 375
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "th",
+      "overflow": false,
+      "theme": "light",
+      "violations": [],
+      "width": 414
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "th",
+      "overflow": false,
+      "theme": "light",
+      "violations": [],
+      "width": 768
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "th",
+      "overflow": false,
+      "theme": "light",
+      "violations": [],
+      "width": 1280
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "th",
+      "overflow": false,
+      "theme": "light",
+      "violations": [],
+      "width": 1440
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "th",
+      "overflow": false,
+      "theme": "dark",
+      "violations": [],
+      "width": 320
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "th",
+      "overflow": false,
+      "theme": "dark",
+      "violations": [],
+      "width": 375
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "th",
+      "overflow": false,
+      "theme": "dark",
+      "violations": [],
+      "width": 414
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "th",
+      "overflow": false,
+      "theme": "dark",
+      "violations": [],
+      "width": 768
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "th",
+      "overflow": false,
+      "theme": "dark",
+      "violations": [],
+      "width": 1280
+    },
+    {
+      "heroActionVisible": true,
+      "lang": "th",
+      "overflow": false,
+      "theme": "dark",
+      "violations": [],
+      "width": 1440
+    }
+  ],
+  "downloadChecks": "Actual Windows/macOS fetches matched manifest hashes and byte counts; Home Windows and download-page macOS clicked via shared browser",
+  "actualDownloads": [
+    {
+      "fileName": "FORGE-Windows.zip",
+      "path": "C:\\Users\\siripon.sri\\.t3\\userdata\\server-browser\\downloads\\f3ef7e8184a1253af5c2409598ab3f895c80f138cccd771b859a1267d9b9f342\\c3689742-9e6b-42a2-9bc9-6385ba5b90e4",
+      "sizeBytes": 1277711,
+      "url": "http://127.0.0.1:4179/downloads/FORGE-Windows.zip",
+      "completedAt": "2026-11-26T03:01:03.207Z"
+    },
+    {
+      "fileName": "FORGE-macOS.zip",
+      "path": "C:\\Users\\siripon.sri\\.t3\\userdata\\server-browser\\downloads\\f3ef7e8184a1253af5c2409598ab3f895c80f138cccd771b859a1267d9b9f342\\5e20d239-c2ee-471b-be04-e8c6b3bebde5",
+      "sizeBytes": 1277700,
+      "url": "http://127.0.0.1:4179/downloads/FORGE-macOS.zip",
+      "completedAt": "2026-11-26T03:01:43.519Z"
+    }
+  ],
+  "interactionChecks": {
+    "filter": 8,
+    "all": 16,
+    "plan": "Your brief",
+    "inspect": "Your results",
+    "modeKeyboard": [
+      "Parallel",
+      "Candidates"
+    ],
+    "disclosures": "hash and summary opens",
+    "sixModes": "settled desktop 1440/mobile375 no overflow"
+  },
+  "screenshots": [
+    "apps/website/docs/evidence/impeccable-20261126/hero-320-en-light.png",
+    "apps/website/docs/evidence/impeccable-20261126/hero-375-en-light.png",
+    "apps/website/docs/evidence/impeccable-20261126/hero-414-en-light.png",
+    "apps/website/docs/evidence/impeccable-20261126/hero-768-en-light.png",
+    "apps/website/docs/evidence/impeccable-20261126/hero-1280-en-light.png",
+    "apps/website/docs/evidence/impeccable-20261126/hero-1440-en-light.png",
+    "apps/website/docs/evidence/impeccable-20261126/hero-320-th-dark.png",
+    "apps/website/docs/evidence/impeccable-20261126/hero-375-th-dark.png",
+    "apps/website/docs/evidence/impeccable-20261126/hero-1440-th-dark.png"
+  ],
+  "scope": "Static website only. Native macOS, live product, Home UAT NOT_RUN. No product completion or user aesthetic acceptance."
+}
