@@ -113,7 +113,33 @@ both user and global config. Setup now creates two distinct empty private config
 files. The full stage fixture checks this alongside its existing scrubbed-env and
 command assertions; no lock, source, patch or image trust check was relaxed.
 
-Actual fresh source compile evidence is pending completion of the heavy run.
+Actual fresh source setup PASS: `%TEMP%/forge-session-install-fresh-kGZGRk/`
+`fresh-build-evidence.json`. Real archive extraction, base source patch and
+CLI/T3/broker compilation, private SDK npm ci (95 packages), NEW frontend/session
+patches and matching CLI/T3 compilation, complete source/image/notice verification,
+private installed copy and restart all passed. Dependency-store reuse and direct
+base T3 compiler execution remain the explicit harness-only boundary above.
+Both retained source/image fingerprints are
+`6456715ef2004cdb3fb1dcf835d46ab40747263c0d4b03f1ca37c2fc49e4a708`.
+
+Observed fresh installed images (source-build inventory, not new approved-cache
+pins or live qualification):
+
+- CLI: `a223ff68775958bc6baab9719987d92acc1cdaac7f363e37506dabb5b48759af`.
+- T3 all45 + actual Node:
+  `a915d1abcfaaa796ba8af4ec846885a82b0598e141166ac7104f56ec0bf3e6d2`.
+- Broker: `0d1279dfee2a3414fe3592cc58755e1f579d753c7e1b417d202662e9f2c3828b`.
+- Actual root Node:
+  `3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237`.
+
+The approved-cache pairs remain unchanged. Fresh builds record their actual
+outputs and authenticate the verified installed inventory across reopen.
+Standalone import of the copied T3 entry passed, and the copied CLI returned
+`opencode v2.4.1-forge-sessions.0` under a private empty home with no provider turn.
+The final narrow full-stage fixture passed again after the fresh build. All
+artifact services, exclusive owner locks and version-check children were closed;
+the READY disposable data directory is retained for lead-owned separate-process
+native qualification and must not be cleaned before that check.
 No live provider/account session, Owner home workflow or product activation is
 claimed. HOME_UAT_NOT_RUN. These external checks are separate from root-owned
 integration and implementation obligations.

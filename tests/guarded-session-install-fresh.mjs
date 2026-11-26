@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import assert from 'node:assert/strict';
-import {fileURLToPath} from 'node:url';
+import {fileURLToPath,pathToFileURL} from 'node:url';
 import {createGuardedArtifactService} from '../app/guarded-runtime/install.mjs';
 import {fileDigest} from '../app/guarded-runtime/file-digest.mjs';
 import {digest} from '../app/guarded-runtime/profile.mjs';
@@ -58,11 +58,12 @@ async function dependencies(tree,target){
     await clone(await fs.realpath(from),path.join(target,importer,'node_modules'));
   }
 }
-let service,outcome;
+let service,outcome,ownedRunner,privateEnvironment;
 const before=await retainedFingerprint();
 console.log(JSON.stringify({root,scope:'REAL full default source builds; read-only retained dependency stores; no provider turn'}));
 try{
   service=await createGuardedArtifactService({dataDir:root,commandRunner:async(spec,runOwned)=>{
+    ownedRunner=runOwned;privateEnvironment=spec.env;
     const entry={stage:spec.stage,startedAt:new Date().toISOString()};stages.push(entry);console.log('START',spec.stage);
     if(spec.stage==='sources'||spec.stage==='toolchain'){
       const cache=spec.args[1];assert.ok(inside(root,cache.startsWith('\\\\?\\')?cache.slice(4):cache));
@@ -92,6 +93,10 @@ try{
   let state;for(;;){state=await service.state();if(state.status!=='preparing')break;await new Promise(r=>setTimeout(r,1000));}
   assert.equal(state.status,'ready',JSON.stringify(state));const artifacts=await service.artifacts();
   assert.deepEqual(artifacts.opencode.purposes,['guarded-default','supervised-frontend-v1','supervised-orchestrator-v1']);
+  const entry=await import(pathToFileURL(artifacts.t3.entry).href);assert.equal(typeof entry.probeInstallationConnection,'function');
+  const versionLog=path.join(root,'installed-cli-version.log');
+  const versionResult=await ownedRunner({command:process.execPath,args:[capture,JSON.stringify({command:artifacts.opencode.path,args:['--version']}),versionLog],cwd:root,env:privateEnvironment,timeoutMs:30000});
+  assert.equal(versionResult.exitCode,0);assert.equal((await fs.readFile(versionLog,'utf8')).trim(),'opencode v'+artifacts.opencode.version);
   const actual=artifacts.t3.files.map(f=>({name:f.name,sha256:fileDigest(f.path)})).sort((a,b)=>a.name.localeCompare(b.name));
   assert.equal(actual.length,46);await service.close();service=await createGuardedArtifactService({dataDir:root});
   assert.equal((await service.state()).status,'ready');assert.equal(fileDigest((await service.artifacts()).opencode.path),fileDigest(artifacts.opencode.path));
@@ -103,7 +108,7 @@ try{
   const sourceFiles=[];for(const file of ['patch-report.json','cli-build-report.json','t3-build-report.json','windows/build.json'])sourceFiles.push({file:path.join(build,'cache',file),sha256:fileDigest(path.join(build,'cache',file))});
   for(const file of ['frontend-patches.json','session-patches.json','opencode-session-build.json','t3-session-build.json'])sourceFiles.push({file:path.join(generation,file),sha256:fileDigest(path.join(generation,file))});
   const notices=(await fs.readdir(path.join(path.dirname(artifacts.opencode.path),'notices'))).sort().map(name=>({name,sha256:fileDigest(path.join(path.dirname(artifacts.opencode.path),'notices',name))}));
-  outcome={status:'PASS',generation,artifacts,images:{opencodeSha256:fileDigest(artifacts.opencode.path),t3All45AndActualNodeSha256:digest(actual),files:actual,brokerSha256:fileDigest(artifacts.fileBroker.path),currentNodeSha256:fileDigest(process.execPath)},verifiedInventory:job.inventory,notices,sourceFiles,pipeline,proof:null};
+  outcome={status:'PASS',generation,artifacts,standaloneT3Import:true,actualInstalledCliVersion:artifacts.opencode.version,images:{opencodeSha256:fileDigest(artifacts.opencode.path),t3All45AndActualNodeSha256:digest(actual),files:actual,brokerSha256:fileDigest(artifacts.fileBroker.path),currentNodeSha256:fileDigest(process.execPath)},verifiedInventory:job.inventory,notices,sourceFiles,pipeline,proof:null};
 }catch(error){outcome={status:'FAIL',error:{message:error.message,stack:error.stack},proof:null};process.exitCode=1;}
 finally{
   await service?.close();const after=await retainedFingerprint();assert.equal(after,before,'retained source/image fingerprint changed');
