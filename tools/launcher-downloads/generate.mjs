@@ -7,16 +7,15 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { unzip } from '../../app/reports/files.mjs';
+import {downloadSourceDirectories,downloadSourcePaths} from '../../app/server/downloads.mjs';
 
 const run = promisify(execFile);
 const platforms = [
   { id: 'windows', label: 'Windows', filename: 'FORGE-Windows.zip', extension: 'cmd' },
   { id: 'macos', label: 'macOS', filename: 'FORGE-macOS.zip', extension: 'command' },
 ];
-// Mirror the canonical source boundary to verify it, never to construct another ZIP.
-const sourcePaths = ['app', 'assets/forge-mark.svg', 'package.json', 'package-lock.json', 'LICENSE',
-  'THIRD_PARTY_NOTICES.md', 'docs/FORGE_LOCAL_QUICKSTART_TH.md',
-  ...['Start', 'Stop', 'Restart'].flatMap(action => [action + '-FORGE.cmd', action + '-FORGE.command'])];
+// Use the canonical source boundary to verify it, never a second ZIP writer.
+const sourcePaths=downloadSourcePaths;
 export const publicationFiles = Object.freeze([...platforms.map(p => p.filename), 'manifest.json', 'SHA256SUMS']);
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const json = value => JSON.stringify(value, null, 2) + '\n';
@@ -37,7 +36,7 @@ function safeSourcePath(name) {
     || /[. ]$/.test(part) || /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(part)
     || /^(node_modules|dist|\.git|\.cache|browser-profile|user-data-dir|auth\.json|\.env(?:\..*)?)$/i.test(part)
     || /\.(exe|dll|so|dylib|pem|key|db|sqlite\d*)$/i.test(part))) return false;
-  return sourcePaths.some(prefix => name === prefix || prefix === 'app' && name.startsWith('app/'));
+  return sourcePaths.includes(name)||downloadSourceDirectories.some(prefix=>name.startsWith(prefix+'/'));
 }
 async function sourceSnapshot(sourceRoot, commit) {
   if (typeof sourceRoot !== 'string' || !sourceRoot.trim()) throw new Error('sourceRoot is required');
@@ -56,7 +55,7 @@ async function sourceSnapshot(sourceRoot, commit) {
     if ([...entries.keys()].some(key => key.toLowerCase() === name.toLowerCase())) throw new Error('Case-colliding package paths');
     entries.set(name, { mode, blob });
   }
-  for (const name of ['app/launcher.mjs', ...sourcePaths.filter(p => p !== 'app')]) {
+  for (const name of ['app/launcher.mjs', ...sourcePaths.filter(p => !downloadSourceDirectories.includes(p))]) {
     if (!entries.has(name)) throw new Error(`Committed source is missing ${name}`);
   }
   return { root, commit, version: manifest.version, entries };

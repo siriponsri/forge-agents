@@ -6,7 +6,9 @@ import path from 'node:path';
 import {zipSync} from 'fflate';
 import {unzip} from '../reports/files.mjs';
 const run=promisify(execFile);
-const sourcePaths=['app','assets/forge-mark.svg','package.json','package-lock.json','LICENSE','THIRD_PARTY_NOTICES.md','docs/FORGE_LOCAL_QUICKSTART_TH.md',...['Start','Stop','Restart'].flatMap(x=>[x+'-FORGE.cmd',x+'-FORGE.command'])];
+export const downloadSourceDirectories=Object.freeze(['app','tools/guarded-runtime','tools/frontend-tools','tools/session-tools']);
+export const downloadSourcePaths=Object.freeze([...downloadSourceDirectories,'assets/forge-mark.svg','package.json','package-lock.json','LICENSE','THIRD_PARTY_NOTICES.md','docs/FORGE_LOCAL_QUICKSTART_TH.md',...['Start','Stop','Restart'].flatMap(x=>[x+'-FORGE.cmd',x+'-FORGE.command'])]);
+const sourcePaths=downloadSourcePaths;
 const sha256=bytes=>createHash('sha256').update(bytes).digest('hex');
 export function createDownloadService({sourceRoot,dataDir}){
   let pending;

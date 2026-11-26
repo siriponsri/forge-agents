@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {createDownloadService} from '../app/server/downloads.mjs';
-import {extractPackage} from '../app/reports/files.mjs';
+import {extractPackage,unzip} from '../app/reports/files.mjs';
 function entries(bytes){
   const end=bytes.lastIndexOf(Buffer.from('504b0506','hex'));assert.ok(end>=0);
   let at=bytes.readUInt32LE(end+16);const count=bytes.readUInt16LE(end+10),out=[];
@@ -19,6 +19,9 @@ test('platform downloads contain real scoped launchers, source revision and matc
   for(const p of m.platforms){
     const f=await s.file(p.filename),bytes=await readFile(f.path);assert.equal(createHash('sha256').update(bytes).digest('hex'),p.sha256);assert.equal(bytes.length,p.bytes);
     const list=entries(bytes),names=list.map(e=>e.name);assert.ok(names.includes('FORGE/release-info.json'));assert.ok(names.includes('FORGE/README_FIRST.txt'));assert.ok(names.includes('FORGE/package-lock.json'));assert.ok(names.includes('FORGE/app/launcher.mjs'));
+    const files=unzip(bytes),installer=files.get('FORGE/app/guarded-runtime/install.mjs').toString('utf8');
+    const pipeline=JSON.parse(installer.match(/const PIPELINE = (\{[\s\S]*?\n\});/)[1]);
+    for(const filename of Object.keys(pipeline))assert.ok(names.includes('FORGE/'+filename),`Private setup pipeline source is packaged: ${filename}`);
     assert.equal(names.some(n=>/(^|\/)(node_modules|dist|\.git|\.env|auth\.json)(\/|$)/.test(n)),false);
     const suffix=p.id==='windows'?'cmd':'command';assert.ok(names.includes(`FORGE/Start-FORGE.${suffix}`));
     if(p.id==='macos'){assert.equal(p.qualification,'not-run');assert.equal(list.find(e=>e.name==='FORGE/Start-FORGE.command').mode&0o777,0o755);}
