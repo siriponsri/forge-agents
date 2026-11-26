@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 const origin=process.env.SITE_URL?new URL(process.env.SITE_URL).origin:'';
 for(const lang of ['th','en'])for(const page of ['','docs/','install/','download/','changelog/','github/']){
   const html=await readFile(`dist/${lang}/${page}index.html`,'utf8');
-  assert.ok(html.includes(`lang="${lang}"`));assert.ok(html.includes('<h1>'),'prerendered heading');
+  assert.ok(html.includes(`lang="${lang}"`));assert.equal((html.match(/<h1(?:\s[^>]*)?>/g)||[]).length,1,'one prerendered main heading, with or without attributes');
   assert.ok(html.includes('name="description"'));assert.ok(html.includes('og:title'));
   assert.equal(html.includes('name="robots" content="index,follow"'),!!origin);
   assert.equal(html.includes('rel="canonical"'),!!origin);
