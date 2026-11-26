@@ -463,7 +463,7 @@ export default function App() {
               onOpenThread={openThread} onStartProduct={startProduct} focusToken={homeFocus}/>
           ) : (
             <>
-              {page === "studio" && <ProductStudio key={projectId} {...props} initialPrompt={studioPrompt} onConsumePrompt={() => setStudioPrompt("")} />}
+              {page === "studio" && <ProductStudio key={projectId} {...props} initialPrompt={studioPrompt} onConsumePrompt={() => setStudioPrompt("")} onNavigate={openPage} />}
               {page === "plan" && <Planning {...props} />}{" "}
               {page==='missions'&&<Missions key={projectId} {...props}/>}
               {page==='proactive'&&<ProactiveWorkflows key={projectId} {...props}/>}
