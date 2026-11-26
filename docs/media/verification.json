@@ -1,6 +1,6 @@
 {
   "result": "PASSED",
-  "preparedRevision": "758af5866ee8cb5ea79a57fe12e38c6739348d0c",
+  "preparedRevision": "d5026482292b117bf3669604f53d63f515246161",
   "checks": [
     "all public media SHA-256 and sizes",
     "all PNG/GIF frames decoded",
@@ -25,7 +25,7 @@
       "filename": "office-report.gif",
       "width": 1008,
       "height": 700,
-      "frames": 68,
+      "frames": 61,
       "decoded": true
     },
     {
@@ -179,7 +179,7 @@
       "filename": "software-mission.gif",
       "width": 1008,
       "height": 700,
-      "frames": 40,
+      "frames": 39,
       "decoded": true
     },
     {
@@ -220,7 +220,7 @@
     {
       "filename": "sources/docs-full.png",
       "width": 1440,
-      "height": 1088,
+      "height": 1296,
       "frames": 1,
       "decoded": true
     },
@@ -329,7 +329,7 @@
     {
       "filename": "sources/workspace-mobile-full.png",
       "width": 390,
-      "height": 1287,
+      "height": 1333,
       "frames": 1,
       "decoded": true
     },

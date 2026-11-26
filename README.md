@@ -35,8 +35,9 @@ The interface defaults to Thai and supports English. The local core is
 are injected; local tests, file preview and delivery artifacts are real.
 [Capture provenance and limitations](docs/media/manifest.json).*
 
-*Media was captured from `758af58` and awaits a refresh on the final integrated
-tree. It documents the labelled flows below, not qualification of newer changes.*
+*Media was refreshed from `d502648`: 21 production-App screenshots and four
+walkthroughs with disposable engineering data. It documents the labelled local
+flows below; external providers and model quality remain unqualified.*
 
 ## A workspace that follows the work
 

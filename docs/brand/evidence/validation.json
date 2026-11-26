@@ -1,5 +1,6 @@
 {
   "baseline": "631ca22",
+  "scope": "integrated asset verification",
   "files": [
     {
       "file": "exports/forge-mark-default.svg",
@@ -562,6 +563,10 @@
     },
     {
       "document": "README.md",
+      "target": "docs/HOME_HANDOFF_20261126_TH.md"
+    },
+    {
+      "document": "README.md",
       "target": "docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md"
     },
     {
@@ -582,7 +587,27 @@
     },
     {
       "document": "README.md",
+      "target": "docs/worker-agent-strategies.md"
+    },
+    {
+      "document": "README.md",
       "target": "#verification-and-current-limits"
+    },
+    {
+      "document": "README.md",
+      "target": "apps/website/public/downloads/FORGE-Windows.zip"
+    },
+    {
+      "document": "README.md",
+      "target": "apps/website/public/downloads/FORGE-macOS.zip"
+    },
+    {
+      "document": "README.md",
+      "target": "apps/website/public/downloads/manifest.json"
+    },
+    {
+      "document": "README.md",
+      "target": "apps/website/public/downloads/SHA256SUMS"
     },
     {
       "document": "README.md",
@@ -675,6 +700,10 @@
     {
       "document": "README.md",
       "target": "docs/guarded-route.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/evidence/session-control-transport-20261126.json"
     },
     {
       "document": "README.md",
@@ -1022,10 +1051,9 @@
     }
   ],
   "preserved": {
-    "readme_text_except_logo_reference_identical": true,
     "diagram_picture_blocks_byte_identical": true,
     "existing_media_paths_and_alt_labels_identical": true,
-    "existing_diagram_media_and_protected_legacy_files_identical": true
+    "protected_legacy_files_identical": true
   },
   "palette": {
     "orange": "#f97316",
@@ -1305,12 +1333,13 @@
       }
     }
   ],
-  "readme_sha256": "0886db2012c6c5c1a44ec908b5f6a154a111527e3ea28a3fe5d4f2ab4806cce5",
+  "readme_sha256": "be312762103da5fcc22c3069b9e1445792a49bae859eb3ece0f65305124fe576",
   "readme_layout_variants": 4,
+  "whole_tree_brand_only_scope_guard": "not applicable to integrated product",
   "source_sha256": {
     "tools/brand/build.mjs": "087934e208ef28e13648dc3b8a5f43688c0de3517bd6f08d4afb3e865e3d3523",
     "tools/brand/determinism.py": "374b5e97384511adb6e16fbdb28f4d3ba8507f57826a46a92f6a79863281cac2",
-    "tools/brand/verify.py": "71350ba0cc8a794ed6c8c75c7c8052b52271709c4a2d911066fd5c56a62ecab3",
+    "tools/brand/verify.py": "fd59d1673402835986d4a7af300258ea182d3e3b713afe6d911150b7995379e9",
     "tools/brand/readme-proof.mjs": "fa4d9b6c6b25bef639ab54d467e394b498338a051568cbc30e882f93d89dae8c"
   },
   "result": "PASS"

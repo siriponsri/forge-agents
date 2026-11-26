@@ -15,12 +15,13 @@ approval for plans and controlled actions.</p>
 <p><a href="#run-locally">Get started</a> · <a href="#idea-to-delivery">See the workflow</a> ·
 <a href="docs/media/README.md">Explore the screenshots</a> ·
 <a href="docs/FORGE_LOCAL_QUICKSTART_TH.md">Thai setup guide</a> ·
+<a href="docs/HOME_HANDOFF_20261126_TH.md">Home test checklist</a> ·
 <a href="docs/owner/forge-local-complete-20261124-v3/progress/CURRENT_STATUS.md">Development status</a></p>
 <blockquote>
 <p><strong>Development checkpoint — implementation incomplete.</strong> Published <code>main</code>
 checkpoint <code>d928e9c</code> is source for continued development and home testing.
-Complete-product acceptance, newer native integrations and final review remain
-pending. <strong>Live account checks and Home UAT have not run.</strong> No signed desktop
+Complete-product acceptance and final release verification remain pending.
+<strong>Live account checks and Home UAT have not run.</strong> No signed desktop
 installer is published.
 <a href="docs/CHECKPOINT_HOME_20261125.md">Checkpoint scope and home instructions</a> ·
 <a href="docs/NEXT_SESSION_20261126.md">Continuation handoff</a>.</p>
@@ -29,8 +30,9 @@ installer is published.
 <p><em>Actual production App with disposable engineering data. Provider observations
 are injected; local tests, file preview and delivery artifacts are real.
 <a href="docs/media/manifest.json">Capture provenance and limitations</a>.</em></p>
-<p><em>Media was captured from <code>758af58</code> and awaits a refresh on the final integrated
-tree. It documents the labelled flows below, not qualification of newer changes.</em></p>
+<p><em>Media was refreshed from <code>d502648</code>: 21 production-App screenshots and four
+walkthroughs with disposable engineering data. It documents the labelled local
+flows below; external providers and model quality remain unqualified.</em></p>
 <h2>A workspace that follows the work</h2>
 <ul>
 <li><strong>Plan and deliver.</strong> Turn a brief into a reviewed Mission, canonical tasks and
@@ -43,8 +45,12 @@ and existing permission-checked controls.</li>
 check their actual changes and review the integration queue. The original
 workspace and its uncommitted work stay under their existing owner.</li>
 <li><strong>Choose models deliberately.</strong> Inspect connected provider catalogs and exact
-model options. Configure Executor/Asst routing under an explicit policy;
-role-session and Strategist integration remain pending final qualification.</li>
+model options. Select Executor, optional Asst and reviewed Strategist handoffs.
+Assign scoped session roles; a role never grants tools or plan authority.</li>
+<li><strong>Choose how the team works.</strong> The GUI offers Supervisor/Workers, parallel
+fan-out/fan-in, Router/Specialists, Generator/Verifier, DAG and independent
+candidates with explicit selection. Existing owners retain execution, checks,
+budgets and Stop; see the <a href="docs/worker-agent-strategies.md">mode contracts</a>.</li>
 <li><strong>Keep useful knowledge.</strong> Search scoped local memory and retain provenance.
 Central Owner Memory is private until the Owner shares an exact revision with
 a named project. Editing or revoking that source invalidates the old grant.</li>
@@ -57,6 +63,14 @@ Unknown results and unreported costs remain visible as unknown.</li>
 <p>The workbench includes 15 semantic themes. Read the
 <a href="#verification-and-current-limits">qualification limits</a> before relying on a flow.</p>
 <h2>Run locally</h2>
+<p>Development source launcher packages are available for
+<strong><a href="apps/website/public/downloads/FORGE-Windows.zip">Windows</a></strong> and
+<strong><a href="apps/website/public/downloads/FORGE-macOS.zip">macOS</a></strong>.
+<a href="apps/website/public/downloads/manifest.json">Exact source revision, requirements and limitations</a>
+· <a href="apps/website/public/downloads/SHA256SUMS">SHA-256 checksums</a>.
+Extract the entire ZIP before starting. These unsigned packages include the
+launcher and source, including private-runtime setup tools; they do not bundle
+Node.js, provider accounts or machine runtimes. Native macOS verification is unrun.</p>
 <p>Windows is the primary development platform. Install <strong>Node.js 24.13+</strong> and
 <strong>Git</strong>; local notebook and Python job execution also need <strong>Python</strong>. The first
 launch needs internet access to obtain dependencies pinned by the lockfile and
@@ -89,8 +103,9 @@ logs and recovery.</p>
 <p>Optional private native runtimes and report engines have separate installation
 and configuration flows in Settings. Their compiled images, fonts and machine
 credentials are not bundled in Git. A fresh full build of the latest private
-runtime setup pipeline remains unqualified; ordinary workbench flows should
-remain usable while that setup is investigated.</p>
+runtime setup pipeline reached READY and reopened in a documented engineering
+run with read-only dependency-store reuse. Installation proof does not qualify
+every native route; the assembled Orchestrator path still has an open defect.</p>
 <p>macOS launcher sources are included as <code>.command</code> files. Native macOS operation
 and secure credential entry are not yet qualified; see the current status before
 choosing that platform.</p>
@@ -172,9 +187,9 @@ used. <a href="docs/media/README.md">All 21 screenshots, static alternatives and
 <a href="docs/diagrams/architecture.png">PNG alternative</a> ·
 <a href="docs/diagrams/README.md">Editable sources and visual credits</a>.</em></p>
 <p>FORGE owns project, plan, task, approval and evidence records. T3 owns provider
-execution. AG-UI projects state and events into the interface. Executor/Asst
-roles use those boundaries; role-session and Strategist work remains pending
-and does not establish a second planner or approval authority.
+execution. AG-UI projects state and events into the interface. Executor, Asst,
+Strategist and scoped session roles use those boundaries; they do not establish
+a second execution or approval authority.
 MCP selection does not itself grant permission:
 Allowed/Ask/Off policies and exact-operation checks apply at dispatch.</p>
 <p>Telegram is the first supported mobile bridge channel through Hermes Agent or
@@ -210,11 +225,15 @@ live account access or cloud/mobile behavior.</p>
 <tbody>
 <tr>
 <td>Guarded automation and private native setup</td>
-<td>The <a href="docs/guarded-route.md">bounded native route</a> has actual Windows native evidence with a loopback model fixture. Arbitrary tools and hard resource caps are unavailable. Fresh full source-build verification of the latest setup pipeline and final integration review remain open.</td>
+<td>The <a href="docs/guarded-route.md">bounded native route</a> has actual Windows native evidence with a loopback model fixture. Fresh source setup reached READY with documented dependency reuse. Arbitrary tools and unsupported resource caps remain unavailable; installation is not route qualification.</td>
 </tr>
 <tr>
 <td>Role sessions and Strategist</td>
-<td>Integration is in progress. Persistent role sessions and Strategist behavior must not be treated as completed or qualified features.</td>
+<td>Canonical role/approval/Stop and Strategist handoffs are integrated and fixture-tested. The assembled native parent passed on <code>246daac</code> with the original approved image: three loopback model requests, one child dispatch, same-turn results, completed parent and replay without duplicate dispatch. Account/catalog/model protocol and ordinary child transport are injected; the parent runtime, SDK and canonical owners are actual. <a href="docs/evidence/session-control-transport-20261126.json">Exact evidence</a>. External model quality is unestablished.</td>
+</tr>
+<tr>
+<td>Six strategy modes</td>
+<td>GUI and canonical Workspace/T3/Conversation hooks are connected. Real Git/SQLite/service checks use labelled injected native transport. The checked-predecessor race correction passed independent recheck; external product journeys remain unrun.</td>
 </tr>
 <tr>
 <td>Usage and budgets</td>
@@ -222,7 +241,7 @@ live account access or cloud/mobile behavior.</p>
 </tr>
 <tr>
 <td>Research Lab</td>
-<td>Fixed local CPU/file experiments, independent checks and exports are exercised. Assembled native action/cohort/GUI qualification remains open; service fixtures and resumed local changes do not establish completion. Official benchmark execution is separate.</td>
+<td>Fixed local CPU/file experiments and independent checks/exports are exercised. Static native Research and an all-ON primary/helper/revision cohort passed on frozen <code>def855d</code> with loopback model responses and real file effects. This does not qualify later images or external model quality; official benchmarks are separate.</td>
 </tr>
 <tr>
 <td>Remote providers, compute and mobile</td>
@@ -230,7 +249,7 @@ live account access or cloud/mobile behavior.</p>
 </tr>
 <tr>
 <td>macOS and Home UAT</td>
-<td>Native qualification and Owner home acceptance remain not run.</td>
+<td>Native qualification and Owner home acceptance remain not run. The Owner deferred real-product creation and external-server checks to home because of work-machine administrator/network restrictions.</td>
 </tr>
 </tbody>
 </table>

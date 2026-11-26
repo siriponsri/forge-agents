@@ -31,7 +31,13 @@ qualification. App/site builds and static checks pass. The serial run covered
 917 checks: 905 PASS, 11 skipped, one old generation-fixture ENOENT. That fixture
 was corrected (`cc60da3`) and its complete three-test file passes separately;
 the aggregate is not relabelled all green. Same-image Guarded/frontend regression
-and final README/media refresh are in progress. See
+also passes 15/15 with no skips on the original approved session-capable image
+(9 loopback protocol requests, three broker receipt callbacks). README media
+was refreshed from `d502648`: 21 actual built-App captures and four walkthroughs,
+zero provider calls, actual local Office/report/files/tests/preview/ZIP receipts.
+Machine verification and independent review of all21 captures/12 sampled GIF
+frames pass at documentation scope. Light/dark README layout and brand checks
+pass; no hosted-GitHub rendering or Owner aesthetic approval is inferred. See
 `docs/evidence/developer-checks-20261126.json`.
 
 The installer now authenticates inventory/capability metadata and supports the
@@ -64,7 +70,7 @@ correction at exact `2a34a9e`, with four focused checks passed. Filesystem
 inspection is point-in-time; no filesystem lock or OS sandbox is inferred.
 
 Real Windows/macOS source-launcher ZIPs, manifest and checksums are now generated
-under `apps/website/public/downloads` (prepared current source `be617db`).
+and committed under `apps/website/public/downloads` (source `be617db`).
 Each archive contains 420 committed files, including all private setup tools;
 `f3343a1` corrected the earlier omission of those tools from source packaging.
 They are unsigned development source packages, require Node.js 24.13+ and initial

@@ -1,6 +1,6 @@
 {
   "scope": "Local Markdown layout fixture. Not actual GitHub CSS/sanitization or assembled app/site qualification.",
-  "readmeSHA256": "0886db2012c6c5c1a44ec908b5f6a154a111527e3ea28a3fe5d4f2ab4806cce5",
+  "readmeSHA256": "be312762103da5fcc22c3069b9e1445792a49bae859eb3ece0f65305124fe576",
   "generatorSHA256": "fa4d9b6c6b25bef639ab54d467e394b498338a051568cbc30e882f93d89dae8c",
   "logos": [
     {
@@ -442,27 +442,27 @@
   "files": [
     {
       "file": "readme-light-900.png",
-      "sha256": "cec27f2cf6396b5a782475be0b3ac7672d402952ecffd58a1aeb18f602abdc23"
+      "sha256": "f4714fd53b8a8c210313f77931297bd24a3a78dee777e88046c4d3463ec6aa5a"
     },
     {
       "file": "readme-light-375.png",
-      "sha256": "bc75f0a8d986948e6ff4025c1cb6cf583baf5566be703d7ee0cc883dabd49118"
+      "sha256": "b327a1da1b8c3ef9c4c262ade935da9f49c41bce4998bb6fdf98caf0b9b634d1"
     },
     {
       "file": "readme-dark-900.png",
-      "sha256": "7f39398a2838116c982f880338c607d61e3383c66f120d758650f2143640ebdb"
+      "sha256": "3fcb788f09844329f9f906d6713a266d89d1eb42788318bec55d8def4b470c9a"
     },
     {
       "file": "readme-dark-375.png",
-      "sha256": "34e025bf7343950e650516f5b1526fecaa3eff0d812a8368d169092eb53b8a37"
+      "sha256": "9c9d7e96090816139a557be16835f01b90d1665bc0cdad98b4d0d69e5dbaaa90"
     },
     {
       "file": "readme-light.html",
-      "sha256": "b5f194334b94333dacdc0367cedc702eaf9f996ce02a7e34122e6073bc0d4479"
+      "sha256": "da61aa4656de0130d48b5ce2c41948794c8a43bda6c92bdaed5a73fd43220a33"
     },
     {
       "file": "readme-dark.html",
-      "sha256": "cc3d6f2e7761d84ecc452decb0ef26edbb1605488aa3c039727d5d95ec2b8452"
+      "sha256": "c90c22c3ad14e68c97387096112449084f996047e5fd45bf367ad23054b96d86"
     }
   ]
 }

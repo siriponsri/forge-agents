@@ -38,8 +38,31 @@
     "manifest": "apps/website/public/downloads/manifest.json",
     "httpEvidence": "apps/website/docs/evidence/impeccable-20261126/final-download-http.json"
   },
-  "sameImageGuardedFrontendRegression": {"status": "RUNNING", "image": "original approved session-capable generation", "logNameInLocalTemp": "forge-session-image-all-purposes-20261126.log"},
-  "mediaRefresh": "PENDING",
+  "sameImageGuardedFrontendRegression": {
+    "status": "PASS",
+    "image": "original approved session-capable generation",
+    "nativeCliSha256": "2224d7edb8a06f241c5ec764b506607af110bfec5300e91a03e00421854aef17",
+    "t3AllModulesAndActualNodeSha256": "1435d81ad72b5838dd6f8b413bfda3576a4878f0845ec40e474758c333ba538e",
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 290217.5784,
+    "fixturePathCorrection": "64924cc / 4e2c588 select the canonical sessions output and assert its exact independent pins; old frontend pins remain unchanged.",
+    "qualification": "Actual matched compiled T3/OpenCode, broker and frontend SDK on controlled canonical fixtures; admission callbacks/model protocol are injected, not external provider qualification.",
+    "logNameInLocalTemp": "forge-session-image-all-purposes-20261126.log"
+  },
+  "mediaRefresh": {
+    "status": "MACHINE_VERIFIED_AND_SCOPED_VISUAL_REVIEW_ACCEPTED",
+    "preparedRevision": "d5026482292b117bf3669604f53d63f515246161",
+    "screenshots": 21,
+    "walkthroughs": 4,
+    "providerCalls": 0,
+    "visualReview": "docs/evidence/media-finish-review-20261126.json; all21 viewport captures and12 sampled GIF frames, no actionable findings; not every-frame privacy certification or release approval",
+    "sources": ["docs/media/manifest.json", "docs/media/verification.json"],
+    "scope": "Actual built App, fresh disposable engineering state, real local files/tests/preview/ZIP/Office/report flows; provider observations injected where labelled, not an Owner product journey.",
+    "readmeProof": "900/375px light/dark; all images decoded, one visible colored logo, no overflow or external requests.",
+    "brandVerification": "47 assets, 127 local links, 15 native small-size checks, four neutral text pairs >=7:1; original diagram/media references and protected legacy preserved."
+  },
   "limits": [
     "Controlled native fixtures use deterministic loopback model responses, not external model quality or live child-provider qualification.",
     "Private Guarded/native Orchestrator/selection-tool setup is currently Windows x64 only; macOS launcher execution remains NOT_RUN.",
