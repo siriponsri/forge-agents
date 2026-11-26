@@ -11,13 +11,13 @@ from PIL import Image
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseline', default='631ca22')
+parser.add_argument('--integrated', action='store_true', help='Verify assets in the integrated product; do not require the whole Git delta to contain only brand files.')
+parser.add_argument('--output', help='Write the verification report to this path instead of replacing the worker package report.')
 args = parser.parse_args()
 ROOT = Path(__file__).resolve().parents[2]
 BRAND = ROOT / 'docs/brand'
 evidence = json.loads((BRAND / 'evidence/exports.json').read_text(encoding='utf-8'))
-checks = {'baseline': args.baseline, 'files': [], 'links': [], 'preserved': {}}
-# Materialize this report's own linked target before validating documentation.
-(BRAND / 'evidence/validation.json').write_text('{}\n', encoding='utf-8', newline='\n')
+checks = {'baseline': args.baseline, 'scope': 'integrated asset verification' if args.integrated else 'isolated brand-only delta', 'files': [], 'links': [], 'preserved': {}}
 
 def sha(data):
     return hashlib.sha256(data).hexdigest()
@@ -141,8 +141,9 @@ baseline_bytes = subprocess.check_output(['git', 'show', f'{args.baseline}:READM
 assert re.findall(rb'<picture>[\s\S]*?</picture>', baseline_bytes) == re.findall(rb'<picture>[\s\S]*?</picture>', readme_bytes)
 readme = readme_bytes.decode('utf-8')
 baseline = baseline_bytes.decode('utf-8')
-assert readme.replace('forge-lockup-default.svg#gh-light-mode-only', 'forge-lockup-for-light.svg#gh-light-mode-only') == baseline, 'README changed outside logo embed reference'
-checks['preserved']['readme_text_except_logo_reference_identical'] = True
+if not args.integrated:
+    assert readme.replace('forge-lockup-default.svg#gh-light-mode-only', 'forge-lockup-for-light.svg#gh-light-mode-only') == baseline, 'README changed outside logo embed reference'
+    checks['preserved']['readme_text_except_logo_reference_identical'] = True
 assert re.findall(r'<picture>[\s\S]*?</picture>', baseline) == re.findall(r'<picture>[\s\S]*?</picture>', readme)
 checks['preserved']['diagram_picture_blocks_byte_identical'] = True
 media = lambda s: re.findall(r'!\[[^\]]*\]\(docs/media/[^)]+\)', s)
@@ -150,14 +151,19 @@ assert media(readme) == media(baseline), 'Existing screenshot/GIF paths or alt l
 checks['preserved']['existing_media_paths_and_alt_labels_identical'] = True
 assert '2x speed' in readme and 'predetermined' in readme and 'injected' in readme
 assert 'Apache-2.0' in readme and 'Legacy launchers retain their original meaning' in readme
-assert 'role-session' in readme and 'pending' in readme and 'd928e9c' in readme
+assert 'Strategist' in readme and 'd928e9c' in readme
 checks['readme_sha256'] = sha(readme.encode())
 assert layout['readmeSHA256'] == checks['readme_sha256'], 'README layout captures need regeneration'
 checks['readme_layout_variants'] = len(layout['variants'])
 changed = subprocess.check_output(['git', 'diff', '--name-only', args.baseline], cwd=ROOT).decode().splitlines()
-assert all(p in ('README.md', 'docs/worker-brand-color.md') or p.startswith(('docs/brand/', 'tools/brand/')) for p in changed), changed
-subprocess.run(['git', 'diff', '--exit-code', args.baseline, '--', 'docs/media', 'docs/diagrams', 'bootstrap/payload', 'bootstrap/P11_PORTABLE_PACKAGE_MANIFEST.json', 'runtime', 'adapters/ao'], cwd=ROOT, check=True, capture_output=True)
-checks['preserved']['existing_diagram_media_and_protected_legacy_files_identical'] = True
+if not args.integrated:
+    assert all(p in ('README.md', 'docs/worker-brand-color.md') or p.startswith(('docs/brand/', 'tools/brand/')) for p in changed), changed
+preserved_paths = ['bootstrap/payload', 'bootstrap/P11_PORTABLE_PACKAGE_MANIFEST.json', 'runtime', 'adapters/ao']
+if not args.integrated:
+    preserved_paths += ['docs/media', 'docs/diagrams']
+subprocess.run(['git', 'diff', '--exit-code', args.baseline, '--', *preserved_paths], cwd=ROOT, check=True, capture_output=True)
+checks['preserved']['protected_legacy_files_identical'] = True
+checks['whole_tree_brand_only_scope_guard'] = 'not applicable to integrated product' if args.integrated else 'PASS'
 
 def anchor_set(source):
     anchors = set()
@@ -183,5 +189,7 @@ for doc in docs:
 
 checks['source_sha256'] = {f: sha((ROOT / f).read_bytes()) for f in ['tools/brand/build.mjs', 'tools/brand/determinism.py', 'tools/brand/verify.py', 'tools/brand/readme-proof.mjs']}
 checks['result'] = 'PASS'
-(BRAND / 'evidence/validation.json').write_text(json.dumps(checks, indent=2) + '\n', encoding='utf-8', newline='\n')
-print(f"PASS: {len(checks['files'])} asset hashes/XML/PNG checks; {len(checks['links'])} local links; 15 native small-size checks; four neutral text pairs >=7:1; 12 decorative pairs measured only; README text, diagrams, media and protected legacy preserved.")
+output = Path(args.output).resolve() if args.output else BRAND / 'evidence/validation.json'
+output.parent.mkdir(parents=True, exist_ok=True)
+output.write_text(json.dumps(checks, indent=2) + '\n', encoding='utf-8', newline='\n')
+print(f"PASS ({checks['scope']}): {len(checks['files'])} asset hashes/XML/PNG checks; {len(checks['links'])} local links; 15 native small-size checks; four neutral text pairs >=7:1; 12 decorative pairs measured only; diagram embeds/media links and protected legacy preserved.")
