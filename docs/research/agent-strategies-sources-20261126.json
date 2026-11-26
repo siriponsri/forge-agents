@@ -1,0 +1,557 @@
+{
+  "schema": "forge.agent-strategies-source-register/1",
+  "inspectedOn": "2026-11-26",
+  "timezone": "Asia/Bangkok",
+  "scope": "Bounded read-only source mapping for six selectable FORGE strategies. No broad catalogue audit.",
+  "forgeBaseline": {
+    "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+    "branch": "t3/map-agent-orchestration-modes",
+    "worktree": "C:/Users/siripon.sri/.t3/worktrees/forge-agents/t3-e00b4060-2e828160d6d0a3ca"
+  },
+  "method": {
+    "headPin": "GitHub repository default-branch commits API; files subsequently read at returned immutable commit SHA.",
+    "inspectedScope": "Selected official docs and relevant source/API excerpts, plus root LICENSE files. Not a full upstream code/security audit.",
+    "sourceHashes": "Optional SHA-256 values identify fetched raw HTTP bytes, not installed or executed artifacts. No upstream source archive stored.",
+    "webVersioning": "Official live web docs have access date only; they are not asserted to match the pinned repository revision.",
+    "primarySourceBoundary": "Framework/repository docs and source are primary for their interfaces. Awesome Agentic Patterns is primary for its catalogue definitions, secondary for linked implementations/studies.",
+    "remoteInstructions": "Not adopted."
+  },
+  "repositories": [
+    {
+      "id": "agent-orchestrator",
+      "repository": "OrchestratorInc/agent-orchestrator",
+      "head": "107103b5859f55b4f26b49161b1704ed3d3ab737",
+      "committedAt": "2026-11-25T22:45:38Z",
+      "license": {
+        "spdxId": "Apache-2.0",
+        "path": "LICENSE",
+        "url": "https://github.com/OrchestratorInc/agent-orchestrator/blob/107103b5859f55b4f26b49161b1704ed3d3ab737/LICENSE",
+        "scope": "Observed root repository license only; no blanket claim about linked assets/dependencies."
+      },
+      "files": [
+        {
+          "path": "LICENSE",
+          "kind": "license",
+          "inspection": "Root Apache License 2.0 text inspected.",
+          "url": "https://github.com/OrchestratorInc/agent-orchestrator/blob/107103b5859f55b4f26b49161b1704ed3d3ab737/LICENSE",
+          "rawUrl": "https://raw.githubusercontent.com/OrchestratorInc/agent-orchestrator/107103b5859f55b4f26b49161b1704ed3d3ab737/LICENSE"
+        },
+        {
+          "path": "frontend/src/docs/content/guides/parallel-issues.mdx",
+          "kind": "documentation",
+          "inspection": "Independent sessions, per-session isolation, shared repository-host effects, current spawn/inspection/cleanup CLI.",
+          "url": "https://github.com/OrchestratorInc/agent-orchestrator/blob/107103b5859f55b4f26b49161b1704ed3d3ab737/frontend/src/docs/content/guides/parallel-issues.mdx",
+          "rawUrl": "https://raw.githubusercontent.com/OrchestratorInc/agent-orchestrator/107103b5859f55b4f26b49161b1704ed3d3ab737/frontend/src/docs/content/guides/parallel-issues.mdx"
+        },
+        {
+          "path": "frontend/src/docs/content/plugins/workspaces/worktree.mdx",
+          "kind": "documentation",
+          "inspection": "Recorded base ref, worktree branch/file separation, default-branch resolution and cleanup preservation.",
+          "url": "https://github.com/OrchestratorInc/agent-orchestrator/blob/107103b5859f55b4f26b49161b1704ed3d3ab737/frontend/src/docs/content/plugins/workspaces/worktree.mdx",
+          "rawUrl": "https://raw.githubusercontent.com/OrchestratorInc/agent-orchestrator/107103b5859f55b4f26b49161b1704ed3d3ab737/frontend/src/docs/content/plugins/workspaces/worktree.mdx"
+        },
+        {
+          "path": "backend/internal/adapters/workspace/gitworktree/workspace.go",
+          "kind": "api-source-excerpts",
+          "sha256": "da96fc9e1ed24620272579554d63a639c511a63f24e2b79050f2357883dd1f1a",
+          "symbols": [
+            "Workspace.ResolveDefaultBranch",
+            "Workspace.ResolveDefaultBranchWithin",
+            "Workspace.Create"
+          ],
+          "inspection": "Function declarations and adjacent validation/resolution excerpts; not a full adapter audit.",
+          "url": "https://github.com/OrchestratorInc/agent-orchestrator/blob/107103b5859f55b4f26b49161b1704ed3d3ab737/backend/internal/adapters/workspace/gitworktree/workspace.go",
+          "rawUrl": "https://raw.githubusercontent.com/OrchestratorInc/agent-orchestrator/107103b5859f55b4f26b49161b1704ed3d3ab737/backend/internal/adapters/workspace/gitworktree/workspace.go"
+        }
+      ],
+      "adoption": "Concepts only: isolated ownership, recorded base and lifecycle visibility through FORGE Workspace. No AO commands/runtime/adapters activated.",
+      "branch": "main",
+      "inspectedOn": "2026-11-26",
+      "headResolutionUrl": "https://api.github.com/repos/OrchestratorInc/agent-orchestrator/commits/main",
+      "commitUrl": "https://github.com/OrchestratorInc/agent-orchestrator/commit/107103b5859f55b4f26b49161b1704ed3d3ab737"
+    },
+    {
+      "id": "awesome-agentic-patterns",
+      "repository": "nibzard/awesome-agentic-patterns",
+      "head": "42690fd5270c0927d4073a7f3b21292217846711",
+      "committedAt": "2026-11-23T21:28:29Z",
+      "license": {
+        "spdxId": "Apache-2.0",
+        "path": "LICENSE",
+        "url": "https://github.com/nibzard/awesome-agentic-patterns/blob/42690fd5270c0927d4073a7f3b21292217846711/LICENSE",
+        "scope": "Observed root repository license only; no blanket claim about linked assets/dependencies."
+      },
+      "files": [
+        {
+          "path": "LICENSE",
+          "kind": "license",
+          "inspection": "Root Apache License 2.0 text inspected.",
+          "url": "https://github.com/nibzard/awesome-agentic-patterns/blob/42690fd5270c0927d4073a7f3b21292217846711/LICENSE",
+          "rawUrl": "https://raw.githubusercontent.com/nibzard/awesome-agentic-patterns/42690fd5270c0927d4073a7f3b21292217846711/LICENSE"
+        },
+        {
+          "path": "patterns/hybrid-llm-code-workflow-coordinator.md",
+          "kind": "catalogue-definition",
+          "entryStatus": "proposed",
+          "entryUpdatedOn": "2026-10-13",
+          "inspection": "Distinguishes model and code coordination; consulted for bounded design vocabulary. Downstream empirical claims not adopted.",
+          "url": "https://github.com/nibzard/awesome-agentic-patterns/blob/42690fd5270c0927d4073a7f3b21292217846711/patterns/hybrid-llm-code-workflow-coordinator.md",
+          "rawUrl": "https://raw.githubusercontent.com/nibzard/awesome-agentic-patterns/42690fd5270c0927d4073a7f3b21292217846711/patterns/hybrid-llm-code-workflow-coordinator.md"
+        },
+        {
+          "path": "patterns/non-generative-judgment-routing.md",
+          "kind": "catalogue-definition",
+          "entryStatus": "emerging",
+          "entryUpdatedOn": "2026-09-26",
+          "inspection": "Closed answer spaces and explicit decline/escalation. No backend or empirical result adopted.",
+          "url": "https://github.com/nibzard/awesome-agentic-patterns/blob/42690fd5270c0927d4073a7f3b21292217846711/patterns/non-generative-judgment-routing.md",
+          "rawUrl": "https://raw.githubusercontent.com/nibzard/awesome-agentic-patterns/42690fd5270c0927d4073a7f3b21292217846711/patterns/non-generative-judgment-routing.md"
+        },
+        {
+          "path": "patterns/self-critique-evaluator-loop.md",
+          "kind": "catalogue-definition",
+          "entryStatus": "established",
+          "entryUpdatedOn": "2026-10-13",
+          "inspection": "Judge-training pattern, not evidence that a plain reviewer is independent validation. Training excluded.",
+          "url": "https://github.com/nibzard/awesome-agentic-patterns/blob/42690fd5270c0927d4073a7f3b21292217846711/patterns/self-critique-evaluator-loop.md",
+          "rawUrl": "https://raw.githubusercontent.com/nibzard/awesome-agentic-patterns/42690fd5270c0927d4073a7f3b21292217846711/patterns/self-critique-evaluator-loop.md"
+        }
+      ],
+      "adoption": "Typed decisions and explicit unknown handling only. Editorial status labels and linked studies are not FORGE capability/quality proof; linked originals not independently audited.",
+      "branch": "main",
+      "inspectedOn": "2026-11-26",
+      "headResolutionUrl": "https://api.github.com/repos/nibzard/awesome-agentic-patterns/commits/main",
+      "commitUrl": "https://github.com/nibzard/awesome-agentic-patterns/commit/42690fd5270c0927d4073a7f3b21292217846711"
+    },
+    {
+      "id": "crewai",
+      "repository": "crewAIInc/crewAI",
+      "head": "77237aecacb204684a80e334dcd8eefa90d7ee60",
+      "committedAt": "2026-11-25T18:41:44Z",
+      "license": {
+        "spdxId": "MIT",
+        "path": "LICENSE",
+        "url": "https://github.com/crewAIInc/crewAI/blob/77237aecacb204684a80e334dcd8eefa90d7ee60/LICENSE",
+        "scope": "Observed root repository license only; no blanket claim about linked assets/dependencies."
+      },
+      "files": [
+        {
+          "path": "LICENSE",
+          "kind": "license",
+          "inspection": "Root permissive license text and copyright inspected.",
+          "url": "https://github.com/crewAIInc/crewAI/blob/77237aecacb204684a80e334dcd8eefa90d7ee60/LICENSE",
+          "rawUrl": "https://raw.githubusercontent.com/crewAIInc/crewAI/77237aecacb204684a80e334dcd8eefa90d7ee60/LICENSE"
+        },
+        {
+          "path": "docs/edge/en/concepts/processes.mdx",
+          "kind": "documentation",
+          "inspection": "Sequential process, hierarchical manager and manager_llm/manager_agent requirements.",
+          "url": "https://github.com/crewAIInc/crewAI/blob/77237aecacb204684a80e334dcd8eefa90d7ee60/docs/edge/en/concepts/processes.mdx",
+          "rawUrl": "https://raw.githubusercontent.com/crewAIInc/crewAI/77237aecacb204684a80e334dcd8eefa90d7ee60/docs/edge/en/concepts/processes.mdx"
+        },
+        {
+          "path": "lib/crewai/src/crewai/process.py",
+          "kind": "api-source",
+          "symbols": [
+            "Process.sequential",
+            "Process.hierarchical"
+          ],
+          "inspection": "Enum inspected; no implemented consensual enum member.",
+          "url": "https://github.com/crewAIInc/crewAI/blob/77237aecacb204684a80e334dcd8eefa90d7ee60/lib/crewai/src/crewai/process.py",
+          "rawUrl": "https://raw.githubusercontent.com/crewAIInc/crewAI/77237aecacb204684a80e334dcd8eefa90d7ee60/lib/crewai/src/crewai/process.py"
+        },
+        {
+          "path": "lib/crewai/src/crewai/crew.py",
+          "kind": "api-source-excerpts",
+          "sha256": "d7b2cc2d823f86efeac242492c8a58db4debc4e1dd3dd24270ef429dbb7e71c2",
+          "symbols": [
+            "Crew._run_sequential_process",
+            "Crew._run_hierarchical_process",
+            "Crew._create_manager_agent"
+          ],
+          "inspection": "Process validation/dispatch and manager-creation excerpts; not a full CrewAI runtime audit.",
+          "url": "https://github.com/crewAIInc/crewAI/blob/77237aecacb204684a80e334dcd8eefa90d7ee60/lib/crewai/src/crewai/crew.py",
+          "rawUrl": "https://raw.githubusercontent.com/crewAIInc/crewAI/77237aecacb204684a80e334dcd8eefa90d7ee60/lib/crewai/src/crewai/crew.py"
+        }
+      ],
+      "adoption": "Manager versus fixed-order concept only; CrewAI Process is not the six FORGE modes. No framework or delegation tools installed.",
+      "branch": "main",
+      "inspectedOn": "2026-11-26",
+      "headResolutionUrl": "https://api.github.com/repos/crewAIInc/crewAI/commits/main",
+      "commitUrl": "https://github.com/crewAIInc/crewAI/commit/77237aecacb204684a80e334dcd8eefa90d7ee60"
+    },
+    {
+      "id": "langgraph",
+      "repository": "langchain-ai/langgraph",
+      "head": "3e3dbd42c5329dd404669ccd923c005c814bee3a",
+      "committedAt": "2026-11-25T20:48:14Z",
+      "license": {
+        "spdxId": "MIT",
+        "path": "LICENSE",
+        "url": "https://github.com/langchain-ai/langgraph/blob/3e3dbd42c5329dd404669ccd923c005c814bee3a/LICENSE",
+        "scope": "Observed root repository license only; no blanket claim about linked assets/dependencies."
+      },
+      "files": [
+        {
+          "path": "LICENSE",
+          "kind": "license",
+          "inspection": "Root MIT License text and copyright inspected.",
+          "url": "https://github.com/langchain-ai/langgraph/blob/3e3dbd42c5329dd404669ccd923c005c814bee3a/LICENSE",
+          "rawUrl": "https://raw.githubusercontent.com/langchain-ai/langgraph/3e3dbd42c5329dd404669ccd923c005c814bee3a/LICENSE"
+        },
+        {
+          "path": "libs/langgraph/langgraph/graph/state.py",
+          "kind": "api-source-excerpts",
+          "sha256": "5757a89fec6ec6246ec15c91d6654b37ec0a8ba9d9bb945573ffcce4505fbae8",
+          "symbols": [
+            "StateGraph.add_node",
+            "StateGraph.add_edge",
+            "StateGraph.add_conditional_edges",
+            "StateGraph.compile"
+          ],
+          "inspection": "API declarations and all-prerequisites add_edge docstring inspected.",
+          "url": "https://github.com/langchain-ai/langgraph/blob/3e3dbd42c5329dd404669ccd923c005c814bee3a/libs/langgraph/langgraph/graph/state.py",
+          "rawUrl": "https://raw.githubusercontent.com/langchain-ai/langgraph/3e3dbd42c5329dd404669ccd923c005c814bee3a/libs/langgraph/langgraph/graph/state.py"
+        },
+        {
+          "path": "libs/langgraph/langgraph/types.py",
+          "kind": "api-source-excerpts",
+          "symbols": [
+            "Durability",
+            "Send",
+            "Command",
+            "interrupt"
+          ],
+          "inspection": "Exports and durability declarations inspected; detailed workflow semantics also read in official docs.",
+          "url": "https://github.com/langchain-ai/langgraph/blob/3e3dbd42c5329dd404669ccd923c005c814bee3a/libs/langgraph/langgraph/types.py",
+          "rawUrl": "https://raw.githubusercontent.com/langchain-ai/langgraph/3e3dbd42c5329dd404669ccd923c005c814bee3a/libs/langgraph/langgraph/types.py"
+        }
+      ],
+      "adoption": "Explicit prerequisite joins and durable-operation concepts through FORGE's canonical store; no StateGraph/checkpointer/turn runtime installed.",
+      "branch": "main",
+      "inspectedOn": "2026-11-26",
+      "headResolutionUrl": "https://api.github.com/repos/langchain-ai/langgraph/commits/main",
+      "commitUrl": "https://github.com/langchain-ai/langgraph/commit/3e3dbd42c5329dd404669ccd923c005c814bee3a"
+    }
+  ],
+  "webSources": [
+    {
+      "id": "anthropic-effective-agents",
+      "url": "https://www.anthropic.com/research/building-effective-agents",
+      "publisher": "Anthropic",
+      "publishedOn": "2024-12-19",
+      "inspectedOn": "2026-11-26",
+      "revision": null,
+      "license": null,
+      "inspection": "Workflow/agent distinction, chaining/routing/parallelization/orchestrator-workers/evaluator-optimizer, environment feedback and stopping limits; current tooling-staleness notice.",
+      "adoption": "Pattern definitions only; no model support/performance or live FORGE claim."
+    },
+    {
+      "id": "langgraph-workflows",
+      "url": "https://docs.langchain.com/oss/python/langgraph/workflows-agents",
+      "publisher": "LangChain",
+      "inspectedOn": "2026-11-26",
+      "revision": null,
+      "license": null,
+      "inspection": "Structured routing, Send worker allocation/shared outputs, generator/evaluator and conditional feedback example.",
+      "adoption": "Explicit routing/decomposition/result concepts; no sample code copied."
+    },
+    {
+      "id": "langgraph-persistence",
+      "url": "https://docs.langchain.com/oss/python/langgraph/persistence",
+      "requestedUrl": "https://docs.langchain.com/oss/python/langgraph/durable-execution",
+      "publisher": "LangChain",
+      "inspectedOn": "2026-11-26",
+      "revision": null,
+      "license": null,
+      "inspection": "durable-execution URL redirects to persistence; checkpointer/store separation and in-memory saver restart limitation.",
+      "adoption": "Durable ownership distinction only; FORGE remains canonical persistence owner."
+    },
+    {
+      "id": "langgraph-fault-tolerance",
+      "url": "https://docs.langchain.com/oss/python/langgraph/fault-tolerance",
+      "publisher": "LangChain",
+      "inspectedOn": "2026-11-26",
+      "revision": null,
+      "license": null,
+      "inspection": "Whole-node retry may repeat effects; stable durable idempotency key before effects; missing acknowledgement is unknown.",
+      "adoption": "No automatic resend in FORGE; retain operation and reconcile through existing owner."
+    }
+  ],
+  "localEvidence": [
+    {
+      "path": "app/server/t3.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Canonical task run reservation, replay comparison, native dispatch/final admission, stop/reconcile."
+    },
+    {
+      "path": "app/providers/conversations.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Canonical chat binding/send/reconcile/stop; root-workspace admission, exact provider run identity."
+    },
+    {
+      "path": "app/server/session-route.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Reviewed parent intent; current private native qualification; mixed-context denial; restore/revocation."
+    },
+    {
+      "path": "app/server/session-roles.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Exact parent/child membership, durable prompt operation, child result-view gap, Stop and no-resend recovery."
+    },
+    {
+      "path": "app/session-tools/contract.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Two native session tool input schemas and explicit advice/authority boundaries."
+    },
+    {
+      "path": "app/guarded-runtime/profile.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Current opencode2-api implementation, pinned binary/revision requirements."
+    },
+    {
+      "path": "app/workspaces/service.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Single-use start, reconcile/stop, clean-head check/review/integration and recovery."
+    },
+    {
+      "path": "app/workspaces/contracts.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Task signatures, TASK_BUSY, exact ownedRun and no-mixed-controller guards."
+    },
+    {
+      "path": "app/workspaces/context.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Admission context, clean base, distinct checkout concurrency and provider ceilings."
+    },
+    {
+      "path": "app/goals/index.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Goal claims, bounded progression, authenticated independent QA and Owner review."
+    },
+    {
+      "path": "app/goals/evidence.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Exact attempt-linked deterministic evidence; reported usage/cost with unknown handling."
+    },
+    {
+      "path": "app/budgets/admission.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Durable per-attempt holds, currency/policy fence and final admission."
+    },
+    {
+      "path": "app/research/runner.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Bounded research experiment execution owner."
+    },
+    {
+      "path": "app/research-components/runner.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Bounded composition advancement and retained result/evidence."
+    },
+    {
+      "path": "app/research-native/owner.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Native admission/proof and resource guards; no authority borrowing."
+    },
+    {
+      "path": "app/research/policies.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Explicit policies, mandatory final independent validation; learning disabled."
+    },
+    {
+      "path": "app/assistance/selection.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Observed capability/model selection; owner ordinal classifications and deterministic sorting."
+    },
+    {
+      "path": "app/assistance/context.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Exact role/model/context admission and scoped feedback prompt."
+    },
+    {
+      "path": "app/assistance/index.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Explicit reviewed strategist/assistant return to executor and bounded role transitions."
+    },
+    {
+      "path": "app/adaptive/loop.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Bounded execute/inspect/revise/review and explicit feedback/resume."
+    },
+    {
+      "path": "app/adaptive/evidence.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Bounded run/artifact/versioned verifier checks; artifact paths confined under project.workspace."
+    },
+    {
+      "path": "app/server/adaptive-context.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Pinned skill/harness attempt validation; no independent loop composition."
+    },
+    {
+      "path": "app/server/admission.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Shared workspace ownership, conflicts and exact supervised parent exception."
+    },
+    {
+      "path": "app/server/domain.mjs",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Canonical task dependency existence and cycle validation."
+    },
+    {
+      "path": "app/web/src/Strategies.jsx",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Baseline has Assistance/Adaptive/Goals/Context tabs, without six-mode coordinator."
+    },
+    {
+      "path": "docs/requirements/AGENT_STRATEGIES_AND_LANDING.md",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Owner requires all six modes as functional selectable GUI behavior."
+    },
+    {
+      "path": "AGENTS.md",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Assigned-path worktree and preserved legacy boundaries."
+    },
+    {
+      "path": "docs/owner/forge-local-complete-20261124-v3/00_START_HERE_TH.md",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Active product scope and separate implementation/live/home UAT evidence."
+    },
+    {
+      "path": "docs/owner/forge-local-complete-20261124-v3/prompts/START_FULL_PRODUCT.txt",
+      "revision": "378466061e575ffd3b429f73aaf623f51b5396fb",
+      "inspection": "Active development requirements and release/owner boundaries."
+    }
+  ],
+  "modeMapping": [
+    {
+      "mode": "supervisor",
+      "ownerPath": [
+        "sessionRoute",
+        "sessionRoles",
+        "Conversation",
+        "T3"
+      ],
+      "requiredDifference": "Task-specific main-agent decomposition and reviewed child delegation, then exact terminal-result aggregation/synthesis.",
+      "baselineGaps": [
+        "Bounded terminal child content/evidence projection after parent ends",
+        "Retained synthesis/review record",
+        "Mode-wide Stop of parent and every exact child command"
+      ],
+      "qualification": "Conversation children are serialized root-workspace advice; no isolated parallel writer claim."
+    },
+    {
+      "mode": "parallel-fan-out-fan-in",
+      "ownerPath": [
+        "Workspace",
+        "T3",
+        "Budget"
+      ],
+      "requiredDifference": "Independent approved tasks/worktrees and all-required exact terminal evidence join.",
+      "baselineGaps": [
+        "Strategy claims and final dispatch fence",
+        "Durable aggregation and blocked branch handling"
+      ]
+    },
+    {
+      "mode": "router-specialists",
+      "ownerPath": [
+        "Assistance selection as proposal",
+        "Workspace/T3 or Conversation as qualified owner"
+      ],
+      "requiredDifference": "Persist deterministic route decision/reason against actual capabilities and model options.",
+      "baselineGaps": [
+        "Strategy decision/dispatch binding",
+        "Actionable stale/unsupported route state"
+      ],
+      "qualification": "Owner ordinal ranks do not establish measured quality, prices or runtime authority."
+    },
+    {
+      "mode": "generator-verifier",
+      "ownerPath": [
+        "Workspace",
+        "T3",
+        "host verification",
+        "Owner review"
+      ],
+      "requiredDifference": "Separate producer/reviewer allocations and exact output provenance; bounded reviewed feedback to a new allocation.",
+      "baselineGaps": [
+        "Producer/reviewer linkage and immutable review input",
+        "Feedback source/target ownership",
+        "Independent evidence separation"
+      ],
+      "qualification": "Model review cannot mint trusted verification, independent authenticated QA or Owner approval."
+    },
+    {
+      "mode": "sequential-dag",
+      "ownerPath": [
+        "domain task dependencies",
+        "Workspace",
+        "T3",
+        "host checks"
+      ],
+      "requiredDifference": "Persist explicit acyclic dependencies and release only stages with satisfied evidence and canonical approvals.",
+      "baselineGaps": [
+        "Stage-level release state and context fence",
+        "Failed/unknown blockers"
+      ],
+      "qualification": "No arbitrary eval/shell executor added for deterministic stages."
+    },
+    {
+      "mode": "independent-candidates-selection",
+      "ownerPath": [
+        "Workspace",
+        "T3",
+        "Budget",
+        "Owner selection",
+        "Workspace integration"
+      ],
+      "requiredDifference": "Distinct approved candidate tasks/worktrees from comparable input, retained rubric/evidence and explicit selection.",
+      "baselineGaps": [
+        "Candidate independence record",
+        "Usage/unknown cost exposure across all work",
+        "Supported selection record with no merge side effect"
+      ],
+      "qualification": "Concurrent candidates cannot reuse one canonical task; selection is separate from integration approval."
+    }
+  ],
+  "safetyInvariants": [
+    "Canonical owners alone create turns, reserves, holds and checkout authority.",
+    "Claim/operation and immutable request binding durable before effects.",
+    "Reservation and final dispatch validate exact strategy/context, including omission/bypass attempts.",
+    "Lost response, restart, restore and ambiguous outcome remain unknown/no-redispatch.",
+    "Stop prevents new release and covers all exact retained owned effects; observed termination is distinct.",
+    "No automatic context mixing across Workspace, Assistance, Adaptive, Goals, Research or sessionRoute.",
+    "Actual independent check evidence and human approval remain separate from model synthesis.",
+    "Native supervisor admission is limited to its currently qualified implementation/manifest; no all-provider claim."
+  ],
+  "qualifications": {
+    "sourceLicenseApiReads": "COMPLETED_READ_ONLY",
+    "sixModeImplementation": "IMPLEMENTATION_INCOMPLETE_AT_BASELINE",
+    "nativeProviderExecution": "NOT_RUN",
+    "liveAccounts": "NOT_RUN",
+    "officialBenchmarks": "NOT_RUN",
+    "modelQualityComparison": "NOT_RUN",
+    "homeUat": "HOME_UAT_NOT_RUN",
+    "laterImplementationCommits": "NOT_REVIEWED_BY_THIS_RESEARCH",
+    "upstreamCodeAdoption": "NONE",
+    "dependenciesInstalled": "NONE",
+    "push": "NOT_PERFORMED"
+  },
+  "excludedWrites": [
+    "app/",
+    "shared contracts",
+    "progress/",
+    "bootstrap/",
+    "runtime/",
+    "adapters/ao/",
+    "manifests and lockfiles",
+    "source/install/cache artifacts"
+  ],
+  "researchOutputs": [
+    "docs/research/agent-strategies-20261126.md",
+    "docs/research/agent-strategies-sources-20261126.json"
+  ]
+}
