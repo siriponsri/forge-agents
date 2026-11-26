@@ -5,9 +5,9 @@ import { operationId, request } from './api.mjs';
 const translate = (th, en) => th;
 const errorResult = (pending, code) => ({ status: 'error', documentId: pending.arguments.documentId, revision: pending.arguments.expectedRevision, error: { code } });
 const resultMessage = (code, t) => ({
-  EDITOR_UNAVAILABLE: t('เปิดเอกสารใน Office ก่อนส่งข้อความที่เลือก', 'Open the document in Office before sending its selection.'),
-  REVISION_CONFLICT: t('บันทึกการแก้ไขและเปิดเอกสารรุ่นล่าสุดก่อนเริ่มงานใหม่', 'Save your edits and reopen the latest revision before starting a new task.'),
-  NO_SELECTION: t('ไม่มีข้อความที่เลือกในเนื้อหาหลัก หรือช่วงที่เลือกเกิน 8,192 ตัวอักษร', 'No main-body text selection, or the selection exceeds 8,192 UTF-16 units.'),
+  EDITOR_UNAVAILABLE: t('เปิดเอกสารในหน้าเอกสารก่อนส่งข้อความที่เลือก', 'Open the document in Office before sending its selection.'),
+  REVISION_CONFLICT: t('เอกสารถูกแก้ไขหลังเริ่มงาน บันทึกการแก้ไขและเปิดเอกสารฉบับล่าสุดก่อนเริ่มงานใหม่', 'Save your edits and reopen the latest revision before starting a new task.'),
+  NO_SELECTION: t('ยังไม่ได้เลือกข้อความในเนื้อหาหลัก หรือเลือกยาวเกิน 8,192 ตัวอักษร', 'No main-body text selection, or the selection exceeds 8,192 UTF-16 units.'),
   DECLINED: t('คุณปฏิเสธคำขอนี้แล้ว', 'You declined this request.'),
 }[code]);
 
@@ -76,19 +76,19 @@ export default function FrontendTools({ t = translate, projectId, run, getEditor
     } catch (e) { if (active.current === key) setError(e); }
     finally { if (active.current === key) setSending(null); }
   };
-  return <section className="panel" aria-label={t('คำขออ่านข้อความที่เลือก', 'Selection requests')}>
+  return <section className="panel" aria-label={t('คำขอของ AI ที่ขออ่านข้อความ', 'Selection requests')}>
     <h3>{t('ข้อความที่เลือกสำหรับงานนี้', 'Selection for this task')}</h3>
-    <p className="help">{t('เลือกข้อความในเอกสารที่บันทึกแล้ว แล้วส่งให้งานนี้ อ่านได้ไม่เกิน 8,192 ตัวอักษร โดยไม่แก้ไขเอกสาร', 'Select text in the saved document, then send it to this task. Reads up to 8,192 UTF-16 units without changing the document.')}</p>
-    {loading && <p role="status">{t('กำลังตรวจคำขอ…', 'Checking requests…')}</p>}
-    {!loading && !calls.length && <p className="help">{t('เมื่อบอทขออ่านข้อความที่เลือก คำขอจะปรากฏที่นี่', 'Requests appear here when the bot asks to read your selection.')}</p>}
+    <p className="help">{t('เลือกข้อความในเอกสารที่บันทึกแล้ว แล้วกดส่งให้ AI อ่าน (ไม่เกิน 8,192 ตัวอักษร) AI จะไม่แก้ไขเอกสาร', 'Select text in the saved document, then send it to this task. Reads up to 8,192 UTF-16 units without changing the document.')}</p>
+    {loading && <p role="status">{t('กำลังโหลดคำขอ…', 'Checking requests…')}</p>}
+    {!loading && !calls.length && <p className="help">{t('เมื่อผู้ช่วย AI ขออ่านข้อความที่คุณเลือก คำขอจะแสดงที่นี่', 'Requests appear here when the bot asks to read your selection.')}</p>}
     {calls.map(call => <div className="history-row" key={call.pendingId}>
-      <div><strong>{t('อ่านข้อความที่เลือก', 'Read selected text')} · r{call.arguments.expectedRevision}</strong><small>{call.status === 'pending' ? t('รอคุณส่งข้อความที่เลือก', 'Waiting for your selection') : call.status === 'unknown' ? t('ไม่ทราบผล ส่งซ้ำไม่ได้ โปรดตรวจสถานะงาน', 'Outcome unknown. Check the run before starting again.') : t('รับผลแล้ว การส่งถึงบอทยังต้องยืนยันจากงาน', 'Result accepted; provider delivery awaits run observation.')}</small>{results[call.pendingId]?.status === 'error' && <small role="status">{resultMessage(results[call.pendingId].error.code, t)}</small>}</div>
+      <div><strong>{t('อ่านข้อความที่เลือก', 'Read selected text')} · r{call.arguments.expectedRevision}</strong><small>{call.status === 'pending' ? t('รอคุณส่งข้อความที่เลือก', 'Waiting for your selection') : call.status === 'unknown' ? t('ยังไม่รู้ผล ส่งซ้ำไม่ได้ ตรวจสถานะงานก่อนเริ่มใหม่', 'Outcome unknown. Check the run before starting again.') : t('ส่งแล้ว รอดูว่าผู้ช่วย AI ได้รับในงานนี้หรือไม่', 'Result accepted; provider delivery awaits run observation.')}</small>{results[call.pendingId]?.status === 'error' && <small role="status">{resultMessage(results[call.pendingId].error.code, t)}</small>}</div>
       {call.status === 'pending' && <div className="toolbar">
-        <button type="button" disabled={busy || !!sending || Date.now() >= call.expiresAt} onMouseDown={e => e.preventDefault()} onClick={() => answer(call)}>{sending === call.pendingId ? t('กำลังส่ง…', 'Sending…') : retries.current.has(call.pendingId) ? t('ตรวจและส่งผลเดิมอีกครั้ง', 'Retry same result') : t('ส่งข้อความที่เลือก', 'Send selection')}</button>
+        <button type="button" disabled={busy || !!sending || Date.now() >= call.expiresAt} onMouseDown={e => e.preventDefault()} onClick={() => answer(call)}>{sending === call.pendingId ? t('กำลังส่ง…', 'Sending…') : retries.current.has(call.pendingId) ? t('ส่งข้อความเดิมอีกครั้ง', 'Retry same result') : t('ส่งข้อความที่เลือก', 'Send selection')}</button>
         <button type="button" disabled={busy || !!sending || retries.current.has(call.pendingId)} onClick={() => answer(call, true)}>{t('ปฏิเสธ', 'Decline')}</button>
       </div>}
     </div>)}
-    {error && <p role="alert">{t('ส่งหรืออ่านสถานะไม่สำเร็จ ตรวจการเชื่อมต่อและลองผลเดิมอีกครั้ง', 'Could not send or read status. Check the connection and retry the same result.')} {error.code ?? ''}</p>}
+    {error && <p role="alert">{t('ส่งข้อความหรืออ่านสถานะไม่สำเร็จ ตรวจการเชื่อมต่อแล้วส่งข้อความเดิมอีกครั้ง', 'Could not send or read status. Check the connection and retry the same result.')} {error.code ?? ''}</p>}
   </section>;
 }
 
@@ -111,12 +111,12 @@ export function FrontendRunControl({ t = translate, projectId, state, record, di
     } catch (e) { setError(e); } finally { setSending(false); }
   };
   return <form className="panel inline-form" onSubmit={start}>
-    <Field label={t('งานที่อนุมัติให้อ่านข้อความที่เลือก', 'Approved task to read the selection')}><select value={taskId} onChange={e => { setTaskId(e.target.value); attempt.current = null; }} required disabled={sending}>
-      <option value="">{t('เลือกงานจากแผนที่อนุมัติแล้ว', 'Choose a task from an approved plan')}</option>
+    <Field label={t('งานย่อยที่จะให้ AI อ่านข้อความที่เลือก', 'Approved task to read the selection')}><select value={taskId} onChange={e => { setTaskId(e.target.value); attempt.current = null; }} required disabled={sending}>
+      <option value="">{t('เลือกงานย่อยจากแผนงานที่อนุมัติแล้ว', 'Choose a task from an approved plan')}</option>
       {tasks.map(task => <option key={task.id} value={task.id}>{task.title}</option>)}
     </select></Field>
-    <p className="help">{dirty ? t('บันทึกเอกสารก่อนเริ่มงาน', 'Save the document before starting.') : t('อ่านเฉพาะข้อความที่เลือกจากเอกสารรุ่นที่บันทึกไว้ คำขอมีเวลา 5 นาทีรวมการเตรียมระบบและรอคำตอบ', 'Reads only selected text from the saved revision. The request lasts five minutes including setup and waiting for your response.')}</p>
-    <button type="submit" disabled={busy || sending || dirty || record?.kind !== 'doc' || !taskId}>{sending ? t('กำลังเริ่ม…', 'Starting…') : t('เริ่มงานอ่านข้อความที่เลือก', 'Start selection task')}</button>
-    {error && <p role="alert">{t('เริ่มงานไม่ได้ ตรวจแผน รุ่นเอกสาร และโมเดลใน Settings แล้วลองอีกครั้ง', 'Could not start. Check the plan, document revision, and selected model in Settings, then retry.')} {error.code ?? ''}</p>}
+    <p className="help">{dirty ? t('บันทึกเอกสารก่อนเริ่มงาน', 'Save the document before starting.') : t('AI อ่านได้เฉพาะข้อความที่คุณเลือกจากเอกสารฉบับที่บันทึกไว้ คำขอหมดเวลาใน 5 นาที (รวมเวลาเตรียมระบบและรอคุณตอบ)', 'Reads only selected text from the saved revision. The request lasts five minutes including setup and waiting for your response.')}</p>
+    <button type="submit" disabled={busy || sending || dirty || record?.kind !== 'doc' || !taskId}>{sending ? t('กำลังเริ่ม…', 'Starting…') : t('เริ่มให้ AI อ่านข้อความที่เลือก', 'Start selection task')}</button>
+    {error && <p role="alert">{t('เริ่มงานไม่ได้ ตรวจแผนงาน ฉบับของเอกสาร และโมเดลใน ตั้งค่า แล้วลองอีกครั้ง', 'Could not start. Check the plan, document revision, and selected model in Settings, then retry.')} {error.code ?? ''}</p>}
   </form>;
 }

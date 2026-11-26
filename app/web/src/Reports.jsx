@@ -55,14 +55,14 @@ export default function Reports({ t, state, projectId, mutate, run, busy }) {
   return (
     <>
       <Heading
-        title={t("Report Studio · รายงาน", "Report Studio")}
+        title={t("สร้างรายงาน", "Report Studio")}
         description={t(
-          "บันทึก ReportSpec → สร้าง DOCX/PDF จากเวอร์ชันเดียว → ตรวจและดาวน์โหลดไฟล์จริง",
+          "เขียนต้นฉบับรายงานแล้วบันทึก → สร้างไฟล์ DOCX และ PDF จากฉบับเดียวกัน → ตรวจไฟล์แล้วดาวน์โหลด",
           "Save ReportSpec → generate DOCX/PDF from one revision → inspect verified output files.",
         )}
       >
         <button onClick={() => setConfigure(!configure)}>
-          {t("ตั้งค่า engine และฟอนต์", "Engines & fonts")}
+          {t("ตั้งค่าโปรแกรมสร้างไฟล์และฟอนต์", "Engines & fonts")}
         </button>
       </Heading>
       <div className="engine-strip">
@@ -70,7 +70,7 @@ export default function Reports({ t, state, projectId, mutate, run, busy }) {
         {['wordcraft','pdfcraft'].map(name => <span key={name} role="status">
           {name === 'wordcraft' ? 'WordCraft' : 'PdfCraft'} · {engines?.engines?.[name]?.ready
             ? `${engines.engines[name].identity?.version ?? ''} ${t('พร้อมใช้งาน','Ready')}`
-            : engines?.engines?.[name]?.recovery || t('ตรวจสอบก่อนใช้งาน','Check setup')}
+            : engines?.engines?.[name]?.recovery || t('ต้องตั้งค่าก่อนใช้','Check setup')}
         </span>)}
         <button
           onClick={() =>
@@ -81,10 +81,10 @@ export default function Reports({ t, state, projectId, mutate, run, busy }) {
             })
           }
         >
-          {t("ตรวจความพร้อม", "Check readiness")}
+          {t("ตรวจว่าพร้อมใช้", "Check readiness")}
         </button>
         <details>
-          <summary>{t("ผลตรวจจริง", "Observed readiness")}</summary>
+          <summary>{t("รายละเอียดทางเทคนิค", "Observed readiness")}</summary>
           <Json value={engines || { status: "checking" }} />
         </details>
       </div>
@@ -94,7 +94,7 @@ export default function Reports({ t, state, projectId, mutate, run, busy }) {
       <div className="split report-layout">
         <aside className="panel">
           <button onClick={() => setSelected("")}>
-            {t("+ แหล่งรายงานใหม่", "+ New report source")}
+            {t("+ ต้นฉบับรายงานใหม่", "+ New report source")}
           </button>
           <Collection
             items={reports}
@@ -103,7 +103,7 @@ export default function Reports({ t, state, projectId, mutate, run, busy }) {
             subtitle={(r) => `r${r.revision} · ${r.spec?.language || "—"}`}
           />
           {!reports.length && (
-            <Empty>{t("ยังไม่มีแหล่งรายงาน", "No report sources yet.")}</Empty>
+            <Empty>{t("ยังไม่มีต้นฉบับรายงาน กด + ต้นฉบับรายงานใหม่ เพื่อเริ่ม", "No report sources yet.")}</Empty>
           )}
         </aside>
         <section>
@@ -116,13 +116,13 @@ export default function Reports({ t, state, projectId, mutate, run, busy }) {
             <section className="panel">
               <div className="record-head">
                 <h2>
-                  {t("สร้างไฟล์จากแหล่งที่บันทึก", "Generate from saved source")}
+                  {t("สร้างไฟล์จากต้นฉบับที่บันทึกไว้", "Generate from saved source")}
                 </h2>
                 <span>r{record.revision}</span>
               </div>
               <p>
                 {t(
-                  "สร้างไฟล์จากเวอร์ชันนี้ แล้วตรวจฟอนต์และการจัดหน้าก่อนดาวน์โหลด",
+                  "ระบบจะสร้างไฟล์จากฉบับที่บันทึกล่าสุด ตรวจฟอนต์และการจัดหน้าก่อนดาวน์โหลด",
                   "Generate this saved revision, then review fonts and pagination before downloading.",
                 )}
               </p>
@@ -154,11 +154,11 @@ export default function Reports({ t, state, projectId, mutate, run, busy }) {
         </section>
       </div>
       <section className="panel">
-        <h2>{t("ตรวจและประมวลผล PDF", "PDF inspection & processing")}</h2>
+        <h2>{t("ตรวจและแก้ไฟล์ PDF", "PDF inspection & processing")}</h2>
         {!pdfs.length ? (
           <Empty>
             {t(
-              "ต้องมี PDF ที่ลงทะเบียนและผ่านการตรวจแล้ว",
+              "ยังไม่มีไฟล์ PDF สร้างรายงานก่อน หรืออัปโหลด PDF ในหน้า ไฟล์ผลลัพธ์",
               "Register a verified PDF or generate a report first.",
             )}
           </Empty>
@@ -199,20 +199,20 @@ export default function Reports({ t, state, projectId, mutate, run, busy }) {
                   ))}
                 </select>
               </Field>
-              <Field label={t("การดำเนินการ", "Operation")}>
+              <Field label={t("ต้องการทำอะไร", "Operation")}>
                 <select name="operation">
                   <option value="inspect">
-                    {t("ตรวจโครงสร้าง", "Inspect")}
+                    {t("ดูโครงสร้างไฟล์", "Inspect")}
                   </option>
                   <option value="render">
-                    {t("สร้างภาพหน้าเอกสาร", "Render pages")}
+                    {t("ทำภาพตัวอย่างหน้า", "Render pages")}
                   </option>
                   <option value="rotate">{t("หมุนหน้า", "Rotate pages")}</option>
                 </select>
               </Field>
               <Field
                 label={t(
-                  "หน้าเอกสารตามที่ adapter รองรับ",
+                  "เลขหน้า",
                   "Pages supported by adapter",
                 )}
               >
@@ -226,7 +226,7 @@ export default function Reports({ t, state, projectId, mutate, run, busy }) {
                 </select>
               </Field>
               <Submit busy={busy}>
-                {t("ดำเนินการด้วย PdfCraft", "Run PdfCraft operation")}
+                {t("เริ่มทำ", "Run PdfCraft operation")}
               </Submit>
             </form>
             <div className="actions">
@@ -241,7 +241,7 @@ export default function Reports({ t, state, projectId, mutate, run, busy }) {
       </section>
       <p className="help">
         {t(
-          "การแปลง XLSX/DOCX ผ่าน Univer Exchange เป็นส่วนเสริมที่ยังไม่เปิดใช้ Native snapshots ยังคงแก้ไขและบันทึกได้ ข้อจำกัดฟอนต์และการจัดหน้าให้ตรวจจากไฟล์ที่สร้างจริง",
+          "ยังแปลงไฟล์ XLSX/DOCX เข้ามาไม่ได้ แต่ยังแก้และบันทึกเอกสารใน FORGE ได้ตามปกติ ควรเปิดไฟล์ที่สร้างเพื่อตรวจฟอนต์และการจัดหน้า",
           "Univer Exchange XLSX/DOCX conversion is not enabled. Native editing is independent. Verify fonts and pagination in the actual generated files.",
         )}
       </p>
@@ -268,10 +268,10 @@ export default function Reports({ t, state, projectId, mutate, run, busy }) {
               </div>
             </div>
             <p className="help">
-              {t("ไฟล์จริงจาก artifact ที่บันทึกแล้ว", "Actual registered artifact")} ·
+              {t("ไฟล์ผลลัพธ์ที่บันทึกไว้", "Actual registered artifact")} ·
               SHA256 {preview.sha256 || preview.hash || "—"}
             </p>
-            {previewImage?<div className="report-page-preview"><p className="help">{t('หน้าที่ 1 · ภาพจากไฟล์ PDF ที่ตรวจแล้ว','Page 1 · rendered from the verified PDF')}</p><img src={downloadUrl(previewImage.id)} alt={t('ภาพหน้ารายงานที่สร้างจริง','Rendered report page')} style={{display:'block',maxWidth:'100%',height:'auto',margin:'0 auto'}}/></div>:<div className="overview-empty"><p>{t('ยังไม่มีภาพตัวอย่างของ PDF นี้','A rendered preview is not available yet.')}</p><button disabled={busy} onClick={()=>run(()=>request('/api/reports/pdf-operation',{operationId:operationId(),projectId,artifactId:preview.id,expectedRevision:preview.revision,operation:'render',page:1}))}>{t('สร้างภาพตัวอย่าง','Render preview')}</button></div>}
+            {previewImage?<div className="report-page-preview"><p className="help">{t('หน้าที่ 1 · ภาพจากไฟล์ PDF','Page 1 · rendered from the verified PDF')}</p><img src={downloadUrl(previewImage.id)} alt={t('ภาพหน้ารายงาน','Rendered report page')} style={{display:'block',maxWidth:'100%',height:'auto',margin:'0 auto'}}/></div>:<div className="overview-empty"><p>{t('ยังไม่มีภาพตัวอย่างของ PDF นี้','A rendered preview is not available yet.')}</p><button disabled={busy} onClick={()=>run(()=>request('/api/reports/pdf-operation',{operationId:operationId(),projectId,artifactId:preview.id,expectedRevision:preview.revision,operation:'render',page:1}))}>{t('สร้างภาพตัวอย่าง','Render preview')}</button></div>}
             <a className="button" href={downloadUrl(preview.id)} target="_blank" rel="noreferrer">{t('เปิด PDF แบบเต็ม','Open full PDF')}</a>
           </section>
         </div>
@@ -324,7 +324,7 @@ function SourceEditor({
       }}
     >
       <div className="record-head">
-        <h2>{t("แหล่งรายงาน", "Report source")}</h2>
+        <h2>{t("ต้นฉบับรายงาน", "Report source")}</h2>
         <Badge>
           {dirty
             ? t("ยังไม่บันทึก", "unsaved")
@@ -334,7 +334,7 @@ function SourceEditor({
         </Badge>
       </div>
       <div className="form-grid">
-        <Field label={t("ชื่อแหล่งรายงาน", "Source name")}>
+        <Field label={t("ชื่อต้นฉบับ", "Source name")}>
           <input
             value={name}
             required
@@ -344,7 +344,7 @@ function SourceEditor({
             }}
           />
         </Field>
-        <Field label={t("ชื่อเรื่องในเอกสาร", "Report title")}>
+        <Field label={t("ชื่อเรื่องรายงาน", "Report title")}>
           <input
             value={spec.title}
             required
@@ -360,7 +360,7 @@ function SourceEditor({
             <option value="en">English</option>
           </select>
         </Field>
-        <Field label={t("ฟอนต์ที่ engine ตรวจพบ", "Font available to engine")}>
+        <Field label={t("ฟอนต์", "Font available to engine")}>
           <input
             value={spec.fontFamily}
             required
@@ -369,7 +369,7 @@ function SourceEditor({
         </Field>
       </div>
       <details>
-        <summary>{t("แม่แบบและเวอร์ชัน", "Template & version")}</summary>
+        <summary>{t("แม่แบบและรุ่น", "Template & version")}</summary>
         <div className="form-grid">
           <Field label="Template ID">
             <input
@@ -417,7 +417,7 @@ function SourceEditor({
           <details>
             <summary>
               {t(
-                "ตารางและรูปประกอบ",
+                "ตารางและรูปภาพ",
                 "Table and figure",
               )}
             </summary>
@@ -470,7 +470,7 @@ function SourceEditor({
       </button>
       <Field
         label={t(
-          "อ้างอิงและหลักฐาน (หนึ่งรายการต่อบรรทัด)",
+          "แหล่งอ้างอิงและหลักฐาน (บรรทัดละหนึ่งรายการ)",
           "Citations / evidence (one per line)",
         )}
       >
@@ -487,7 +487,7 @@ function SourceEditor({
       </Field>
       <Field
         label={t(
-          "อินพุตจาก artifact เวอร์ชันที่บันทึก (เลือกหลายรายการด้วย Ctrl)",
+          "ไฟล์ผลลัพธ์ที่ใช้ประกอบ (กด Ctrl ค้างเพื่อเลือกหลายไฟล์)",
           "Input artifact revisions (Ctrl for multiple)",
         )}
       >
@@ -518,10 +518,10 @@ function SourceEditor({
       </Field>
       <NativeReportImport {...{t,documents,run,projectId,busy}} onImport={result=>update({sections:[...spec.sections,result.section],inputs:[...spec.inputs,result.input]})}/>
       <div className="actions">
-        <Submit busy={busy}>{t("บันทึกแหล่งรายงาน", "Save report source")}</Submit>
+        <Submit busy={busy}>{t("บันทึกต้นฉบับ", "Save report source")}</Submit>
         <small>
           {t(
-            "บันทึกแหล่งข้อมูลแยกจากการสร้างและส่งไฟล์",
+            "การบันทึกต้นฉบับยังไม่ได้สร้างไฟล์ ต้องกด สร้าง DOCX และ PDF แยกอีกครั้ง",
             "Source save is separate from generation and delivery.",
           )}
         </small>
@@ -531,7 +531,7 @@ function SourceEditor({
 }
 function ReportTable({t,table,onChange}){
   const [text,setText]=useState(()=>table?.values.map(row=>row.join('\t')).join('\n')??'');
-  return <><Field label={t('ข้อมูลตาราง (วางจากตาราง ใช้ Tab คั่นคอลัมน์)','Table cells (paste rows with tab-separated columns)')}><textarea rows={4} value={text} placeholder={'Name\tValue\nรายการ\t10'} onChange={e=>{
+  return <><Field label={t('ข้อมูลตาราง (คัดลอกจากตารางมาวางได้เลย)','Table cells (paste rows with tab-separated columns)')}><textarea rows={4} value={text} placeholder={'Name\tValue\nรายการ\t10'} onChange={e=>{
     const value=e.target.value;setText(value);const rows=value.split('\n').map(row=>row.split('\t'));
     const valid=!value||(rows.length<=1000&&rows[0].length<=63&&rows.every(row=>row.length===rows[0].length));e.target.setCustomValidity(valid?'':t('ทุกแถวต้องมีจำนวนคอลัมน์เท่ากัน','Every row must have the same number of columns'));
     if(valid)onChange(value?{values:rows,header:table?.header!==false}:undefined);
@@ -540,12 +540,12 @@ function ReportTable({t,table,onChange}){
 function NativeReportImport({t,documents,run,projectId,busy,onImport}){
   const [id,setId]=useState(''),[sheetId,setSheetId]=useState(''),[range,setRange]=useState('A1:B5'),[formulaMode,setFormulaMode]=useState('expressions'),[review,setReview]=useState(null);
   const document=documents.find(d=>d.id===id);
-  return <details><summary>{t('นำเนื้อหาจาก Docs หรือช่วงเซลล์ Sheets','Import from Docs or a Sheets range')}</summary>
-    <p className="help">{t('นำเข้าข้อความหรือเซลล์จากเวอร์ชันที่บันทึก พร้อมต้นทางและ hash ไม่แปลงรูปแบบ ตารางใน Docs รูป หรือกราฟ','Imports saved text or selected cells with revision and hash. Document styling, Docs tables, images and charts are not converted.')}</p>
-    <Field label={t('เอกสารต้นทาง','Source document')}><select value={id} onChange={e=>{setId(e.target.value);setSheetId('');setReview(null);}}><option value="">—</option>{documents.map(d=><option key={d.id} value={d.id}>{d.name} · r{d.revision}</option>)}</select></Field>
-    {document?.kind==='sheet'&&<div className="form-grid"><Field label={t('แผ่นงาน','Worksheet')}><select value={sheetId||document.snapshot.sheetOrder[0]} onChange={e=>{setSheetId(e.target.value);setReview(null);}}>{document.snapshot.sheetOrder.map(key=><option key={key} value={key}>{document.snapshot.sheets[key].name}</option>)}</select></Field><Field label={t('ช่วงเซลล์ที่นำเข้า','Import range')}><input value={range} onChange={e=>{setRange(e.target.value);setReview(null);}}/></Field><Field label={t('สูตรในรายงาน','Report formulas')}><select value={formulaMode} onChange={e=>{setFormulaMode(e.target.value);setReview(null);}}><option value="expressions">{t('แสดงนิพจน์สูตรเป็นข้อความ','Formula expressions as text')}</option><option value="cached-values">{t('ใช้ค่าที่บันทึกไว้','Use saved scalar values')}</option></select></Field></div>}
-    <button type="button" disabled={busy||!document} onClick={()=>run(async()=>{const result=await request('/api/reports/extract-document',{projectId,documentId:id,expectedRevision:document.revision,sheetId:sheetId||undefined,range,formulaMode});setReview(result);return result;})}>{t('ตรวจเนื้อหาที่จะนำเข้า','Preview import')}</button>
-    {review&&<div className="panel"><h3>{review.section.heading}</h3>{review.section.text&&<p style={{whiteSpace:'pre-wrap'}}>{review.section.text}</p>}{review.section.table&&<div className="table-wrap"><table><tbody>{review.section.table.values.map((row,i)=><tr key={i}>{row.map((cell,n)=><td key={n}>{String(cell)}</td>)}</tr>)}</tbody></table></div>}<small>r{review.input.revision} · {review.input.sourceSha256.slice(0,12)}</small><p className="help">{review.warnings.join(' ')}</p><button type="button" onClick={()=>{onImport(review);setReview(null);}}>{t('เพิ่มเนื้อหานี้ลงแหล่งรายงาน','Add this content to report source')}</button></div>}
+  return <details><summary>{t('นำเนื้อหาจากเอกสารหรือตารางใน FORGE','Import from Docs or a Sheets range')}</summary>
+    <p className="help">{t('นำข้อความหรือเซลล์จากฉบับที่บันทึกไว้เข้ามา พร้อมที่มาและรหัสตรวจไฟล์ แต่จะไม่นำรูปแบบตัวอักษร ตารางในเอกสาร รูป หรือกราฟมาด้วย','Imports saved text or selected cells with revision and hash. Document styling, Docs tables, images and charts are not converted.')}</p>
+    <Field label={t('เอกสารที่จะนำมา','Source document')}><select value={id} onChange={e=>{setId(e.target.value);setSheetId('');setReview(null);}}><option value="">—</option>{documents.map(d=><option key={d.id} value={d.id}>{d.name} · r{d.revision}</option>)}</select></Field>
+    {document?.kind==='sheet'&&<div className="form-grid"><Field label={t('แผ่นงาน','Worksheet')}><select value={sheetId||document.snapshot.sheetOrder[0]} onChange={e=>{setSheetId(e.target.value);setReview(null);}}>{document.snapshot.sheetOrder.map(key=><option key={key} value={key}>{document.snapshot.sheets[key].name}</option>)}</select></Field><Field label={t('ช่วงเซลล์ (เช่น A1:C10)','Import range')}><input value={range} onChange={e=>{setRange(e.target.value);setReview(null);}}/></Field><Field label={t('เซลล์ที่มีสูตร','Report formulas')}><select value={formulaMode} onChange={e=>{setFormulaMode(e.target.value);setReview(null);}}><option value="expressions">{t('แสดงตัวสูตร เช่น =SUM(A1:A3)','Formula expressions as text')}</option><option value="cached-values">{t('แสดงผลลัพธ์ของสูตร','Use saved scalar values')}</option></select></Field></div>}
+    <button type="button" disabled={busy||!document} onClick={()=>run(async()=>{const result=await request('/api/reports/extract-document',{projectId,documentId:id,expectedRevision:document.revision,sheetId:sheetId||undefined,range,formulaMode});setReview(result);return result;})}>{t('ดูตัวอย่างก่อนนำเข้า','Preview import')}</button>
+    {review&&<div className="panel"><h3>{review.section.heading}</h3>{review.section.text&&<p style={{whiteSpace:'pre-wrap'}}>{review.section.text}</p>}{review.section.table&&<div className="table-wrap"><table><tbody>{review.section.table.values.map((row,i)=><tr key={i}>{row.map((cell,n)=><td key={n}>{String(cell)}</td>)}</tr>)}</tbody></table></div>}<small>r{review.input.revision} · {review.input.sourceSha256.slice(0,12)}</small><p className="help">{review.warnings.join(' ')}</p><button type="button" onClick={()=>{onImport(review);setReview(null);}}>{t('เพิ่มเนื้อหานี้ลงต้นฉบับรายงาน','Add this content to report source')}</button></div>}
   </details>;
 }
 function ReportJob({ t, job, run, busy, artifacts, setPreview }) {
@@ -563,7 +563,7 @@ function ReportJob({ t, job, run, busy, artifacts, setPreview }) {
         <Badge>{job.status}</Badge>
       </div>
       <p>
-        {date(job.createdAt)} · {t("เวอร์ชันแหล่งรายงาน", "Source revision")}{" "}
+        {date(job.createdAt)} · {t("ต้นฉบับฉบับที่", "Source revision")}{" "}
         {job.sourceRevision ?? job.reportRevision ?? "—"}
       </p>
       {job.error && (
@@ -583,7 +583,7 @@ function ReportJob({ t, job, run, busy, artifacts, setPreview }) {
             })
           }
         >
-          {t("ตรวจสถานะ / log", "Inspect status / logs")}
+          {t("ดูสถานะและบันทึกการทำงาน", "Inspect status / logs")}
         </button>
         <button
           disabled={busy}
@@ -596,7 +596,7 @@ function ReportJob({ t, job, run, busy, artifacts, setPreview }) {
           }
         >
           <Square size={14} />
-          {t("ขอหยุด job", "Request job stop")}
+          {t("หยุดงานนี้", "Request job stop")}
         </button>
         {outputs.map((a) => (
           <React.Fragment key={a.id}>
@@ -608,7 +608,7 @@ function ReportJob({ t, job, run, busy, artifacts, setPreview }) {
               a.contentType || a.filename || a.name || a.kind || "",
             ) && (
               <button onClick={() => setPreview(a)}>
-                {t("ดู PDF จริง", "Preview PDF")}
+                {t("ดู PDF", "Preview PDF")}
               </button>
             )}
           </React.Fragment>
@@ -616,7 +616,7 @@ function ReportJob({ t, job, run, busy, artifacts, setPreview }) {
       </div>
       {details && (
         <details open>
-          <summary>{t("ผลจากบริการ", "Service result")}</summary>
+          <summary>{t("รายละเอียดทางเทคนิค", "Service result")}</summary>
           <Json value={details} />
         </details>
       )}
@@ -656,7 +656,7 @@ function EngineSettings({ t, run, busy, onHealth, health }) {
         });
       }}
     >
-      <h2>{t("ตั้งค่า engine บนเครื่องนี้", "Machine-local engines")}</h2>
+      <h2>{t("โปรแกรมสร้างไฟล์บนเครื่องนี้", "Machine-local engines")}</h2>
       <div className="actions">
         {["wordcraft", "pdfcraft"].map((engine) => (
           <React.Fragment key={engine}>
@@ -674,7 +674,7 @@ function EngineSettings({ t, run, busy, onHealth, health }) {
                 })
               }
             >
-              {t("ค้นหา", "Discover")} {engine}
+              {t("ค้นหาในเครื่อง", "Discover")} {engine}
             </button>
             <button
               type="button"
@@ -690,7 +690,7 @@ function EngineSettings({ t, run, busy, onHealth, health }) {
                 })
               }
             >
-              {t("ติดตั้งรุ่นที่ตรวจสอบแล้ว", "Install verified release")} {engine}
+              {t("ติดตั้งรุ่นที่รองรับ", "Install verified release")} {engine}
             </button>
           </React.Fragment>
         ))}
@@ -702,7 +702,7 @@ function EngineSettings({ t, run, busy, onHealth, health }) {
         <Field label="PdfCraft executable">
           <input name="pdfcraftPath" defaultValue={health?.config?.pdfcraft?.path ?? ''} />
         </Field>
-        <Field label={t("ป้ายเวอร์ชันโปรไฟล์ฟอนต์", "Font profile version label")}>
+        <Field label={t("ชื่อรุ่นของชุดฟอนต์", "Font profile version label")}>
           <input required name="fontVersion" defaultValue={health?.config?.fonts?.[0]?.version ?? 'system-local'} />
         </Field>
         <Field label={t("ฟอนต์", "Font family")}>
@@ -711,7 +711,7 @@ function EngineSettings({ t, run, busy, onHealth, health }) {
         </Field>
         <Field
           label={t(
-            "ไฟล์ฟอนต์ในเครื่อง (หนึ่งพาธต่อบรรทัด)",
+            "ไฟล์ฟอนต์ในเครื่อง (บรรทัดละหนึ่งไฟล์)",
             "Local font files (one path per line)",
           )}
         >
@@ -720,12 +720,12 @@ function EngineSettings({ t, run, busy, onHealth, health }) {
       </div>
       <p className="help">
         {t(
-          "พาธเป็นการตั้งค่าของเครื่องนี้ บริการต้องตรวจเวอร์ชันและความพร้อมก่อนรัน",
+          "ที่อยู่ไฟล์ใช้ได้เฉพาะเครื่องนี้ ระบบจะตรวจโปรแกรมก่อนใช้งานทุกครั้ง",
           "Paths are machine-local. The service verifies actual binaries and readiness before execution.",
         )}
       </p>
       <Submit busy={busy}>
-        {t("บันทึกและตรวจ engine", "Save & inspect engines")}
+        {t("บันทึกและตรวจโปรแกรม", "Save & inspect engines")}
       </Submit>
     </form>
   );

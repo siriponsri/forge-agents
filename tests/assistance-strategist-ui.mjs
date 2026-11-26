@@ -45,7 +45,7 @@ try{
   async function action(name,action){const response=page.waitForResponse(r=>r.url().endsWith('/api/assistance/'+action));await button(name).click();const r=await response;assert.equal(r.status(),200,JSON.stringify(await r.json()));await page.getByRole('status').filter({hasText:'Reading or saving…'}).waitFor({state:'hidden'});}
   async function complete(){await h.complete(h.service.state({projectId:h.p.id}).loops.at(-1));await action('Refresh strategy','state');}
   const panel=()=>page.locator('section').filter({has:page.getByRole('heading',{name:'Strategist and Executor loop',exact:true})});
-  await page.goto(url);await page.getByRole('heading',{name:'กลยุทธ์ผู้ช่วย',exact:true}).waitFor();await label('รูปแบบบทบาท').selectOption('strategist-executor');await label('คุณภาพ Strategist ขั้นต่ำ').waitFor();
+  await page.goto(url);await page.getByRole('heading',{name:'กลยุทธ์ผู้ช่วย',exact:true}).waitFor();await label('รูปแบบบทบาท').selectOption('strategist-executor');await label('คุณภาพผู้วางกลยุทธ์ขั้นต่ำ').waitFor();
   await label('Language').selectOption('en');await label('Task').selectOption(h.task.id);await action('Select and record reasons','select');
   await page.getByText('ask_owner',{exact:true}).waitFor();assert.ok(await button('Create loop starting with Executor').isDisabled());
   await label('Quality weight').fill('2');await label('Cost weight').fill('3');await label('Unknown cost handling').selectOption('allow-ranked-last');
@@ -70,7 +70,7 @@ try{
   await page.locator('html').evaluate(e=>e.dataset.theme='dark-modern');
   await page.screenshot({path:path.join(temp,'desktop-strategist-handoff.png'),fullPage:true});
   await label('Language').selectOption('th');await page.setViewportSize({width:375,height:1000});
-  await page.getByRole('button',{name:'ส่งแผนที่ตรวจแล้วให้ Executor',exact:true}).scrollIntoViewIfNeeded();
+  await page.getByRole('button',{name:'ส่งแผนที่ตรวจแล้วให้ผู้ลงมือทำงาน',exact:true}).scrollIntoViewIfNeeded();
   await page.screenshot({path:path.join(temp,'mobile-th-strategist-handoff.png'),fullPage:true});
   for(const width of [320,375,414,768]){await page.setViewportSize({width,height:1000});assert.equal(await page.locator('main').evaluate(e=>e.scrollWidth<=e.clientWidth),true,`overflow ${width}`);}
   await label('Language').selectOption('en');await page.setViewportSize({width:1440,height:1000});

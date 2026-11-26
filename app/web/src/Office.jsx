@@ -33,7 +33,7 @@ export default function Office({
   const choose = (id) => {
     if (
       !dirty ||
-      window.confirm(t("ทิ้งการแก้ไขที่ยังไม่บันทึก?", "Discard unsaved edits?"))
+      window.confirm(t("ทิ้งการแก้ไขที่ยังไม่ได้บันทึกใช่ไหม?", "Discard unsaved edits?"))
     ) {
       setSelected(id);
       setDirty(false);
@@ -43,9 +43,9 @@ export default function Office({
   return (
     <>
       <Heading
-        title={t("Docs & sheets · เอกสารและตาราง", "Docs & sheets")}
+        title={t("เอกสารและตาราง", "Docs & sheets")}
         description={t(
-          "Univer ในแอป บันทึก native snapshot พร้อมประวัติเวอร์ชัน แยกจากไฟล์ Office ที่ส่งออก",
+          "สร้างและแก้เอกสารหรือตารางใน FORGE ได้เลย ทุกครั้งที่บันทึกจะเก็บประวัติไว้ แยกจากไฟล์ Word/Excel ที่ส่งออก",
           "Embedded Univer. Native snapshots and revision history are separate from Office exports.",
         )}
       >
@@ -100,7 +100,7 @@ export default function Office({
           {!documents.length && (
             <Empty>
               {t(
-                "ยังไม่มีเอกสาร สร้างตารางหรือเอกสารใหม่",
+                "ยังไม่มีเอกสาร กด + สร้างเอกสาร เพื่อเริ่ม",
                 "Create your first workbook or document.",
               )}
             </Empty>
@@ -123,7 +123,7 @@ export default function Office({
             />
           ) : (
             <Empty>
-              {t("เลือกเอกสารเพื่อแก้ไขในแอป", "Select a document to edit here.")}
+              {t("เลือกเอกสารเพื่อเปิดแก้ไข", "Select a document to edit here.")}
             </Empty>
           )}
         </section>
@@ -275,7 +275,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
     return result;
   });
   const reviewQueued=async r=>run(async()=>{
-    if(!ready||dirty||pending.current||saving.current)throw new Error(t('บันทึกงานปัจจุบันก่อนตรวจคำขอ','Save current edits before reviewing a request.'));
+    if(!ready||dirty||pending.current||saving.current)throw new Error(t('บันทึกการแก้ไขของคุณก่อนดูคำขอ','Save current edits before reviewing a request.'));
     const clean={projectId,documentId:record.id,editorSessionId:editorSessionId.current,expectedRevision:base.current.revision,dirty:false};
     const lease=editorLease.current
       ? await request('/api/office/agent/renew',{...clean,leaseToken:editorLease.current.leaseToken}).then(x=>({...editorLease.current,...x}))
@@ -285,7 +285,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
     setReviewed(result.request.status==='review'?r.operationId:null);return result;
   });
   const applyQueued=async r=>run(async()=>{
-    if(!editor.current||dirty||pending.current||reviewed!==r.operationId)throw new Error(t('ตรวจคำขอและบันทึกงานปัจจุบันก่อน','Review the request and save current edits first.'));
+    if(!editor.current||dirty||pending.current||reviewed!==r.operationId)throw new Error(t('กด ดูคำขอ และบันทึกการแก้ไขของคุณก่อน','Review the request and save current edits first.'));
     const result=await request('/api/office/agent/begin-apply',{...scopeFor(r),...editorLease.current});
     if(!result.mayApply)return result;
     setQueuePending(true);setLocked(true);
@@ -311,7 +311,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
       if (!editor.current || dirty || pending.current || queueLocked)
         throw new Error(
           t(
-            "บันทึกการแก้ไขปัจจุบันก่อนใช้คำสั่งบอท",
+            "บันทึกการแก้ไขของคุณก่อนใช้การแก้ไขจากผู้ช่วย AI",
             "Save current changes before applying an agent operation.",
           ),
         );
@@ -325,7 +325,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
         if (!current || current.revision !== base.current.revision)
           throw new Error(
             t(
-              "เวอร์ชันเปลี่ยนแล้ว โปรดเปิดเวอร์ชันล่าสุดก่อนใช้คำสั่ง",
+              "มีการแก้ไขเอกสารนี้ก่อนหน้า เปิดฉบับล่าสุดแล้วลองใหม่",
               "Revision changed. Reopen the latest revision before applying the command.",
             ),
           );
@@ -396,7 +396,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
           </button>
           <button
             disabled={!ready || locked || queueLocked}
-            title={t("ย้อนกลับใน session ปัจจุบัน", "Undo in current session")}
+            title={t("ย้อนกลับ (เฉพาะที่แก้ในรอบนี้)", "Undo in current session")}
             aria-label="Undo"
             onClick={() =>
               run(async () => {
@@ -440,7 +440,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
       </div>
       <div className="editor-notice">
         {t(
-          "เมนูตัวแก้ไขเป็นอังกฤษ (ไม่มี Thai locale ในแพ็กเกจ 1.6.1) พิมพ์ไทยได้ บันทึก native ไม่ต้องใช้บริการเชิงพาณิชย์",
+          "ตัวแก้ไขเวอร์ชัน 1.6.1 ยังไม่มีเมนูภาษาไทย แต่พิมพ์ภาษาไทยได้ และบันทึกได้โดยไม่ต้องใช้บริการเสียเงิน",
           "Editor menus use English (1.6.1 ships no Thai locale). Thai content is supported. Native save needs no commercial service.",
         )}
       </div>
@@ -451,7 +451,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
       {newer && (
         <div className="alert">
           {t(
-            "มีเวอร์ชันใหม่จากบริการ การแก้ไขนี้ยังอยู่ในแท็บและจะไม่เขียนทับเวอร์ชันใหม่",
+            "มีคนบันทึกฉบับใหม่กว่าแล้ว การแก้ไขของคุณยังอยู่ในแท็บนี้ และจะไม่เขียนทับฉบับใหม่",
             "A newer durable revision exists. This tab retains its edits and will not overwrite that revision.",
           )}
         </div>
@@ -465,11 +465,11 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
             <p>{error.message}</p>
             <div className="actions">
               <button onClick={recover}>
-                {t("เตรียม snapshot กู้คืน", "Prepare recovery snapshot")}
+                {t("เตรียมไฟล์สำรองสำหรับกู้คืน", "Prepare recovery snapshot")}
               </button>
               {recoverUrl && (
                 <a href={recoverUrl} download={`${record.name}.forge.json`}>
-                  {t("ดาวน์โหลด snapshot", "Download snapshot")}
+                  {t("ดาวน์โหลดไฟล์สำรอง", "Download snapshot")}
                 </a>
               )}
             </div>
@@ -487,10 +487,10 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
           </div>
         )}
       </div>
-      {queueRequests.length>0&&<section className="panel office-agent-queue" aria-label={t('คำขอแก้ไขจาก agent','Agent edit requests')}>
-        <h3>{t('คำขอแก้ไขจาก agent','Agent edit requests')}</h3>
-        <p className="help">{t('ตรวจข้อความและขอบเขตก่อนใช้ การแก้ไขจะผ่าน editor นี้แล้วบันทึกเป็น revision เดียว','Review the text and region. The operation applies through this editor and saves one durable revision.')}</p>
-        {queueLocked&&<p role="status">{t('กำลังยืนยันผลคำขอ ห้ามใช้คำสั่งซ้ำ หากขาดการเชื่อมต่อให้บันทึกคำสั่งเดิมอีกครั้ง','Reconciling an issued operation. Do not apply again. If the save response was lost, retry Save with the same command.')}</p>}
+      {queueRequests.length>0&&<section className="panel office-agent-queue" aria-label={t('คำขอแก้ไขจากผู้ช่วย AI','Agent edit requests')}>
+        <h3>{t('คำขอแก้ไขจากผู้ช่วย AI','Agent edit requests')}</h3>
+        <p className="help">{t('ดูข้อความและตำแหน่งที่จะแก้ก่อน ถ้ากดใช้ ระบบจะแก้ในเอกสารนี้แล้วบันทึกเป็นฉบับใหม่หนึ่งฉบับ','Review the text and region. The operation applies through this editor and saves one durable revision.')}</p>
+        {queueLocked&&<p role="status">{t('กำลังตรวจผลการแก้ไข อย่ากดใช้ซ้ำ ถ้าการเชื่อมต่อขาด ให้กด บันทึก อีกครั้ง','Reconciling an issued operation. Do not apply again. If the save response was lost, retry Save with the same command.')}</p>}
         {queueRequests.map(r=><article className="history-row" key={r.operationId}>
           <div><strong>{r.region} · r{r.expectedRevision}</strong> <Badge>{r.status}</Badge>
             <small>{scoped(state,'bots',projectId).find(b=>b.id===r.botId)?.name||r.botId} · {r.operationId}</small>
@@ -498,11 +498,11 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
           </div>
           <div className="actions">
             {['pending','review'].includes(r.status)&&<>
-              <button disabled={!ready||busy||locked||dirty||queueLocked||newer} onClick={()=>reviewQueued(r)}>{t('ตรวจคำขอ','Review request')}</button>
-              <button className="primary" disabled={busy||locked||dirty||queueLocked||reviewed!==r.operationId||newer} onClick={()=>applyQueued(r)}>{t('ใช้คำขอและบันทึก','Apply request & save')}</button>
+              <button disabled={!ready||busy||locked||dirty||queueLocked||newer} onClick={()=>reviewQueued(r)}>{t('ดูคำขอ','Review request')}</button>
+              <button className="primary" disabled={busy||locked||dirty||queueLocked||reviewed!==r.operationId||newer} onClick={()=>applyQueued(r)}>{t('ใช้การแก้ไขนี้และบันทึก','Apply request & save')}</button>
               <button disabled={busy||reviewed!==r.operationId} onClick={()=>run(()=>request('/api/office/agent/reject',{...scopeFor(r),editorSessionId:editorSessionId.current,leaseToken:editorLease.current.leaseToken}))}>{t('ปฏิเสธ','Reject')}</button>
             </>}
-            {(['applying','uncertain'].includes(r.status)||(queuePending&&pending.current?.queueScope?.operationId===r.operationId))&&<button disabled={busy} onClick={()=>reconcileQueued(r)}>{t('ตรวจผลบันทึก','Reconcile save')}</button>}
+            {(['applying','uncertain'].includes(r.status)||(queuePending&&pending.current?.queueScope?.operationId===r.operationId))&&<button disabled={busy} onClick={()=>reconcileQueued(r)}>{t('ตรวจสถานะล่าสุด','Reconcile save')}</button>}
           </div>
         </article>)}
       </section>}
@@ -511,7 +511,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
           disabled={!ready || locked || dirty || queueLocked}
           onClick={() => setAgent(!agent)}
         >
-          {t("คำสั่งแก้ไขแบบจำกัดขอบเขต", "Bounded agent edit")}
+          {t("สั่งแก้ไขเฉพาะส่วน", "Bounded agent edit")}
         </button>
         <button
           onClick={() => {
@@ -519,7 +519,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
               !dirty ||
               window.confirm(
                 t(
-                  "ทิ้งการแก้ไขและเปิดเวอร์ชันล่าสุด?",
+                  "ทิ้งการแก้ไขแล้วเปิดฉบับล่าสุดใช่ไหม?",
                   "Discard edits and reopen the latest revision?",
                 ),
               )
@@ -527,7 +527,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
               onReload();
           }}
         >
-          {t("เปิดเวอร์ชันล่าสุด", "Reopen latest revision")}
+          {t("เปิดฉบับล่าสุด", "Reopen latest revision")}
         </button>
         <button
           disabled={busy}
@@ -553,18 +553,18 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
       {agent && (
         <form className="panel" onSubmit={applyAgent}>
           <h3>
-            {t("ตรวจทานคำสั่งบอทก่อนใช้", "Review a bounded agent operation")}
+            {t("ตรวจการแก้ไขของผู้ช่วย AI ก่อนใช้", "Review a bounded agent operation")}
           </h3>
           <p className="help">
             {t(
-              "ใช้ Facade ของเอกสารที่เปิดอยู่ เกิดหนึ่ง undo step แล้วบันทึกผ่าน revision เดียวกับผู้ใช้ ไม่มีการเรียกโมเดลจากฟอร์มนี้",
+              "การแก้ไขจะลงในเอกสารที่เปิดอยู่ ย้อนกลับได้ในครั้งเดียว และบันทึกเหมือนคุณแก้เอง ฟอร์มนี้ไม่ได้เรียกโมเดล AI",
               "Applies to this mounted editor as one undo step, then saves through its revision boundary. This form does not invoke a model.",
             )}
           </p>
           <div className="form-grid">
-            <Field label={t("บอทผู้แก้ไข", "Actor bot")}>
+            <Field label={t("ผู้ช่วย AI ที่แก้ไข", "Actor bot")}>
               <select required name="botId">
-                <option value="">{t("เลือกบอท", "Select bot")}</option>
+                <option value="">{t("เลือกผู้ช่วย AI", "Select bot")}</option>
                 {scoped(state, "bots", projectId).map((b) => (
                   <option value={b.id} key={b.id}>
                     {b.name}
@@ -575,7 +575,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
             {record.kind === "sheet" ? (
               <Field
                 label={t(
-                  "ช่วงเซลล์ (ไม่เกิน 1000)",
+                  "ช่วงเซลล์ (ไม่เกิน 1000 เซลล์)",
                   "Cell range (up to 1000 cells)",
                 )}
               >
@@ -600,7 +600,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
             label={
               record.kind === "sheet"
                 ? t(
-                    "ค่า / สูตร ใช้ Tab คั่นคอลัมน์และขึ้นบรรทัดใหม่คั่นแถว",
+                    "ค่าหรือสูตร: กด Tab เพื่อขึ้นคอลัมน์ใหม่ กด Enter เพื่อขึ้นแถวใหม่",
                     "Values / formulas: tab-separated columns, newline-separated rows",
                   )
                 : t("ข้อความที่จะเพิ่มในย่อหน้า", "Text to insert in the paragraph")
@@ -609,22 +609,22 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
             <textarea name="text" required rows={3} maxLength={10000} />
           </Field>
           <Submit busy={busy || locked || dirty || queueLocked}>
-            {t("ใช้คำสั่งและบันทึก", "Apply & save")}
+            {t("ใช้การแก้ไขและบันทึก", "Apply & save")}
           </Submit>
         </form>
       )}
       {receipt && (
         <div className="save-receipt" role="status">
-          {t("บริการยืนยันการบันทึก", "Durable save acknowledged")} ·{" "}
+          {t("บันทึกเรียบร้อย", "Durable save acknowledged")} ·{" "}
           {receipt.operationId} · r{receipt.revision}
         </div>
       )}
       {history && (
         <section className="panel">
-          <h3>{t("ประวัติเวอร์ชันถาวร", "Durable revision history")}</h3>
+          <h3>{t("ประวัติการบันทึก", "Durable revision history")}</h3>
           <p className="help">
             {t(
-              "Undo/redo ใช้ใน session ปัจจุบันเท่านั้น การกู้เวอร์ชันสร้าง revision ใหม่",
+              "ปุ่มย้อนกลับ/ทำซ้ำใช้ได้เฉพาะที่แก้ในรอบนี้ การกู้ฉบับเก่าจะบันทึกเป็นฉบับใหม่ ไม่ลบฉบับปัจจุบัน",
               "Undo/redo belongs to this live session. Restoring history creates a new revision.",
             )}
           </p>
@@ -659,7 +659,7 @@ function Editor({ t, state, projectId, record, run, busy, onDirty, onReload,them
                   })
                 }
               >
-                {t("กู้เวอร์ชันนี้", "Restore revision")}
+                {t("กู้ฉบับนี้", "Restore revision")}
               </button>
             </div>
           ))}

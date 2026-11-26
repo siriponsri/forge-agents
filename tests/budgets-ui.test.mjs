@@ -41,8 +41,8 @@ test('actual TH/EN BudgetStudio saves exact Owner money, reports unknowns, fence
   // leak across projects. This uses actual shipped CSS at narrow widths.
   await page.getByLabel('Reported spending stop threshold').fill('PRIVATE-DRAFT');
   const other=f.store.read().projects[1].id;await page.setViewportSize({width:375,height:1000});await page.evaluate(id=>window.renderBudget(id,'th'),other);
-  await page.getByRole('heading',{name:'งบประมาณและการใช้งาน',exact:true}).waitFor();await page.getByLabel('เพดานค่าใช้จ่ายที่สั่งหยุด').waitFor();
-  assert.equal(await page.getByLabel('เพดานค่าใช้จ่ายที่สั่งหยุด').inputValue(),'');assert.equal(await page.getByText(r.id,{exact:true}).count(),0);
+  await page.getByRole('heading',{name:'งบและการใช้งาน',exact:true}).waitFor();await page.getByLabel('หยุดงานเมื่อค่าใช้จ่ายถึง').waitFor();
+  assert.equal(await page.getByLabel('หยุดงานเมื่อค่าใช้จ่ายถึง').inputValue(),'');assert.equal(await page.getByText(r.id,{exact:true}).count(),0);
   for(const width of [320,375,768]){await page.setViewportSize({width,height:1000});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth),false,`no page overflow at ${width}px`);}
   if(process.env.FORGE_BUDGET_CAPTURE_DIR)await page.screenshot({path:path.join(process.env.FORGE_BUDGET_CAPTURE_DIR,'budgets-th-768.png'),fullPage:true});
   assert.deepEqual(errors,[]);

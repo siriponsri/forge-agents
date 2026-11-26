@@ -8,7 +8,7 @@ import {VAST_MCP,vastMcpConfiguration} from '../../providers/vast-preset.mjs';
 
 const modes = ['allowed', 'ask', 'off'];
 const query = scope => new URLSearchParams(scope).toString();
-const modeLabel = (t, mode) => ({ allowed: t('อนุญาต', 'Allowed'), ask: t('ถามก่อน', 'Ask'), off: t('ปิด', 'Off') })[mode];
+const modeLabel = (t, mode) => ({ allowed: t('อนุญาตเลย', 'Allowed'), ask: t('ถามก่อน', 'Ask'), off: t('ปิด', 'Off') })[mode];
 async function oauthStatus(scope, signal, timeout = 8000) {
   const controller = new AbortController(), abort = () => controller.abort();
   if (signal?.aborted) abort(); else signal?.addEventListener('abort', abort, { once: true });
@@ -27,10 +27,10 @@ function McpProject({ t, state, projectId, run, busy }) {
   const connection = connections.find(c => c.id === selected) ?? connections[0];
   return <section aria-label={t('การเชื่อมต่อ MCP', 'MCP connections')} style={{ minWidth: 0, overflowWrap: 'anywhere' }}>
     <h2>{t('เชื่อมต่อเครื่องมือ MCP', 'Connect MCP tools')}</h2>
-    <p className="help">{t('เพิ่ม server ตรวจ schema จริง แล้วกำหนด Allowed / Ask / Off เครื่องมือเริ่มต้นปิดอยู่ การเชื่อมบัญชีไม่ใช่การอนุญาตรันเครื่องมือ', 'Add a server, discover its actual schemas, then configure Allowed / Ask / Off. Tools default to Off. Account connection does not authorize tool execution.')}</p>
+    <p className="help">{t('เพิ่มเซิร์ฟเวอร์ MCP ดูรายการเครื่องมือ แล้วเลือกว่าแต่ละเครื่องมือ อนุญาตเลย / ถามก่อน / ปิด ทุกเครื่องมือปิดไว้ก่อน การเชื่อมบัญชียังไม่ได้อนุญาตให้ AI ใช้เครื่องมือ', 'Add a server, discover its actual schemas, then configure Allowed / Ask / Off. Tools default to Off. Account connection does not authorize tool execution.')}</p>
     <McpForm {...{ t, projectId, run, busy }} onCreated={c => setSelected(c.id)} />
-    {!connections.length ? <Empty>{t('ยังไม่มี MCP ในโครงการนี้', 'No MCP connections in this project yet.')}</Empty> : <>
-      <Field label={t('MCP ของโครงการ', 'Project MCP connection')}><select disabled={busy} value={connection.id} onChange={e => setSelected(e.target.value)}>{connections.map(c => <option key={c.id} value={c.id}>{c.name} · {c.route}</option>)}</select></Field>
+    {!connections.length ? <Empty>{t('โปรเจกต์นี้ยังไม่มีการเชื่อมต่อ MCP', 'No MCP connections in this project yet.')}</Empty> : <>
+      <Field label={t('การเชื่อมต่อ MCP ของโปรเจกต์', 'Project MCP connection')}><select disabled={busy} value={connection.id} onChange={e => setSelected(e.target.value)}>{connections.map(c => <option key={c.id} value={c.id}>{c.name} · {c.route}</option>)}</select></Field>
       <McpAccount key={connection.id} {...{ t, state, connection, projectId, run, busy }} />
     </>}
   </section>;
@@ -40,7 +40,7 @@ function McpForm({ t, projectId, run, busy, onCreated }) {
   const [command, setCommand] = useState(''), [args, setArgs] = useState(''), [refs, setRefs] = useState(''), [auth, setAuth] = useState('none'), [authEnv, setAuthEnv] = useState(''), [error, setError] = useState('');
   const pending = useRef(false);
   const [vastDirectory,setVastDirectory]=useState('');
-  return <details className="panel"><summary>{t('เพิ่ม MCP server', 'Add MCP server')}</summary>
+  return <details className="panel"><summary>{t('เพิ่มเซิร์ฟเวอร์ MCP', 'Add MCP server')}</summary>
     <form onSubmit={e => {
       e.preventDefault(); if (pending.current) return; pending.current = true; setError('');
       run(async () => {
@@ -49,7 +49,7 @@ function McpForm({ t, projectId, run, busy, onCreated }) {
           if (route === 'stdio') Object.assign(body, { command, args: argumentRows(args), envRefs: environmentNames(refs) });
           else {
             const endpoint = new URL(url);
-            if (!authorizationLink(url) || endpoint.search || endpoint.hash) throw new Error(t('ใช้ HTTPS หรือ localhost โดยไม่ใส่ credential หรือ query', 'Use HTTPS or loopback HTTP without credentials, query or fragment.'));
+            if (!authorizationLink(url) || endpoint.search || endpoint.hash) throw new Error(t('URL ต้องเป็น HTTPS หรือ localhost และห้ามมีรหัสผ่าน หรือส่วนหลัง ? และ #', 'Use HTTPS or loopback HTTP without credentials, query or fragment.'));
             body.url = url;
             if (auth === 'env') { if (environmentNames(authEnv).length !== 1) throw new Error('Enter one environment variable name.'); body.authEnv = authEnv; }
           }
@@ -57,20 +57,20 @@ function McpForm({ t, projectId, run, busy, onCreated }) {
         } catch (e) { setError(e.message); throw e; } finally { pending.current = false; }
       });
     }}>
-      <fieldset><legend>Vast MCP</legend><p className="help">{t('ใช้ checkout ที่เตรียมไว้และ uv เพื่อค้นหา GPU และคำนวณราคาจากข้อมูลสังเคราะห์ รุ่นนี้บล็อก live search และไม่มีการเช่าเครื่อง ไม่ต้องใส่ API key','Use a prepared checkout and uv for synthetic GPU search and cost estimates. This version blocks live search and cannot rent an instance. No API key is needed.')}</p><a href={`${VAST_MCP.repository}/tree/${VAST_MCP.revision}`} target="_blank" rel="noreferrer">{t('Source และวิธีเตรียม Vast MCP','Vast MCP source and setup')}</a><Field label={t('โฟลเดอร์ Vast MCP ที่เตรียมไว้','Prepared Vast MCP folder')}><input value={vastDirectory} onChange={e=>setVastDirectory(e.target.value)}/></Field><button type="button" disabled={busy||!vastDirectory.trim()} onClick={()=>{try{const preset=vastMcpConfiguration({directory:vastDirectory,projectId,operationId:operationId()});setName(preset.name);setRoute(preset.route);setCommand(preset.command);setArgs(preset.args.join('\n'));setRefs('');setAuthEnv('');setAuth('none');setError('');}catch(e){setError(e.message);}}}>{t('ใช้ preset Vast MCP','Use Vast MCP preset')}</button></fieldset>
-      <Field label={t('ชื่อการเชื่อมต่อ MCP', 'MCP connection label')}><input required value={name} onChange={e => setName(e.target.value)} /></Field>
-      <Field label={t('ช่องทาง MCP', 'MCP transport')}><select value={route} onChange={e => setRoute(e.target.value)}><option value="http">Streamable HTTP</option><option value="stdio">{t('โปรแกรม stdio ในเครื่อง', 'Local stdio executable')}</option></select></Field>
+      <fieldset><legend>Vast MCP</legend><p className="help">{t('ใช้โฟลเดอร์ Vast MCP ที่เตรียมไว้และ uv เพื่อลองค้นหา GPU และประมาณราคาจากข้อมูลตัวอย่าง รุ่นนี้ไม่ค้นหาราคาจริงและไม่เช่าเครื่อง ไม่ต้องใส่คีย์ลับ API','Use a prepared checkout and uv for synthetic GPU search and cost estimates. This version blocks live search and cannot rent an instance. No API key is needed.')}</p><a href={`${VAST_MCP.repository}/tree/${VAST_MCP.revision}`} target="_blank" rel="noreferrer">{t('ซอร์สโค้ดและวิธีเตรียม Vast MCP','Vast MCP source and setup')}</a><Field label={t('โฟลเดอร์ Vast MCP ที่เตรียมไว้','Prepared Vast MCP folder')}><input value={vastDirectory} onChange={e=>setVastDirectory(e.target.value)}/></Field><button type="button" disabled={busy||!vastDirectory.trim()} onClick={()=>{try{const preset=vastMcpConfiguration({directory:vastDirectory,projectId,operationId:operationId()});setName(preset.name);setRoute(preset.route);setCommand(preset.command);setArgs(preset.args.join('\n'));setRefs('');setAuthEnv('');setAuth('none');setError('');}catch(e){setError(e.message);}}}>{t('กรอกค่าสำหรับ Vast MCP ให้อัตโนมัติ','Use Vast MCP preset')}</button></fieldset>
+      <Field label={t('ชื่อเรียกการเชื่อมต่อ', 'MCP connection label')}><input required value={name} onChange={e => setName(e.target.value)} /></Field>
+      <Field label={t('วิธีเชื่อมต่อ', 'MCP transport')}><select value={route} onChange={e => setRoute(e.target.value)}><option value="http">Streamable HTTP</option><option value="stdio">{t('โปรแกรมในเครื่อง (stdio)', 'Local stdio executable')}</option></select></Field>
       {route === 'http' ? <>
-        <Field label={t('URL ของ MCP endpoint', 'MCP endpoint URL')}><input required type="url" value={url} onChange={e => setURL(e.target.value)} placeholder="https://server.example/mcp" /></Field>
-        <Field label={t('การยืนยันบัญชี HTTP', 'HTTP authentication')}><select value={auth} onChange={e => setAuth(e.target.value)}><option value="none">{t('ไม่มี / เชื่อม OAuth หลังบันทึก', 'None / connect OAuth after saving')}</option><option value="env">{t('Bearer จาก environment reference', 'Bearer environment reference')}</option></select></Field>
-        {auth === 'env' && <Field label={t('ชื่อ environment variable ของ Bearer', 'Bearer environment reference')} hint={t('กรอกชื่อเท่านั้น ค่า secret อยู่ในเครื่อง', 'Name only; the secret value stays on this machine.')}><input required pattern="[A-Za-z_][A-Za-z0-9_]{0,127}" autoComplete="off" value={authEnv} onChange={e => setAuthEnv(e.target.value)} placeholder="FORGE_MCP_TOKEN" /></Field>}
+        <Field label={t('URL ของเซิร์ฟเวอร์ MCP', 'MCP endpoint URL')}><input required type="url" value={url} onChange={e => setURL(e.target.value)} placeholder="https://server.example/mcp" /></Field>
+        <Field label={t('การยืนยันตัวตน', 'HTTP authentication')}><select value={auth} onChange={e => setAuth(e.target.value)}><option value="none">{t('ไม่มี หรือเชื่อม OAuth หลังบันทึก', 'None / connect OAuth after saving')}</option><option value="env">{t('Bearer token จากคีย์ลับ', 'Bearer environment reference')}</option></select></Field>
+        {auth === 'env' && <Field label={t('ชื่อคีย์ลับของ Bearer token', 'Bearer environment reference')} hint={t('กรอกแค่ชื่อคีย์ ค่าจริงเก็บอยู่ในเครื่องนี้', 'Name only; the secret value stays on this machine.')}><input required pattern="[A-Za-z_][A-Za-z0-9_]{0,127}" autoComplete="off" value={authEnv} onChange={e => setAuthEnv(e.target.value)} placeholder="FORGE_MCP_TOKEN" /></Field>}
       </> : <>
-        <Field label={t('โปรแกรม MCP ที่ติดตั้งไว้', 'Installed MCP executable')}><input required value={command} onChange={e => setCommand(e.target.value)} /></Field>
-        <Field label={t('อาร์กิวเมนต์ MCP (หนึ่งค่าต่อบรรทัด)', 'MCP literal arguments (one per line)')} hint={t('โปรแกรมจะเริ่มเมื่อตรวจเครื่องมือ ไม่ใช้ shell command หรือ secret', 'Discovery starts this program. Literal argv only, no shell commands or credentials.')}><textarea rows={3} value={args} onChange={e => setArgs(e.target.value)} /></Field>
-        <Field label={t('ชื่อ environment variables ของ MCP', 'MCP environment references')}><textarea rows={2} autoComplete="off" value={refs} onChange={e => setRefs(e.target.value)} /></Field>
+        <Field label={t('โปรแกรม MCP ที่ติดตั้งไว้ (ชื่อหรือที่อยู่ไฟล์)', 'Installed MCP executable')}><input required value={command} onChange={e => setCommand(e.target.value)} /></Field>
+        <Field label={t('ค่าที่ส่งให้โปรแกรม (บรรทัดละหนึ่งค่า)', 'MCP literal arguments (one per line)')} hint={t('โปรแกรมจะเริ่มทำงานตอนกด ดูรายการเครื่องมือ ใส่ได้เฉพาะค่าตรง ๆ ห้ามใส่คำสั่ง shell หรือคีย์ลับ', 'Discovery starts this program. Literal argv only, no shell commands or credentials.')}><textarea rows={3} value={args} onChange={e => setArgs(e.target.value)} /></Field>
+        <Field label={t('ชื่อคีย์ลับที่โปรแกรมใช้ (บรรทัดละชื่อ)', 'MCP environment references')}><textarea rows={2} autoComplete="off" value={refs} onChange={e => setRefs(e.target.value)} /></Field>
       </>}
       {error && <p className="error-text" role="alert">{error}</p>}
-      <button className="primary" disabled={busy}>{t('บันทึก MCP server', 'Save MCP server')}</button>
+      <button className="primary" disabled={busy}>{t('บันทึกเซิร์ฟเวอร์ MCP', 'Save MCP server')}</button>
     </form>
   </details>;
 }
@@ -121,7 +121,7 @@ function McpAccount({ t, state, connection: c, projectId, run, busy }) {
     } catch (e) {
       if (live.current) {
         const uncertain = dispatchAttempted && (!e.status || e.status >= 500);
-        setResult({ operationId: operation.operationId, status: uncertain ? 'unconfirmed' : 'not-dispatched', message: uncertain ? t('ไม่ส่งซ้ำ ตรวจประวัติและผลจาก server ก่อน', 'No replay. Inspect server history and outcome before another operation.') : t('ไม่ได้ส่งเครื่องมือ ตรวจสิทธิ์หรือแก้ arguments ก่อนเริ่ม operation ใหม่', 'Tool not dispatched. Reload policy or correct the arguments before a new operation.') });
+        setResult({ operationId: operation.operationId, status: uncertain ? 'unconfirmed' : 'not-dispatched', message: uncertain ? t('ยังไม่รู้ผล ระบบจะไม่ส่งซ้ำ ตรวจผลที่เซิร์ฟเวอร์ก่อนสั่งใหม่', 'No replay. Inspect server history and outcome before another operation.') : t('ยังไม่ได้เรียกเครื่องมือ ตรวจสิทธิ์ หรือแก้ค่าที่ส่ง แล้วลองใหม่', 'Tool not dispatched. Reload policy or correct the arguments before a new operation.') });
         if (!dispatchAttempted) setPolicy(null);
       }
       throw e;
@@ -138,32 +138,32 @@ function McpAccount({ t, state, connection: c, projectId, run, busy }) {
     <h3>{c.name}</h3><p><Badge>{c.enabled === false ? 'disabled' : 'enabled'}</Badge> · {c.route} · {c.url ?? c.command}</p>
     <div className="actions">
       <button disabled={busy || executing} onClick={() => perform(() => request('/api/mcp/enable', { ...scope, enabled: c.enabled === false }))}>{c.enabled === false ? t('เปิดการเชื่อมต่อ', 'Enable connection') : t('ปิดการเชื่อมต่อ', 'Disable connection')}</button>
-      <button disabled={busy || executing || c.enabled === false} onClick={() => perform(async () => { const value = await request('/api/mcp/discover', scope); await loadPolicy(); return value; })}>{t('ตรวจเครื่องมือจริง', 'Discover actual tools')}</button>
+      <button disabled={busy || executing || c.enabled === false} onClick={() => perform(async () => { const value = await request('/api/mcp/discover', scope); await loadPolicy(); return value; })}>{t('ดูรายการเครื่องมือ', 'Discover actual tools')}</button>
     </div>
-    {c.lastCheck && <p role="status">{t('ผลตรวจ', 'Discovery')}: <Badge>{c.lastCheck.status}</Badge> · {date(c.lastCheck.checkedAt)}</p>}
+    {c.lastCheck && <p role="status">{t('ดูรายการเครื่องมือล่าสุด', 'Discovery')}: <Badge>{c.lastCheck.status}</Badge> · {date(c.lastCheck.checkedAt)}</p>}
     {c.lastCheck?.error && <p className="error-text" role="alert">{c.lastCheck.error.message}</p>}
-    {c.discoveryStale && <p role="status">{t('ต้องตรวจเครื่องมือใหม่ก่อนเรียกใช้งาน', 'Discovery is required before a call.')}</p>}
+    {c.discoveryStale && <p role="status">{t('การเชื่อมต่อเปลี่ยนไป กด ดูรายการเครื่องมือ อีกครั้งก่อนใช้', 'Discovery is required before a call.')}</p>}
     {error && <p role="alert" className="error-text">{error}</p>}
     {c.route === 'http' && <McpOAuth key={c.id} {...{ t, c, scope, run, busy: busy || executing }} />}
-    <hr /><h3>{t('สิทธิ์เครื่องมือ', 'Tool policy')}</h3>
-    <p className="help">{t('Off เป็นค่าเริ่มต้น สิทธิ์รายเครื่องมือจำกัดให้แคบลงเท่านั้น เมื่อ endpoint บัญชี หรือ catalog เปลี่ยน ต้องบันทึกสิทธิ์ใหม่อย่างชัดเจน', 'Default is Off. Tool overrides can only narrow the connection policy. Endpoint, account or catalog changes require explicit policy configuration again.')}</p>
-    {(!policyFresh || !policy?.bindingCurrent) && <p role="status">{t('สิทธิ์ที่แสดงยังไม่ผูกกับสถานะล่าสุด การเรียกถูกปิดจนกว่าจะอ่านและบันทึกสิทธิ์ใหม่', 'Policy is not bound to the displayed current connection. Calls remain Off until policy is reloaded and explicitly saved.')}</p>}
-    <button disabled={busy || executing} onClick={() => perform(loadPolicy)}>{t('อ่านสิทธิ์ล่าสุด', 'Reload policy')}</button>
+    <hr /><h3>{t('สิทธิ์ใช้เครื่องมือ', 'Tool policy')}</h3>
+    <p className="help">{t('ค่าเริ่มต้นคือ ปิด สิทธิ์ของแต่ละเครื่องมือตั้งให้เข้มกว่าสิทธิ์ของการเชื่อมต่อได้เท่านั้น ถ้า URL บัญชี หรือรายการเครื่องมือเปลี่ยน ต้องบันทึกสิทธิ์ใหม่', 'Default is Off. Tool overrides can only narrow the connection policy. Endpoint, account or catalog changes require explicit policy configuration again.')}</p>
+    {(!policyFresh || !policy?.bindingCurrent) && <p role="status">{t('สิทธิ์นี้ยังไม่ได้ยืนยันกับข้อมูลล่าสุด ระบบปิดการใช้เครื่องมือไว้ก่อน กด โหลดข้อมูลล่าสุด แล้วบันทึกสิทธิ์อีกครั้ง', 'Policy is not bound to the displayed current connection. Calls remain Off until policy is reloaded and explicitly saved.')}</p>}
+    <button disabled={busy || executing} onClick={() => perform(loadPolicy)}>{t('โหลดข้อมูลล่าสุด', 'Reload policy')}</button>
     <form onSubmit={e => { e.preventDefault(); perform(async () => {
       await request('/api/governance/policy', { ...scope, operationId: operationId(), expectedRevision: policy.revision, expectedConnectionRevision: policy.connectionRevision, mode, tools: Object.fromEntries(Object.entries(overrides).filter(([name]) => tools.some(tool => tool.name === name))) });
       return loadPolicy();
     }); }}>
-      <Field label={t('สิทธิ์สูงสุดของการเชื่อมต่อ', 'Connection policy ceiling')}><select value={mode} onChange={e => setMode(e.target.value)}>{modes.map(value => <option key={value} value={value}>{modeLabel(t, value)}</option>)}</select></Field>
-      {tools.map(tool => <Field key={tool.name} label={`${tool.name} · ${t('ใช้จริง', 'effective')}: ${modeLabel(t, effective(tool.name))}`}><select value={overrides[tool.name] ?? ''} onChange={e => setOverrides(s => { const next = { ...s }; if (e.target.value) next[tool.name] = e.target.value; else delete next[tool.name]; return next; })}><option value="">{t('ตามสิทธิ์การเชื่อมต่อ', 'Inherit connection policy')}</option>{modes.map(value => <option key={value} value={value}>{modeLabel(t, value)}</option>)}</select></Field>)}
-      <button className="primary" disabled={busy || executing || !policyFresh || c.discoveryStale || c.enabled === false}>{t('บันทึกสิทธิ์สำหรับสถานะนี้', 'Save policy for this connection')}</button>
+      <Field label={t('สิทธิ์ของการเชื่อมต่อนี้ (สูงสุด)', 'Connection policy ceiling')}><select value={mode} onChange={e => setMode(e.target.value)}>{modes.map(value => <option key={value} value={value}>{modeLabel(t, value)}</option>)}</select></Field>
+      {tools.map(tool => <Field key={tool.name} label={`${tool.name} · ${t('ที่ใช้อยู่', 'effective')}: ${modeLabel(t, effective(tool.name))}`}><select value={overrides[tool.name] ?? ''} onChange={e => setOverrides(s => { const next = { ...s }; if (e.target.value) next[tool.name] = e.target.value; else delete next[tool.name]; return next; })}><option value="">{t('ใช้สิทธิ์ของการเชื่อมต่อ', 'Inherit connection policy')}</option>{modes.map(value => <option key={value} value={value}>{modeLabel(t, value)}</option>)}</select></Field>)}
+      <button className="primary" disabled={busy || executing || !policyFresh || c.discoveryStale || c.enabled === false}>{t('บันทึกสิทธิ์', 'Save policy for this connection')}</button>
     </form>
-    <hr /><h3>{t('ตรวจและเรียกเครื่องมือ', 'Inspect & run a tool')}</h3>
-    {!tools.length && <Empty>{t('ยังไม่มี schema ที่ตรวจพบจาก server', 'No schemas discovered from this server yet.')}</Empty>}
-    <Field label={t('เครื่องมือที่ตรวจพบ', 'Discovered tool')}><select value={toolName} disabled={executing} onChange={e => setTool(e.target.value)}><option value="">{t('เลือกเครื่องมือ', 'Choose a tool')}</option>{tools.map(tool => <option key={tool.name} value={tool.name}>{tool.name}</option>)}</select></Field>
+    <hr /><h3>{t('ลองใช้เครื่องมือ', 'Inspect & run a tool')}</h3>
+    {!tools.length && <Empty>{t('ยังไม่มีรายการเครื่องมือ กด ดูรายการเครื่องมือ ก่อน', 'No schemas discovered from this server yet.')}</Empty>}
+    <Field label={t('เครื่องมือ', 'Discovered tool')}><select value={toolName} disabled={executing} onChange={e => setTool(e.target.value)}><option value="">{t('เลือกเครื่องมือ', 'Choose a tool')}</option>{tools.map(tool => <option key={tool.name} value={tool.name}>{tool.name}</option>)}</select></Field>
     {tool && <ToolForm key={JSON.stringify([tool.name, tool.inputSchema])} {...{ t, tool, execute }} blocked={busy || executing || active || c.enabled === false || c.discoveryStale || effective(tool.name) === 'off' || unknown || result?.status === 'unconfirmed'} />}
-    {unknown && <p role="status">{t('มีผลลัพธ์ไม่แน่นอน ต้องตรวจ server ก่อน ไม่มีการ retry หรืออ้างว่ายกเลิกผลที่เกิดแล้ว', 'An outcome is unknown. Inspect the server before further calls. No retry or rollback is assumed.')}</p>}
-    {result && <div role="status"><p>{t('การเรียกล่าสุด', 'Latest call')}: <Badge>{result.status}</Badge></p>{result.message && <p>{result.message}</p>}<Json value={result} /></div>}
-    {calls.slice().reverse().map(call => <article className="run" key={call.id}><div className="record-head"><strong>{call.name}</strong><Badge>{call.status}</Badge></div><small>{call.operationId} · {date(call.createdAt)}</small>{['submitting', 'running'].includes(call.status) && <button disabled={stopped.current.has(call.id) || call.stopRequested} onClick={() => stop(call)}>{t('หยุดรอผลครั้งเดียว', 'Stop waiting once')}</button>}{call.stopRequested && <p>{t('ส่งคำขอหยุดแล้ว ผลฝั่ง server อาจยังเกิดขึ้น', 'Stop was requested. The remote effect may still have happened.')}</p>}<details><summary>{t('ผลที่สังเกตได้', 'Observed outcome')}</summary><Json value={call} /></details></article>)}
+    {unknown && <p role="status">{t('มีคำสั่งที่ยังไม่รู้ผล ตรวจที่เซิร์ฟเวอร์ก่อนใช้ต่อ ระบบไม่ส่งซ้ำ และไม่ได้ย้อนสิ่งที่อาจเกิดไปแล้ว', 'An outcome is unknown. Inspect the server before further calls. No retry or rollback is assumed.')}</p>}
+    {result && <div role="status"><p>{t('ผลการใช้ล่าสุด', 'Latest call')}: <Badge>{result.status}</Badge></p>{result.message && <p>{result.message}</p>}<Json value={result} /></div>}
+    {calls.slice().reverse().map(call => <article className="run" key={call.id}><div className="record-head"><strong>{call.name}</strong><Badge>{call.status}</Badge></div><small>{call.operationId} · {date(call.createdAt)}</small>{['submitting', 'running'].includes(call.status) && <button disabled={stopped.current.has(call.id) || call.stopRequested} onClick={() => stop(call)}>{t('หยุดรอผล', 'Stop waiting once')}</button>}{call.stopRequested && <p>{t('ส่งคำสั่งหยุดแล้ว แต่เซิร์ฟเวอร์อาจทำคำสั่งไปแล้ว', 'Stop was requested. The remote effect may still have happened.')}</p>}<details><summary>{t('รายละเอียด', 'Observed outcome')}</summary><Json value={call} /></details></article>)}
   </div>;
 }
 function ToolForm({ t, tool, execute, blocked }) {
@@ -172,24 +172,24 @@ function ToolForm({ t, tool, execute, blocked }) {
   const [advanced, setAdvanced] = useState(!simple), [json, setJSON] = useState('{}'), [values, setValues] = useState({}), [error, setError] = useState('');
   const parse = () => {
     const args = advanced ? JSON.parse(json) : Object.fromEntries(Object.entries(values).filter(([, v]) => v !== undefined));
-    if (!args || typeof args !== 'object' || Array.isArray(args)) throw new Error(t('arguments ต้องเป็น JSON object', 'Arguments must be a JSON object.'));
+    if (!args || typeof args !== 'object' || Array.isArray(args)) throw new Error(t('ค่าที่ส่งต้องเป็น JSON object', 'Arguments must be a JSON object.'));
     if (JSON.stringify(args).length > 128000) throw new Error('Arguments exceed the 128000 character limit.');
     return args;
   };
   let preview; try { preview = parse(); } catch { preview = null; }
   return <form onSubmit={e => { e.preventDefault(); try { const args = parse(); setError(''); execute(args); } catch (e) { setError(e.message); } }}>
-    <p>{tool.description}</p><details><summary>{t('schema จาก server', 'Server input schema')}</summary><Json value={schema} /></details>
-    {simple && <label className="check"><input type="checkbox" checked={advanced} onChange={e => { setAdvanced(e.target.checked); if (e.target.checked) setJSON(JSON.stringify(values, null, 2)); }} />{t('ใช้ JSON ขั้นสูง', 'Use advanced JSON')}</label>}
-    {advanced ? <Field label={t('arguments JSON ที่จะรัน', 'Exact tool arguments JSON')}><textarea required rows={7} autoComplete="off" aria-invalid={error ? true : undefined} value={json} onChange={e => setJSON(e.target.value)} /></Field> : fields.map(([name, s]) => {
+    <p>{tool.description}</p><details><summary>{t('รูปแบบข้อมูลที่เครื่องมือรับ', 'Server input schema')}</summary><Json value={schema} /></details>
+    {simple && <label className="check"><input type="checkbox" checked={advanced} onChange={e => { setAdvanced(e.target.checked); if (e.target.checked) setJSON(JSON.stringify(values, null, 2)); }} />{t('กรอกเป็น JSON (ขั้นสูง)', 'Use advanced JSON')}</label>}
+    {advanced ? <Field label={t('ค่าที่จะส่ง (JSON)', 'Exact tool arguments JSON')}><textarea required rows={7} autoComplete="off" aria-invalid={error ? true : undefined} value={json} onChange={e => setJSON(e.target.value)} /></Field> : fields.map(([name, s]) => {
       const required = schema.required?.includes(name), update = value => setValues(previous => { const next = { ...previous }; if (value === undefined) delete next[name]; else next[name] = value; return next; });
       return <Field key={name} label={`${name}${required ? ' *' : ''}`} hint={s.description}>
-        {s.enum || s.type === 'boolean' ? <select required={required} value={Object.hasOwn(values, name) ? JSON.stringify(values[name]) : ''} onChange={e => update(e.target.value === '' ? undefined : JSON.parse(e.target.value))}><option value="">{t('ไม่ระบุ', 'Omit')}</option>{(s.enum ?? [true, false]).map(v => <option key={JSON.stringify(v)} value={JSON.stringify(v)}>{String(v)}</option>)}</select> : <input required={required} type={s.type === 'string' ? 'text' : 'number'} step={s.type === 'integer' ? 1 : 'any'} min={s.minimum} max={s.maximum} minLength={s.minLength} maxLength={s.maxLength} value={values[name] ?? ''} onChange={e => update(e.target.value === '' ? undefined : s.type === 'string' ? e.target.value : Number(e.target.value))} />}
+        {s.enum || s.type === 'boolean' ? <select required={required} value={Object.hasOwn(values, name) ? JSON.stringify(values[name]) : ''} onChange={e => update(e.target.value === '' ? undefined : JSON.parse(e.target.value))}><option value="">{t('ไม่ใส่', 'Omit')}</option>{(s.enum ?? [true, false]).map(v => <option key={JSON.stringify(v)} value={JSON.stringify(v)}>{String(v)}</option>)}</select> : <input required={required} type={s.type === 'string' ? 'text' : 'number'} step={s.type === 'integer' ? 1 : 'any'} min={s.minimum} max={s.maximum} minLength={s.minLength} maxLength={s.maxLength} value={values[name] ?? ''} onChange={e => update(e.target.value === '' ? undefined : s.type === 'string' ? e.target.value : Number(e.target.value))} />}
       </Field>;
     })}
-    <p>{t('การรันอนุมัติเฉพาะชื่อเครื่องมือและ arguments ด้านล่าง คำอธิบาย read-only จาก server ไม่ใช่สิทธิ์', 'Run approves only this tool and the exact arguments below. Server annotations do not grant permission.')}</p>
-    <div aria-label={t('ตัวอย่างการเรียกที่แน่นอน', 'Exact operation preview')}><Json value={{ name: tool.name, arguments: preview }} /></div>
+    <p>{t('การกดใช้จะอนุมัติเฉพาะเครื่องมือและค่าด้านล่างนี้เท่านั้น คำอธิบายจากเซิร์ฟเวอร์ (เช่น “อ่านอย่างเดียว”) ไม่ได้ให้สิทธิ์เพิ่ม', 'Run approves only this tool and the exact arguments below. Server annotations do not grant permission.')}</p>
+    <div aria-label={t('สิ่งที่จะส่งจริง', 'Exact operation preview')}><Json value={{ name: tool.name, arguments: preview }} /></div>
     {error && <p className="error-text" role="alert">{error}</p>}
-    <button className="primary" disabled={blocked || preview === null}>{t('รัน operation นี้', 'Run this exact operation')}</button>
+    <button className="primary" disabled={blocked || preview === null}>{t('ใช้เครื่องมือด้วยค่านี้', 'Run this exact operation')}</button>
   </form>;
 }
 function McpOAuth({ t, c, scope, run, busy }) {
@@ -231,18 +231,18 @@ function McpOAuth({ t, c, scope, run, busy }) {
   };
   return <details><summary>{t('เชื่อมบัญชี OAuth', 'OAuth account connection')}</summary>
     <p role="status">OAuth: <Badge>{status?.status ?? 'not checked'}</Badge></p>
-    <p className="help">{t('บัญชีเก็บใน vault ของเครื่องนี้ callback จัดการโดย server เมื่อเชื่อมสำเร็จต้องตรวจเครื่องมือและตั้งสิทธิ์ใหม่ ไม่เรียก operation เดิมซ้ำ', 'Credentials stay in this machine’s vault. The server owns the fixed callback. After connection, rediscover tools and configure policy; previous operations are never replayed.')}</p>
-    {c.config?.authEnv && <p>{t('การเชื่อมต่อนี้ใช้ Bearer reference หากต้องการ OAuth ให้เพิ่มการเชื่อมต่อใหม่ที่ไม่มี Bearer', 'This connection uses a Bearer reference. Add a connection without Bearer authentication to use OAuth.')}</p>}
-    <details><summary>{t('Client registration ขั้นสูง', 'Advanced client registration')}</summary><Field label={t('ชื่อ environment variable ของ client registration', 'Client registration environment reference')} hint={t('เว้นว่างถ้า server รองรับการลงทะเบียนอัตโนมัติ ไม่ใส่ JSON หรือ client secret ที่นี่', 'Leave empty for dynamic registration. Do not paste client JSON or secrets here.')}><input autoComplete="off" pattern="[A-Za-z_][A-Za-z0-9_]{0,127}" value={clientEnv} onChange={e => setClientEnv(e.target.value)} /></Field></details>
+    <p className="help">{t('ข้อมูลล็อกอินเก็บไว้อย่างปลอดภัยในเครื่องนี้ เชื่อมสำเร็จแล้วให้กด ดูรายการเครื่องมือ และตั้งสิทธิ์ใหม่ ระบบจะไม่ส่งคำสั่งเดิมซ้ำ', 'Credentials stay in this machine’s vault. The server owns the fixed callback. After connection, rediscover tools and configure policy; previous operations are never replayed.')}</p>
+    {c.config?.authEnv && <p>{t('การเชื่อมต่อนี้ใช้ Bearer token อยู่ ถ้าจะใช้ OAuth ให้เพิ่มการเชื่อมต่อใหม่แบบไม่มี Bearer token', 'This connection uses a Bearer reference. Add a connection without Bearer authentication to use OAuth.')}</p>}
+    <details><summary>{t('การลงทะเบียน client (ขั้นสูง)', 'Advanced client registration')}</summary><Field label={t('ชื่อคีย์ลับของข้อมูล client', 'Client registration environment reference')} hint={t('เว้นว่างถ้าเซิร์ฟเวอร์ลงทะเบียนให้อัตโนมัติ ห้ามวาง JSON หรือ client secret ที่นี่', 'Leave empty for dynamic registration. Do not paste client JSON or secrets here.')}><input autoComplete="off" pattern="[A-Za-z_][A-Za-z0-9_]{0,127}" value={clientEnv} onChange={e => setClientEnv(e.target.value)} /></Field></details>
     <div className="actions">
       <button disabled={busy || uncertain || c.enabled === false || !!c.config?.authEnv || ['connecting', 'awaiting-authorization'].includes(status?.status)} onClick={() => action('begin')}>{t('เชื่อม OAuth', 'Connect OAuth')}</button>
       <button disabled={busy} onClick={() => run(async () => { const value = await read(); if (live.current) { setStatus(value); setUncertain(false); if (!['connecting', 'awaiting-authorization'].includes(value.status)) setURL(''); } return value; })}>{t('ตรวจสถานะ OAuth', 'Check OAuth status')}</button>
       <button disabled={busy || !status || ['not-configured', 'disconnected'].includes(status.status) || disconnected.current} onClick={() => action('disconnect')}>{t('ยกเลิกการเชื่อม OAuth', 'Disconnect OAuth')}</button>
     </div>
-    {url && <><p style={{ overflowWrap: 'anywhere' }}>{url}</p><a className="button" href={url} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer">{t('เปิดหน้าอนุญาตที่แสดง', 'Open reviewed authorization page')}</a></>}
-    {poll > 0 && <p role="status">{t('ตรวจสถานะอย่างเดียว สูงสุด 60 วินาที ไม่มีการ retry เครื่องมือ', 'Checking status only for up to 60 seconds. No tool retry.')}</p>}
-    {uncertain && <p role="status">{t('ผลคำขอไม่แน่นอน ตรวจสถานะก่อนเริ่มใหม่ ไม่มีการส่งซ้ำ', 'Request outcome is unconfirmed. Check status before beginning again; nothing is replayed.')}</p>}
-    {status?.status === 'connected' && <p>{t('เก็บบัญชีในเครื่องแล้ว การตรวจเครื่องมือจริงยังแยกต่างหาก', 'Machine credentials are connected. Remote tool qualification is separate.')}</p>}
+    {url && <><p style={{ overflowWrap: 'anywhere' }}>{url}</p><a className="button" href={url} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer">{t('เปิดหน้าอนุญาต', 'Open reviewed authorization page')}</a></>}
+    {poll > 0 && <p role="status">{t('กำลังตรวจสถานะการเชื่อมต่อ (สูงสุด 60 วินาที) ไม่มีการเรียกเครื่องมือซ้ำ', 'Checking status only for up to 60 seconds. No tool retry.')}</p>}
+    {uncertain && <p role="status">{t('ยังไม่รู้ผล กด ตรวจสถานะ OAuth ก่อนเริ่มใหม่ ระบบไม่ส่งซ้ำ', 'Request outcome is unconfirmed. Check status before beginning again; nothing is replayed.')}</p>}
+    {status?.status === 'connected' && <p>{t('เชื่อมบัญชีแล้ว ขั้นต่อไปกด ดูรายการเครื่องมือ', 'Machine credentials are connected. Remote tool qualification is separate.')}</p>}
     {(error || status?.error?.message) && <p className="error-text" role="alert">{error || status.error.message}</p>}
   </details>;
 }

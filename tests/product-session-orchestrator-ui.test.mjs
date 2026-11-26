@@ -114,15 +114,15 @@ async function harness(t,{language='th',mode='chat'}={}){
       await button.waitFor();await button.focus();await page.keyboard.press('Enter');
       assert.equal(await button.getAttribute('aria-pressed'),'true');
     }
-    await page.getByRole('heading',{name:tr(lang,'บทบาทของเซสชัน','Session roles'),exact:true}).waitFor();
+    await page.getByRole('heading',{name:tr(lang,'บทบาทของรอบการทำงาน','Session roles'),exact:true}).waitFor();
     await page.locator('.session-orchestrator > summary').focus();await page.keyboard.press('Enter');
     assert.equal(await page.locator('.session-orchestrator').getAttribute('open'),'');
-    await page.getByRole('button',{name:tr(lang,'โหลดสถานะ','Refresh state'),exact:true}).click();
+    await page.getByRole('button',{name:tr(lang,'โหลดข้อมูลล่าสุด','Refresh state'),exact:true}).click();
   };
   const select=async(lang=language)=>{
-    await page.getByLabel(tr(lang,'Task ที่อนุมัติ','Approved task'),{exact:true}).selectOption(f.task.id);
+    await page.getByLabel(tr(lang,'งานย่อยที่อนุมัติ','Approved task'),{exact:true}).selectOption(f.task.id);
     const assignment=f.store.read().events.find(e=>e.type==='session-role.assignment'&&e.conversationId===f.chat.id);
-    await page.getByLabel(tr(lang,'เซสชัน Orchestrator','Orchestrator session'),{exact:true}).selectOption(assignment.id);
+    await page.getByLabel(tr(lang,'รอบการทำงานผู้ประสานงาน','Orchestrator session'),{exact:true}).selectOption(assignment.id);
     await page.locator('.session-child').filter({hasText:longName}).getByRole('checkbox').check();
   };
   const shot=async name=>{await page.evaluate(()=>document.fonts.ready);const file=path.join(captures,`${name}.png`);await page.screenshot({path:file,fullPage:true});return file;};
@@ -182,17 +182,17 @@ test('session UI integration: actual mounted production components, injected nat
   await t.test('Chat navigation, TH default/EN, task/role/child selection, shipped CSS and colored assets at 320/375/768/1440',async t=>{
     const h=await harness(t),{f,page}=h;await h.open();
     assert.equal(h.requests.filter(x=>x.method!=='state').length,0,'opening the view does not start work');
-    const taskSelect=page.getByLabel('Task ที่อนุมัติ',{exact:true});
+    const taskSelect=page.getByLabel('งานย่อยที่อนุมัติ',{exact:true});
     assert.deepEqual(await taskSelect.locator('option').evaluateAll(rows=>rows.map(x=>x.value)),['',f.task.id],'only ready/backlog approved tasks with preassigned Orchestrator roles');
     await h.select();assert.equal(await page.locator('.session-orchestrator input[type="checkbox"]').count(),2,'bound role sessions only, including the alternate parent as an eligible child');
-    assert.equal(await page.getByRole('button',{name:'อนุมัติและเริ่ม attempt ใหม่',exact:true}).isEnabled(),true);
-    const parentSelect=page.getByLabel('เซสชัน Orchestrator',{exact:true});
+    assert.equal(await page.getByRole('button',{name:'อนุมัติและเริ่มงานรอบใหม่',exact:true}).isEnabled(),true);
+    const parentSelect=page.getByLabel('รอบการทำงานผู้ประสานงาน',{exact:true});
     const other=f.store.read().events.find(e=>e.type==='session-role.assignment'&&e.conversationId===f.otherParent.id);
     await parentSelect.selectOption(other.id);assert.equal(await page.locator('.session-child').filter({hasText:longName}).getByRole('checkbox').isChecked(),false,'parent change clears child approval draft');
     await h.select();
     const layoutFailures=[],contrasts=[];
     for(const lang of ['th','en']){
-      await h.render(f.p.id,lang);await page.getByRole('heading',{name:tr(lang,'บทบาทของเซสชัน','Session roles'),exact:true}).waitFor();
+      await h.render(f.p.id,lang);await page.getByRole('heading',{name:tr(lang,'บทบาทของรอบการทำงาน','Session roles'),exact:true}).waitFor();
       for(const width of [320,375,768,1440]){try{await fit(page,width);}catch(error){layoutFailures.push(`${lang}: ${error.message}`);}await h.shot(`chat-sessions-${lang}-${width}-dark`);}
       contrasts.push(await semanticContrast(page));
     }
@@ -306,7 +306,7 @@ test('session UI integration: actual mounted production components, injected nat
   await t.test('existing SessionRoles fallback TH, real link/prompt services, lost prompt replay, Stop/reconcile/revoke and narrow uncertainty',async t=>{
     const h=await harness(t,{mode:'standalone'}),{f,page}=h;
     await f.store.transaction(s=>{find(s,'runs',f.parent.id).status='running';});
-    await h.open();await page.getByRole('heading',{name:'บทบาทของเซสชัน',exact:true}).waitFor();
+    await h.open();await page.getByRole('heading',{name:'บทบาทของรอบการทำงาน',exact:true}).waitFor();
     await h.render(f.p.id,'en','standalone');await page.getByRole('button',{name:'Refresh state',exact:true}).click();
     await page.getByLabel('Parent orchestrator run',{exact:true}).selectOption(f.parent.id);
     const child=f.roles.state({projectId:f.p.id},f.owner).assignments.find(a=>a.conversationId===f.child.id);

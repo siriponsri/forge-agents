@@ -63,7 +63,7 @@ test('password form saves, clears, rotates, removes and retries uncertain writes
   assert.equal(f.privateState().records.filter(r => !r.deleted).length, 1);
   assert.equal(f.privateState().records.find(r => !r.deleted).revision, 1);
   await page.getByRole('button', { name: 'Language', exact: true }).click();
-  await page.getByRole('heading', { name: 'คีย์ส่วนตัวในเครื่อง', exact: true }).waitFor();
+  await page.getByRole('heading', { name: 'คีย์ลับในเครื่องนี้', exact: true }).waitFor();
   await page.setViewportSize({ width: 375, height: 900 });
   assert.equal(await page.locator('input,select,textarea').evaluateAll(nodes => nodes.filter(n => !n.labels?.length && !n.getAttribute('aria-label')).length), 0);
   await page.locator('input[type=password]').fill('unsaved-switch-disposable-ONLY');

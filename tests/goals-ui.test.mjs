@@ -47,7 +47,7 @@ test('Goals TH/EN form uses exact routes, actual evidence, QA and same authentic
   assert.equal(f.goal(g).status,'completed');
   for(const c of calls){assert.ok(!Object.hasOwn(c.input,'reviewer'));assert.ok(!Object.hasOwn(c.input,'approved'));assert.ok(!Object.hasOwn(c.input,'caller'));}
   await page.getByRole('button',{name:'Language',exact:true}).click();
-  await page.getByRole('heading',{name:'เป้าหมายและเกณฑ์รับงาน',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'เป้าหมายและเกณฑ์ว่างานเสร็จ',exact:true}).waitFor();
   await page.setViewportSize({width:375,height:900});
   const unlabeled=await page.locator('input,textarea,select').evaluateAll(nodes=>nodes.filter(n=>!n.labels?.length&&!n.getAttribute('aria-label')).length);
   assert.equal(unlabeled,0);

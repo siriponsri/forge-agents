@@ -35,16 +35,16 @@ export function Notebooks({ t, state, projectId, mutate, run, busy }) {
   return (
     <>
       <Heading
-        title={t("Notebooks · สมุดงาน Python", "Notebooks")}
+        title={t("สมุดโค้ด Python", "Notebooks")}
         description={t(
-          "บันทึกโค้ดก่อนเรียกใช้ ผลลัพธ์และ log มาจาก job จริงของบริการในเครื่อง",
+          "เขียนโค้ด Python แล้วบันทึกก่อนรัน ผลลัพธ์และบันทึกการทำงานมาจากการรันจริงในเครื่องนี้",
           "Save source before execution. Status and logs come from actual local jobs.",
         )}
       />
       <div className="split">
         <section className="panel">
           <button onClick={() => setSelected("")}>
-            {t("+ สมุดงานใหม่", "+ New notebook")}
+            {t("+ สมุดโค้ดใหม่", "+ New notebook")}
           </button>
           <Collection
             items={notebooks}
@@ -53,7 +53,7 @@ export function Notebooks({ t, state, projectId, mutate, run, busy }) {
             subtitle={(n) => `${n.language || "python"} · r${n.revision}`}
           />
           {!notebooks.length && (
-            <Empty>{t("ยังไม่มีสมุดงาน", "No notebooks yet.")}</Empty>
+            <Empty>{t("ยังไม่มีสมุดโค้ด กด + สมุดโค้ดใหม่ เพื่อเริ่ม", "No notebooks yet.")}</Empty>
           )}
           <Field label={t("นำเข้าไฟล์ .py หรือ .ipynb", "Import .py or .ipynb")}>
             <input
@@ -111,13 +111,13 @@ export function Notebooks({ t, state, projectId, mutate, run, busy }) {
               }
             }}
           >
-            <Field label={t("ชื่อสมุดงาน", "Notebook name")}>
+            <Field label={t("ชื่อสมุดโค้ด", "Notebook name")}>
               <input required name="name" defaultValue={notebook?.name || ""} />
             </Field>
             <Field
               label={t("โค้ด Python", "Python source")}
               hint={t(
-                "รันด้วยสภาพแวดล้อม Python ในเครื่องตามการตั้งค่าบริการ",
+                "รันด้วย Python ในเครื่องนี้",
                 "Runs in the local service Python environment.",
               )}
             >
@@ -131,7 +131,7 @@ export function Notebooks({ t, state, projectId, mutate, run, busy }) {
               />
             </Field>
             <div className="actions">
-              <Submit busy={busy}>{t("บันทึกสมุดงาน", "Save notebook")}</Submit>
+              <Submit busy={busy}>{t("บันทึกสมุดโค้ด", "Save notebook")}</Submit>
               {notebook && (
                 <button
                   type="button"
@@ -147,7 +147,7 @@ export function Notebooks({ t, state, projectId, mutate, run, busy }) {
                   }
                 >
                   <Play size={15} />
-                  {t("รันเวอร์ชันที่บันทึก", "Run saved revision")}
+                  {t("รันฉบับที่บันทึกไว้", "Run saved revision")}
                 </button>
               )}
             </div>
@@ -162,7 +162,7 @@ export function Notebooks({ t, state, projectId, mutate, run, busy }) {
                   <Badge>{j.status}</Badge>
                 </div>
                 <p>
-                  {date(j.createdAt)} · {t("ซอร์สเวอร์ชัน", "Source revision")}{" "}
+                  {date(j.createdAt)} · {t("โค้ดฉบับที่", "Source revision")}{" "}
                   {j.notebookRevision ?? j.sourceRevision ?? "—"}
                 </p>
                 <div className="actions">
@@ -181,7 +181,7 @@ export function Notebooks({ t, state, projectId, mutate, run, busy }) {
                       })
                     }
                   >
-                    {t("โหลด log ล่าสุด", "Read current logs")}
+                    {t("โหลดบันทึกการทำงานล่าสุด", "Read current logs")}
                   </button>
                   <button
                     disabled={busy}
@@ -194,7 +194,7 @@ export function Notebooks({ t, state, projectId, mutate, run, busy }) {
                     }
                   >
                     <Square size={14} />
-                    {t("ขอหยุด", "Request stop")}
+                    {t("หยุดการรัน", "Request stop")}
                   </button>
                 </div>
                 <pre className="code logs">
@@ -221,20 +221,20 @@ export function Artifacts({ t, state, projectId, run, busy }) {
   return (
     <>
       <Heading
-        title={t("Artifacts · ไฟล์และผลลัพธ์", "Artifacts")}
+        title={t("ไฟล์ผลลัพธ์", "Artifacts")}
         description={t(
-          "ลงทะเบียนไฟล์ที่มีอยู่จริง บริการตรวจไฟล์ ขนาด และ SHA256 ก่อนบันทึก",
+          "เพิ่มไฟล์เข้าโปรเจกต์เพื่อใช้ต่อในงานอื่น ระบบตรวจไฟล์และขนาดก่อนบันทึก",
           "Register an existing file. The service verifies its bytes and SHA256 before registration.",
         )}
       />
       <form className="panel inline-form" onSubmit={e=>{e.preventDefault();const data=new FormData(e.currentTarget),file=data.get('file');run(async()=>{
-        if(!file?.size||file.size>16*1024*1024)throw new Error(t('เลือกไฟล์ไม่เกิน 16 MB','Choose a nonempty file up to 16 MB'));
+        if(!file?.size||file.size>16*1024*1024)throw new Error(t('เลือกไฟล์ที่ไม่ว่างและไม่เกิน 16 MB','Choose a nonempty file up to 16 MB'));
         const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(file);});
         return request('/api/artifacts/upload',{operationId:operationId(),projectId,name:file.name,kind:data.get('kind'),base64});
       });}}>
         <Field label={t('เพิ่มไฟล์จากเครื่อง (ไม่เกิน 16 MB)','Upload a file (up to 16 MB)')}><input type="file" name="file" required/></Field>
-        <Field label={t('ชนิดของไฟล์ที่เพิ่ม','Uploaded artifact kind')}><select name="kind">{['file','model','preprocessor','dataset','figure','config'].map(k=><option key={k}>{k}</option>)}</select></Field>
-        <Submit busy={busy}>{t('อัปโหลดและตรวจไฟล์','Upload & verify')}</Submit>
+        <Field label={t('ประเภทไฟล์','Uploaded artifact kind')}><select name="kind">{['file','model','preprocessor','dataset','figure','config'].map(k=><option key={k}>{k}</option>)}</select></Field>
+        <Submit busy={busy}>{t('อัปโหลด','Upload & verify')}</Submit>
       </form>
       <form
         className="panel inline-form"
@@ -250,10 +250,10 @@ export function Artifacts({ t, state, projectId, run, busy }) {
           );
         }}
       >
-        <Field label={t("พาธไฟล์ในโครงการ", "Project file path")}>
+        <Field label={t("ที่อยู่ไฟล์ในโฟลเดอร์งาน", "Project file path")}>
           <input name="path" required />
         </Field>
-        <Field label={t("ประเภทไฟล์", "Artifact kind")}>
+        <Field label={t("ประเภทไฟล์ผลลัพธ์", "Artifact kind")}>
           <select name="kind">
             {[
               "dataset",
@@ -268,10 +268,10 @@ export function Artifacts({ t, state, projectId, run, busy }) {
             ))}
           </select>
         </Field>
-        <Submit busy={busy}>{t("ตรวจและลงทะเบียน", "Verify & register")}</Submit>
+        <Submit busy={busy}>{t("เพิ่มไฟล์นี้", "Verify & register")}</Submit>
       </form>
       <div className="toolbar">
-        <Field label={t("กรองประเภท", "Filter kind")}>
+        <Field label={t("แสดงเฉพาะประเภท", "Filter kind")}>
           <select value={kind} onChange={(e) => setKind(e.target.value)}>
             <option value="all">{t("ทั้งหมด", "All")}</option>
             {[...new Set(items.map((i) => i.kind))].filter(Boolean).map((k) => (
@@ -280,11 +280,11 @@ export function Artifacts({ t, state, projectId, run, busy }) {
           </select>
         </Field>
         <span>
-          {items.length} {t("รายการจริง", "registered records")}
+          {items.length} {t("ไฟล์", "registered records")}
         </span>
       </div>
       {!items.length ? (
-        <Empty>{t("ยังไม่มีไฟล์ที่ลงทะเบียน", "No verified artifacts yet.")}</Empty>
+        <Empty>{t("ยังไม่มีไฟล์ผลลัพธ์", "No verified artifacts yet.")}</Empty>
       ) : (
         <div className="table-wrap">
           <table>
@@ -350,31 +350,31 @@ export function Monitoring(props) {
   return (
     <>
       <Heading
-        title={t("Monitor · ติดตามการทำงาน", "Monitor")}
+        title={t("ติดตามการทำงาน", "Monitor")}
         description={t(
-          "แสดงสถานะที่บันทึกไว้ ไม่มีการประมาณความสำเร็จหรือสร้างตัวเลขฝึกโมเดล",
+          "แสดงเฉพาะสถานะที่บันทึกไว้จริง ไม่เดาว่างานสำเร็จ และไม่สร้างตัวเลขการเทรนขึ้นเอง",
           "Persisted observations only. No inferred completion or synthetic training metrics.",
         )}
       />
       <div className="monitor-summary">
         <div>
           <strong>{runs.length}</strong>
-          <span>{t("การรันของ agent", "Agent runs")}</span>
+          <span>{t("งานของผู้ช่วย AI", "Agent runs")}</span>
         </div>
         <div>
           <strong>{jobs.length}</strong>
-          <span>{t("งานประมวลผล", "Compute jobs")}</span>
+          <span>{t("งานบนเครื่องประมวลผล", "Compute jobs")}</span>
         </div>
         <div>
           <strong>{scoped(state, "artifacts", projectId).length}</strong>
-          <span>{t("ไฟล์ที่ลงทะเบียน", "Registered artifacts")}</span>
+          <span>{t("ไฟล์ผลลัพธ์", "Registered artifacts")}</span>
         </div>
       </div>
-      <h2>{t("การทำงานผ่าน T3", "T3 execution")}</h2>
+      <h2>{t("งานของผู้ช่วย AI", "T3 execution")}</h2>
       {!runs.length && (
         <Empty>
           {t(
-            "ยังไม่มีการรัน เริ่มจากรายละเอียดงาน",
+            "ยังไม่มีงาน เริ่มได้จากหน้ารายละเอียดของงานย่อย",
             "No runs yet. Start from a task detail.",
           )}
         </Empty>
@@ -382,8 +382,8 @@ export function Monitoring(props) {
       {[...runs].reverse().map((r) => (
         <Run key={r.id} {...props} runRecord={r} />
       ))}
-      <h2>{t("งานประมวลผลและรายงาน", "Compute & report jobs")}</h2>
-      {!jobs.length && <Empty>{t("ยังไม่มีงานประมวลผล", "No jobs yet.")}</Empty>}
+      <h2>{t("งานประมวลผลและงานสร้างรายงาน", "Compute & report jobs")}</h2>
+      {!jobs.length && <Empty>{t("ยังไม่มีงาน", "No jobs yet.")}</Empty>}
       {[...jobs].reverse().map((j) => (
         <article className="run" key={j.id}>
           <div className="record-head">
@@ -392,7 +392,7 @@ export function Monitoring(props) {
           </div>
           <p>
             {j.kind || j.type || "job"} · {date(j.updatedAt)} ·{" "}
-            {t("เวอร์ชันต้นทาง", "Source revision")}{" "}
+            {t("ต้นฉบับฉบับที่", "Source revision")}{" "}
             {j.sourceRevision ?? j.notebookRevision ?? "—"}
           </p>
           {j.error && (
@@ -403,17 +403,17 @@ export function Monitoring(props) {
           {j.metrics ? (
             <details>
               <summary>
-                {t("ตัวชี้วัดที่ job ส่งมา", "Metrics emitted by job")}
+                {t("ตัวเลขที่งานรายงานมา", "Metrics emitted by job")}
               </summary>
               <Json value={j.metrics} />
             </details>
           ) : (
             <p className="help">
-              {t("งานนี้ยังไม่ส่งตัวชี้วัด", "No measured metrics emitted by this job.")}
+              {t("งานนี้ยังไม่รายงานตัวเลข", "No measured metrics emitted by this job.")}
             </p>
           )}
           <details>
-            <summary>{t("ข้อมูลแหล่งที่มาและ log", "Provenance & logs")}</summary>
+            <summary>{t("รายละเอียดและบันทึกการทำงาน", "Provenance & logs")}</summary>
             <Json
               value={{
                 id: j.id,
@@ -457,22 +457,22 @@ export function SettingsPage({
   return (
     <>
       <Heading
-        title={t("Settings · ตั้งค่าโครงการ", "Project settings")}
+        title={t("ตั้งค่าโปรเจกต์", "Project settings")}
         description={t(
-          "โปรไฟล์แต่ละโครงการแยกอิสระ การเชื่อมต่อพร้อมใช้ต้องผ่านการตรวจจริง",
+          "แต่ละโปรเจกต์ตั้งค่าแยกกัน การบันทึกค่ายังไม่ได้แปลว่าเชื่อมต่อได้ ต้องกดตรวจก่อน",
           "Each project has an independent profile. Saved configuration does not establish readiness.",
         )}
       />
       <div className="tabs section-tabs">
         {[
-          ["project", "โครงการ", "Project"],
-          ['providers','โมเดลและบัญชี','Providers & models'],
+          ["project", "โปรเจกต์", "Project"],
+          ['providers','บริการ AI และโมเดล','Providers & models'],
           ['mcp','เครื่องมือ MCP','MCP tools'],
           ['plugins','ส่วนเสริม','Plugins'],
-          ['keys','กุญแจของเครื่อง','Machine keys'],
-          ['guarded','ขอบเขตการทำงานอัตโนมัติ','Bounded automation'],
+          ['keys','คีย์ลับ','Machine keys'],
+          ['guarded','จำกัดสิ่งที่ AI แก้ได้ (Guarded)','Bounded automation'],
           ["connections", "การเชื่อมต่อ", "Connections"],
-          ["recovery", "สำรองและสถานะระบบ", "Recovery & health"],
+          ["recovery", "สำรองข้อมูลและสถานะระบบ", "Recovery & health"],
         ].map(([id, th, en]) => (
           <button
             className={tab === id ? "selected" : ""}
@@ -487,7 +487,7 @@ export function SettingsPage({
       {tab==='mcp'&&<McpConnections key={projectId} {...{t,state,projectId,run,busy}}/>}
       {tab==='plugins'&&<Plugins key={projectId} {...{t,state,projectId,run,busy}}/>}
       {tab==='guarded'&&<GuardedSetup key={projectId} {...{t,state,projectId,run,busy}}/>}
-      {tab==='keys'&&<><SecretManager key={projectId} {...{t,state,projectId,run,busy}}/><p className="help">{t('ถ้าเปลี่ยนกุญแจ provider หลัง T3 เริ่มแล้ว ให้หยุด FORGE และเปิด launcher ใหม่ก่อนใช้งานกุญแจนั้น จากนั้นตรวจ provider และเลือกโมเดลอีกครั้ง','If a provider key changes after T3 has started, stop FORGE and reopen its launcher before using that key. Then check the provider and select its model again.')}</p></>}
+      {tab==='keys'&&<><SecretManager key={projectId} {...{t,state,projectId,run,busy}}/><p className="help">{t('ถ้าเปลี่ยนคีย์ของบริการ AI ตอนที่ FORGE เปิดอยู่ ให้ปิด FORGE แล้วเปิดใหม่ จากนั้นตรวจบริการ AI และเลือกโมเดลอีกครั้ง','If a provider key changes after T3 has started, stop FORGE and reopen its launcher before using that key. Then check the provider and select its model again.')}</p></>}
       {tab === "project" && (
         <>
           <form
@@ -508,9 +508,9 @@ export function SettingsPage({
               if (saved) acceptProject(saved.entity);
             }}
           >
-            <h2>{t("พื้นที่ทำงาน", "Workspace")}</h2>
+            <h2>{t("ข้อมูลโปรเจกต์", "Workspace")}</h2>
             <div className="form-grid">
-              <Field label={t("ชื่อโครงการ", "Project name")}>
+              <Field label={t("ชื่อโปรเจกต์", "Project name")}>
                 <input required name="name" defaultValue={project.name} />
               </Field>
               <Field label={t("โฟลเดอร์งาน", "Workspace directory")}>
@@ -521,10 +521,10 @@ export function SettingsPage({
                 />
               </Field>
             </div>
-            <Field label={t("เป้าหมาย", "Goal")}>
+            <Field label={t("เป้าหมายของโปรเจกต์", "Goal")}>
               <textarea name="description" defaultValue={project.description} />
             </Field>
-            <h2>{t("โปรไฟล์การทำงาน", "Execution profile")}</h2>
+            <h2>{t("การตั้งค่าการทำงาน", "Execution profile")}</h2>
             <ProviderProfile
               t={t}
               run={run}
@@ -568,7 +568,7 @@ export function SettingsPage({
             <details>
               <summary>
                 {t(
-                  "ขั้นสูง: ขีดจำกัดและค่า override รายขั้นตอน",
+                  "ขั้นสูง: ขีดจำกัด และค่าเฉพาะของแต่ละช่วงงาน",
                   "Advanced: limits & phase overrides",
                 )}
               </summary>
@@ -586,7 +586,7 @@ export function SettingsPage({
               />
             </details>
             <Submit busy={busy}>
-              {t("บันทึกโครงการและโปรไฟล์", "Save project & profile")}
+              {t("บันทึกการตั้งค่าโปรเจกต์", "Save project & profile")}
             </Submit>
           </form>
         </>
@@ -677,7 +677,7 @@ export function SettingsPage({
                   </select>
                 </Field>
                 <Field
-                  label={t("Adapter ที่บริการรองรับ", "Service-supported adapter")}
+                  label={t("ประเภทการเชื่อมต่อที่รองรับ", "Service-supported adapter")}
                 >
                   <input
                     name="adapter"
@@ -703,7 +703,7 @@ export function SettingsPage({
                   </datalist>
                 </Field>
               </div>
-              <Field label={t("URL (เมื่อใช้ HTTP)", "URL (HTTP transport)")}>
+              <Field label={t("URL (ถ้าเชื่อมผ่าน HTTP)", "URL (HTTP transport)")}>
                 <input
                   name="url"
                   type="url"
@@ -712,11 +712,11 @@ export function SettingsPage({
               </Field>
               <Field
                 label={t(
-                  "อ้างอิง credential ที่จัดเก็บในเครื่อง",
+                  "ชื่อคีย์ลับที่เก็บในเครื่อง",
                   "Local credential reference",
                 )}
                 hint={t(
-                  "อย่าป้อนรหัสลับลงในฟอร์มนี้",
+                  "อย่าวางค่าคีย์จริงลงในฟอร์มนี้",
                   "Do not enter secret values in this form.",
                 )}
               >
@@ -728,7 +728,7 @@ export function SettingsPage({
               <details>
                 <summary>
                   {t(
-                    "ขั้นสูง: executable และโมเดล",
+                    "ขั้นสูง: โปรแกรมและโมเดล",
                     "Advanced: executable & model",
                   )}
                 </summary>
@@ -740,7 +740,7 @@ export function SettingsPage({
                 </Field>
                 <Field
                   label={t(
-                    "Arguments (หนึ่งค่าต่อบรรทัด)",
+                    "ค่าที่ส่งให้โปรแกรม (บรรทัดละหนึ่งค่า)",
                     "Arguments (one per line)",
                   )}
                 >
@@ -762,7 +762,7 @@ export function SettingsPage({
                   type="checkbox"
                   defaultChecked={connection?.enabled ?? true}
                 />
-                {t("เปิดใช้ในโครงการ", "Enable in project")}
+                {t("เปิดใช้ในโปรเจกต์นี้", "Enable in project")}
               </label>
               <Submit busy={busy}>
                 {t("บันทึกการเชื่อมต่อ", "Save connection")}
@@ -785,7 +785,7 @@ export function SettingsPage({
                       })
                     }
                   >
-                    {t("ตรวจการเชื่อมต่อจริง", "Check connection")}
+                    {t("ทดสอบการเชื่อมต่อ", "Check connection")}
                   </button>
                   {connection.kind === "mcp" && (
                     <button
@@ -807,14 +807,14 @@ export function SettingsPage({
                 </div>
                 <p className="help">
                   {t(
-                    "การบันทึกฟอร์มไม่ยืนยันสิทธิ์หรือความพร้อม ดูผลตรวจและความสามารถที่ค้นพบด้านล่าง",
+                    "การบันทึกยังไม่ได้แปลว่าเชื่อมต่อได้หรือมีสิทธิ์ ดูผลทดสอบด้านล่าง",
                     "Saving does not confirm access or readiness. Inspect actual checks and discovered capabilities below.",
                   )}
                 </p>
                 {result && <Json value={result} />}
                 <details>
                   <summary>
-                    {t("ความสามารถและหลักฐาน", "Capabilities & evidence")}
+                    {t("สิ่งที่การเชื่อมต่อนี้ทำได้", "Capabilities & evidence")}
                   </summary>
                   <Json
                     value={{
@@ -840,12 +840,12 @@ export function SettingsPage({
       )}
       {tab === "recovery" && (
         <div className="panel">
-          <h2>{t("สถานะบริการในเครื่อง", "Local service health")}</h2>
+          <h2>{t("สถานะระบบในเครื่อง", "Local service health")}</h2>
           <Json value={health || { status: "unavailable" }} />
           <h2>{t("สำรองข้อมูล", "Backup")}</h2>
           <p>
             {t(
-              "การสำรองและกู้คืนต้องผ่านบริการและตรวจข้อมูลจริง เก็บพาธสำรองที่บริการส่งกลับ",
+              "ระบบตรวจข้อมูลทุกครั้งที่สำรองและกู้คืน จดที่อยู่ไฟล์สำรองที่แสดงหลังสำรองเสร็จไว้ใช้กู้คืน",
               "Backup and restore are verified by the service. Keep the returned backup location.",
             )}
           </p>
@@ -874,7 +874,7 @@ export function SettingsPage({
               );
             }}
           >
-            <Field label={t("พาธข้อมูลสำรองที่ตรวจแล้ว", "Verified backup ID")}>
+            <Field label={t("ที่อยู่ไฟล์สำรอง", "Verified backup ID")}>
               <input required name="id" />
             </Field>
             <button disabled={busy} type="submit">
@@ -917,7 +917,7 @@ function ProviderProfile({ t, run, profile, setProfile }) {
       <div className="form-grid">
         <Field
           label={t(
-            "Provider instance ID จาก T3",
+            "รหัสบัญชีบริการ AI จาก T3",
             "Provider instance ID from T3",
           )}
         >
@@ -926,14 +926,14 @@ function ProviderProfile({ t, run, profile, setProfile }) {
             onChange={(e) => set({ instanceId: e.target.value })}
           />
         </Field>
-        <Field label={t("โมเดลที่ T3 รองรับ", "T3-supported model ID")}>
+        <Field label={t("โมเดล", "T3-supported model ID")}>
           <input
             value={provider.model || ""}
             onChange={(e) => set({ model: e.target.value })}
           />
         </Field>
         <Field
-          label={t("Compute ที่รองรับในรุ่นนี้", "Compute implemented in this build")}
+          label={t("เครื่องประมวลผล (ที่รุ่นนี้รองรับ)", "Compute implemented in this build")}
         >
           <select
             value="local"
@@ -947,7 +947,7 @@ function ProviderProfile({ t, run, profile, setProfile }) {
       </div>
       <p className="help">
         {t(
-          "กำหนดบัญชีและตรวจโมเดลในพื้นที่ T3 อิสระ การเลือกค่าไม่ยืนยันว่าบัญชีเรียกโมเดลได้จริง",
+          "ตั้งค่าบัญชีและตรวจโมเดลใน T3 การเลือกค่าที่นี่ยังไม่ได้แปลว่าเรียกโมเดลได้จริง",
           "Configure the account and verify models in the independent T3 surface. Selection does not establish successful provider execution.",
         )}
       </p>
@@ -961,12 +961,12 @@ function ProviderProfile({ t, run, profile, setProfile }) {
           })
         }
       >
-        {t("โหลด catalog จริงจาก T3", "Read actual T3 catalog")}
+        {t("โหลดรายการโมเดลจาก T3", "Read actual T3 catalog")}
       </button>
       {catalog && (
         <details open>
           <summary>
-            {t("Catalog และ options ที่ค้นพบ", "Discovered catalog & options")}
+            {t("รายการโมเดลและตัวเลือก", "Discovered catalog & options")}
           </summary>
           <Json value={catalog} />
         </details>
@@ -974,7 +974,7 @@ function ProviderProfile({ t, run, profile, setProfile }) {
       <details>
         <summary>
           {t(
-            "ขั้นสูง: provider options ตาม catalog",
+            "ขั้นสูง: ตัวเลือกของบริการ AI",
             "Advanced: provider options from catalog",
           )}
         </summary>
@@ -1003,7 +1003,7 @@ function McpCall({ connection, t, run, busy }) {
   const [result, setResult] = useState(null);
   return (
     <details>
-      <summary>{t("เรียกเครื่องมือที่ค้นพบ", "Call a discovered tool")}</summary>
+      <summary>{t("ลองใช้เครื่องมือ", "Call a discovered tool")}</summary>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -1034,13 +1034,13 @@ function McpCall({ connection, t, run, busy }) {
         </Field>
         <Field
           label={t(
-            "Arguments (JSON ตาม schema เครื่องมือ)",
+            "ค่าที่ส่ง (JSON ตามรูปแบบของเครื่องมือ)",
             "Arguments (JSON matching tool schema)",
           )}
         >
           <textarea required name="args" defaultValue="{}" />
         </Field>
-        <button disabled={busy}>{t("เรียกเครื่องมือ", "Call tool")}</button>
+        <button disabled={busy}>{t("ใช้เครื่องมือ", "Call tool")}</button>
       </form>
       {result && <Json value={result} />}
     </details>

@@ -186,7 +186,7 @@ try {
   checks.push('project isolation; OAuth RESPONSE FIXTURE only: explicit reviewed link, bounded status GET, disconnect, no localStorage');
   await field('Harness project').selectOption('project-a'); await field('Configured provider account').waitFor();
   for (const width of [320, 375, 414, 768, 1440]) { await page.setViewportSize({ width, height: 1000 }); assert.equal(await page.locator('html').evaluate(e => e.scrollWidth <= innerWidth), true, `Overflow at ${width}px`); }
-  await field('Harness language').selectOption('th'); await page.getByRole('heading', { name: 'บัญชีและโมเดลของโครงการ', exact: true }).waitFor();
+  await field('Harness language').selectOption('th'); await page.getByRole('heading', { name: 'บริการ AI และโมเดลของโปรเจกต์', exact: true }).waitFor();
   await field('Harness language').selectOption('en'); await field('Configured provider account').focus(); assert.notEqual(await field('Configured provider account').evaluate(e => getComputedStyle(e).outlineStyle), 'none');
   assert.deepEqual(errors, []); checks.push('TH/EN, labelled native controls, keyboard focus, widths 320/375/414/768/1440 without document overflow');
   const serialized = JSON.stringify(store.read()); assert.equal(serialized.includes('FIXTURE-ONLY'), false); assert.equal(serialized.includes('fixture-callback'), false); assert.equal(serialized.includes('fixture-authorize'), false);

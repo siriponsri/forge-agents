@@ -83,10 +83,10 @@ export default function ThemePicker({ theme = DEFAULT_THEME, onChange, t = engli
         onClick={event => { if (event.target === event.currentTarget) setOpen(false); }}>
         <div className="theme-picker-panel">
           <header className="theme-picker-head">
-            <div><span className="section-eyebrow">{t("รูปลักษณ์", "Appearance")}</span><h2 id={titleId}>{t("พื้นที่ทำงาน ในแบบของคุณ", "Make yourself at home")}</h2></div>
+            <div><span className="section-eyebrow">{t("รูปลักษณ์", "Appearance")}</span><h2 id={titleId}>{t("แต่งหน้าตาให้เป็นแบบของคุณ", "Make yourself at home")}</h2></div>
             <button type="button" className="theme-close" onClick={() => setOpen(false)} aria-label={t("ปิดตัวเลือกธีม", "Close theme picker")}><X size={18} aria-hidden="true" /></button>
           </header>
-          <p className="theme-picker-description" id={hintId}>{t("เลือกจากธีมที่คุ้นเคยของ VS Code", "Choose a familiar VS Code theme.")}</p>
+          <p className="theme-picker-description" id={hintId}>{t("เลือกธีมสีที่คุ้นเคยจาก VS Code", "Choose a familiar VS Code theme.")}</p>
           <label className="theme-search">
             <Search size={16} aria-hidden="true" />
             <input ref={search} value={query} onChange={event => setQuery(event.target.value)} placeholder={t("ค้นหาธีม…", "Search themes…")} aria-label={t("ค้นหาธีม", "Search themes")}
@@ -96,7 +96,7 @@ export default function ThemePicker({ theme = DEFAULT_THEME, onChange, t = engli
               }} />
             <kbd aria-hidden="true">Esc</kbd>
           </label>
-          <div className="theme-options" role="radiogroup" aria-label={t("ธีม VS Code", "VS Code themes")}>
+          <div className="theme-options" role="radiogroup" aria-label={t("ธีมสีจาก VS Code", "VS Code themes")}>
             {groups.map(({ kind, label, Icon }) => {
               const items = matching.filter(item => item.kind === kind);
               if (!items.length) return null;
@@ -108,7 +108,7 @@ export default function ThemePicker({ theme = DEFAULT_THEME, onChange, t = engli
                     tabIndex={current.id === item.id || !matching.some(option => option.id === current.id) && ordered[0]?.id === item.id ? 0 : -1}
                     onKeyDown={event => navigate(event, item.id)} onClick={() => choose(item.id)}>
                     <PalettePreview theme={item} />
-                    <span className="theme-option-copy"><strong>{item.label}</strong><small>{item.highContrast ? t("คอนทราสต์สูง", "High contrast") : item.id === DEFAULT_THEME ? t("ค่าเริ่มต้น", "Default") : t("VS Code ในตัว", "VS Code built-in")}</small></span>
+                    <span className="theme-option-copy"><strong>{item.label}</strong><small>{item.highContrast ? t("คอนทราสต์สูง", "High contrast") : item.id === DEFAULT_THEME ? t("ค่าเริ่มต้น", "Default") : t("มากับ VS Code", "VS Code built-in")}</small></span>
                     <span className="theme-option-check" aria-hidden="true">{current.id === item.id && <Check size={14} />}</span>
                   </button>)}
                 </div>
